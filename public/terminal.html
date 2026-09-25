@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <title>Terminal — Nascera AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/css/xterm.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/lib/xterm.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@xterm/addon-fit@0.10.0/lib/addon-fit.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@xterm/addon-web-links@0.11.0/lib/addon-web-links.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
+      margin: 0; height: 100vh; display: flex; flex-direction: column;
+      background: #0a0a0a; color: #fff; overflow: hidden;
+    }
+
+    .top-bar {
+      height: 48px; display: flex; align-items: center; gap: 12px;
+      padding: 0 16px; border-bottom: 1px solid rgba(255,255,255,.06);
+      background: rgba(10,10,10,.95); backdrop-filter: blur(8px);
+      flex-shrink: 0; z-index: 10;
+    }
+
+    .top-bar .logo {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #60a5fa);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 12px rgba(59,130,246,.2);
+    }
+
+    .top-bar h1 { font-size: 13px; font-weight: 600; letter-spacing: -.02em; }
+    .top-bar .badge {
+      font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 6px;
+      background: rgba(59,130,246,.15); color: #60a5fa; border: 1px solid rgba(59,130,246,.2);
+    }
+
+    .back-btn {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 12px; color: #737373; padding: 6px 10px; border-radius: 8px;
+      border: none; background: none; cursor: pointer; transition: all .15s;
+    }
+    .back-btn:hover { color: #fff; background: rgba(255,255,255,.05); }
+
+    #terminal-container {
+      flex: 1; padding: 8px; overflow: hidden;
+    }
+
+    .xterm { height: 100%; }
+    .xterm-viewport::-webkit-scrollbar { width: 5px; }
+    .xterm-viewport::-webkit-scrollbar-track { background: transparent; }
+    .xterm-viewport::-webkit-scrollbar-thumb { background: rgba(255,255,255,.08); border-radius: 3px; }
+
+    .status-bar {
+      height: 28px; display: flex; align-items: center; gap: 8px;
+      padding: 0 16px; border-top: 1px solid rgba(255,255,255,.06);
+      background: rgba(10,10,10,.95); flex-shrink: 0;
+    }
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .status-dot.connected { background: #4ade80; box-shadow: 0 0 6px rgba(74,222,128,.4); }
+    .status-dot.disconnected { background: #f87171; }
+    .status-text { font-size: 11px; color: #525252; }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar">
+    <button class="back-btn" onclick="window.location.href='/home.html'">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Voltar
+    </button>
+    <div style="width:1px;height:20px;background:rgba(255,255,255,.08)"></div>
+    <div class="logo">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M11.811 6.727C12.825 4.909 13.331 4 14.09 4c.757 0 1.264.909 2.277 2.727l.262.47c.288.517.432.775.657.945.224.17.504.234 1.063.36l.51.116c1.967.445 2.95.667 3.185 1.42s-.437 1.537-1.778 3.106l-.347.406c-.381.445-.572.668-.658.944s-.057.573 0 1.168l.053.541c.203 2.094.305 3.14-.308 3.605s-1.534.041-3.377-.807l-.476-.22c-.524-.24-.786-.361-1.063-.361-.278 0-.54.12-1.063.361l-.477.22c-1.842.848-2.763 1.272-3.376.807s-.511-1.511-.309-3.605l.053-.541c.057-.595.086-.892 0-1.168s-.276-.498-.657-.944l-.347-.406C6.57 11.575 5.9 10.79 6.135 10.038s1.218-.975 3.185-1.42l.51-.116c.559-.126.838-.19 1.063-.36s.368-.428.656-.945z"/></svg>
+    </div>
+    <h1>Nascera AI</h1>
+    <span class="badge">Terminal</span>
+    <div style="flex:1"></div>
+    <span id="user-name" style="font-size:11px;color:#525252"></span>
+  </div>
+
+  <div id="terminal-container"></div>
+
+  <div class="status-bar">
+    <div id="status-dot" class="status-dot disconnected"></div>
+    <span id="status-text" class="status-text">Conectando...</span>
+  </div>
+
+<script>
+const token = localStorage.getItem('nascera_token') || localStorage.getItem('nascera_token');
+if (!token) window.location.href = '/';
+document.getElementById('user-name').textContent = localStorage.getItem('nascera_user') || '';
+
+// ─── Xterm Setup ──────────────────────────────
+const term = new Terminal({
+  fontFamily: '"JetBrains Mono", "Fira Code", "Cascadia Code", monospace',
+  fontSize: 14,
+  lineHeight: 1.4,
+  cursorBlink: true,
+  cursorStyle: 'bar',
+  theme: {
+    background: '#0a0a0a',
+    foreground: '#d4d4d4',
+    cursor: '#60a5fa',
+    cursorAccent: '#0a0a0a',
+    selectionBackground: 'rgba(96,165,250,0.3)',
+    black: '#171717',
+    red: '#f87171',
+    green: '#4ade80',
+    yellow: '#fbbf24',
+    blue: '#60a5fa',
+    magenta: '#c084fc',
+    cyan: '#22d3ee',
+    white: '#d4d4d4',
+    brightBlack: '#525252',
+    brightRed: '#fca5a5',
+    brightGreen: '#86efac',
+    brightYellow: '#fde68a',
+    brightBlue: '#93c5fd',
+    brightMagenta: '#d8b4fe',
+    brightCyan: '#67e8f9',
+    brightWhite: '#ffffff',
+  },
+});
+
+const fitAddon = new FitAddon.FitAddon();
+const webLinksAddon = new WebLinksAddon.WebLinksAddon();
+term.loadAddon(fitAddon);
+term.loadAddon(webLinksAddon);
+
+term.open(document.getElementById('terminal-container'));
+fitAddon.fit();
+
+window.addEventListener('resize', () => fitAddon.fit());
+
+// ─── WebSocket ──────────────────────────────
+let ws = null;
+let reconnectTimer = null;
+let reconnectAttempts = 0;
+
+function setStatus(connected) {
+  const dot = document.getElementById('status-dot');
+  const text = document.getElementById('status-text');
+  dot.className = 'status-dot ' + (connected ? 'connected' : 'disconnected');
+  text.textContent = connected ? 'Conectado' : 'Reconectando...';
+}
+
+function connect() {
+  const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+  ws = new WebSocket(`${proto}://${location.host}/ws-terminal?token=${encodeURIComponent(token)}`);
+
+  ws.onopen = () => {
+    setStatus(true);
+    reconnectAttempts = 0;
+    term.focus();
+
+    // Send initial resize
+    const dims = fitAddon.proposeDimensions();
+    if (dims) {
+      ws.send(JSON.stringify({ type: 'resize', cols: dims.cols, rows: dims.rows }));
+    }
+  };
+
+  ws.onmessage = (e) => {
+    try {
+      const msg = JSON.parse(e.data);
+      if (msg.type === 'output') {
+        term.write(msg.data);
+      } else if (msg.type === 'exit') {
+        term.write('\r\n\x1b[33m[Sessao encerrada]\x1b[0m\r\n');
+        setStatus(false);
+      }
+    } catch {
+      term.write(e.data);
+    }
+  };
+
+  ws.onclose = () => {
+    setStatus(false);
+    scheduleReconnect();
+  };
+
+  ws.onerror = () => {};
+}
+
+function scheduleReconnect() {
+  if (reconnectTimer) return;
+  const delay = Math.min(500 * Math.pow(2, reconnectAttempts), 8000);
+  reconnectAttempts++;
+  reconnectTimer = setTimeout(() => {
+    reconnectTimer = null;
+    connect();
+  }, delay);
+}
+
+// Terminal input -> WebSocket
+term.onData((data) => {
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ type: 'input', data }));
+  }
+});
+
+// Resize events
+term.onResize(({ cols, rows }) => {
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ type: 'resize', cols, rows }));
+  }
+});
+
+// Observe container resize for fit
+const ro = new ResizeObserver(() => fitAddon.fit());
+ro.observe(document.getElementById('terminal-container'));
+
+// ─── Start ──────────────────────────────
+connect();
+</script>
+</body>
+</html>

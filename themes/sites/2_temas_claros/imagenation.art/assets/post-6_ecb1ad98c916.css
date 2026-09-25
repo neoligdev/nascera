@@ -1,0 +1,173 @@
+.elementor-kit-6{--e-global-color-primary:#000000;--e-global-color-secondary:#0E2E43;--e-global-color-text:#1D2C34;--e-global-color-accent:#2C434E;--e-global-color-70114af:#0E2E43;--e-global-color-e74b0c7:#12567A;--e-global-color-e99be6f:#116693;--e-global-color-65afa6d:#137FB6;--e-global-color-8078581:#219FD6;--e-global-color-4cc9d35:#49B7E7;--e-global-color-e6bb565:#82CDF0;--e-global-color-10dc5f7:#C0E4F7;--e-global-color-c1fcc86:#E3F1FB;--e-global-color-4297fd2:#F1F9FE;--e-global-color-3e030d2:#282145;--e-global-color-ae3dfdc:#4F3E95;--e-global-color-4b4157b:#614AB8;--e-global-color-6ce4031:#705AD1;--e-global-color-7da128b:#8175DF;--e-global-color-4136b4a:#9490E9;--e-global-color-8c7aff6:#AAADF0;--e-global-color-55bd493:#CED1F7;--e-global-color-6375c37:#E4E6FB;--e-global-color-4cf11af:#F0F1FD;--e-global-color-aeb3ab0:#3F120B;--e-global-color-f904e43:#902D1C;--e-global-color-9252cd8:#B53719;--e-global-color-397184a:#DA491C;--e-global-color-55a3b1f:#E86227;--e-global-color-a891c98:#ED824A;--e-global-color-22aaa9b:#F8CFB0;--e-global-color-3b495d6:#F8CFB0;--e-global-color-1d300c0:#FCE9D8;--e-global-color-eee95b9:#FCE9D8;--e-global-color-6d223b3:#0A2C07;--e-global-color-813dfe0:#215E16;--e-global-color-393d664:#227714;--e-global-color-4f19873:#2A9C14;--e-global-color-ec5c9d3:#3CC41E;--e-global-color-31b7cd2:#5DDE3D;--e-global-color-9a2abc8:#85EC6A;--e-global-color-6510e79:#B5F5A2;--e-global-color-c8525c6:#D8FACD;--e-global-color-5d6cc5e:#EEFDE8;--e-global-color-a3d3da6:#052E2B;--e-global-color-889204e:#125D54;--e-global-color-32e1e63:#117466;--e-global-color-f096309:#10917E;--e-global-color-12e97ba:#17B59B;--e-global-color-1a4095f:#30D1B3;--e-global-color-cd329b8:#61E7CA;--e-global-color-8a7954b:#A2F5E0;--e-global-color-ff476b7:#CDFAED;--e-global-color-6a69c43:#F0FDF9;--e-global-color-15b9ab0:#401E08;--e-global-color-35431e9:#6F3A18;--e-global-color-f823ffb:#A65917;--e-global-color-b1d8c6f:#C77B18;--e-global-color-4ea3b80:#E29F1E;--e-global-color-8c4784e:#E9BD36;--e-global-color-7a9a637:#EDD05C;--e-global-color-d45ad24:#F5E7A2;--e-global-color-9d43146:#F9F1CC;--e-global-color-2c9b1ec:#FDFBED;--e-global-color-059e057:#371818;--e-global-color-86f5854:#673535;--e-global-color-a6f6964:#934242;--e-global-color-5b7a64f:#B05252;--e-global-color-325bab9:#C66D6D;--e-global-color-9ab333e:#D89191;--e-global-color-3bec8f2:#E7BABA;--e-global-color-e8022e9:#EECCCC;--e-global-color-c3b1122:#F7E9E9;--e-global-color-9e64456:#FBF5F5;--e-global-color-3a3f26c:#000000;--e-global-color-5a2447f:#1D2C34;--e-global-color-13927ae:#2C434E;--e-global-color-5f18ba2:#437286;--e-global-color-ae4c5fc:#77A8B9;--e-global-color-c22f166:#A7C6D2;--e-global-color-bba3c7a:#C8DBE3;--e-global-color-2f9aeea:#EAF0F4;--e-global-color-abcbc07:#F5F8FA;--e-global-color-a9bf405:#FFFFFF;--e-global-typography-primary-font-family:"Imagenation";--e-global-typography-primary-font-size:36px;--e-global-typography-primary-font-weight:900;--e-global-typography-primary-text-transform:none;--e-global-typography-primary-font-style:normal;--e-global-typography-primary-text-decoration:none;--e-global-typography-primary-line-height:1.3em;--e-global-typography-primary-letter-spacing:0px;--e-global-typography-primary-word-spacing:0px;--e-global-typography-secondary-font-family:"Imagenation";--e-global-typography-secondary-font-size:28px;--e-global-typography-secondary-font-weight:900;--e-global-typography-secondary-text-transform:none;--e-global-typography-secondary-font-style:normal;--e-global-typography-secondary-text-decoration:none;--e-global-typography-secondary-line-height:1.3em;--e-global-typography-text-font-family:"ImagenationString";--e-global-typography-text-font-size:16px;--e-global-typography-text-font-weight:400;--e-global-typography-text-text-transform:none;--e-global-typography-text-font-style:normal;--e-global-typography-text-text-decoration:none;--e-global-typography-text-line-height:1.5em;--e-global-typography-text-letter-spacing:0px;--e-global-typography-text-word-spacing:0px;--e-global-typography-accent-font-family:"ImagenationString";--e-global-typography-accent-font-size:18px;--e-global-typography-accent-font-weight:400;--e-global-typography-accent-text-transform:none;--e-global-typography-accent-font-style:normal;--e-global-typography-accent-text-decoration:none;--e-global-typography-accent-line-height:1.5em;--e-global-typography-accent-letter-spacing:0px;--e-global-typography-accent-word-spacing:0px;color:#1D2C34;font-family:"ImagenationString", Sans-serif;font-size:16px;font-weight:400;text-transform:uppercase;font-style:normal;text-decoration:none;line-height:1.5em;letter-spacing:0px;word-spacing:0px;}.elementor-kit-6 p{margin-bottom:0px;}.elementor-kit-6 a{color:#80CAED;font-family:"ImagenationString", Sans-serif;font-size:16px;font-weight:400;text-transform:none;font-style:normal;text-decoration:none;line-height:1.5em;letter-spacing:0px;word-spacing:0px;}.elementor-kit-6 h1{color:#000000;font-size:54px;font-weight:900;text-transform:uppercase;font-style:normal;text-decoration:none;line-height:1.3em;letter-spacing:0px;word-spacing:0px;}.elementor-kit-6 h2{color:#000000;font-family:"Imagenation", Sans-serif;font-size:36px;font-weight:900;text-transform:none;font-style:normal;text-decoration:none;line-height:1.3em;letter-spacing:0px;word-spacing:0px;}.elementor-kit-6 h3{color:#000000;font-family:"Imagenation", Sans-serif;font-size:28px;font-weight:900;text-transform:none;font-style:normal;text-decoration:none;line-height:1.3em;letter-spacing:0px;word-spacing:0px;}.elementor-kit-6 h4{color:#000000;font-family:"Imagenation", Sans-serif;font-size:20px;font-weight:900;text-transform:none;font-style:normal;text-decoration:none;line-height:1.3em;letter-spacing:0px;word-spacing:0px;}.elementor-kit-6 h5{color:#000000;font-family:"Imagenation", Sans-serif;font-size:16px;font-weight:900;text-transform:none;font-style:normal;text-decoration:none;line-height:1.3em;letter-spacing:0px;word-spacing:0px;}.elementor-kit-6 h6{color:#000000;font-family:"Imagenation", Sans-serif;font-size:12px;font-weight:900;text-transform:none;font-style:normal;text-decoration:none;line-height:1.3em;letter-spacing:0px;word-spacing:0px;}.elementor-section.elementor-section-boxed > .elementor-container{max-width:1280px;}.e-con{--container-max-width:1280px;--container-default-padding-block-start:0px;--container-default-padding-inline-end:0px;--container-default-padding-block-end:0px;--container-default-padding-inline-start:0px;}.elementor-widget:not(:last-child){margin-block-end:0px;}.elementor-element{--widgets-spacing:0px 0px;}{}h1.entry-title{display:var(--page-title-display);}.elementor-kit-6 e-page-transition{background-color:#FFBC7D;}.site-header{padding-inline-end:0px;padding-inline-start:0px;}@media(max-width:1024px){.elementor-section.elementor-section-boxed > .elementor-container{max-width:1024px;}.e-con{--container-max-width:1024px;}}@media(max-width:767px){.elementor-section.elementor-section-boxed > .elementor-container{max-width:767px;}.e-con{--container-max-width:767px;}}/* Start Custom Fonts CSS */@font-face {
+	font-family: 'Imagenation';
+	font-style: normal;
+	font-weight: 100;
+	font-display: auto;
+	src: url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-Thin.eot');
+	src: url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-Thin.eot?#iefix') format('embedded-opentype'),
+		url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-Thin.woff2') format('woff2'),
+		url("WhyteInktrap-Thin_4eb839a8e4a9.woff") format('woff'),
+		url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-Thin.ttf') format('truetype');
+}
+@font-face {
+	font-family: 'Imagenation';
+	font-style: normal;
+	font-weight: 200;
+	font-display: auto;
+	src: url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-ExtraLight.eot');
+	src: url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-ExtraLight.eot?#iefix') format('embedded-opentype'),
+		url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-ExtraLight.woff2') format('woff2'),
+		url("WhyteInktrap-ExtraLight_7b62fa9e6d56.woff") format('woff'),
+		url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-ExtraLight.ttf') format('truetype');
+}
+@font-face {
+	font-family: 'Imagenation';
+	font-style: normal;
+	font-weight: 300;
+	font-display: auto;
+	src: url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-Light.eot');
+	src: url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-Light.eot?#iefix') format('embedded-opentype'),
+		url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-Light.woff2') format('woff2'),
+		url("WhyteInktrap-Light_2ac77c3df86b.woff") format('woff'),
+		url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-Light.ttf') format('truetype');
+}
+@font-face {
+	font-family: 'Imagenation';
+	font-style: normal;
+	font-weight: 400;
+	font-display: auto;
+	src: url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-Regular.eot');
+	src: url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-Regular.eot?#iefix') format('embedded-opentype'),
+		url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-Regular.woff2') format('woff2'),
+		url("WhyteInktrap-Regular_4283d23c8a6f.woff") format('woff'),
+		url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-Regular.ttf') format('truetype');
+}
+@font-face {
+	font-family: 'Imagenation';
+	font-style: normal;
+	font-weight: 500;
+	font-display: auto;
+	src: url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-Book.eot');
+	src: url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-Book.eot?#iefix') format('embedded-opentype'),
+		url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-Book.woff2') format('woff2'),
+		url("WhyteInktrap-Book_66abaa2a8cfe.woff") format('woff'),
+		url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-Book.ttf') format('truetype');
+}
+@font-face {
+	font-family: 'Imagenation';
+	font-style: normal;
+	font-weight: 600;
+	font-display: auto;
+	src: url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-Medium.eot');
+	src: url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-Medium.eot?#iefix') format('embedded-opentype'),
+		url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-Medium.woff2') format('woff2'),
+		url("WhyteInktrap-Medium_b53cd29bdceb.woff") format('woff'),
+		url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-Medium.ttf') format('truetype');
+}
+@font-face {
+	font-family: 'Imagenation';
+	font-style: normal;
+	font-weight: 700;
+	font-display: auto;
+	src: url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-Bold.eot');
+	src: url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-Bold.eot?#iefix') format('embedded-opentype'),
+		url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-Bold.woff2') format('woff2'),
+		url("WhyteInktrap-Bold_e4a231460d7d.woff") format('woff'),
+		url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-Bold.ttf') format('truetype');
+}
+@font-face {
+	font-family: 'Imagenation';
+	font-style: normal;
+	font-weight: 800;
+	font-display: auto;
+	src: url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-Heavy.eot');
+	src: url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-Heavy.eot?#iefix') format('embedded-opentype'),
+		url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-Heavy.woff2') format('woff2'),
+		url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-Heavy.woff2') format('woff'),
+		url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-Heavy.ttf') format('truetype');
+}
+@font-face {
+	font-family: 'Imagenation';
+	font-style: normal;
+	font-weight: 900;
+	font-display: auto;
+	src: url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-Black.eot');
+	src: url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-Black.eot?#iefix') format('embedded-opentype'),
+		url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-Black.woff2') format('woff2'),
+		url("WhyteInktrap-Black_be1ef41bade7.woff") format('woff'),
+		url('https://imagenation.art/wp-content/uploads/2023/09/WhyteInktrap-Black.ttf') format('truetype');
+}
+/* End Custom Fonts CSS */
+/* Start Custom Fonts CSS */@font-face {
+	font-family: 'ImagenationString';
+	font-style: normal;
+	font-weight: 100;
+	font-display: auto;
+	src: url('https://imagenation.art/wp-content/uploads/2023/09/Vinila-Thin.eot');
+	src: url('https://imagenation.art/wp-content/uploads/2023/09/Vinila-Thin.eot?#iefix') format('embedded-opentype'),
+		url('https://imagenation.art/wp-content/uploads/2023/09/Vinila-Thin.woff2') format('woff2'),
+		url("Vinila-Thin_e2147ae8e810.woff") format('woff'),
+		url('https://imagenation.art/wp-content/uploads/2023/09/Vinila-Thin.ttf') format('truetype'),
+		url("Vinila-Thin_07d44d69ac49.svg") format('svg');
+}
+@font-face {
+	font-family: 'ImagenationString';
+	font-style: normal;
+	font-weight: 300;
+	font-display: auto;
+	src: url('https://imagenation.art/wp-content/uploads/2023/09/Vinila-Light.eot');
+	src: url('https://imagenation.art/wp-content/uploads/2023/09/Vinila-Light.eot?#iefix') format('embedded-opentype'),
+		url('https://imagenation.art/wp-content/uploads/2023/09/Vinila-Light.woff2') format('woff2'),
+		url("Vinila-Light_a097c0bcee96.woff") format('woff'),
+		url('https://imagenation.art/wp-content/uploads/2023/09/Vinila-Light.ttf') format('truetype'),
+		url("Vinila-Light_aa098fd3e30f.svg") format('svg');
+}
+@font-face {
+	font-family: 'ImagenationString';
+	font-style: normal;
+	font-weight: 400;
+	font-display: auto;
+	src: url('https://imagenation.art/wp-content/uploads/2023/09/Vinila-Regular.eot');
+	src: url('https://imagenation.art/wp-content/uploads/2023/09/Vinila-Regular.eot?#iefix') format('embedded-opentype'),
+		url('https://imagenation.art/wp-content/uploads/2023/09/Vinila-Regular.woff2') format('woff2'),
+		url("Vinila-Regular_064507c8ef59.woff") format('woff'),
+		url('https://imagenation.art/wp-content/uploads/2023/09/Vinila-Regular.ttf') format('truetype'),
+		url("Vinila-Regular_acf4c2c18af7.svg") format('svg');
+}
+@font-face {
+	font-family: 'ImagenationString';
+	font-style: normal;
+	font-weight: 700;
+	font-display: auto;
+	src: url('https://imagenation.art/wp-content/uploads/2023/09/Vinila-Bold.eot');
+	src: url('https://imagenation.art/wp-content/uploads/2023/09/Vinila-Bold.eot?#iefix') format('embedded-opentype'),
+		url('https://imagenation.art/wp-content/uploads/2023/09/Vinila-Bold.woff2') format('woff2'),
+		url("Vinila-Bold_007d016f9366.woff") format('woff'),
+		url('https://imagenation.art/wp-content/uploads/2023/09/Vinila-Bold.ttf') format('truetype'),
+		url("Vinila-Bold_e409abbdd2a9.svg") format('svg');
+}
+@font-face {
+	font-family: 'ImagenationString';
+	font-style: normal;
+	font-weight: 800;
+	font-display: auto;
+	src: url('https://imagenation.art/wp-content/uploads/2023/09/Vinila-ExtraBold.eot');
+	src: url('https://imagenation.art/wp-content/uploads/2023/09/Vinila-ExtraBold.eot?#iefix') format('embedded-opentype'),
+		url('https://imagenation.art/wp-content/uploads/2023/09/Vinila-ExtraBold.woff2') format('woff2'),
+		url("Vinila-ExtraBold_b5de48694366.woff") format('woff'),
+		url('https://imagenation.art/wp-content/uploads/2023/09/Vinila-ExtraBold.ttf') format('truetype'),
+		url("Vinila-ExtraBold_6055718e3b17.svg") format('svg');
+}
+@font-face {
+	font-family: 'ImagenationString';
+	font-style: normal;
+	font-weight: 900;
+	font-display: auto;
+	src: url('https://imagenation.art/wp-content/uploads/2023/09/Vinila-Black.eot');
+	src: url('https://imagenation.art/wp-content/uploads/2023/09/Vinila-Black.eot?#iefix') format('embedded-opentype'),
+		url('https://imagenation.art/wp-content/uploads/2023/09/Vinila-Black.woff2') format('woff2'),
+		url("Vinila-Black_fd9c6b113fcd.woff") format('woff'),
+		url('https://imagenation.art/wp-content/uploads/2023/09/Vinila-Black.ttf') format('truetype'),
+		url("Vinila-Black_86c390dd47e4.svg") format('svg');
+}
+/* End Custom Fonts CSS */

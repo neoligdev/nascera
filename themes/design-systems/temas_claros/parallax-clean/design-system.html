@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Design System - AETHEREAL</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- GSAP / Lenis -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js"></script>
+    <style>
+        /* --- CORE --- */
+        :root {
+        --c-bg: #E3E1DC; /* Stone/Concrete */
+        --c-dark: #121212;
+        --c-accent: #374336; /* Deep Moss */
+        --font-display: 'Syncopate', sans-serif;
+        --font-body: 'Manrope', sans-serif;
+        }
+        body {
+        background-color: var(--c-bg);
+        color: var(--c-dark);
+        font-family: var(--font-body);
+        margin: 0;
+        overflow-x: hidden;
+        cursor: auto;
+        opacity: 0; /* JS fade in */
+        }
+        /* --- LAYOUT UTILS --- */
+        .wrapper {
+        position: relative;
+        z-index: 10;
+        background-color: var(--c-bg);
+        margin-bottom: 0; /* Changed from 100vh for DS page */
+        box-shadow: 0 50px 100px rgba(0,0,0,0.5);
+        }
+        /* --- TEXT REVEAL UTILS --- */
+        .word-wrap {
+        display: inline-block;
+        overflow: hidden;
+        vertical-align: top;
+        padding-bottom: 0.1em;
+        }
+        .word-inner {
+        display: inline-block;
+        transform: translateY(110%);
+        }
+        /* --- PRELOADER --- */
+        .loader {
+        position: fixed;
+        inset: 0;
+        background: #000;
+        z-index: 10000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #fff;
+        }
+        .loader-text {
+        font-family: var(--font-display);
+        font-size: 5vw;
+        font-weight: 700;
+        }
+        .loader-bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 4px;
+        background: #fff;
+        width: 0%;
+        }
+        /* --- CARD STACK SECTION --- */
+        .stack-section {
+        padding: 10vh 0;
+        background: var(--c-dark);
+        color: #E3E1DC;
+        position: relative;
+        }
+        .stack-container {
+        width: 100%;
+        max-width: 1400px;
+        margin: 0 auto;
+        position: relative;
+        padding-bottom: 10vh;
+        }
+        .card-item {
+        position: relative; /* Changed from sticky for DS display */
+        height: 60vh; /* Reduced height for DS */
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 5vh;
+        }
+        .card-inner {
+        width: 90%;
+        height: 100%;
+        background: #1a1a1a;
+        border: 1px solid rgba(255,255,255,0.1);
+        position: relative;
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: 1fr 1.2fr;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        }
+        .card-content {
+        padding: 4rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        background: #1a1a1a;
+        z-index: 2;
+        }
+        .card-img-wrap {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        }
+        .card-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 1.5s ease;
+        }
+        .card-inner:hover .card-img {
+        transform: scale(1.1);
+        }
+        /* Mobile adjustment */
+        @media (max-width: 768px) {
+        .card-inner { grid-template-columns: 1fr; }
+        .card-item { height: 85vh; }
+        .card-img-wrap { height: 50%; order: -1; }
+        .card-content { padding: 2rem; }
+        }
+        /* --- TYPOGRAPHY --- */
+        .display { font-family: var(--font-display); }
+        /* --- NOISE --- */
+        .noise-overlay {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 9000;
+        opacity: 0.05;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+        }
+    </style>
+</head>
+<body class="">
+    <!-- UTILS -->
+    <div class="noise-overlay"></div>
+    <!-- PRELOADER -->
+    <div class="loader">
+        <div class="loader-text">SYSTEM</div>
+        <div class="loader-bar"></div>
+    </div>
+
+    <!-- NAVIGATION (System Nav) -->
+    <nav class="fixed top-0 w-full p-8 flex justify-between items-center z-50 mix-blend-difference text-white">
+        <div class="display font-bold text-xl tracking-tighter">SYSTEM</div>
+        <div class="hidden md:flex gap-10 text-xs uppercase tracking-widest">
+            <a class="hover:text-gray-300 transition-colors" href="#typography">Typography</a>
+            <a class="hover:text-gray-300 transition-colors" href="#colors">Colors</a>
+            <a class="hover:text-gray-300 transition-colors" href="#components">Components</a>
+            <a class="hover:text-gray-300 transition-colors" href="index.html">Back to Site</a>
+        </div>
+        <div class="md:hidden">MENU</div>
+    </nav>
+
+    <!-- WRAPPER -->
+    <div class="wrapper pb-20">
+        
+        <!-- 0) HERO CLONE -->
+        <section class="h-screen relative flex items-center justify-center overflow-hidden">
+            <img alt="Hero" class="absolute inset-0 w-full h-full object-cover brightness-75 hero-img" src="assets/068eb8ef6075.webp"/>
+            <div class="relative z-10 text-center text-white mix-blend-difference">
+                <h1 class="display text-[12vw] leading-none hero-text overflow-hidden">
+                    <span class="block translate-y-full">DESIGN</span>
+                </h1>
+                <h1 class="display text-[12vw] leading-none hero-text overflow-hidden">
+                    <span class="block translate-y-full">SYSTEM</span>
+                </h1>
+                <p class="mt-8 text-sm uppercase tracking-[0.5em] opacity-0 hero-fade mix-blend-difference">Aethereal Architecture</p>
+            </div>
+        </section>
+
+        <!-- 1) TYPOGRAPHY -->
+        <section id="typography" class="py-20 px-6 md:px-20 max-w-[1800px] mx-auto border-b border-black/10">
+            <div class="text-xs uppercase tracking-widest mb-12 opacity-50">01 / Typography</div>
+            
+            <div class="space-y-12">
+                <!-- Heading 1 (Display) -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-baseline pb-12 border-b border-black/5">
+                    <div class="md:col-span-3 text-xs uppercase tracking-widest opacity-50">Display H1</div>
+                    <div class="md:col-span-7">
+                        <h1 class="display text-[5vw] leading-none">CONCRETE</h1>
+                    </div>
+                    <div class="md:col-span-2 text-right text-xs opacity-50">Syncopate / 12vw</div>
+                </div>
+
+                <!-- Heading 2 -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-baseline pb-12 border-b border-black/5">
+                    <div class="md:col-span-3 text-xs uppercase tracking-widest opacity-50">Heading 2</div>
+                    <div class="md:col-span-7">
+                        <h2 class="display text-5xl md:text-7xl">RECENT PROJECTS</h2>
+                    </div>
+                    <div class="md:col-span-2 text-right text-xs opacity-50">Syncopate / 7xl</div>
+                </div>
+
+                <!-- Heading 3 -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-baseline pb-12 border-b border-black/5">
+                    <div class="md:col-span-3 text-xs uppercase tracking-widest opacity-50">Heading 3</div>
+                    <div class="md:col-span-7">
+                        <h3 class="text-3xl font-bold font-body">THE VOID HOUSE</h3>
+                    </div>
+                    <div class="md:col-span-2 text-right text-xs opacity-50">Manrope / 3xl / Bold</div>
+                </div>
+
+                <!-- Body Large -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-baseline pb-12 border-b border-black/5">
+                    <div class="md:col-span-3 text-xs uppercase tracking-widest opacity-50">Body Large</div>
+                    <div class="md:col-span-7">
+                        <p class="text-xl font-light leading-relaxed text-gray-700">
+                            We believe that architecture is frozen music. Our studio specializes in brutalist forms softened by biophilic integration.
+                        </p>
+                    </div>
+                    <div class="md:col-span-2 text-right text-xs opacity-50">Manrope / xl / Light</div>
+                </div>
+
+                <!-- Body Standard -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-baseline">
+                    <div class="md:col-span-3 text-xs uppercase tracking-widest opacity-50">Body Standard</div>
+                    <div class="md:col-span-7">
+                        <p class="text-gray-600 font-light leading-relaxed">
+                            Our philosophy is rooted in the belief that buildings should age, not deteriorate. We use materials that develop a patina.
+                        </p>
+                    </div>
+                    <div class="md:col-span-2 text-right text-xs opacity-50">Manrope / Base / Light</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2) COLORS & SURFACES -->
+        <section id="colors" class="py-20 px-6 md:px-20 max-w-[1800px] mx-auto border-b border-black/10">
+            <div class="text-xs uppercase tracking-widest mb-12 opacity-50">02 / Colors & Surfaces</div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <!-- Background -->
+                <div class="aspect-square bg-[#E3E1DC] border border-black/10 p-6 flex flex-col justify-between">
+                    <span class="font-bold">Stone</span>
+                    <span class="text-xs uppercase opacity-50">#E3E1DC (Bg)</span>
+                </div>
+                <!-- Dark -->
+                <div class="aspect-square bg-[#121212] text-white p-6 flex flex-col justify-between">
+                    <span class="font-bold">Dark Matter</span>
+                    <span class="text-xs uppercase opacity-50">#121212</span>
+                </div>
+                <!-- Accent -->
+                <div class="aspect-square bg-[#374336] text-white p-6 flex flex-col justify-between">
+                    <span class="font-bold">Deep Moss</span>
+                    <span class="text-xs uppercase opacity-50">#374336</span>
+                </div>
+                <!-- Card Surface -->
+                <div class="aspect-square bg-[#1a1a1a] text-white p-6 flex flex-col justify-between border border-white/10">
+                    <span class="font-bold">Card Surface</span>
+                    <span class="text-xs uppercase opacity-50">#1a1a1a</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3) UI COMPONENTS -->
+        <section id="components" class="py-20 px-6 md:px-20 max-w-[1800px] mx-auto border-b border-black/10">
+            <div class="text-xs uppercase tracking-widest mb-12 opacity-50">03 / UI Components</div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-20">
+                <!-- Links & Buttons -->
+                <div>
+                    <h3 class="display text-2xl mb-8">Navigation & Actions</h3>
+                    
+                    <div class="space-y-8">
+                        <div>
+                            <div class="text-xs uppercase tracking-widest mb-2 opacity-50">Nav Link</div>
+                            <div class="bg-[#121212] p-6 inline-block">
+                                <a class="text-xs uppercase tracking-widest text-white hover:text-gray-300 transition-colors" href="#">Work</a>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="text-xs uppercase tracking-widest mb-2 opacity-50">Text Link</div>
+                            <div class="bg-[#1a1a1a] p-6 inline-block text-white">
+                                <button class="text-left uppercase tracking-widest text-xs border-b border-white/30 pb-2 w-max hover:text-white transition-colors text-gray-400">View Project</button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="text-xs uppercase tracking-widest mb-2 opacity-50">Big Link</div>
+                            <a class="display text-4xl leading-none hover:text-gray-400 transition-colors text-black" href="#">
+                                LET'S TALK
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cards -->
+                <div>
+                    <h3 class="display text-2xl mb-8">Project Card</h3>
+                    
+                    <!-- Card Instance -->
+                    <div class="w-full h-[400px]">
+                        <div class="card-inner">
+                            <div class="card-content">
+                                <div>
+                                    <div class="text-5xl display mb-2 text-[var(--c-bg)] opacity-30">01</div>
+                                    <h3 class="text-3xl font-bold text-white">VOID HOUSE</h3>
+                                    <p class="text-sm mt-4 opacity-70 uppercase tracking-widest text-white">Kyoto, Japan</p>
+                                </div>
+                                <div class="text-gray-400 font-light text-sm">
+                                    A minimal concrete residence focused on negative space.
+                                </div>
+                                <button class="text-left uppercase tracking-widest text-xs border-b border-white/30 pb-2 w-max hover:text-white transition-colors text-white">View Project</button>
+                            </div>
+                            <div class="card-img-wrap">
+                                <img alt="Project 1" class="card-img object-cover w-full h-full" src="assets/98984301b87c.webp"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4) LAYOUT -->
+        <section id="layout" class="py-20 px-6 md:px-20 max-w-[1800px] mx-auto border-b border-black/10">
+            <div class="text-xs uppercase tracking-widest mb-12 opacity-50">04 / Layout & Grid</div>
+            
+            <div class="grid md:grid-cols-2 gap-16">
+                <!-- Split Layout -->
+                <div class="grid md:grid-cols-2 gap-8 border border-black/10 p-8">
+                    <div class="bg-gray-300 h-32 flex items-center justify-center opacity-20">Content</div>
+                    <div class="bg-gray-300 h-32 flex items-center justify-center opacity-20">Content</div>
+                </div>
+                
+                <!-- Stack Layout Preview -->
+                <div class="relative h-64 border border-black/10 bg-[#121212] overflow-hidden p-8">
+                    <div class="absolute top-8 left-8 right-8 h-32 bg-[#1a1a1a] border border-white/10 z-10"></div>
+                    <div class="absolute top-12 left-8 right-8 h-32 bg-[#1a1a1a] border border-white/10 z-20 transform translate-y-4 scale-95 opacity-50"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5) MOTION -->
+        <section id="motion" class="py-20 px-6 md:px-20 max-w-[1800px] mx-auto border-b border-black/10">
+            <div class="text-xs uppercase tracking-widest mb-12 opacity-50">05 / Motion</div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-20">
+                <!-- Text Reveal -->
+                <div>
+                    <h3 class="display text-xl mb-4">Text Reveal</h3>
+                    <h2 class="display text-4xl leading-tight split-animate">
+                        Structure as <br/><span class="text-[var(--c-accent)]">sculpture.</span>
+                    </h2>
+                    <p class="text-xs mt-4 opacity-50 font-mono">.split-animate .word-inner { transform: translateY(110%) -> 0% }</p>
+                </div>
+
+                <!-- Hover Scale -->
+                <div>
+                    <h3 class="display text-xl mb-4">Image Hover</h3>
+                    <div class="w-full h-64 overflow-hidden relative group cursor-pointer">
+                        <img src="assets/020117376942.webp" class="w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-110" alt="Motion Demo">
+                    </div>
+                    <p class="text-xs mt-4 opacity-50 font-mono">transition: transform 1.5s ease; scale(1.1)</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="py-20 text-center text-xs uppercase tracking-widest opacity-30">
+            AETHEREAL DESIGN SYSTEM
+        </footer>
+
+    </div>
+
+    <script>
+        // --- SETUP ---
+        gsap.registerPlugin(ScrollTrigger);
+
+        // --- LENIS SCROLL ---
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            direction: 'vertical',
+            smooth: true,
+        });
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+
+        // --- TEXT SPLITTER UTILITY ---
+        function splitTextToWords(element) {
+            const text = element.innerText;
+            const words = text.split(' ');
+            element.innerHTML = '';
+            words.forEach(word => {
+                const wordWrap = document.createElement('span');
+                wordWrap.classList.add('word-wrap');
+                wordWrap.innerHTML = `<span class="word-inner">${word}&nbsp;</span>`;
+                element.appendChild(wordWrap);
+            });
+        }
+
+        // Apply split to all elements with class .split-animate
+        document.querySelectorAll('.split-animate').forEach(el => {
+            splitTextToWords(el);
+        });
+
+        // --- LOADER ---
+        const loadTl = gsap.timeline({
+            onComplete: () => {
+                document.body.style.opacity = 1;
+                initSite();
+            }
+        });
+
+        loadTl.to('.loader-bar', { width: '100%', duration: 1.5, ease: 'power2.inOut' })
+              .to('.loader-text', { y: -50, opacity: 0, duration: 0.5 })
+              .to('.loader', { yPercent: -100, duration: 1, ease: 'power4.inOut' });
+
+        function initSite() {
+            // Hero Animations
+            gsap.to('.hero-text span', { 
+                y: 0, 
+                stagger: 0.1, 
+                duration: 1.5, 
+                ease: 'power4.out' 
+            });
+            gsap.to('.hero-fade', { opacity: 1, duration: 1, delay: 0.5 });
+            
+            // Hero Parallax
+            gsap.to('.hero-img', {
+                yPercent: 30,
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: '.hero-img',
+                    start: 'top top',
+                    end: 'bottom top',
+                    scrub: true
+                }
+            });
+
+            // --- TEXT REVEAL ON SCROLL ---
+            const splitElements = document.querySelectorAll('.split-animate');
+            splitElements.forEach(el => {
+                const words = el.querySelectorAll('.word-inner');
+                gsap.to(words, {
+                    y: "0%",
+                    duration: 1,
+                    ease: "power3.out",
+                    stagger: 0.02,
+                    scrollTrigger: {
+                        trigger: el,
+                        start: "top 85%", 
+                        toggleActions: "play none none reverse"
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+</html>

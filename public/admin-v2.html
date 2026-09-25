@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nascera — Painel do dono</title>
+<link rel="icon" href="/favicon.png">
+<link rel="stylesheet" href="/theme.css">
+<link rel="stylesheet" href="/painel/ds.css">
+</head>
+<body>
+<div class="z-shell">
+  <!-- ─── Sidebar ─── -->
+  <aside class="z-side">
+    <div class="z-marca">
+      <img src="/logo.png" alt="Nascera">
+      <span class="z-marca-txt">Nascera</span>
+    </div>
+    <nav class="z-nav" id="z-nav"></nav>
+    <div class="z-side-pe">
+      <a href="/home.html" class="z-nav-item" style="margin:0">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        <span class="z-nav-txt">Voltar ao Nascera</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- ─── Main ─── -->
+  <main class="z-main">
+    <header class="z-top">
+      <button class="z-icone-btn" id="z-compactar" title="Recolher menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      </button>
+      <span class="z-top-rotulo">Admin</span>
+      <span class="z-top-titulo" id="z-top-titulo"></span>
+      <div class="z-top-dir">
+        <button class="z-icone-btn" id="z-recarregar" title="Recarregar esta tela">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.5 9a9 9 0 0114.9-3.4L23 10M1 14l4.6 4.4A9 9 0 0020.5 15"/></svg>
+        </button>
+        <div class="z-avatar" id="z-avatar">A</div>
+      </div>
+    </header>
+    <div class="z-corpo" id="z-corpo">
+      <div class="z-largura" id="z-conteudo"></div>
+    </div>
+  </main>
+</div>
+
+<div class="z-overlay" id="z-overlay"></div>
+<div class="z-toasts" id="z-toasts"></div>
+
+<script src="/painel/nucleo.js"></script>
+<script src="/painel/secoes/visao.js"></script>
+<script src="/painel/secoes/clientes.js"></script>
+<script src="/painel/secoes/receita.js"></script>
+<script src="/painel/secoes/planos.js"></script>
+<script src="/painel/secoes/projetos.js"></script>
+<script src="/painel/secoes/ia.js"></script>
+<script src="/painel/secoes/dominios.js"></script>
+<script src="/painel/secoes/email.js"></script>
+<script src="/painel/secoes/aparencia.js"></script>
+<script src="/painel/secoes/updates.js"></script>
+<script src="/painel/secoes/atividade.js"></script>
+<script src="/painel/secoes/servidor.js"></script>
+<script src="/painel/secoes/config.js"></script>
+</body>
+</html>

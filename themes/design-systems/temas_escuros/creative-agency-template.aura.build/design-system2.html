@@ -1,0 +1,370 @@
+<!doctype html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Creative - Design System Showcase</title>
+
+  <script src="assets/resource_3fa48481346f.es"></script>
+  <script src="assets/lucide_latest_2eebd0ebe8c2.es"></script>
+  <script src="assets/iconify_654a1ef798a3.js"></script>
+
+  <link href="assets/css2_19fd9cc6b396.css" rel="stylesheet"/>
+  <link href="assets/css2_86e10c4bcbd4.css" rel="stylesheet"/>
+  <link href="assets/css2_0fc20595ebff.css" rel="stylesheet"/>
+  <link href="assets/css2_23afcbef9bdd.css" rel="stylesheet"/>
+  <link href="assets/css2_82ced711bf49.css" rel="stylesheet"/>
+  <link href="assets/css2_fa22aa91016e.css" rel="stylesheet"/>
+  <link href="assets/css2_2b2d87bc82d8.css" rel="stylesheet"/>
+  <link href="assets/css2_4fef849c83da.css" rel="stylesheet"/>
+  <link href="assets/css2_a7b22b336fe1.css" rel="stylesheet"/>
+  <link href="assets/css2_0b2072b66163.css" rel="stylesheet"/>
+  <link href="assets/css2_9b8bf743d4a8.css" rel="stylesheet"/>
+  <link href="assets/css2_8e191ef32247.css" rel="stylesheet"/>
+  <link href="assets/css2_70fd47a02eed.css" rel="stylesheet"/>
+  <link href="assets/css2_b52fc18295f8.css" rel="stylesheet"/>
+  <link href="assets/css2_62759cd015bd.css" rel="stylesheet"/>
+  <link href="assets/css2_f495c2faa2a6.css" rel="stylesheet"/>
+  <link href="assets/css2_6f16cdd6fd9f.css" rel="stylesheet"/>
+  <link href="assets/css2_94cb6f0c406a.css" rel="stylesheet"/>
+  <link href="assets/css2_6c160a0c4e6f.css" rel="stylesheet"/>
+  <link href="assets/css2_bd407d5ceb4b.css" rel="stylesheet"/>
+  <link href="assets/css2_176e25227b5e.css" rel="stylesheet"/>
+  <link href="assets/css2_e5ca562f8909.css" rel="stylesheet"/>
+  <link href="assets/css2_bd311904ea29.css" rel="stylesheet"/>
+
+  <style>
+    body { font-family: "Inter", sans-serif; }
+    .font-manrope { font-family: "Manrope", sans-serif !important; }
+    .font-oswald { font-family: "Oswald", sans-serif !important; }
+    .font-sans { font-family: "Inter", sans-serif !important; }
+
+    @keyframes fadeSlideIn {
+      0% { opacity: 0; transform: translateY(30px); filter: blur(8px); }
+      100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+    }
+
+    .animate-on-scroll { animation-play-state: paused !important; }
+    .animate-on-scroll.animate { animation-play-state: running !important; }
+
+    .gradient-blur { position: fixed; z-index: 5; inset: 0 0 auto 0; height: 12%; pointer-events: none; }
+    .gradient-blur > div, .gradient-blur::before, .gradient-blur::after { position: absolute; inset: 0; }
+    .gradient-blur::before { content: ""; z-index: 1; backdrop-filter: blur(.5px); mask: linear-gradient(to top, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 12.5%, rgba(0,0,0,1) 25%, rgba(0,0,0,0) 37.5%); }
+    .gradient-blur > div:nth-of-type(1) { z-index: 2; backdrop-filter: blur(1px); mask: linear-gradient(to top, rgba(0,0,0,0) 12.5%, rgba(0,0,0,1) 25%, rgba(0,0,0,1) 37.5%, rgba(0,0,0,0) 50%); }
+    .gradient-blur > div:nth-of-type(2) { z-index: 3; backdrop-filter: blur(2px); mask: linear-gradient(to top, rgba(0,0,0,0) 25%, rgba(0,0,0,1) 37.5%, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 62.5%); }
+    .gradient-blur > div:nth-of-type(3) { z-index: 4; backdrop-filter: blur(4px); mask: linear-gradient(to top, rgba(0,0,0,0) 37.5%, rgba(0,0,0,1) 50%, rgba(0,0,0,1) 62.5%, rgba(0,0,0,0) 75%); }
+    .gradient-blur > div:nth-of-type(4) { z-index: 5; backdrop-filter: blur(8px); mask: linear-gradient(to top, rgba(0,0,0,0) 50%, rgba(0,0,0,1) 62.5%, rgba(0,0,0,1) 75%, rgba(0,0,0,0) 87.5%); }
+    .gradient-blur > div:nth-of-type(5) { z-index: 6; backdrop-filter: blur(16px); mask: linear-gradient(to top, rgba(0,0,0,0) 62.5%, rgba(0,0,0,1) 75%, rgba(0,0,0,1) 87.5%, rgba(0,0,0,0) 100%); }
+    .gradient-blur > div:nth-of-type(6) { z-index: 7; backdrop-filter: blur(32px); mask: linear-gradient(to top, rgba(0,0,0,0) 75%, rgba(0,0,0,1) 87.5%, rgba(0,0,0,1) 100%); }
+    .gradient-blur::after { content: ""; z-index: 8; backdrop-filter: blur(64px); mask: linear-gradient(to top, rgba(0,0,0,0) 87.5%, rgba(0,0,0,1) 100%); }
+
+    [style*="--border-gradient"]::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      padding: 1px;
+      border-radius: var(--border-radius-before, inherit);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      background: var(--border-gradient);
+      pointer-events: none;
+    }
+  </style>
+
+  <script>
+    (function () {
+      const once = true;
+      if (!window.__inViewIO) {
+        window.__inViewIO = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("animate");
+              if (once) window.__inViewIO.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.1, rootMargin: "0px 0px -5% 0px" });
+      }
+      window.initInViewAnimations = function (selector = ".animate-on-scroll") {
+        document.querySelectorAll(selector).forEach((el) => window.__inViewIO.observe(el));
+      };
+      document.addEventListener("DOMContentLoaded", () => initInViewAnimations());
+    })();
+  </script>
+</head>
+<body class="antialiased overflow-x-hidden selection:bg-red-600/30 selection:text-red-200 text-white bg-black">
+  <div class="aura-background-component -z-10 w-full top-0 absolute h-[800px]" data-alpha-mask="80" style="mask-image: linear-gradient(transparent, black 0%, black 80%, transparent);">
+    <div class="aura-background-component top-0 w-full -z-10 absolute h-full">
+      <div class="absolute w-full h-full left-0 top-0 -z-10" data-us-project="sajpUiTp7MIKdX6daDCu"></div>
+      <script type="text/javascript">
+        !function(){if(!window.UnicornStudio){window.UnicornStudio={isInitialized:!1};var i=document.createElement("script");i.src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.4.29/dist/unicornStudio.umd.js",i.onload=function(){window.UnicornStudio.isInitialized||(UnicornStudio.init(),window.UnicornStudio.isInitialized=!0)},(document.head||document.body).appendChild(i)}}();
+      </script>
+    </div>
+  </div>
+
+  <div class="gradient-blur" style="height: 120px;">
+    <div></div><div></div><div></div><div></div><div></div><div></div>
+  </div>
+
+  <div class="fixed flex [animation:fadeSlideIn_1s_ease-out_1s_both] w-full z-50 pt-6 pr-4 pl-4 top-0 left-0 justify-center">
+    <nav class="shadow-black/50 flex md:gap-12 md:w-auto bg-black/60 w-full max-w-6xl rounded-none pt-2 pr-2 pb-2 pl-3 shadow-2xl backdrop-blur-lg gap-x-8 gap-y-8 items-center justify-between" style="position: relative; --border-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.2)); --border-radius-before: 0">
+      <div class="flex gap-x-3 gap-y-3 items-center">
+        <div class="grid grid-cols-2 opacity-90 w-6 h-6 gap-x-1 gap-y-1">
+          <div class="bg-[#ef233c] w-full h-full rounded-sm"></div>
+          <div class="w-full h-full bg-zinc-700 rounded-sm [animation:fadeSlideIn_1s_ease-out_0.3s_both] animate-on-scroll animate"></div>
+          <div class="w-full h-full bg-zinc-800 rounded-sm"></div>
+          <div class="w-full h-full bg-white rounded-sm shadow-[0_0_10px_rgba(255,255,255,0.4)]"></div>
+        </div>
+        <span class="text-xl font-bold text-white tracking-tight font-manrope">Creative DS</span>
+      </div>
+      <div class="hidden md:flex items-center gap-6">
+        <a class="group hover:text-white transition-colors text-sm font-medium text-gray-400 font-sans py-1 relative" href="#hero">Hero</a>
+        <a class="group hover:text-white transition-colors text-sm font-medium text-gray-400 font-sans py-1 relative" href="#typography">Typography</a>
+        <a class="group hover:text-white transition-colors text-sm font-medium text-gray-400 font-sans py-1 relative" href="#colors">Colors</a>
+        <a class="group hover:text-white transition-colors text-sm font-medium text-gray-400 font-sans py-1 relative" href="#components">Components</a>
+        <a class="group hover:text-white transition-colors text-sm font-medium text-gray-400 font-sans py-1 relative" href="#layout">Layout</a>
+        <a class="group hover:text-white transition-colors text-sm font-medium text-gray-400 font-sans py-1 relative" href="#motion">Motion</a>
+        <a class="group hover:text-white transition-colors text-sm font-medium text-gray-400 font-sans py-1 relative" href="#icons">Icons</a>
+      </div>
+    </nav>
+  </div>
+
+  <section id="hero" class="h-auto min-h-[800px] flex flex-col md:pt-20 overflow-hidden w-full pt-32 relative items-center justify-start" style="mask-image: linear-gradient(180deg, transparent, black 0%, black 95%, transparent); -webkit-mask-image: linear-gradient(180deg, transparent, black 0%, black 95%, transparent);">
+    <div class="z-10 text-center max-w-5xl mt-24 mr-auto mb-12 ml-auto pr-6 pl-6 relative">
+      <div class="[animation:fadeSlideIn_1s_ease-out_0.8s_both] inline-flex transition-transform hover:scale-105 cursor-pointer group animate bg-gradient-to-br from-white/10 to-white/0 bg-gradient-to-b from-white/20 via-white/0 to-white/10 rounded-full mb-10 pt-1.5 pr-3 pb-1.5 pl-3 backdrop-blur-sm gap-x-2 gap-y-2 items-center" style="position: relative; --border-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.1)); --border-radius-before: 9999px">
+        <span class="flex h-1.5 w-1.5 rounded-full group-hover:animate-pulse bg-red-600 shadow-[0_0_10px_rgba(220,38,38,0.5)]"></span>
+        <span class="text-xs font-medium tracking-wide group-hover:text-white transition-colors font-sans text-red-100/80">Living system documentation</span>
+      </div>
+
+      <h1 class="[animation:fadeSlideIn_1s_ease-out_1s_both] animate flex flex-wrap justify-center gap-x-[0.25em] gap-y-2 leading-[1.1] md:text-8xl cursor-default text-6xl font-medium tracking-tighter font-manrope mb-8">
+        <span class="inline-blox leading-[1.3] bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/50 opacity-60">Scale</span>
+        <span class="inline-blox leading-[1.3] bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/50 opacity-60">your</span>
+        <span class="inline-blox leading-[1.3] bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/50 opacity-100">design</span>
+        <span class="inline-blox leading-[1.3] bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/50 opacity-60">with</span>
+        <span class="inline-blox leading-[1.3] bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/50 opacity-60">creative</span>
+        <span class="inline-blox leading-[1.3] bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/50 opacity-60">consistency</span>
+      </h1>
+
+      <p class="[animation:fadeSlideIn_1s_ease-out_1.2s_both] leading-relaxed md:text-2xl animate text-xl font-medium text-gray-400 tracking-normal font-manrope max-w-3xl mr-auto mb-12 ml-auto">
+        Explore typography, colors, components, layouts, and motion patterns used in this exact interface system.
+      </p>
+
+      <div class="[animation:fadeSlideIn_1s_ease-out_1.4s_both] flex flex-col md:flex-row animate mb-12 gap-6 items-center justify-center">
+        <button class="group relative flex min-w-[180px] h-[50px] w-auto items-center justify-center rounded-none px-6 outline-none cursor-pointer transition-transform active:scale-95" data-framer-name="desktop" style="background-color: rgba(255, 255, 255, 0.05); border: none;" type="button">
+          <div class="pointer-events-none absolute inset-0 opacity-100 transition-opacity duration-[1200ms] ease-in-out group-hover:opacity-0" data-framer-name="Glow" style="background: radial-gradient(15% 50% at 50% 100%, rgb(255, 255, 255) 0%, rgba(255, 255, 255, 0) 100%); filter: blur(15px);"></div>
+          <div class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-[1200ms] ease-in-out group-hover:opacity-100" data-framer-name="Glow Hover" style="background: radial-gradient(60.6% 50% at 50% 100%, rgb(255, 255, 255) 0%, rgba(255, 255, 255, 0) 100%); filter: blur(18px);"></div>
+          <div class="pointer-events-none will-change-auto absolute inset-0 opacity-100 transition-opacity duration-[1200ms] ease-in-out group-hover:opacity-0" data-framer-name="Stroke" style="background: radial-gradient(10.7% 50% at 50% 100%, rgb(255, 255, 255) 0%, rgba(255, 255, 255, 0) 100%);"></div>
+          <div class="pointer-events-none will-change-auto absolute inset-0 opacity-0 transition-opacity duration-[1200ms] ease-in-out group-hover:opacity-100" data-framer-name="Stroke Hover" style="background: radial-gradient(60.1% 50% at 50% 100%, rgb(255, 255, 255) 0%, rgba(255, 255, 255, 0) 100%);"></div>
+          <div class="pointer-events-none absolute inset-0 overflow-hidden rounded-none">
+            <div class="absolute -inset-[300%] animate-[spin_4s_linear_infinite]" style="background: conic-gradient(from 90deg at 50% 50%, transparent 0%, transparent 90%, #ffffff 100%);"></div>
+          </div>
+          <div class="absolute inset-[1px] rounded-none" data-framer-name="Fill" style="background-color: rgb(0, 0, 0);"></div>
+          <span class="relative z-20 flex items-center justify-center gap-2 text-xs font-medium text-white tracking-wide uppercase">
+            <span style="-webkit-font-smoothing: antialiased; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">VIEW TOKENS</span>
+            <svg class="transition-transform duration-300 group-hover:translate-x-0.5" fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path>
+            </svg>
+          </span>
+        </button>
+
+        <button class="group relative inline-flex min-w-[180px] h-[50px] items-center justify-center overflow-hidden rounded-none outline-none cursor-pointer transition-transform active:scale-95" style="background-color: rgba(255, 255, 255, 0.05);" type="button">
+          <span class="absolute inset-[-100%] animate-[spin_3s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,transparent_75%,#ef233c_100%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"></span>
+          <span class="absolute inset-0 rounded-none bg-zinc-800 transition-opacity duration-300 group-hover:opacity-0"></span>
+          <span class="absolute inset-[1px] rounded-none bg-black z-10"></span>
+          <span class="absolute inset-0 pointer-events-none opacity-0 transition-opacity duration-500 group-hover:opacity-100 z-10" style="background: radial-gradient(50% 50% at 50% 100%, rgba(239, 35, 60, 0.2) 0%, transparent 100%);"></span>
+          <span class="relative z-20 flex items-center justify-center gap-2 text-xs font-medium text-white tracking-wide uppercase">
+            <span>EXPLORE PATTERNS</span>
+            <svg class="transition-transform duration-300 group-hover:translate-x-0.5" fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path>
+            </svg>
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-6 w-full max-w-6xl mt-8 mr-auto mb-8 ml-auto relative px-6 md:px-0">
+      <section class="flex-1 bg-black border border-zinc-800 border-dashed relative p-8 flex flex-col justify-between group hover:border-[#ef233c]/50 transition-all duration-500 rounded-none animate-on-scroll [animation:fadeSlideIn_1s_ease-out_0.2s_both]">
+        <div class="absolute top-0 left-0 w-2 h-2 border-t border-l border-[#ef233c]"></div>
+        <div class="absolute top-0 right-0 w-2 h-2 border-t border-r border-[#ef233c]"></div>
+        <div class="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-[#ef233c]"></div>
+        <div class="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-[#ef233c]"></div>
+        <div class="space-y-8">
+          <div class="flex items-center justify-between border-b border-zinc-800 pb-4 border-dashed">
+            <span class="font-mono text-[10px] text-[#ef233c] tracking-widest uppercase font-bold">[ System Status ]</span>
+            <div class="flex gap-1.5"><div class="w-1.5 h-1.5 bg-[#ef233c] animate-pulse rounded-none"></div><div class="w-1.5 h-1.5 bg-zinc-800 rounded-none"></div><div class="w-1.5 h-1.5 bg-zinc-800 rounded-none"></div></div>
+          </div>
+          <div>
+            <h3 class="text-zinc-500 text-[10px] font-mono mb-2 uppercase tracking-wider">Components Tracked</h3>
+            <div class="flex items-baseline gap-2"><p class="text-5xl font-medium text-white font-manrope tracking-tighter">46</p><span class="text-[#ef233c] text-xs font-mono">LIVE</span></div>
+            <p class="text-xs text-zinc-400 mt-2 font-sans">Production classes mapped directly from the source page.</p>
+          </div>
+        </div>
+        <button class="mt-8 w-full bg-transparent border border-[#ef233c] text-[#ef233c] hover:bg-[#ef233c] hover:text-white transition-all uppercase text-[11px] font-bold tracking-widest py-4 px-4 flex items-center justify-center gap-3 group/btn rounded-none">
+          <span>View Dashboard</span>
+          <svg class="w-3 h-3 transform group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="square" stroke-linejoin="miter" stroke-width="2"></path></svg>
+        </button>
+      </section>
+
+      <section class="lg:flex-[1.6] min-h-[500px] group overflow-hidden border-zinc-800 border rounded-none relative animate-on-scroll [animation:fadeSlideIn_1s_ease-out_0.4s_both]">
+        <img alt="Agency Hero" class="group-hover:opacity-80 group-hover:scale-105 transition-all duration-700 opacity-100 mix-blend-normal w-full h-full object-cover absolute top-0 right-0 bottom-0 left-0" src="https://cdn.midjourney.com/6512533c-2ac4-41b3-b676-56e877226748/0_3.png?w=800&amp;q=80"/>
+        <div class="flex flex-col z-20 pt-8 pr-8 pb-8 pl-8 absolute top-0 right-0 bottom-0 left-0 justify-between">
+          <div class="flex items-start justify-between">
+            <div class="bg-black border-zinc-800 border pt-4 pr-4 pb-4 pl-4 shadow-xl">
+              <div class="flex gap-2 mb-2 items-center"><span class="w-1.5 h-1.5 bg-[#ef233c]"></span><p class="text-zinc-400 font-mono text-[10px] uppercase tracking-widest">Design System</p></div>
+              <h3 class="text-white font-manrope text-2xl font-semibold tracking-tight uppercase">Pattern Library</h3>
+            </div>
+            <button class="w-12 h-12 bg-[#ef233c] text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors rounded-none border border-transparent hover:border-white">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="square" stroke-linejoin="miter" stroke-width="2"></path></svg>
+            </button>
+          </div>
+          <div class="flex flex-col gap-6">
+            <div class="flex gap-0 border border-zinc-800 w-fit bg-black">
+              <span class="px-4 py-2 border-r border-zinc-800 text-[10px] text-zinc-300 uppercase font-mono hover:text-[#ef233c] hover:bg-white/5 transition-colors cursor-default">Type</span>
+              <span class="px-4 py-2 border-r border-zinc-800 text-[10px] text-zinc-300 uppercase font-mono hover:text-[#ef233c] hover:bg-white/5 transition-colors cursor-default">Color</span>
+              <span class="px-4 py-2 text-[10px] text-zinc-300 uppercase font-mono hover:text-[#ef233c] hover:bg-white/5 transition-colors cursor-default">Motion</span>
+            </div>
+            <div class="bg-black/90 backdrop-blur border-l-4 border-[#ef233c] p-5 max-w-md shadow-2xl">
+              <p class="text-zinc-300 text-sm leading-relaxed font-sans">Canonical implementation using original classes, transitions, gradients, and animations.</p>
+            </div>
+          </div>
+        </div>
+        <div class="absolute bottom-8 right-8 w-24 h-24 border-r border-b border-[#ef233c]/30 z-10"></div>
+      </section>
+
+      <section class="flex-1 flex flex-col bg-black border border-zinc-800 rounded-none relative animate-on-scroll [animation:fadeSlideIn_1s_ease-out_0.6s_both]">
+        <div class="p-5 border-b border-zinc-800 border-dashed flex justify-between items-center bg-zinc-900/10">
+          <span class="font-mono text-[10px] text-white uppercase tracking-widest font-bold">Capabilities Index</span>
+          <div class="flex gap-1"><div class="w-0.5 h-3 bg-[#ef233c]"></div><div class="w-0.5 h-3 bg-zinc-800"></div><div class="w-0.5 h-3 bg-zinc-800"></div></div>
+        </div>
+        <div class="flex-1 flex flex-col">
+          <a class="flex-1 border-b border-zinc-800 p-6 flex items-center justify-between group hover:bg-zinc-900/30 transition-colors relative overflow-hidden" href="#"><div class="absolute left-0 top-0 bottom-0 w-1 bg-[#ef233c] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-200"></div><div><span class="block text-[10px] text-zinc-600 font-mono mb-1 group-hover:text-[#ef233c] transition-colors">01</span><h4 class="text-lg text-white font-manrope font-normal tracking-tight group-hover:translate-x-2 transition-transform duration-300">Design Tokens</h4></div><svg class="w-4 h-4 text-zinc-700 group-hover:text-[#ef233c] transition-colors transform group-hover:rotate-[-45deg] duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke-linecap="square" stroke-linejoin="miter" stroke-width="1.5"></path></svg></a>
+          <a class="flex-1 border-b border-zinc-800 p-6 flex items-center justify-between group hover:bg-zinc-900/30 transition-colors relative overflow-hidden" href="#"><div class="absolute left-0 top-0 bottom-0 w-1 bg-[#ef233c] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-200"></div><div><span class="block text-[10px] text-zinc-600 font-mono mb-1 group-hover:text-[#ef233c] transition-colors">02</span><h4 class="text-lg text-white font-manrope font-normal tracking-tight group-hover:translate-x-2 transition-transform duration-300">UI Components</h4></div><svg class="w-4 h-4 text-zinc-700 group-hover:text-[#ef233c] transition-colors transform group-hover:rotate-[-45deg] duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke-linecap="square" stroke-linejoin="miter" stroke-width="1.5"></path></svg></a>
+          <a class="flex-1 border-b border-zinc-800 p-6 flex items-center justify-between group hover:bg-zinc-900/30 transition-colors relative overflow-hidden" href="#"><div class="absolute left-0 top-0 bottom-0 w-1 bg-[#ef233c] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-200"></div><div><span class="block text-[10px] text-zinc-600 font-mono mb-1 group-hover:text-[#ef233c] transition-colors">03</span><h4 class="text-lg text-white font-manrope font-normal tracking-tight group-hover:translate-x-2 transition-transform duration-300">Layout Rules</h4></div><svg class="w-4 h-4 text-zinc-700 group-hover:text-[#ef233c] transition-colors transform group-hover:rotate-[-45deg] duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke-linecap="square" stroke-linejoin="miter" stroke-width="1.5"></path></svg></a>
+          <a class="flex-1 p-6 flex items-center justify-between group hover:bg-zinc-900/30 transition-colors relative overflow-hidden" href="#"><div class="absolute left-0 top-0 bottom-0 w-1 bg-[#ef233c] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-200"></div><div><span class="block text-[10px] text-zinc-600 font-mono mb-1 group-hover:text-[#ef233c] transition-colors">04</span><h4 class="text-lg text-white font-manrope font-normal tracking-tight group-hover:translate-x-2 transition-transform duration-300">Interaction</h4></div><svg class="w-4 h-4 text-zinc-700 group-hover:text-[#ef233c] transition-colors transform group-hover:rotate-[-45deg] duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke-linecap="square" stroke-linejoin="miter" stroke-width="1.5"></path></svg></a>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <section id="typography" class="[animation:fadeSlideIn_1s_ease-out_1s_both] animate-on-scroll w-full max-w-7xl z-20 mt-24 mr-auto mb-24 ml-auto pt-10 pr-6 pb-10 pl-6 relative">
+    <div class="flex items-center gap-3 mb-8"><span class="uppercase text-sm font-medium text-[#ef233c] tracking-widest">Typography</span></div>
+    <div class="border border-zinc-800">
+      <div class="grid grid-cols-12 border-b border-zinc-800 px-4 py-4 bg-zinc-900/20 text-xs uppercase tracking-wider text-zinc-500 font-mono">
+        <div class="col-span-3">Style</div><div class="col-span-7">Preview</div><div class="col-span-2 text-right">Size / Line</div>
+      </div>
+
+      <div class="grid grid-cols-12 border-b border-zinc-800 px-4 py-6 items-center"><div class="col-span-3 text-zinc-300 text-sm">Heading 1</div><div class="col-span-7"><h1 class="leading-[1.1] md:text-8xl text-6xl font-medium tracking-tighter font-manrope"><span class="bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/50">Heading One</span></h1></div><div class="col-span-2 text-right text-zinc-500 text-xs font-mono">96px / 1.1</div></div>
+      <div class="grid grid-cols-12 border-b border-zinc-800 px-4 py-6 items-center"><div class="col-span-3 text-zinc-300 text-sm">Heading 2</div><div class="col-span-7"><h2 class="text-5xl md:text-6xl font-medium text-white tracking-tighter font-manrope mb-0 leading-[1.1]">Heading Two</h2></div><div class="col-span-2 text-right text-zinc-500 text-xs font-mono">60px / 1.1</div></div>
+      <div class="grid grid-cols-12 border-b border-zinc-800 px-4 py-6 items-center"><div class="col-span-3 text-zinc-300 text-sm">Heading 3</div><div class="col-span-7"><h3 class="text-white font-manrope text-2xl font-semibold tracking-tight uppercase">Heading Three</h3></div><div class="col-span-2 text-right text-zinc-500 text-xs font-mono">24px / tight</div></div>
+      <div class="grid grid-cols-12 border-b border-zinc-800 px-4 py-6 items-center"><div class="col-span-3 text-zinc-300 text-sm">Heading 4</div><div class="col-span-7"><h4 class="text-lg text-white font-manrope font-normal tracking-tight">Heading Four</h4></div><div class="col-span-2 text-right text-zinc-500 text-xs font-mono">18px / tight</div></div>
+
+      <div class="grid grid-cols-12 border-b border-zinc-800 px-4 py-6 items-center"><div class="col-span-3 text-zinc-300 text-sm">Bold L</div><div class="col-span-7"><span class="m-0 p-0 font-sans text-[15px] font-medium text-white tracking-wide">Bold Large label</span></div><div class="col-span-2 text-right text-zinc-500 text-xs font-mono">15px / normal</div></div>
+      <div class="grid grid-cols-12 border-b border-zinc-800 px-4 py-6 items-center"><div class="col-span-3 text-zinc-300 text-sm">Bold M</div><div class="col-span-7"><span class="text-xs font-medium tracking-wide text-white uppercase">Bold Medium label</span></div><div class="col-span-2 text-right text-zinc-500 text-xs font-mono">12px / normal</div></div>
+      <div class="grid grid-cols-12 border-b border-zinc-800 px-4 py-6 items-center"><div class="col-span-3 text-zinc-300 text-sm">Bold S</div><div class="col-span-7"><span class="text-[11px] font-bold tracking-widest uppercase text-white">Bold Small label</span></div><div class="col-span-2 text-right text-zinc-500 text-xs font-mono">11px / normal</div></div>
+
+      <div class="grid grid-cols-12 border-b border-zinc-800 px-4 py-6 items-center"><div class="col-span-3 text-zinc-300 text-sm">Paragraph</div><div class="col-span-7"><p class="text-lg text-zinc-400 font-sans leading-relaxed max-w-md">Larger paragraph text used in content blocks for explanatory copy and supporting narrative.</p></div><div class="col-span-2 text-right text-zinc-500 text-xs font-mono">18px / relaxed</div></div>
+      <div class="grid grid-cols-12 border-b border-zinc-800 px-4 py-6 items-center"><div class="col-span-3 text-zinc-300 text-sm">Regular L</div><div class="col-span-7"><p class="text-sm text-zinc-300 leading-relaxed font-sans">Regular large text sample for body and card messaging.</p></div><div class="col-span-2 text-right text-zinc-500 text-xs font-mono">14px / relaxed</div></div>
+      <div class="grid grid-cols-12 border-b border-zinc-800 px-4 py-6 items-center"><div class="col-span-3 text-zinc-300 text-sm">Regular M</div><div class="col-span-7"><p class="text-xs text-zinc-400 mt-0 font-sans">Regular medium helper text for compact contexts.</p></div><div class="col-span-2 text-right text-zinc-500 text-xs font-mono">12px / normal</div></div>
+      <div class="grid grid-cols-12 px-4 py-6 items-center"><div class="col-span-3 text-zinc-300 text-sm">Regular S</div><div class="col-span-7"><span class="block text-[10px] text-zinc-600 font-mono mb-1">Regular small metadata line</span></div><div class="col-span-2 text-right text-zinc-500 text-xs font-mono">10px / normal</div></div>
+    </div>
+  </section>
+
+  <section id="colors" class="[animation:fadeSlideIn_1s_ease-out_1s_both] animate-on-scroll w-full max-w-7xl z-20 mt-24 mr-auto mb-24 ml-auto pt-10 pr-6 pb-10 pl-6 relative">
+    <div class="flex items-center gap-3 mb-8"><span class="uppercase text-sm font-medium text-[#ef233c] tracking-widest">Colors &amp; Surfaces</span></div>
+    <div class="grid lg:grid-cols-3 gap-6">
+      <div class="border border-zinc-800 p-5 bg-black"><div class="h-20 bg-black border border-zinc-700"></div><p class="text-xs text-zinc-400 mt-3 font-sans">Page / Base background</p></div>
+      <div class="border border-zinc-800 p-5 bg-black"><div class="h-20 bg-zinc-900/10 border border-zinc-800"></div><p class="text-xs text-zinc-400 mt-3 font-sans">Section surface</p></div>
+      <div class="border border-zinc-800 p-5 bg-black"><div class="h-20 bg-black/90 backdrop-blur border-l-4 border-[#ef233c]"></div><p class="text-xs text-zinc-400 mt-3 font-sans">Card / glass overlay</p></div>
+      <div class="border border-zinc-800 p-5 bg-black"><div class="h-20 border border-zinc-800 border-dashed"></div><p class="text-xs text-zinc-400 mt-3 font-sans">Divider / dashed border</p></div>
+      <div class="border border-zinc-800 p-5 bg-black"><div class="h-20 bg-gradient-to-r from-transparent via-[#ef233c] to-transparent"></div><p class="text-xs text-zinc-400 mt-3 font-sans">Linear gradient usage</p></div>
+      <div class="border border-zinc-800 p-5 bg-black"><div class="h-20" style="background: radial-gradient(50% 50% at 50% 100%, rgba(239, 35, 60, 0.2) 0%, transparent 100%);"></div><p class="text-xs text-zinc-400 mt-3 font-sans">Radial glow usage</p></div>
+    </div>
+  </section>
+
+  <section id="components" class="[animation:fadeSlideIn_1s_ease-out_1s_both] animate-on-scroll w-full max-w-7xl z-20 mt-24 mr-auto mb-24 ml-auto pt-10 pr-6 pb-10 pl-6 relative">
+    <div class="flex items-center gap-3 mb-8"><span class="uppercase text-sm font-medium text-[#ef233c] tracking-widest">UI Components</span></div>
+
+    <div class="grid lg:grid-cols-5 gap-4 mb-10">
+      <div class="border border-zinc-800 p-4 bg-black"><p class="text-[10px] text-zinc-500 uppercase mb-3 font-mono">Default</p><button class="w-full bg-transparent border border-[#ef233c] text-[#ef233c] hover:bg-[#ef233c] hover:text-white transition-all uppercase text-[11px] font-bold tracking-widest py-4 px-4 flex items-center justify-center gap-3 group/btn rounded-none"><span>Button</span></button></div>
+      <div class="border border-zinc-800 p-4 bg-black"><p class="text-[10px] text-zinc-500 uppercase mb-3 font-mono">Hover</p><button class="w-full bg-transparent border border-[#ef233c] text-[#ef233c] bg-[#ef233c] text-white transition-all uppercase text-[11px] font-bold tracking-widest py-4 px-4 flex items-center justify-center gap-3 rounded-none"><span>Button</span></button></div>
+      <div class="border border-zinc-800 p-4 bg-black"><p class="text-[10px] text-zinc-500 uppercase mb-3 font-mono">Active</p><button class="w-full bg-transparent border border-[#ef233c] text-[#ef233c] transition-all uppercase text-[11px] font-bold tracking-widest py-4 px-4 flex items-center justify-center gap-3 rounded-none scale-95"><span>Button</span></button></div>
+      <div class="border border-zinc-800 p-4 bg-black"><p class="text-[10px] text-zinc-500 uppercase mb-3 font-mono">Focus</p><input class="peer w-full bg-transparent border-b border-white/10 py-3 text-white placeholder-transparent focus:border-red-600 focus:outline-none transition-colors font-sans text-lg" placeholder="Name" value="Focused field"/></div>
+      <div class="border border-zinc-800 p-4 bg-black"><p class="text-[10px] text-zinc-500 uppercase mb-3 font-mono">Disabled</p><button class="w-full bg-transparent border border-[#ef233c] text-[#ef233c] transition-all uppercase text-[11px] font-bold tracking-widest py-4 px-4 flex items-center justify-center gap-3 rounded-none" disabled><span>Button</span></button></div>
+    </div>
+
+    <div class="grid lg:grid-cols-2 gap-6">
+      <div class="group overflow-hidden border-zinc-800 border rounded-none relative">
+        <img alt="Component Card" class="group-hover:opacity-80 group-hover:scale-105 transition-all duration-700 opacity-100 mix-blend-normal w-full h-[260px] object-cover" src="https://cdn.midjourney.com/6512533c-2ac4-41b3-b676-56e877226748/0_3.png?w=800&amp;q=80"/>
+      </div>
+      <form class="space-y-10 border border-zinc-800 p-6 bg-black">
+        <div class="group relative"><input class="peer w-full bg-transparent border-b border-white/10 py-3 text-white placeholder-transparent focus:border-red-600 focus:outline-none transition-colors font-sans text-lg" id="demo-name" placeholder="Name" type="text"/><label class="absolute left-0 -top-5 text-xs text-zinc-500 transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-zinc-400 peer-placeholder-shown:top-3 peer-focus:-top-5 peer-focus:text-[10px] peer-focus:text-red-600 font-sans uppercase tracking-wider font-medium" for="demo-name">Name</label></div>
+        <div class="group relative"><input class="peer w-full bg-transparent border-b border-white/10 py-3 text-white placeholder-transparent focus:border-red-600 focus:outline-none transition-colors font-sans text-lg" id="demo-email" placeholder="Email" type="email"/><label class="absolute left-0 -top-5 text-xs text-zinc-500 transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-zinc-400 peer-placeholder-shown:top-3 peer-focus:-top-5 peer-focus:text-[10px] peer-focus:text-red-600 font-sans uppercase tracking-wider font-medium" for="demo-email">Email</label></div>
+      </form>
+    </div>
+  </section>
+
+  <section id="layout" class="[animation:fadeSlideIn_1s_ease-out_1s_both] animate-on-scroll w-full max-w-7xl z-20 mt-24 mr-auto mb-24 ml-auto pt-10 pr-6 pb-10 pl-6 relative">
+    <div class="flex items-center gap-3 mb-8"><span class="uppercase text-sm font-medium text-[#ef233c] tracking-widest">Layout &amp; Spacing</span></div>
+
+    <div class="space-y-8">
+      <div class="flex flex-col lg:flex-row gap-6 w-full">
+        <div class="flex-1 border border-zinc-800 p-8 bg-black">Hero pattern column 1</div>
+        <div class="lg:flex-[1.6] border border-zinc-800 p-8 bg-black">Hero pattern column 2</div>
+        <div class="flex-1 border border-zinc-800 p-8 bg-black">Hero pattern column 3</div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:px-6 lg:grid-cols-2 lg:gap-8 pt-8 pr-4 pb-8 pl-4 gap-x-6 gap-y-6 border border-zinc-800">
+        <div class="border border-zinc-800 p-8 bg-black/40">Grid pattern A</div>
+        <div class="border border-zinc-800 p-8 bg-black/40">Grid pattern B</div>
+      </div>
+
+      <div class="grid lg:grid-cols-12 gap-16 items-start border border-zinc-800 p-8">
+        <div class="lg:col-span-5 border border-zinc-800 p-6 bg-black/40">Split text block</div>
+        <div class="lg:col-span-7 border border-zinc-800 p-6 bg-black/40">Split form/content block</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="motion" class="[animation:fadeSlideIn_1s_ease-out_1s_both] animate-on-scroll w-full max-w-7xl z-20 mt-24 mr-auto mb-24 ml-auto pt-10 pr-6 pb-10 pl-6 relative">
+    <div class="flex items-center gap-3 mb-8"><span class="uppercase text-sm font-medium text-[#ef233c] tracking-widest">Motion &amp; Interaction</span></div>
+
+    <div class="grid lg:grid-cols-3 gap-6 mb-8">
+      <div class="[animation:fadeSlideIn_1s_ease-out_0.2s_both] animate-on-scroll border border-zinc-800 p-6 bg-black">Entrance animation: fadeSlideIn</div>
+      <div class="group border border-zinc-800 p-6 bg-black transition-all duration-700 hover:border-[#ef233c]/50">Hover glow / border transition</div>
+      <div class="group border border-zinc-800 p-6 bg-black"><button class="group relative inline-flex min-w-[180px] h-[50px] items-center justify-center overflow-hidden rounded-none outline-none cursor-pointer transition-transform active:scale-95 w-full" style="background-color: rgba(255, 255, 255, 0.05);" type="button"><span class="absolute inset-[-100%] animate-[spin_3s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,transparent_75%,#ef233c_100%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"></span><span class="absolute inset-0 rounded-none bg-zinc-800 transition-opacity duration-300 group-hover:opacity-0"></span><span class="absolute inset-[1px] rounded-none bg-black z-10"></span><span class="relative z-20 text-xs font-medium text-white tracking-wide uppercase">Button transition</span></button></div>
+    </div>
+
+    <div class="border border-zinc-800 p-6 bg-black">
+      <p class="text-zinc-400 text-sm mb-4">Motion gallery classes</p>
+      <div class="grid md:grid-cols-4 gap-4">
+        <div class="[animation:fadeSlideIn_1s_ease-out_0.1s_both] animate-on-scroll border border-zinc-800 p-4">Delay .1s</div>
+        <div class="[animation:fadeSlideIn_1s_ease-out_0.3s_both] animate-on-scroll border border-zinc-800 p-4">Delay .3s</div>
+        <div class="[animation:fadeSlideIn_1s_ease-out_0.5s_both] animate-on-scroll border border-zinc-800 p-4">Delay .5s</div>
+        <div class="border border-zinc-800 p-4 group hover:bg-zinc-900/30 transition-colors">Hover color shift</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="icons" class="[animation:fadeSlideIn_1s_ease-out_1s_both] animate-on-scroll w-full max-w-7xl z-20 mt-24 mr-auto mb-24 ml-auto pt-10 pr-6 pb-24 pl-6 relative">
+    <div class="flex items-center gap-3 mb-8"><span class="uppercase text-sm font-medium text-[#ef233c] tracking-widest">Icons</span></div>
+    <div class="grid lg:grid-cols-2 gap-6">
+      <div class="border border-zinc-800 p-6 bg-black">
+        <p class="text-xs text-zinc-500 uppercase tracking-wider font-mono mb-4">Iconify system + size variants</p>
+        <div class="flex items-center gap-8">
+          <svg aria-hidden="true" class="iconify text-2xl text-white iconify--simple-icons" data-icon="simple-icons:git" height="1em" role="img" viewBox="0 0 24 24" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M23.546 10.93L13.067.452a1.55 1.55 0 0 0-2.188 0L8.708 2.627l2.76 2.76a1.838 1.838 0 0 1 2.327 2.341l2.658 2.66a1.838 1.838 0 0 1 1.9 3.039a1.837 1.837 0 0 1-2.6 0a1.85 1.85 0 0 1-.404-1.996L12.86 8.955v6.525c.176.086.342.203.488.348a1.85 1.85 0 0 1 0 2.6a1.844 1.844 0 0 1-2.609 0a1.834 1.834 0 0 1 0-2.598c.182-.18.387-.316.605-.406V8.835a1.834 1.834 0 0 1-.996-2.41L7.636 3.7L.45 10.881c-.6.605-.6 1.584 0 2.189l10.48 10.477a1.545 1.545 0 0 0 2.186 0l10.43-10.43a1.544 1.544 0 0 0 0-2.187" fill="currentColor"></path></svg>
+          <svg aria-hidden="true" class="iconify text-3xl text-white iconify--simple-icons" data-icon="simple-icons:npm" height="1em" role="img" viewBox="0 0 24 24" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M1.763 0C.786 0 0 .786 0 1.763v20.474C0 23.214.786 24 1.763 24h20.474c.977 0 1.763-.786 1.763-1.763V1.763C24 .786 23.214 0 22.237 0zM5.13 5.323l13.837.019l-.009 13.836h-3.464l.01-10.382h-3.456L12.04 19.17H5.113z" fill="currentColor"></path></svg>
+          <span class="iconify text-xl text-white" data-icon="simple-icons:wrike"></span>
+        </div>
+      </div>
+      <div class="border border-zinc-800 p-6 bg-black">
+        <p class="text-xs text-zinc-500 uppercase tracking-wider font-mono mb-4">Lucide stroke icons + color inheritance</p>
+        <div class="flex items-center gap-6 text-zinc-300">
+          <svg class="lucide lucide-arrow-right w-5 h-5" fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+          <svg class="lucide lucide-instagram w-5 h-5 text-white" fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><rect height="20" rx="5" ry="5" width="20" x="2" y="2"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
+          <svg class="lucide lucide-globe w-6 h-6 text-[#ef233c]" fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
+        </div>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

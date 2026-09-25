@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Design System — Langfuse</title>
+<link href="assets/css2_1aa00095e743.css" rel="stylesheet"/>
+<script src="assets/resource_3fa48481346f.es"></script>
+<script src="assets/iconify-icon_e19829e7f0e8.js"></script>
+<style>
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #020205;
+}
+.font-mono {
+  font-family: 'Space Mono', monospace;
+}
+.glass-panel {
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.07) 0%,
+    rgba(255, 255, 255, 0.03) 40%,
+    rgba(255, 255, 255, 0.01) 100%
+  );
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(50px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-left: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.2),
+    0 20px 60px -10px rgba(0, 0, 0, 0.6),
+    inset 0 0 40px rgba(255, 255, 255, 0.02);
+}
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.6;
+  z-index: -1;
+  animation: drift 10s infinite alternate ease-in-out;
+}
+.blob-1 { background: #4f46e5; width: 600px; height: 600px; top: -10%; left: -10%; }
+.blob-2 { background: #db2777; width: 500px; height: 500px; bottom: -10%; right: -5%; animation-delay: -5s; }
+.blob-3 { background: #0ea5e9; width: 400px; height: 400px; top: 40%; left: 30%; opacity: 0.3; }
+@keyframes drift {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(30px, 50px); }
+}
+.text-glow { text-shadow: 0 0 40px rgba(255, 255, 255, 0.3); }
+.icon-btn {
+  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px -5px rgba(0,0,0,0.5);
+}
+.icon-btn.active {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.15);
+}
+.stat-value { letter-spacing: -0.06em; }
+.tab-content { animation: fadeIn 0.5s ease-out forwards; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.feature-card {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.feature-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.check-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  color: #4ade80;
+  margin-right: 0.75rem;
+}
+/* DS-only: demo blobs inside containers (no z-index:-1) */
+.ds-anim-drift { animation: drift 10s infinite alternate ease-in-out; }
+.ds-anim-drift-delayed { animation: drift 10s infinite alternate ease-in-out; animation-delay: -5s; }
+/* DS type spec table row */
+.ds-type-row {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.75rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.ds-type-label {
+  width: 7rem;
+  flex-shrink: 0;
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+}
+.ds-type-preview { flex-grow: 1; overflow: hidden; }
+.ds-type-spec {
+  width: 11rem;
+  flex-shrink: 0;
+  text-align: right;
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  color: rgba(255,255,255,0.3);
+  line-height: 1.6;
+}
+.ds-type-row:last-child { border-bottom: none; }
+</style>
+</head>
+<body class="w-full relative selection:bg-indigo-500/30">
+
+<!-- Global background elements (exact clone) -->
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="blob blob-3"></div>
+<div class="fixed inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-150 contrast-150 pointer-events-none mix-blend-overlay"></div>
+<div class="fixed inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:100px_100px] pointer-events-none"></div>
+
+<!-- ============================================================ -->
+<!-- DS TOP NAV — anchor links to each section -->
+<!-- ============================================================ -->
+<nav class="fixed top-0 left-0 right-0 z-[200] flex items-center justify-between px-8 py-3 bg-[#020205]/90 backdrop-blur-md border-b border-white/5">
+  <div class="flex items-center gap-3">
+    <div class="w-8 h-8 bg-white rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+      <iconify-icon class="text-black" icon="solar:infinity-bold" width="18"></iconify-icon>
+    </div>
+    <span class="font-mono text-sm text-white font-medium tracking-tight">DESIGN SYSTEM</span>
+  </div>
+  <div class="hidden md:flex items-center gap-1 bg-white/5 p-1 rounded-full border border-white/10">
+    <a href="#ds-hero"       class="px-4 py-1.5 rounded-full font-mono text-white/60 hover:text-white hover:bg-white/5 text-[10px] tracking-widest uppercase transition-all">Hero</a>
+    <a href="#ds-typography" class="px-4 py-1.5 rounded-full font-mono text-white/60 hover:text-white hover:bg-white/5 text-[10px] tracking-widest uppercase transition-all">Type</a>
+    <a href="#ds-colors"     class="px-4 py-1.5 rounded-full font-mono text-white/60 hover:text-white hover:bg-white/5 text-[10px] tracking-widest uppercase transition-all">Colors</a>
+    <a href="#ds-components" class="px-4 py-1.5 rounded-full font-mono text-white/60 hover:text-white hover:bg-white/5 text-[10px] tracking-widest uppercase transition-all">Components</a>
+    <a href="#ds-layout"     class="px-4 py-1.5 rounded-full font-mono text-white/60 hover:text-white hover:bg-white/5 text-[10px] tracking-widest uppercase transition-all">Layout</a>
+    <a href="#ds-motion"     class="px-4 py-1.5 rounded-full font-mono text-white/60 hover:text-white hover:bg-white/5 text-[10px] tracking-widest uppercase transition-all">Motion</a>
+    <a href="#ds-icons"      class="px-4 py-1.5 rounded-full font-mono text-white/60 hover:text-white hover:bg-white/5 text-[10px] tracking-widest uppercase transition-all">Icons</a>
+  </div>
+  <div class="flex items-center gap-2 bg-black/30 px-4 py-2 rounded-full border border-white/5">
+    <iconify-icon class="text-indigo-300" icon="solar:palette-linear" width="16"></iconify-icon>
+    <span class="font-mono text-sm text-white/60">v1.0</span>
+  </div>
+</nav>
+
+<div class="pt-[60px]">
+
+  <!-- ============================================================ -->
+  <!-- SECTION 0: HERO — EXACT CLONE (text adapted) -->
+  <!-- ============================================================ -->
+  <div id="ds-hero" class="flex items-start justify-center relative px-4 py-8">
+    <div class="relative w-[96vw] max-w-[1700px] h-[94vh] transition-all duration-700">
+      <div class="glass-panel w-full h-full rounded-[3rem] relative overflow-y-auto no-scrollbar scroll-smooth">
+        <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-white/5 via-transparent to-transparent pointer-events-none z-0"></div>
+
+        <!-- Sticky Header (exact clone) -->
+        <div class="sticky top-0 z-50 px-6 sm:px-12 lg:px-16 pt-12 pb-4 bg-gradient-to-b from-[#020205]/80 to-transparent backdrop-blur-sm">
+          <div class="flex justify-between items-center border-b border-white/5 pb-8">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+                <iconify-icon class="text-black" icon="solar:infinity-bold" width="24"></iconify-icon>
+              </div>
+              <span class="text-2xl text-white font-medium tracking-tight">Langfuse</span>
+            </div>
+            <nav class="hidden md:flex items-center gap-1 bg-white/5 p-1.5 rounded-full border border-white/10 backdrop-blur-md shadow-lg">
+              <button class="px-6 py-2 rounded-full text-white text-sm font-medium bg-white/10 shadow-inner hover:bg-white/20 transition-all">Overview</button>
+              <button class="px-6 py-2 rounded-full text-white/60 hover:text-white hover:bg-white/5 text-sm font-medium transition-all" onclick="document.getElementById('ds-typography').scrollIntoView({behavior:'smooth'})">Typography</button>
+              <button class="px-6 py-2 rounded-full text-white/60 hover:text-white hover:bg-white/5 text-sm font-medium transition-all" onclick="document.getElementById('ds-colors').scrollIntoView({behavior:'smooth'})">Colors</button>
+              <button class="px-6 py-2 rounded-full text-white/60 hover:text-white hover:bg-white/5 text-sm font-medium transition-all" onclick="document.getElementById('ds-components').scrollIntoView({behavior:'smooth'})">Components</button>
+            </nav>
+            <div class="flex items-center gap-4">
+              <div class="hidden lg:flex items-center gap-2 bg-black/30 px-4 py-2 rounded-full border border-white/5">
+                <iconify-icon class="text-amber-400" icon="solar:star-bold" width="16"></iconify-icon>
+                <span class="text-sm text-white font-mono">4.2k</span>
+              </div>
+              <div class="w-px h-6 bg-white/10 hidden lg:block"></div>
+              <button class="text-white/60 hover:text-white transition-colors">
+                <iconify-icon icon="solar:user-circle-linear" width="28"></iconify-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hero Content -->
+        <div class="min-h-[calc(90vh-140px)] px-6 sm:px-12 lg:px-16 flex flex-col justify-between pb-12 relative z-10">
+          <div class="flex flex-col lg:flex-row justify-between lg:items-end mt-8 gap-4">
+            <div>
+              <h1 class="text-5xl lg:text-7xl text-white font-medium tracking-tighter mb-4 text-glow drop-shadow-2xl leading-[1.1]">The Langfuse<br/> Design System.</h1>
+            </div>
+            <div class="flex flex-col items-start lg:items-end gap-2 mb-2">
+              <div class="flex items-center gap-2">
+                <div class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.8)] animate-pulse"></div>
+                <span class="text-xs font-mono text-emerald-400/80 tracking-widest uppercase">System Normal</span>
+              </div>
+              <div class="flex gap-2">
+                <span class="px-3 py-1 rounded bg-white/5 border border-white/10 text-white/60 text-[10px] font-mono">DESIGN TOKENS</span>
+                <span class="px-3 py-1 rounded bg-white/5 border border-white/10 text-white/60 text-[10px] font-mono">COMPONENTS</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab buttons + content -->
+          <div class="flex flex-col lg:flex-row flex-grow items-start lg:items-center gap-8 lg:gap-12 z-10 my-12">
+            <div class="flex lg:flex-col gap-4">
+              <button class="icon-btn active w-20 h-20 lg:w-24 lg:h-24 rounded-[1.5rem] flex flex-col gap-2 items-center justify-center text-white group" onclick="switchTab('trace', this)">
+                <iconify-icon class="group-hover:scale-110 transition-transform duration-300" height="32" icon="solar:code-square-linear" width="32"></iconify-icon>
+                <span class="text-[10px] font-mono tracking-widest opacity-70">FOUND</span>
+              </button>
+              <button class="icon-btn w-20 h-20 lg:w-24 lg:h-24 rounded-[1.5rem] flex flex-col gap-2 items-center justify-center text-white/40 hover:text-white group" onclick="switchTab('evals', this)">
+                <iconify-icon class="group-hover:scale-110 transition-transform duration-300" height="32" icon="solar:chart-2-linear" width="32"></iconify-icon>
+                <span class="text-[10px] font-mono tracking-widest opacity-70">TOKENS</span>
+              </button>
+              <button class="icon-btn w-20 h-20 lg:w-24 lg:h-24 rounded-[1.5rem] flex flex-col gap-2 items-center justify-center text-white/40 hover:text-white group" onclick="switchTab('demo', this)">
+                <iconify-icon class="group-hover:scale-110 transition-transform duration-300" height="32" icon="solar:play-circle-linear" width="32"></iconify-icon>
+                <span class="text-[10px] font-mono tracking-widest opacity-70">USAGE</span>
+              </button>
+            </div>
+
+            <div class="flex-grow w-full h-full min-h-[400px] relative">
+              <!-- TAB 1: FOUNDATIONS -->
+              <div class="tab-content grid md:grid-cols-3 gap-6 h-full absolute inset-0" id="tab-trace">
+                <div class="bg-white/[0.03] border border-white/5 rounded-[2.5rem] p-8 flex flex-col justify-between hover:bg-white/[0.06] transition-colors duration-500 group relative overflow-hidden">
+                  <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-500/20 blur-[60px] rounded-full group-hover:bg-indigo-500/30 transition-all"></div>
+                  <div class="relative z-10">
+                    <div class="flex justify-between items-start mb-4">
+                      <iconify-icon class="text-white/40" icon="solar:text-bold-square-linear" width="32"></iconify-icon>
+                      <span class="text-xs font-mono text-indigo-300 bg-indigo-500/10 px-2 py-1 rounded border border-indigo-500/20">TYPE</span>
+                    </div>
+                    <div class="text-lg text-white/80 font-medium mb-1">Typography</div>
+                    <p class="text-white/40 text-sm font-light leading-relaxed">Type scale, weights, and rhythm. From 72px display to 10px mono labels.</p>
+                  </div>
+                  <div class="text-6xl lg:text-7xl text-white font-light stat-value mt-2 group-hover:text-indigo-200 transition-colors">Aa</div>
+                </div>
+                <div class="bg-white/[0.03] border border-white/5 rounded-[2.5rem] p-8 flex flex-col justify-between hover:bg-white/[0.06] transition-colors duration-500 group relative overflow-hidden">
+                  <div class="absolute bottom-0 left-0 w-32 h-32 bg-emerald-500/20 blur-[60px] rounded-full group-hover:bg-emerald-500/30 transition-all"></div>
+                  <div class="relative z-10">
+                    <div class="flex justify-between items-start mb-4">
+                      <iconify-icon class="text-white/40" icon="solar:palette-linear" width="32"></iconify-icon>
+                      <span class="text-xs font-mono text-emerald-300 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20">COLOR</span>
+                    </div>
+                    <div class="text-lg text-white/80 font-medium mb-1">Color System</div>
+                    <p class="text-white/40 text-sm font-light leading-relaxed">Dark surfaces, glass overlays, accent gradients. Every shade documented.</p>
+                  </div>
+                  <div class="text-6xl lg:text-7xl text-white font-light stat-value mt-2 group-hover:text-emerald-200 transition-colors">12<span class="text-3xl text-white/30 ml-1">+</span></div>
+                </div>
+                <div class="bg-white/[0.03] border border-white/5 rounded-[2.5rem] p-8 flex flex-col justify-between hover:bg-white/[0.06] transition-colors duration-500 group relative overflow-hidden">
+                  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-pink-500/20 blur-[60px] rounded-full group-hover:bg-pink-500/30 transition-all"></div>
+                  <div class="relative z-10">
+                    <div class="flex justify-between items-start mb-4">
+                      <iconify-icon class="text-white/40" icon="solar:widget-3-linear" width="32"></iconify-icon>
+                      <span class="text-xs font-mono text-pink-300 bg-pink-500/10 px-2 py-1 rounded border border-pink-500/20">UI</span>
+                    </div>
+                    <div class="text-lg text-white/80 font-medium mb-1">Components</div>
+                    <p class="text-white/40 text-sm font-light leading-relaxed">Glass cards, buttons, inputs, and badges. Every interactive state included.</p>
+                  </div>
+                  <div class="text-6xl lg:text-7xl text-white font-light stat-value mt-2 group-hover:text-pink-200 transition-colors">50<span class="text-3xl text-white/30 ml-1">+</span></div>
+                </div>
+              </div>
+
+              <!-- TAB 2: TOKENS -->
+              <div class="tab-content grid md:grid-cols-3 gap-6 h-full absolute inset-0 hidden" id="tab-evals">
+                <div class="bg-white/[0.03] border border-white/5 rounded-[2.5rem] p-8 flex flex-col justify-between hover:bg-white/[0.06] transition-colors duration-500 group relative overflow-hidden">
+                  <div class="absolute top-0 right-0 w-32 h-32 bg-amber-500/20 blur-[60px] rounded-full group-hover:bg-amber-500/30 transition-all"></div>
+                  <div class="relative z-10">
+                    <div class="flex justify-between items-start mb-4">
+                      <iconify-icon class="text-white/40" icon="solar:magic-stick-3-linear" width="32"></iconify-icon>
+                      <span class="text-xs font-mono text-amber-300 bg-amber-500/10 px-2 py-1 rounded border border-amber-500/20">MOTION</span>
+                    </div>
+                    <div class="text-lg text-white/80 font-medium mb-1">Animations</div>
+                    <p class="text-white/40 text-sm font-light leading-relaxed">Entrance, hover, and transition animations with spring easing curves.</p>
+                  </div>
+                  <div class="text-6xl lg:text-7xl text-white font-light stat-value mt-2 group-hover:text-amber-200 transition-colors">8<span class="text-3xl text-white/30 ml-1">fx</span></div>
+                </div>
+                <div class="bg-white/[0.03] border border-white/5 rounded-[2.5rem] p-8 flex flex-col justify-between hover:bg-white/[0.06] transition-colors duration-500 group relative overflow-hidden">
+                  <div class="absolute bottom-0 left-0 w-32 h-32 bg-cyan-500/20 blur-[60px] rounded-full group-hover:bg-cyan-500/30 transition-all"></div>
+                  <div class="relative z-10">
+                    <div class="flex justify-between items-start mb-4">
+                      <iconify-icon class="text-white/40" icon="solar:users-group-two-rounded-linear" width="32"></iconify-icon>
+                      <span class="text-xs font-mono text-cyan-300 bg-cyan-500/10 px-2 py-1 rounded border border-cyan-500/20">ICONS</span>
+                    </div>
+                    <div class="text-lg text-white/80 font-medium mb-1">Icon System</div>
+                    <p class="text-white/40 text-sm font-light leading-relaxed">Solar icon library via Iconify. Linear and bold variants throughout.</p>
+                  </div>
+                  <div class="text-6xl lg:text-7xl text-white font-light stat-value mt-2 group-hover:text-cyan-200 transition-colors">24<span class="text-3xl text-white/30 ml-1">px</span></div>
+                </div>
+                <div class="bg-white/[0.03] border border-white/5 rounded-[2.5rem] p-8 flex flex-col justify-between hover:bg-white/[0.06] transition-colors duration-500 group relative overflow-hidden">
+                  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-purple-500/20 blur-[60px] rounded-full group-hover:bg-purple-500/30 transition-all"></div>
+                  <div class="relative z-10">
+                    <div class="flex justify-between items-start mb-4">
+                      <iconify-icon class="text-white/40" icon="solar:database-linear" width="32"></iconify-icon>
+                      <span class="text-xs font-mono text-purple-300 bg-purple-500/10 px-2 py-1 rounded border border-purple-500/20">LAYOUT</span>
+                    </div>
+                    <div class="text-lg text-white/80 font-medium mb-1">Grids & Spacing</div>
+                    <p class="text-white/40 text-sm font-light leading-relaxed">Container widths, column grids, and spacing scale for every breakpoint.</p>
+                  </div>
+                  <div class="text-6xl lg:text-7xl text-white font-light stat-value mt-2 group-hover:text-purple-200 transition-colors">16<span class="text-3xl text-white/30 ml-1">col</span></div>
+                </div>
+              </div>
+
+              <!-- TAB 3: USAGE (Terminal) -->
+              <div class="tab-content w-full h-full absolute inset-0 hidden" id="tab-demo">
+                <div class="w-full h-full bg-[#0d0d12] border border-white/10 rounded-[2.5rem] p-8 relative overflow-hidden flex flex-col">
+                  <div class="flex items-center justify-between mb-6 border-b border-white/5 pb-4">
+                    <div class="flex items-center gap-2">
+                      <div class="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/50"></div>
+                      <div class="w-3 h-3 rounded-full bg-yellow-500/20 border border-yellow-500/50"></div>
+                      <div class="w-3 h-3 rounded-full bg-green-500/20 border border-green-500/50"></div>
+                    </div>
+                    <div class="text-xs font-mono text-white/30">design-system.html — usage — 80x24</div>
+                  </div>
+                  <div class="font-mono text-sm text-white/80 space-y-2 overflow-hidden">
+                    <div class="flex gap-2"><span class="text-emerald-400">➜</span><span class="text-white/50">~</span> <span class="text-white">open design-system.html</span></div>
+                    <div class="text-white/30 text-xs pb-2">Design system loaded successfully.</div>
+                    <div class="flex gap-2"><span class="text-emerald-400">➜</span><span class="text-white/50">~</span> <span class="text-white">grep -c "glass-panel" design-system.html</span></div>
+                    <div class="flex gap-2"><span class="text-emerald-400">➜</span><span class="text-white/50">~</span> <span class="text-white">node validate-tokens.js</span></div>
+                    <div class="pt-2 pl-4 border-l-2 border-white/10 space-y-1">
+                      <div class="text-blue-400">INFO: <span class="text-white/70">Glass panel active. Backdrop blur: 50px.</span></div>
+                      <div class="text-blue-400">INFO: <span class="text-white/70">Typography: Inter + Space Mono loaded.</span></div>
+                      <div class="text-blue-400">INFO: <span class="text-white/70">Animations: drift · fadeIn · feature-card reveal.</span></div>
+                      <div class="text-emerald-400">SUCCESS: <span class="text-white/70">Design system ready. Navigate:</span></div>
+                      <a class="text-indigo-400 underline decoration-indigo-400/30 underline-offset-4" href="#">#ds-typography → #ds-colors → #ds-icons</a>
+                    </div>
+                    <div class="flex gap-2 pt-2"><span class="text-emerald-400">➜</span><span class="text-white/50">~</span> <span class="w-2 h-4 bg-white/50 animate-pulse inline-block align-middle"></span></div>
+                  </div>
+                  <div class="absolute bottom-0 right-0 w-64 h-64 bg-emerald-500/10 blur-[80px] pointer-events-none"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom bar -->
+          <div class="flex items-end justify-between z-10 pt-4 border-t border-white/5">
+            <div class="w-full md:w-1/2 bg-black/20 h-20 rounded-2xl border border-white/10 flex items-center justify-between px-6 relative overflow-hidden group cursor-pointer backdrop-blur-sm">
+              <div class="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div class="flex items-center gap-4 z-10">
+                <iconify-icon class="text-white/60" icon="solar:terminal-linear" width="24"></iconify-icon>
+                <div class="flex flex-col">
+                  <span class="font-mono text-xs text-white/40 mb-1">GET STARTED</span>
+                  <span class="font-mono text-lg text-white/90">design-system.html</span>
+                </div>
+              </div>
+              <div class="h-8 w-px bg-white/10 mx-2 hidden sm:block"></div>
+              <div class="hidden sm:flex items-center gap-2 z-10 opacity-60 grayscale group-hover:grayscale-0 transition-all duration-500">
+                <iconify-icon class="text-white" icon="solar:palette-linear" width="20"></iconify-icon>
+                <span class="font-mono text-base text-white">Tailwind</span>
+              </div>
+            </div>
+            <div class="hidden md:flex flex-col items-end gap-3 pb-1">
+              <button class="group flex items-center gap-3 text-white/60 hover:text-white text-sm font-medium transition-colors py-2 animate-bounce" onclick="document.getElementById('ds-typography').scrollIntoView({behavior:'smooth'})">
+                <span>Scroll</span>
+                <iconify-icon icon="solar:arrow-down-linear" width="16"></iconify-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wrapper for all DS sections -->
+  <div class="mx-auto w-[96vw] max-w-[1700px]">
+
+    <!-- ============================================================ -->
+    <!-- SECTION 1: TYPOGRAPHY -->
+    <!-- ============================================================ -->
+    <section id="ds-typography" class="px-6 sm:px-12 lg:px-16 pt-32 pb-24 relative z-10 border-t border-white/5">
+      <div class="flex flex-col items-center mb-16 text-center feature-card">
+        <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-indigo-300 text-[10px] font-mono tracking-widest uppercase mb-4">Type Scale</span>
+        <h2 class="text-4xl md:text-5xl text-white font-medium tracking-tight text-glow mb-6">Typography.</h2>
+      </div>
+
+      <div class="feature-card">
+        <div class="ds-type-row">
+          <div class="ds-type-label">Heading 1</div>
+          <div class="ds-type-preview">
+            <h1 class="text-5xl lg:text-7xl text-white font-medium tracking-tighter text-glow drop-shadow-2xl leading-[1.1]">Design System</h1>
+          </div>
+          <div class="ds-type-spec">72px / 1.1<br/>Medium · Tighter · Glow</div>
+        </div>
+        <div class="ds-type-row">
+          <div class="ds-type-label">Heading 2</div>
+          <div class="ds-type-preview">
+            <h2 class="text-4xl md:text-5xl text-white font-medium tracking-tight text-glow">Everything you need to build.</h2>
+          </div>
+          <div class="ds-type-spec">48px / 1.25<br/>Medium · Tight · Glow</div>
+        </div>
+        <div class="ds-type-row">
+          <div class="ds-type-label">Heading 3</div>
+          <div class="ds-type-preview">
+            <h3 class="text-white text-lg font-medium">Cost Tracking</h3>
+          </div>
+          <div class="ds-type-spec">18px / 1.5<br/>Medium</div>
+        </div>
+        <div class="ds-type-row">
+          <div class="ds-type-label">Heading 4</div>
+          <div class="ds-type-preview">
+            <div class="text-lg text-white/80 font-medium">Observability</div>
+          </div>
+          <div class="ds-type-spec">18px / 1.5<br/>Medium · 80% opacity</div>
+        </div>
+        <div class="ds-type-row">
+          <div class="ds-type-label">Brand</div>
+          <div class="ds-type-preview">
+            <span class="text-2xl text-white font-medium tracking-tight">Langfuse</span>
+          </div>
+          <div class="ds-type-spec">24px / 1.5<br/>Medium · Tight</div>
+        </div>
+        <div class="ds-type-row">
+          <div class="ds-type-label">Display Stat</div>
+          <div class="ds-type-preview">
+            <div class="text-6xl lg:text-7xl text-white font-light stat-value">100<span class="text-3xl text-white/30 ml-1">%</span></div>
+          </div>
+          <div class="ds-type-spec">72px / 1<br/>Light · -0.06em</div>
+        </div>
+        <div class="ds-type-row">
+          <div class="ds-type-label">Price</div>
+          <div class="ds-type-preview">
+            <div class="text-4xl text-white font-medium tracking-tight">$59<span class="text-lg text-white/40 font-normal">/mo</span></div>
+          </div>
+          <div class="ds-type-spec">36px / 1.5<br/>Medium · Tight</div>
+        </div>
+        <div class="ds-type-row">
+          <div class="ds-type-label">Body S</div>
+          <div class="ds-type-preview">
+            <p class="text-white/40 text-sm font-light leading-relaxed">Detailed traces for every request. Debug complex agent chains in seconds. Fully open source with MIT license and self-hosting support.</p>
+          </div>
+          <div class="ds-type-spec">14px / 1.625<br/>Light · Relaxed</div>
+        </div>
+        <div class="ds-type-row">
+          <div class="ds-type-label">Regular XS</div>
+          <div class="ds-type-preview">
+            <p class="text-white/40 text-xs">Get up and running in 5 minutes.</p>
+          </div>
+          <div class="ds-type-spec">12px / 1.5</div>
+        </div>
+        <div class="ds-type-row">
+          <div class="ds-type-label">Mono Base</div>
+          <div class="ds-type-preview">
+            <span class="font-mono text-lg text-white/90">npm install langfuse</span>
+          </div>
+          <div class="ds-type-spec">18px / 1.5<br/>Space Mono</div>
+        </div>
+        <div class="ds-type-row">
+          <div class="ds-type-label">Mono S</div>
+          <div class="ds-type-preview">
+            <span class="font-mono text-sm text-white/80">langfuse-sdk-demo — bash — 80x24</span>
+          </div>
+          <div class="ds-type-spec">14px / 1.5<br/>Space Mono</div>
+        </div>
+        <div class="ds-type-row">
+          <div class="ds-type-label">Mono Label</div>
+          <div class="ds-type-preview">
+            <span class="font-mono text-[10px] tracking-widest uppercase text-white/30">GET STARTED · TRACE · EVALS · DEMO</span>
+          </div>
+          <div class="ds-type-spec">10px / 1.5<br/>Space Mono · Wide</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 2: COLORS & SURFACES -->
+    <!-- ============================================================ -->
+    <section id="ds-colors" class="px-6 sm:px-12 lg:px-16 pt-32 pb-24 relative z-10 border-t border-white/5 bg-black/20">
+      <div class="flex flex-col items-center mb-16 text-center feature-card">
+        <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-emerald-300 text-[10px] font-mono tracking-widest uppercase mb-4">Palette</span>
+        <h2 class="text-4xl md:text-5xl text-white font-medium tracking-tight text-glow mb-6">Colors & Surfaces.</h2>
+      </div>
+
+      <!-- Backgrounds -->
+      <div class="mb-16 feature-card">
+        <h3 class="text-white text-lg font-medium mb-6">Backgrounds & Surfaces</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-6">
+            <div class="w-full h-20 rounded-2xl mb-4 bg-[#020205] border border-white/10"></div>
+            <p class="font-mono text-[10px] tracking-widest text-white/60 uppercase mb-1">Page BG</p>
+            <p class="font-mono text-xs text-white/30">#020205</p>
+          </div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-6">
+            <div class="w-full h-20 rounded-2xl mb-4 glass-panel"></div>
+            <p class="font-mono text-[10px] tracking-widest text-white/60 uppercase mb-1">Glass Panel</p>
+            <p class="font-mono text-xs text-white/30">rgba(255,255,255,0.07→0.01)</p>
+          </div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-6">
+            <div class="w-full h-20 rounded-2xl mb-4 bg-white/[0.03] border border-white/5"></div>
+            <p class="font-mono text-[10px] tracking-widest text-white/60 uppercase mb-1">Card Surface</p>
+            <p class="font-mono text-xs text-white/30">rgba(255,255,255,0.03)</p>
+          </div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-6">
+            <div class="w-full h-20 rounded-2xl mb-4 bg-black/20 border border-white/5"></div>
+            <p class="font-mono text-[10px] tracking-widest text-white/60 uppercase mb-1">Section Dark</p>
+            <p class="font-mono text-xs text-white/30">rgba(0,0,0,0.20)</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Blob Accents -->
+      <div class="mb-16 feature-card">
+        <h3 class="text-white text-lg font-medium mb-6">Blob Accents & Brand Colors</h3>
+        <div class="grid grid-cols-3 md:grid-cols-6 gap-4">
+          <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-4">
+            <div class="w-full h-14 rounded-xl mb-3 bg-[#4f46e5]"></div>
+            <p class="font-mono text-[10px] text-white/60 uppercase mb-1">Indigo</p>
+            <p class="font-mono text-[10px] text-white/30">#4f46e5 · blob-1</p>
+          </div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-4">
+            <div class="w-full h-14 rounded-xl mb-3 bg-[#db2777]"></div>
+            <p class="font-mono text-[10px] text-white/60 uppercase mb-1">Pink</p>
+            <p class="font-mono text-[10px] text-white/30">#db2777 · blob-2</p>
+          </div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-4">
+            <div class="w-full h-14 rounded-xl mb-3 bg-[#0ea5e9]"></div>
+            <p class="font-mono text-[10px] text-white/60 uppercase mb-1">Sky</p>
+            <p class="font-mono text-[10px] text-white/30">#0ea5e9 · blob-3</p>
+          </div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-4">
+            <div class="w-full h-14 rounded-xl mb-3 bg-emerald-400"></div>
+            <p class="font-mono text-[10px] text-white/60 uppercase mb-1">Emerald</p>
+            <p class="font-mono text-[10px] text-white/30">emerald-400</p>
+          </div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-4">
+            <div class="w-full h-14 rounded-xl mb-3 bg-amber-400"></div>
+            <p class="font-mono text-[10px] text-white/60 uppercase mb-1">Amber</p>
+            <p class="font-mono text-[10px] text-white/30">amber-400</p>
+          </div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-4">
+            <div class="w-full h-14 rounded-xl mb-3 bg-cyan-400"></div>
+            <p class="font-mono text-[10px] text-white/60 uppercase mb-1">Cyan</p>
+            <p class="font-mono text-[10px] text-white/30">cyan-400</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-3 md:grid-cols-5 gap-4 mt-4">
+          <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-4"><div class="w-full h-10 rounded-xl mb-2 bg-blue-400"></div><p class="font-mono text-[10px] text-white/30">blue-400 · cost tracking</p></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-4"><div class="w-full h-10 rounded-xl mb-2 bg-purple-400"></div><p class="font-mono text-[10px] text-white/30">purple-400 · datasets</p></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-4"><div class="w-full h-10 rounded-xl mb-2 bg-rose-400"></div><p class="font-mono text-[10px] text-white/30">rose-400 · alerts</p></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-4"><div class="w-full h-10 rounded-xl mb-2 bg-indigo-500"></div><p class="font-mono text-[10px] text-white/30">indigo-500 · CTA</p></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-4"><div class="w-full h-10 rounded-xl mb-2 bg-green-400"></div><p class="font-mono text-[10px] text-white/30">green-400 · check icon</p></div>
+        </div>
+      </div>
+
+      <!-- White Opacity Scale -->
+      <div class="mb-16 feature-card">
+        <h3 class="text-white text-lg font-medium mb-6">White Opacity Scale</h3>
+        <div class="grid grid-cols-4 md:grid-cols-7 gap-4">
+          <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-4"><div class="w-full h-10 rounded-xl mb-2 bg-white/[0.02]"></div><p class="font-mono text-[10px] text-white/30">2%</p></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-4"><div class="w-full h-10 rounded-xl mb-2 bg-white/5"></div><p class="font-mono text-[10px] text-white/30">5%</p></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-4"><div class="w-full h-10 rounded-xl mb-2 bg-white/10"></div><p class="font-mono text-[10px] text-white/30">10%</p></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-4"><div class="w-full h-10 rounded-xl mb-2 bg-white/15"></div><p class="font-mono text-[10px] text-white/30">15%</p></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-4"><div class="w-full h-10 rounded-xl mb-2 bg-white/20"></div><p class="font-mono text-[10px] text-white/30">20%</p></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-4"><div class="w-full h-10 rounded-xl mb-2 bg-white/40"></div><p class="font-mono text-[10px] text-white/30">40%</p></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-4"><div class="w-full h-10 rounded-xl mb-2 bg-white/60"></div><p class="font-mono text-[10px] text-white/30">60%</p></div>
+        </div>
+      </div>
+
+      <!-- Borders -->
+      <div class="feature-card">
+        <h3 class="text-white text-lg font-medium mb-8">Borders & Dividers</h3>
+        <div class="space-y-8">
+          <div class="flex items-center gap-8"><div class="flex-1 h-px bg-white/5"></div><span class="font-mono text-[10px] text-white/30 flex-shrink-0">border-white/5 · section dividers</span></div>
+          <div class="flex items-center gap-8"><div class="flex-1 h-px bg-white/10"></div><span class="font-mono text-[10px] text-white/30 flex-shrink-0">border-white/10 · card borders · nav · pills</span></div>
+          <div class="flex items-center gap-8"><div class="flex-1 h-px bg-white/20"></div><span class="font-mono text-[10px] text-white/30 flex-shrink-0">border-white/20 · icon-btn hover</span></div>
+          <div class="flex items-center gap-8"><div class="flex-1 h-px bg-white/40"></div><span class="font-mono text-[10px] text-white/30 flex-shrink-0">border-white/40 · icon-btn active state</span></div>
+          <div class="flex items-center gap-8"><div class="flex-1 h-px bg-indigo-500/50"></div><span class="font-mono text-[10px] text-white/30 flex-shrink-0">border-indigo-500/50 · featured pricing card</span></div>
+          <div class="flex items-center gap-8"><div class="flex-1 h-px bg-pink-500/50"></div><span class="font-mono text-[10px] text-white/30 flex-shrink-0">focus-within:border-pink-500/50 · search input</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 3: UI COMPONENTS -->
+    <!-- ============================================================ -->
+    <section id="ds-components" class="px-6 sm:px-12 lg:px-16 pt-32 pb-24 relative z-10 border-t border-white/5">
+      <div class="flex flex-col items-center mb-16 text-center feature-card">
+        <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-pink-300 text-[10px] font-mono tracking-widest uppercase mb-4">UI Primitives</span>
+        <h2 class="text-4xl md:text-5xl text-white font-medium tracking-tight text-glow mb-6">Components.</h2>
+      </div>
+
+      <!-- BUTTONS -->
+      <div class="mb-20 feature-card">
+        <h3 class="text-white text-lg font-medium mb-8">Buttons</h3>
+        <div class="mb-10">
+          <p class="font-mono text-[10px] tracking-widest uppercase text-white/30 mb-5">Primary — Indigo</p>
+          <div class="flex flex-wrap items-end gap-6">
+            <div class="flex flex-col items-center gap-2"><button class="py-3 px-6 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium transition-colors shadow-lg shadow-indigo-500/25">Start Free Trial</button><span class="font-mono text-[9px] text-white/30">Default</span></div>
+            <div class="flex flex-col items-center gap-2"><button class="py-3 px-6 rounded-xl bg-indigo-600 text-white text-sm font-medium shadow-lg shadow-indigo-500/25">Start Free Trial</button><span class="font-mono text-[9px] text-white/30">Hover</span></div>
+            <div class="flex flex-col items-center gap-2"><button class="py-3 px-6 rounded-xl bg-indigo-500 text-white text-sm font-medium opacity-40 cursor-not-allowed">Start Free Trial</button><span class="font-mono text-[9px] text-white/30">Disabled</span></div>
+          </div>
+        </div>
+        <div class="mb-10">
+          <p class="font-mono text-[10px] tracking-widest uppercase text-white/30 mb-5">Ghost — White</p>
+          <div class="flex flex-wrap items-end gap-6">
+            <div class="flex flex-col items-center gap-2"><button class="py-3 px-6 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm font-medium transition-colors">Get Started</button><span class="font-mono text-[9px] text-white/30">Default</span></div>
+            <div class="flex flex-col items-center gap-2"><button class="py-3 px-6 rounded-xl bg-white/10 border border-white/10 text-white text-sm font-medium">Get Started</button><span class="font-mono text-[9px] text-white/30">Hover</span></div>
+            <div class="flex flex-col items-center gap-2"><button class="py-3 px-6 rounded-xl bg-white/5 border border-white/10 text-white text-sm font-medium opacity-40 cursor-not-allowed">Get Started</button><span class="font-mono text-[9px] text-white/30">Disabled</span></div>
+          </div>
+        </div>
+        <div>
+          <p class="font-mono text-[10px] tracking-widest uppercase text-white/30 mb-5">Pill Nav</p>
+          <div class="flex items-center gap-1 bg-white/5 p-1.5 rounded-full border border-white/10 w-fit">
+            <button class="px-6 py-2 rounded-full text-white text-sm font-medium bg-white/10 shadow-inner hover:bg-white/20 transition-all">Product</button>
+            <button class="px-6 py-2 rounded-full text-white/60 hover:text-white hover:bg-white/5 text-sm font-medium transition-all">Features</button>
+            <button class="px-6 py-2 rounded-full text-white/60 hover:text-white hover:bg-white/5 text-sm font-medium transition-all">Pricing</button>
+            <button class="px-6 py-2 rounded-full text-white/60 hover:text-white hover:bg-white/5 text-sm font-medium transition-all">Docs</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ICON BUTTONS -->
+      <div class="mb-20 feature-card">
+        <h3 class="text-white text-lg font-medium mb-8">Icon Buttons</h3>
+        <div class="flex flex-wrap gap-6 items-end">
+          <div class="flex flex-col items-center gap-3">
+            <button class="icon-btn w-24 h-24 rounded-[1.5rem] flex flex-col gap-2 items-center justify-center text-white/40 group">
+              <iconify-icon class="group-hover:scale-110 transition-transform duration-300" height="32" icon="solar:code-square-linear" width="32"></iconify-icon>
+              <span class="text-[10px] font-mono tracking-widest opacity-70">DEFAULT</span>
+            </button>
+            <span class="font-mono text-[9px] text-white/30">Default</span>
+          </div>
+          <div class="flex flex-col items-center gap-3">
+            <button class="icon-btn active w-24 h-24 rounded-[1.5rem] flex flex-col gap-2 items-center justify-center text-white group">
+              <iconify-icon class="group-hover:scale-110 transition-transform duration-300" height="32" icon="solar:play-circle-linear" width="32"></iconify-icon>
+              <span class="text-[10px] font-mono tracking-widest opacity-70">ACTIVE</span>
+            </button>
+            <span class="font-mono text-[9px] text-white/30">Active</span>
+          </div>
+          <div class="flex-1 bg-white/[0.02] border border-white/5 rounded-2xl p-5 font-mono text-[10px] text-white/30 space-y-1">
+            <p class="text-white/50 uppercase tracking-widest mb-2">Specs</p>
+            <p>Default: bg rgba(255,255,255,0.03) · border rgba(255,255,255,0.05)</p>
+            <p>Hover: translateY(-4px) · bg 0.10 · shadow 0 10px 30px -5px</p>
+            <p>Active: bg 0.15 · border 0.40 · glow 0 0 30px rgba(255,255,255,0.15)</p>
+            <p>Transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARDS -->
+      <div class="mb-20 feature-card">
+        <h3 class="text-white text-lg font-medium mb-8">Cards</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <p class="font-mono text-[10px] tracking-widest uppercase text-white/30 mb-4">Feature Card</p>
+            <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-8 hover:bg-white/[0.06] hover:border-white/10 transition-all duration-300 group">
+              <div class="w-12 h-12 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <iconify-icon class="text-blue-400" icon="solar:graph-up-linear" width="24"></iconify-icon>
+              </div>
+              <h3 class="text-white text-lg font-medium mb-3">Cost Tracking</h3>
+              <p class="text-white/40 text-sm leading-relaxed">bg-white/[0.02] · rounded-3xl · hover lifts opacity and border.</p>
+            </div>
+          </div>
+          <div>
+            <p class="font-mono text-[10px] tracking-widest uppercase text-white/30 mb-4">Hero Stat Card</p>
+            <div class="bg-white/[0.03] border border-white/5 rounded-[2.5rem] p-8 flex flex-col justify-between hover:bg-white/[0.06] transition-colors duration-500 group relative overflow-hidden">
+              <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-500/20 blur-[60px] rounded-full group-hover:bg-indigo-500/30 transition-all"></div>
+              <div class="relative z-10">
+                <div class="flex justify-between items-start mb-4">
+                  <iconify-icon class="text-white/40" icon="solar:eye-linear" width="32"></iconify-icon>
+                  <span class="text-xs font-mono text-indigo-300 bg-indigo-500/10 px-2 py-1 rounded border border-indigo-500/20">CORE</span>
+                </div>
+                <div class="text-lg text-white/80 font-medium mb-1">Observability</div>
+                <p class="text-white/40 text-sm font-light leading-relaxed">bg-white/[0.03] · rounded-[2.5rem] · blur glow on hover.</p>
+              </div>
+              <div class="text-6xl lg:text-7xl text-white font-light stat-value mt-2 group-hover:text-indigo-200 transition-colors">100<span class="text-3xl text-white/30 ml-1">%</span></div>
+            </div>
+          </div>
+          <div>
+            <p class="font-mono text-[10px] tracking-widest uppercase text-white/30 mb-4">Featured Pricing Card</p>
+            <div class="bg-gradient-to-b from-white/[0.08] to-white/[0.02] border border-indigo-500/50 rounded-3xl p-8 flex flex-col relative shadow-[0_0_50px_-20px_rgba(99,102,241,0.3)]">
+              <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-indigo-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">Most Popular</div>
+              <div class="text-lg text-white font-medium mb-2">Pro</div>
+              <div class="text-sm text-white/50 mb-4">gradient from-white/[0.08] → border-indigo-500/50</div>
+              <div class="text-4xl text-white font-medium tracking-tight mb-6">$59<span class="text-lg text-white/40 font-normal">/mo</span></div>
+              <button class="w-full py-3 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium transition-colors shadow-lg shadow-indigo-500/25">Start Free Trial</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BADGES & TAGS -->
+      <div class="mb-20 feature-card">
+        <h3 class="text-white text-lg font-medium mb-8">Badges & Tags</h3>
+        <div class="space-y-6">
+          <div>
+            <p class="font-mono text-[10px] tracking-widest uppercase text-white/30 mb-4">Section Labels — rounded-full bg-white/5</p>
+            <div class="flex flex-wrap gap-3">
+              <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-indigo-300 text-[10px] font-mono tracking-widest uppercase">Platform capabilities</span>
+              <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-emerald-300 text-[10px] font-mono tracking-widest uppercase">Start for free</span>
+              <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-pink-300 text-[10px] font-mono tracking-widest uppercase">Documentation</span>
+            </div>
+          </div>
+          <div>
+            <p class="font-mono text-[10px] tracking-widest uppercase text-white/30 mb-4">Card Tags — rounded bg-{color}/10</p>
+            <div class="flex flex-wrap gap-3">
+              <span class="text-xs font-mono text-indigo-300 bg-indigo-500/10 px-2 py-1 rounded border border-indigo-500/20">CORE</span>
+              <span class="text-xs font-mono text-emerald-300 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20">OSS</span>
+              <span class="text-xs font-mono text-pink-300 bg-pink-500/10 px-2 py-1 rounded border border-pink-500/20">CLOUD</span>
+              <span class="text-xs font-mono text-amber-300 bg-amber-500/10 px-2 py-1 rounded border border-amber-500/20">AUTO</span>
+              <span class="text-xs font-mono text-cyan-300 bg-cyan-500/10 px-2 py-1 rounded border border-cyan-500/20">HUMAN</span>
+              <span class="text-xs font-mono text-purple-300 bg-purple-500/10 px-2 py-1 rounded border border-purple-500/20">DATA</span>
+            </div>
+          </div>
+          <div>
+            <p class="font-mono text-[10px] tracking-widest uppercase text-white/30 mb-4">Compliance / Code Badges · Pill CTA</p>
+            <div class="flex flex-wrap gap-3 items-center">
+              <span class="px-3 py-1 rounded bg-white/5 border border-white/10 text-white/60 text-[10px] font-mono">SOC2 TYPE II</span>
+              <span class="px-3 py-1 rounded bg-white/5 border border-white/10 text-white/60 text-[10px] font-mono">ISO 27001</span>
+              <div class="bg-indigo-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">Most Popular</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STATUS INDICATORS -->
+      <div class="mb-20 feature-card">
+        <h3 class="text-white text-lg font-medium mb-8">Status Indicators</h3>
+        <div class="flex flex-wrap gap-8 items-center">
+          <div class="flex items-center gap-2">
+            <div class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.8)] animate-pulse"></div>
+            <span class="text-xs font-mono text-emerald-400/80 tracking-widest uppercase">System Normal</span>
+          </div>
+          <div class="flex items-center gap-2 bg-black/30 px-4 py-2 rounded-full border border-white/5">
+            <iconify-icon class="text-amber-400" icon="solar:star-bold" width="16"></iconify-icon>
+            <span class="text-sm text-white font-mono">4.2k</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="check-icon"><iconify-icon icon="solar:check-read-linear"></iconify-icon></div>
+            <span class="font-mono text-[10px] text-white/30">Default check-icon</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="check-icon bg-indigo-500/20 text-indigo-300"><iconify-icon icon="solar:check-read-linear"></iconify-icon></div>
+            <span class="font-mono text-[10px] text-white/30">Indigo check-icon (Pro tier)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- TOGGLE -->
+      <div class="mb-20 feature-card">
+        <h3 class="text-white text-lg font-medium mb-8">Toggle</h3>
+        <div class="flex items-center gap-4 bg-white/5 p-1 rounded-full border border-white/10 w-fit">
+          <div class="px-4 py-1.5 bg-white/10 rounded-full text-xs font-medium text-white shadow-sm">Monthly</div>
+          <div class="px-4 py-1.5 text-xs font-medium text-white/40">Yearly <span class="text-emerald-400 ml-1">-20%</span></div>
+        </div>
+      </div>
+
+      <!-- SEARCH INPUT -->
+      <div class="mb-20 feature-card">
+        <h3 class="text-white text-lg font-medium mb-8">Search Input</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <p class="font-mono text-[10px] tracking-widest uppercase text-white/30 mb-4">Default</p>
+            <div class="relative bg-black/40 border border-white/10 rounded-full flex items-center px-4 py-3 gap-3">
+              <iconify-icon class="text-white/40" icon="solar:magnifer-linear"></iconify-icon>
+              <input class="bg-transparent border-none outline-none text-white text-sm w-full placeholder-white/30 font-mono" placeholder="Search documentation..." type="text"/>
+              <div class="px-2 py-0.5 rounded bg-white/10 border border-white/10 text-[10px] text-white/40 font-mono">⌘K</div>
+            </div>
+          </div>
+          <div>
+            <p class="font-mono text-[10px] tracking-widest uppercase text-white/30 mb-4">Focus state (focus-within:border-pink-500/50)</p>
+            <div class="relative group">
+              <div class="absolute inset-0 bg-pink-500/20 blur-xl opacity-100"></div>
+              <div class="relative bg-black/40 border border-pink-500/50 rounded-full flex items-center px-4 py-3 gap-3">
+                <iconify-icon class="text-white/40" icon="solar:magnifer-linear"></iconify-icon>
+                <input class="bg-transparent border-none outline-none text-white text-sm w-full placeholder-white/30 font-mono" placeholder="Focused state…" type="text"/>
+                <div class="px-2 py-0.5 rounded bg-white/10 border border-white/10 text-[10px] text-white/40 font-mono">⌘K</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CLI BAR -->
+      <div class="feature-card">
+        <h3 class="text-white text-lg font-medium mb-8">CLI / Install Bar</h3>
+        <div class="w-full md:w-2/3 bg-black/20 h-20 rounded-2xl border border-white/10 flex items-center justify-between px-6 relative overflow-hidden group cursor-pointer backdrop-blur-sm">
+          <div class="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div class="flex items-center gap-4 z-10">
+            <iconify-icon class="text-white/60" icon="solar:terminal-linear" width="24"></iconify-icon>
+            <div class="flex flex-col">
+              <span class="font-mono text-xs text-white/40 mb-1">GET STARTED</span>
+              <span class="font-mono text-lg text-white/90">npm install langfuse</span>
+            </div>
+          </div>
+          <div class="h-8 w-px bg-white/10 mx-2 hidden sm:block"></div>
+          <div class="hidden sm:flex items-center gap-2 z-10 opacity-60 grayscale group-hover:grayscale-0 transition-all duration-500">
+            <iconify-icon class="text-white" icon="solar:box-minimalistic-linear" width="20"></iconify-icon>
+            <span class="font-mono text-base text-white">LangChain</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 4: LAYOUT & SPACING -->
+    <!-- ============================================================ -->
+    <section id="ds-layout" class="px-6 sm:px-12 lg:px-16 pt-32 pb-24 relative z-10 border-t border-white/5 bg-black/20">
+      <div class="flex flex-col items-center mb-16 text-center feature-card">
+        <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-amber-300 text-[10px] font-mono tracking-widest uppercase mb-4">Structure</span>
+        <h2 class="text-4xl md:text-5xl text-white font-medium tracking-tight text-glow mb-6">Layout & Spacing.</h2>
+      </div>
+
+      <!-- Container -->
+      <div class="mb-16 feature-card">
+        <h3 class="text-white text-lg font-medium mb-6">Main Container Structure</h3>
+        <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-8">
+          <div class="border border-indigo-500/30 rounded-2xl p-5 mb-4">
+            <p class="font-mono text-[10px] text-indigo-300 mb-3">w-[96vw] max-w-[1700px] · centered · h-[94vh]</p>
+            <div class="border border-white/10 rounded-xl p-4">
+              <p class="font-mono text-[10px] text-white/40 mb-3">glass-panel · rounded-[3rem] · overflow-y-auto no-scrollbar</p>
+              <div class="border border-emerald-500/20 rounded-lg p-3">
+                <p class="font-mono text-[10px] text-emerald-300 mb-2">px-6 sm:px-12 lg:px-16 · content area</p>
+                <div class="h-8 bg-white/5 rounded flex items-center px-3"><span class="font-mono text-[9px] text-white/30">sticky header / hero / footer</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="grid grid-cols-3 gap-4 text-center">
+            <div class="bg-white/5 rounded-xl p-3"><p class="font-mono text-[10px] text-indigo-300 mb-1">Max Width</p><p class="font-mono text-xs text-white/60">1700px</p></div>
+            <div class="bg-white/5 rounded-xl p-3"><p class="font-mono text-[10px] text-emerald-300 mb-1">Width</p><p class="font-mono text-xs text-white/60">96vw</p></div>
+            <div class="bg-white/5 rounded-xl p-3"><p class="font-mono text-[10px] text-pink-300 mb-1">Border Radius</p><p class="font-mono text-xs text-white/60">3rem (48px)</p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grid Patterns -->
+      <div class="mb-16 feature-card">
+        <h3 class="text-white text-lg font-medium mb-6">Grid Patterns</h3>
+        <div class="space-y-10">
+          <div>
+            <p class="font-mono text-[10px] tracking-widest uppercase text-white/30 mb-4">3-Column · grid md:grid-cols-3 gap-6 · Feature cards, hero tabs, pricing</p>
+            <div class="grid md:grid-cols-3 gap-6">
+              <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-6 flex items-center justify-center h-20 font-mono text-xs text-white/30">col 1</div>
+              <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-6 flex items-center justify-center h-20 font-mono text-xs text-white/30">col 2</div>
+              <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-6 flex items-center justify-center h-20 font-mono text-xs text-white/30">col 3</div>
+            </div>
+          </div>
+          <div>
+            <p class="font-mono text-[10px] tracking-widest uppercase text-white/30 mb-4">4-Column · grid md:grid-cols-2 lg:grid-cols-4 gap-6 · Doc link cards</p>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+              <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex items-center justify-center h-14 font-mono text-xs text-white/30">1</div>
+              <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex items-center justify-center h-14 font-mono text-xs text-white/30">2</div>
+              <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex items-center justify-center h-14 font-mono text-xs text-white/30">3</div>
+              <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex items-center justify-center h-14 font-mono text-xs text-white/30">4</div>
+            </div>
+          </div>
+          <div>
+            <p class="font-mono text-[10px] tracking-widest uppercase text-white/30 mb-4">Hero Split · flex flex-col lg:flex-row justify-between lg:items-end gap-4</p>
+            <div class="flex flex-col lg:flex-row justify-between lg:items-end gap-4 bg-white/[0.02] border border-white/5 rounded-3xl p-8">
+              <div class="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-4 font-mono text-[10px] text-indigo-300 lg:w-2/3">H1 Heading (flex-grow, lg:w-2/3)</div>
+              <div class="bg-white/5 border border-white/10 rounded-xl p-4 font-mono text-[10px] text-white/40 text-right">Status (items-end)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Spacing Scale -->
+      <div class="feature-card">
+        <h3 class="text-white text-lg font-medium mb-6">Section Padding Scale</h3>
+        <div class="space-y-4">
+          <div class="flex items-center gap-4"><div class="w-2 h-32 bg-indigo-500/50 rounded flex-shrink-0"></div><div><p class="font-mono text-[10px] text-white/60 mb-1">pt-32 pb-24</p><p class="font-mono text-[10px] text-white/30">128px / 96px · Major sections</p></div></div>
+          <div class="flex items-center gap-4"><div class="w-2 h-16 bg-emerald-500/50 rounded flex-shrink-0"></div><div><p class="font-mono text-[10px] text-white/60 mb-1">mb-16</p><p class="font-mono text-[10px] text-white/30">64px · Section header bottom margin</p></div></div>
+          <div class="flex items-center gap-4"><div class="w-2 h-8 bg-amber-500/50 rounded flex-shrink-0"></div><div><p class="font-mono text-[10px] text-white/60 mb-1">p-8</p><p class="font-mono text-[10px] text-white/30">32px · Card padding</p></div></div>
+          <div class="flex items-center gap-4"><div class="w-2 h-6 bg-cyan-500/50 rounded flex-shrink-0"></div><div><p class="font-mono text-[10px] text-white/60 mb-1">gap-6 · p-6</p><p class="font-mono text-[10px] text-white/30">24px · Card grid gap · Doc card padding</p></div></div>
+          <div class="flex items-center gap-4"><div class="w-2 h-4 bg-rose-500/50 rounded flex-shrink-0"></div><div><p class="font-mono text-[10px] text-white/60 mb-1">gap-4 · p-4</p><p class="font-mono text-[10px] text-white/30">16px · Smaller gaps</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 5: MOTION & INTERACTION -->
+    <!-- ============================================================ -->
+    <section id="ds-motion" class="px-6 sm:px-12 lg:px-16 pt-32 pb-24 relative z-10 border-t border-white/5">
+      <div class="flex flex-col items-center mb-16 text-center feature-card">
+        <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-cyan-300 text-[10px] font-mono tracking-widest uppercase mb-4">Animations</span>
+        <h2 class="text-4xl md:text-5xl text-white font-medium tracking-tight text-glow mb-6">Motion & Interaction.</h2>
+      </div>
+
+      <!-- Blob Drift -->
+      <div class="mb-16 feature-card">
+        <h3 class="text-white text-lg font-medium mb-8">Blob Drift — @keyframes drift</h3>
+        <div class="grid md:grid-cols-3 gap-6">
+          <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-8 relative overflow-hidden h-44">
+            <div class="absolute w-40 h-40 bg-[#4f46e5] rounded-full blur-[60px] opacity-60 -top-10 -left-10 ds-anim-drift"></div>
+            <div class="relative z-10"><p class="font-mono text-[10px] text-white/60 uppercase tracking-widest mb-2">blob-1</p><p class="font-mono text-[10px] text-white/30">background: #4f46e5<br/>drift 10s alternate ease-in-out</p></div>
+          </div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-8 relative overflow-hidden h-44">
+            <div class="absolute w-40 h-40 bg-[#db2777] rounded-full blur-[60px] opacity-60 -bottom-10 -right-10 ds-anim-drift-delayed"></div>
+            <div class="relative z-10"><p class="font-mono text-[10px] text-white/60 uppercase tracking-widest mb-2">blob-2</p><p class="font-mono text-[10px] text-white/30">background: #db2777<br/>animation-delay: -5s</p></div>
+          </div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-8 relative overflow-hidden h-44">
+            <div class="absolute w-32 h-32 bg-[#0ea5e9] rounded-full blur-[60px] opacity-30 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ds-anim-drift"></div>
+            <div class="relative z-10"><p class="font-mono text-[10px] text-white/60 uppercase tracking-widest mb-2">blob-3</p><p class="font-mono text-[10px] text-white/30">background: #0ea5e9<br/>opacity: 0.3 (subtle)</p></div>
+          </div>
+        </div>
+        <div class="mt-4 bg-white/[0.02] border border-white/5 rounded-2xl p-5">
+          <p class="font-mono text-[10px] text-white/30">@keyframes drift — 0%: translate(0,0) → 100%: translate(30px, 50px) · blur(90px) · z-index: -1</p>
+        </div>
+      </div>
+
+      <!-- FadeIn -->
+      <div class="mb-16 feature-card">
+        <h3 class="text-white text-lg font-medium mb-8">Tab FadeIn — @keyframes fadeIn</h3>
+        <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-8">
+          <p class="font-mono text-[10px] text-white/30 mb-6">from: opacity:0 translateY(10px) → to: opacity:1 translateY(0) · 0.5s ease-out forwards</p>
+          <div class="flex gap-4 mb-6 items-center">
+            <button class="icon-btn active w-16 h-16 rounded-[1.5rem] flex flex-col gap-1 items-center justify-center text-white group" onclick="triggerFadeDemo()">
+              <iconify-icon height="24" icon="solar:play-circle-linear" width="24"></iconify-icon>
+              <span class="text-[8px] font-mono tracking-widest opacity-70">PLAY</span>
+            </button>
+            <span class="font-mono text-[10px] text-white/30">Click to replay the animation</span>
+          </div>
+          <div id="fade-demo-container" class="min-h-[80px]">
+            <div class="tab-content bg-indigo-500/10 border border-indigo-500/20 rounded-2xl p-6" id="fade-demo">
+              <p class="font-mono text-sm text-indigo-300">fadeIn — opacity: 0→1 · translateY: 10px→0 · 0.5s ease-out</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scroll Reveal -->
+      <div class="mb-16 feature-card">
+        <h3 class="text-white text-lg font-medium mb-8">Scroll Reveal — .feature-card + IntersectionObserver</h3>
+        <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-8">
+          <p class="font-mono text-[10px] text-white/30 mb-6">Initial: opacity:0 translateY(30px) → .visible: opacity:1 translateY(0)<br/>transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1) · IntersectionObserver threshold: 0.1</p>
+          <div class="grid md:grid-cols-3 gap-6">
+            <div class="feature-card bg-white/[0.02] border border-white/5 rounded-3xl p-8 hover:bg-white/[0.06] transition-all duration-300 group">
+              <div class="w-12 h-12 bg-indigo-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform"><iconify-icon class="text-indigo-400" icon="solar:eye-linear" width="24"></iconify-icon></div>
+              <h3 class="text-white text-lg font-medium mb-3">Card Reveal</h3>
+              <p class="text-white/40 text-sm leading-relaxed">Scroll reveal via IntersectionObserver. 0.6s spring easing.</p>
+            </div>
+            <div class="feature-card bg-white/[0.02] border border-white/5 rounded-3xl p-8 hover:bg-white/[0.06] transition-all duration-300 group">
+              <div class="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform"><iconify-icon class="text-emerald-400" icon="solar:shield-check-linear" width="24"></iconify-icon></div>
+              <h3 class="text-white text-lg font-medium mb-3">Icon Scale</h3>
+              <p class="text-white/40 text-sm leading-relaxed">group-hover:scale-110 on icon wrapper via Tailwind group.</p>
+            </div>
+            <div class="feature-card bg-white/[0.02] border border-white/5 rounded-3xl p-8 hover:bg-white/[0.06] transition-all duration-300 group">
+              <div class="w-12 h-12 bg-rose-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform"><iconify-icon class="text-rose-400" icon="solar:bell-bing-linear" width="24"></iconify-icon></div>
+              <h3 class="text-white text-lg font-medium mb-3">Hover States</h3>
+              <p class="text-white/40 text-sm leading-relaxed">hover:bg-white/[0.06] · transition-all duration-300.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Icon Button Hover Lift -->
+      <div class="mb-16 feature-card">
+        <h3 class="text-white text-lg font-medium mb-8">Icon Button Hover Lift</h3>
+        <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-8">
+          <p class="font-mono text-[10px] text-white/30 mb-6">Hover: translateY(-4px) · bg 0.1 · border 0.2 · shadow 0 10px 30px -5px<br/>Transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) · Icon: group-hover:scale-110 duration-300</p>
+          <div class="flex gap-4 flex-wrap">
+            <button class="icon-btn w-24 h-24 rounded-[1.5rem] flex flex-col gap-2 items-center justify-center text-white/40 hover:text-white group">
+              <iconify-icon class="group-hover:scale-110 transition-transform duration-300" height="32" icon="solar:code-square-linear" width="32"></iconify-icon>
+              <span class="text-[10px] font-mono tracking-widest opacity-70">HOVER</span>
+            </button>
+            <button class="icon-btn w-24 h-24 rounded-[1.5rem] flex flex-col gap-2 items-center justify-center text-white/40 hover:text-white group">
+              <iconify-icon class="group-hover:scale-110 transition-transform duration-300" height="32" icon="solar:chart-2-linear" width="32"></iconify-icon>
+              <span class="text-[10px] font-mono tracking-widest opacity-70">ME</span>
+            </button>
+            <button class="icon-btn active w-24 h-24 rounded-[1.5rem] flex flex-col gap-2 items-center justify-center text-white group">
+              <iconify-icon class="group-hover:scale-110 transition-transform duration-300" height="32" icon="solar:play-circle-linear" width="32"></iconify-icon>
+              <span class="text-[10px] font-mono tracking-widest opacity-70">ACTIVE</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Hover Glow -->
+      <div class="mb-16 feature-card">
+        <h3 class="text-white text-lg font-medium mb-8">Card Inner Glow — Hero Stat Cards</h3>
+        <div class="grid md:grid-cols-3 gap-6">
+          <div class="bg-white/[0.03] border border-white/5 rounded-[2.5rem] p-8 flex flex-col justify-between hover:bg-white/[0.06] transition-colors duration-500 group relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-500/20 blur-[60px] rounded-full group-hover:bg-indigo-500/30 transition-all"></div>
+            <div class="relative z-10"><span class="text-xs font-mono text-indigo-300 bg-indigo-500/10 px-2 py-1 rounded border border-indigo-500/20">CORE</span></div>
+            <div class="text-6xl text-white font-light stat-value mt-2 group-hover:text-indigo-200 transition-colors">100<span class="text-2xl text-white/30 ml-1">%</span></div>
+          </div>
+          <div class="bg-white/[0.03] border border-white/5 rounded-[2.5rem] p-8 flex flex-col justify-between hover:bg-white/[0.06] transition-colors duration-500 group relative overflow-hidden">
+            <div class="absolute bottom-0 left-0 w-32 h-32 bg-emerald-500/20 blur-[60px] rounded-full group-hover:bg-emerald-500/30 transition-all"></div>
+            <div class="relative z-10"><span class="text-xs font-mono text-emerald-300 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20">OSS</span></div>
+            <div class="text-6xl text-white font-light stat-value mt-2 group-hover:text-emerald-200 transition-colors">$0<span class="text-2xl text-white/30 ml-1">/mo</span></div>
+          </div>
+          <div class="bg-white/[0.03] border border-white/5 rounded-[2.5rem] p-8 flex flex-col justify-between hover:bg-white/[0.06] transition-colors duration-500 group relative overflow-hidden">
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-pink-500/20 blur-[60px] rounded-full group-hover:bg-pink-500/30 transition-all"></div>
+            <div class="relative z-10"><span class="text-xs font-mono text-pink-300 bg-pink-500/10 px-2 py-1 rounded border border-pink-500/20">CLOUD</span></div>
+            <div class="text-6xl text-white font-light stat-value mt-2 group-hover:text-pink-200 transition-colors">50<span class="text-2xl text-white/30 ml-1">k</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Utility Animations -->
+      <div class="feature-card">
+        <h3 class="text-white text-lg font-medium mb-8">Utility Animations Gallery</h3>
+        <div class="grid md:grid-cols-3 gap-6">
+          <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-8 flex flex-col gap-4">
+            <div class="flex items-center gap-2">
+              <div class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.8)] animate-pulse"></div>
+              <span class="text-xs font-mono text-emerald-400/80 tracking-widest uppercase">animate-pulse</span>
+            </div>
+            <p class="text-white/40 text-sm font-light leading-relaxed">Status dot with emerald glow shadow. System health indicator.</p>
+          </div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-8 flex flex-col gap-4">
+            <button class="group flex items-center gap-3 text-white/60 hover:text-white text-sm font-medium transition-colors py-2 animate-bounce w-fit">
+              <span>Scroll</span>
+              <iconify-icon icon="solar:arrow-down-linear" width="16"></iconify-icon>
+            </button>
+            <p class="text-white/40 text-sm font-light leading-relaxed">animate-bounce · Scroll CTA arrow</p>
+          </div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-8 flex flex-col gap-4">
+            <div class="flex items-center gap-3">
+              <span class="w-2 h-4 bg-white/50 animate-pulse inline-block align-middle"></span>
+              <span class="font-mono text-sm text-white/50">_ cursor</span>
+            </div>
+            <p class="text-white/40 text-sm font-light leading-relaxed">animate-pulse on block · Terminal cursor blink.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 6: ICONS -->
+    <!-- ============================================================ -->
+    <section id="ds-icons" class="px-6 sm:px-12 lg:px-16 pt-32 pb-32 relative z-10 border-t border-white/5 bg-black/20">
+      <div class="flex flex-col items-center mb-16 text-center feature-card">
+        <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-purple-300 text-[10px] font-mono tracking-widest uppercase mb-4">Solar Icons</span>
+        <h2 class="text-4xl md:text-5xl text-white font-medium tracking-tight text-glow mb-6">Icons.</h2>
+      </div>
+
+      <!-- System Info -->
+      <div class="mb-12 feature-card bg-white/[0.02] border border-white/5 rounded-3xl p-8">
+        <div class="grid md:grid-cols-3 gap-6">
+          <div><p class="font-mono text-[10px] tracking-widest text-white/30 mb-2 uppercase">Library</p><p class="font-mono text-sm text-white/60">Iconify · Solar Icon Set</p></div>
+          <div><p class="font-mono text-[10px] tracking-widest text-white/30 mb-2 uppercase">Style Used</p><p class="font-mono text-sm text-white/60">Linear (primary) · Bold (accent)</p></div>
+          <div><p class="font-mono text-[10px] tracking-widest text-white/30 mb-2 uppercase">Markup</p><p class="font-mono text-xs text-white/60 break-all">&lt;iconify-icon icon="solar:name-linear" width="24"&gt;&lt;/iconify-icon&gt;</p></div>
+        </div>
+      </div>
+
+      <!-- All Icons -->
+      <div class="mb-12 feature-card">
+        <h3 class="text-white text-lg font-medium mb-6">All Icons Used — 24px</h3>
+        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 gap-4">
+          <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex flex-col items-center gap-3 group hover:bg-white/[0.06] transition-colors"><iconify-icon class="text-white/60 group-hover:text-white transition-colors" icon="solar:infinity-bold" width="24"></iconify-icon><span class="font-mono text-[9px] text-white/30 text-center">infinity-bold</span></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex flex-col items-center gap-3 group hover:bg-white/[0.06] transition-colors"><iconify-icon class="text-white/60 group-hover:text-white transition-colors" icon="solar:star-bold" width="24"></iconify-icon><span class="font-mono text-[9px] text-white/30 text-center">star-bold</span></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex flex-col items-center gap-3 group hover:bg-white/[0.06] transition-colors"><iconify-icon class="text-white/60 group-hover:text-white transition-colors" icon="solar:user-circle-linear" width="24"></iconify-icon><span class="font-mono text-[9px] text-white/30 text-center">user-circle-linear</span></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex flex-col items-center gap-3 group hover:bg-white/[0.06] transition-colors"><iconify-icon class="text-white/60 group-hover:text-white transition-colors" icon="solar:code-square-linear" width="24"></iconify-icon><span class="font-mono text-[9px] text-white/30 text-center">code-square-linear</span></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex flex-col items-center gap-3 group hover:bg-white/[0.06] transition-colors"><iconify-icon class="text-white/60 group-hover:text-white transition-colors" icon="solar:chart-2-linear" width="24"></iconify-icon><span class="font-mono text-[9px] text-white/30 text-center">chart-2-linear</span></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex flex-col items-center gap-3 group hover:bg-white/[0.06] transition-colors"><iconify-icon class="text-white/60 group-hover:text-white transition-colors" icon="solar:play-circle-linear" width="24"></iconify-icon><span class="font-mono text-[9px] text-white/30 text-center">play-circle-linear</span></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex flex-col items-center gap-3 group hover:bg-white/[0.06] transition-colors"><iconify-icon class="text-white/60 group-hover:text-white transition-colors" icon="solar:eye-linear" width="24"></iconify-icon><span class="font-mono text-[9px] text-white/30 text-center">eye-linear</span></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex flex-col items-center gap-3 group hover:bg-white/[0.06] transition-colors"><iconify-icon class="text-white/60 group-hover:text-white transition-colors" icon="solar:server-square-linear" width="24"></iconify-icon><span class="font-mono text-[9px] text-white/30 text-center">server-square-linear</span></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex flex-col items-center gap-3 group hover:bg-white/[0.06] transition-colors"><iconify-icon class="text-white/60 group-hover:text-white transition-colors" icon="solar:cloud-linear" width="24"></iconify-icon><span class="font-mono text-[9px] text-white/30 text-center">cloud-linear</span></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex flex-col items-center gap-3 group hover:bg-white/[0.06] transition-colors"><iconify-icon class="text-white/60 group-hover:text-white transition-colors" icon="solar:magic-stick-3-linear" width="24"></iconify-icon><span class="font-mono text-[9px] text-white/30 text-center">magic-stick-3-linear</span></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex flex-col items-center gap-3 group hover:bg-white/[0.06] transition-colors"><iconify-icon class="text-white/60 group-hover:text-white transition-colors" icon="solar:users-group-two-rounded-linear" width="24"></iconify-icon><span class="font-mono text-[9px] text-white/30 text-center">users-group-two-rounded</span></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex flex-col items-center gap-3 group hover:bg-white/[0.06] transition-colors"><iconify-icon class="text-white/60 group-hover:text-white transition-colors" icon="solar:database-linear" width="24"></iconify-icon><span class="font-mono text-[9px] text-white/30 text-center">database-linear</span></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex flex-col items-center gap-3 group hover:bg-white/[0.06] transition-colors"><iconify-icon class="text-white/60 group-hover:text-white transition-colors" icon="solar:graph-up-linear" width="24"></iconify-icon><span class="font-mono text-[9px] text-white/30 text-center">graph-up-linear</span></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex flex-col items-center gap-3 group hover:bg-white/[0.06] transition-colors"><iconify-icon class="text-white/60 group-hover:text-white transition-colors" icon="solar:bug-linear" width="24"></iconify-icon><span class="font-mono text-[9px] text-white/30 text-center">bug-linear</span></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex flex-col items-center gap-3 group hover:bg-white/[0.06] transition-colors"><iconify-icon class="text-white/60 group-hover:text-white transition-colors" icon="solar:filters-linear" width="24"></iconify-icon><span class="font-mono text-[9px] text-white/30 text-center">filters-linear</span></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex flex-col items-center gap-3 group hover:bg-white/[0.06] transition-colors"><iconify-icon class="text-white/60 group-hover:text-white transition-colors" icon="solar:shield-check-linear" width="24"></iconify-icon><span class="font-mono text-[9px] text-white/30 text-center">shield-check-linear</span></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex flex-col items-center gap-3 group hover:bg-white/[0.06] transition-colors"><iconify-icon class="text-white/60 group-hover:text-white transition-colors" icon="solar:bell-bing-linear" width="24"></iconify-icon><span class="font-mono text-[9px] text-white/30 text-center">bell-bing-linear</span></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex flex-col items-center gap-3 group hover:bg-white/[0.06] transition-colors"><iconify-icon class="text-white/60 group-hover:text-white transition-colors" icon="solar:code-file-linear" width="24"></iconify-icon><span class="font-mono text-[9px] text-white/30 text-center">code-file-linear</span></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex flex-col items-center gap-3 group hover:bg-white/[0.06] transition-colors"><iconify-icon class="text-white/60 group-hover:text-white transition-colors" icon="solar:terminal-linear" width="24"></iconify-icon><span class="font-mono text-[9px] text-white/30 text-center">terminal-linear</span></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex flex-col items-center gap-3 group hover:bg-white/[0.06] transition-colors"><iconify-icon class="text-white/60 group-hover:text-white transition-colors" icon="solar:box-minimalistic-linear" width="24"></iconify-icon><span class="font-mono text-[9px] text-white/30 text-center">box-minimalistic-linear</span></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex flex-col items-center gap-3 group hover:bg-white/[0.06] transition-colors"><iconify-icon class="text-white/60 group-hover:text-white transition-colors" icon="solar:arrow-down-linear" width="24"></iconify-icon><span class="font-mono text-[9px] text-white/30 text-center">arrow-down-linear</span></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex flex-col items-center gap-3 group hover:bg-white/[0.06] transition-colors"><iconify-icon class="text-white/60 group-hover:text-white transition-colors" icon="solar:rocket-2-linear" width="24"></iconify-icon><span class="font-mono text-[9px] text-white/30 text-center">rocket-2-linear</span></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex flex-col items-center gap-3 group hover:bg-white/[0.06] transition-colors"><iconify-icon class="text-white/60 group-hover:text-white transition-colors" icon="solar:magnifer-linear" width="24"></iconify-icon><span class="font-mono text-[9px] text-white/30 text-center">magnifer-linear</span></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex flex-col items-center gap-3 group hover:bg-white/[0.06] transition-colors"><iconify-icon class="text-white/60 group-hover:text-white transition-colors" icon="solar:plug-circle-linear" width="24"></iconify-icon><span class="font-mono text-[9px] text-white/30 text-center">plug-circle-linear</span></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex flex-col items-center gap-3 group hover:bg-white/[0.06] transition-colors"><iconify-icon class="text-white/60 group-hover:text-white transition-colors" icon="solar:check-read-linear" width="24"></iconify-icon><span class="font-mono text-[9px] text-white/30 text-center">check-read-linear</span></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex flex-col items-center gap-3 group hover:bg-white/[0.06] transition-colors"><iconify-icon class="text-white/60 group-hover:text-white transition-colors" icon="solar:palette-linear" width="24"></iconify-icon><span class="font-mono text-[9px] text-white/30 text-center">palette-linear</span></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex flex-col items-center gap-3 group hover:bg-white/[0.06] transition-colors"><iconify-icon class="text-white/60 group-hover:text-white transition-colors" icon="solar:widget-3-linear" width="24"></iconify-icon><span class="font-mono text-[9px] text-white/30 text-center">widget-3-linear</span></div>
+          <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex flex-col items-center gap-3 group hover:bg-white/[0.06] transition-colors"><iconify-icon class="text-white/60 group-hover:text-white transition-colors" icon="solar:text-bold-square-linear" width="24"></iconify-icon><span class="font-mono text-[9px] text-white/30 text-center">text-bold-square-linear</span></div>
+        </div>
+      </div>
+
+      <!-- Size Variants -->
+      <div class="mb-12 feature-card">
+        <h3 class="text-white text-lg font-medium mb-6">Size Variants</h3>
+        <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-8">
+          <div class="flex items-end gap-8 flex-wrap">
+            <div class="flex flex-col items-center gap-3"><iconify-icon class="text-white/60" icon="solar:eye-linear" width="16"></iconify-icon><span class="font-mono text-[9px] text-white/30">16px</span></div>
+            <div class="flex flex-col items-center gap-3"><iconify-icon class="text-white/60" icon="solar:eye-linear" width="20"></iconify-icon><span class="font-mono text-[9px] text-white/30">20px</span></div>
+            <div class="flex flex-col items-center gap-3"><iconify-icon class="text-white/60" icon="solar:eye-linear" width="24"></iconify-icon><span class="font-mono text-[9px] text-white/30">24px</span></div>
+            <div class="flex flex-col items-center gap-3"><iconify-icon class="text-white/60" icon="solar:eye-linear" width="28"></iconify-icon><span class="font-mono text-[9px] text-white/30">28px</span></div>
+            <div class="flex flex-col items-center gap-3"><iconify-icon class="text-white/60" icon="solar:eye-linear" width="32"></iconify-icon><span class="font-mono text-[9px] text-white/30">32px · tabs</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Color Inheritance -->
+      <div class="mb-12 feature-card">
+        <h3 class="text-white text-lg font-medium mb-6">Color Inheritance — currentColor via text-*</h3>
+        <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-8">
+          <div class="flex items-center gap-6 flex-wrap mb-4">
+            <iconify-icon class="text-white" icon="solar:eye-linear" width="24"></iconify-icon>
+            <iconify-icon class="text-white/60" icon="solar:eye-linear" width="24"></iconify-icon>
+            <iconify-icon class="text-white/40" icon="solar:eye-linear" width="24"></iconify-icon>
+            <iconify-icon class="text-indigo-400" icon="solar:eye-linear" width="24"></iconify-icon>
+            <iconify-icon class="text-emerald-400" icon="solar:eye-linear" width="24"></iconify-icon>
+            <iconify-icon class="text-amber-400" icon="solar:eye-linear" width="24"></iconify-icon>
+            <iconify-icon class="text-pink-400" icon="solar:eye-linear" width="24"></iconify-icon>
+            <iconify-icon class="text-cyan-400" icon="solar:eye-linear" width="24"></iconify-icon>
+            <iconify-icon class="text-purple-400" icon="solar:eye-linear" width="24"></iconify-icon>
+            <iconify-icon class="text-rose-400" icon="solar:eye-linear" width="24"></iconify-icon>
+            <iconify-icon class="text-blue-400" icon="solar:eye-linear" width="24"></iconify-icon>
+          </div>
+          <p class="font-mono text-[10px] text-white/30">Icons inherit currentColor — apply text-* utility to tint. group-hover:text-white for contextual hover.</p>
+        </div>
+      </div>
+
+      <!-- Footer (cloned) -->
+      <div class="mt-24 border-t border-white/5 pt-10 flex flex-col md:flex-row justify-between items-center text-white/30 text-xs font-mono">
+        <div class="flex items-center gap-6 mb-4 md:mb-0">
+          <a class="hover:text-white transition-colors" href="#">GITHUB</a>
+          <a class="hover:text-white transition-colors" href="#">DISCORD</a>
+          <a class="hover:text-white transition-colors" href="#">TWITTER</a>
+          <a class="hover:text-white transition-colors" href="#">LINKEDIN</a>
+        </div>
+        <div class="flex items-center gap-4">
+          <a class="hover:text-white transition-colors" href="#">DESIGN SYSTEM</a>
+          <a class="hover:text-white transition-colors" href="#">PRIVACY</a>
+          <span>BERLIN © 2024</span>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- end mx-auto wrapper -->
+</div><!-- end pt-[60px] -->
+
+<script>
+  // Tab switching — scoped to hero section only
+  function switchTab(tabName, btn) {
+    const hero = document.getElementById('ds-hero');
+    hero.querySelectorAll('.icon-btn').forEach(b => {
+      b.classList.remove('active', 'text-white');
+      b.classList.add('text-white/40');
+    });
+    btn.classList.add('active', 'text-white');
+    btn.classList.remove('text-white/40');
+    hero.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+    const target = document.getElementById('tab-' + tabName);
+    if (target) {
+      target.classList.remove('hidden');
+      target.style.animation = 'none';
+      target.offsetHeight;
+      target.style.animation = null;
+    }
+  }
+
+  // Intersection Observer for scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.feature-card').forEach(el => observer.observe(el));
+
+  // FadeIn demo trigger
+  function triggerFadeDemo() {
+    const el = document.getElementById('fade-demo');
+    el.style.animation = 'none';
+    el.offsetHeight;
+    el.style.animation = null;
+  }
+</script>
+</body>
+</html>

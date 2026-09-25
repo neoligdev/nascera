@@ -1,0 +1,122 @@
+[
+  {
+    "prefix": "text",
+    "count": 683
+  },
+  {
+    "prefix": "font",
+    "count": 411
+  },
+  {
+    "prefix": "transition",
+    "count": 234
+  },
+  {
+    "prefix": "tracking",
+    "count": 228
+  },
+  {
+    "prefix": "border",
+    "count": 210
+  },
+  {
+    "prefix": "leading",
+    "count": 177
+  },
+  {
+    "prefix": "justify",
+    "count": 134
+  },
+  {
+    "prefix": "shrink",
+    "count": 129
+  },
+  {
+    "prefix": "items",
+    "count": 123
+  },
+  {
+    "prefix": "overflow",
+    "count": 122
+  },
+  {
+    "prefix": "group",
+    "count": 119
+  },
+  {
+    "prefix": "rounded",
+    "count": 115
+  },
+  {
+    "prefix": "gap",
+    "count": 110
+  },
+  {
+    "prefix": "bg",
+    "count": 104
+  },
+  {
+    "prefix": "duration",
+    "count": 98
+  },
+  {
+    "prefix": "mt",
+    "count": 87
+  },
+  {
+    "prefix": "max",
+    "count": 74
+  },
+  {
+    "prefix": "top",
+    "count": 60
+  },
+  {
+    "prefix": "opacity",
+    "count": 57
+  },
+  {
+    "prefix": "flex",
+    "count": 51
+  },
+  {
+    "prefix": "right",
+    "count": 50
+  },
+  {
+    "prefix": "select",
+    "count": 50
+  },
+  {
+    "prefix": "pt",
+    "count": 45
+  },
+  {
+    "prefix": "shadow",
+    "count": 42
+  },
+  {
+    "prefix": "px",
+    "count": 36
+  },
+  {
+    "prefix": "pointer",
+    "count": 36
+  },
+  {
+    "prefix": "inset",
+    "count": 36
+  },
+  {
+    "prefix": "py",
+    "count": 31
+  },
+  {
+    "prefix": "col",
+    "count": 25
+  },
+  {
+    "prefix": "grid",
+    "count": 24
+  }
+]

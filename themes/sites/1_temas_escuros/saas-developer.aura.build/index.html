@@ -1,0 +1,1798 @@
+<html class="h-full antialiased selection:bg-sky-500/30 selection:text-sky-200" lang="en"><head>
+<script id="aura-supabase-token-firewall">(function () {
+  if (window.__AURA_SUPABASE_FIREWALL__) return;
+  window.__AURA_SUPABASE_FIREWALL__ = true;
+
+  var SUPABASE_HOST = "hoirqrkdgbmvpwutwuwj.supabase.co";
+  var BLOCKED_KEY_PATTERNS = [
+    /^sb-[a-z0-9-]+-auth-token$/i,
+    /^supabase\.auth\.token$/i
+  ];
+
+  function isBlockedStorageKey(key) {
+    if (typeof key !== "string") return false;
+    for (var i = 0; i < BLOCKED_KEY_PATTERNS.length; i++) {
+      if (BLOCKED_KEY_PATTERNS[i].test(key)) return true;
+    }
+    return false;
+  }
+
+  function toAbsoluteUrl(input) {
+    try {
+      return new URL(input, window.location.href);
+    } catch {
+      return null;
+    }
+  }
+
+  function isSupabaseDestination(input) {
+    var parsed = toAbsoluteUrl(input);
+    if (!parsed) return false;
+    if (SUPABASE_HOST && parsed.host === SUPABASE_HOST) return true;
+    return parsed.host.endsWith(".supabase.co");
+  }
+
+  function pathLooksSensitive(input) {
+    var parsed = toAbsoluteUrl(input);
+    if (!parsed) return false;
+    return /^\/(auth|rest|functions)\/v1\//.test(parsed.pathname || "");
+  }
+
+  function headersContainAuth(headersLike) {
+    if (!headersLike) return false;
+
+    try {
+      if (typeof Headers !== "undefined" && headersLike instanceof Headers) {
+        return !!(headersLike.get("authorization") || headersLike.get("apikey"));
+      }
+    } catch {}
+
+    if (Array.isArray(headersLike)) {
+      for (var i = 0; i < headersLike.length; i++) {
+        var pair = headersLike[i] || [];
+        var name = String(pair[0] || "").toLowerCase();
+        if (name === "authorization" || name === "apikey") return true;
+      }
+      return false;
+    }
+
+    if (typeof headersLike === "object") {
+      var keys = Object.keys(headersLike);
+      for (var j = 0; j < keys.length; j++) {
+        var k = keys[j].toLowerCase();
+        if (k === "authorization" || k === "apikey") return true;
+      }
+    }
+    return false;
+  }
+
+  function requestLooksSensitive(input, init, extraHeaders) {
+    var url = "";
+    try {
+      if (typeof input === "string") {
+        url = input;
+      } else if (input && typeof input.url === "string") {
+        url = input.url;
+      }
+    } catch {}
+
+    var headers =
+      (init && init.headers) ||
+      (input && input.headers) ||
+      extraHeaders ||
+      null;
+    var hasAuthHeaders = headersContainAuth(headers);
+    if (hasAuthHeaders) return true;
+
+    if (!url) return false;
+    if (isSupabaseDestination(url) && pathLooksSensitive(url)) return true;
+    return false;
+  }
+
+  function patchStorage(storage, storageName) {
+    if (!storage) return;
+    var proto = Object.getPrototypeOf(storage);
+    if (!proto || proto.__auraSupabaseFirewallPatched) return;
+
+    var rawGetItem = proto.getItem;
+    var rawSetItem = proto.setItem;
+    var rawRemoveItem = proto.removeItem;
+    var rawKey = proto.key;
+    var rawLengthDescriptor = Object.getOwnPropertyDescriptor(proto, "length");
+    var rawLengthGet = rawLengthDescriptor && rawLengthDescriptor.get;
+
+    function getRawLength(instance) {
+      try {
+        if (rawLengthGet) return Number(rawLengthGet.call(instance) || 0);
+      } catch {}
+      try {
+        return Number(instance.length || 0);
+      } catch {}
+      return 0;
+    }
+
+    function getVisibleKeys(instance) {
+      var visible = [];
+      var total = getRawLength(instance);
+      for (var i = 0; i < total; i++) {
+        var currentKey = rawKey.call(instance, i);
+        if (currentKey && !isBlockedStorageKey(currentKey)) {
+          visible.push(currentKey);
+        }
+      }
+      return visible;
+    }
+
+    function maskBlockedKeyProperty(instance, keyName) {
+      if (!keyName || !isBlockedStorageKey(keyName)) return;
+      try {
+        Object.defineProperty(instance, keyName, {
+          configurable: true,
+          enumerable: false,
+          get: function () {
+            return null;
+          },
+          set: function () {
+            return true;
+          }
+        });
+      } catch {}
+    }
+
+    function syncBlockedKeyProperties(instance) {
+      var total = getRawLength(instance);
+      for (var i = 0; i < total; i++) {
+        var k = rawKey.call(instance, i);
+        if (k) maskBlockedKeyProperty(instance, k);
+      }
+    }
+
+    proto.getItem = function (key) {
+      syncBlockedKeyProperties(this);
+      if (isBlockedStorageKey(String(key))) return null;
+      return rawGetItem.call(this, key);
+    };
+
+    proto.setItem = function (key, value) {
+      if (isBlockedStorageKey(String(key))) return;
+      return rawSetItem.call(this, key, value);
+    };
+
+    proto.removeItem = function (key) {
+      if (isBlockedStorageKey(String(key))) return;
+      return rawRemoveItem.call(this, key);
+    };
+
+    proto.key = function (index) {
+      syncBlockedKeyProperties(this);
+      var visible = getVisibleKeys(this);
+      return visible[index] || null;
+    };
+
+    try {
+      Object.defineProperty(proto, "length", {
+        configurable: true,
+        enumerable: false,
+        get: function () {
+          syncBlockedKeyProperties(this);
+          return getVisibleKeys(this).length;
+        }
+      });
+    } catch {}
+
+    var proxyStorage = null;
+    try {
+      proxyStorage = new Proxy(storage, {
+        get: function (target, prop) {
+          if (typeof prop === "string" && isBlockedStorageKey(prop)) return null;
+          if (prop === "length") return getVisibleKeys(target).length;
+          if (prop === "key") {
+            return function (index) {
+              var visible = getVisibleKeys(target);
+              return visible[index] || null;
+            };
+          }
+
+          var value = target[prop];
+          if (typeof value === "function") return value.bind(target);
+          return value;
+        },
+        set: function (target, prop, value) {
+          if (typeof prop === "string" && isBlockedStorageKey(prop)) return true;
+          target[prop] = value;
+          return true;
+        },
+        has: function (target, prop) {
+          if (typeof prop === "string" && isBlockedStorageKey(prop)) return false;
+          return prop in target;
+        },
+        ownKeys: function (target) {
+          return getVisibleKeys(target);
+        },
+        getOwnPropertyDescriptor: function (target, prop) {
+          if (typeof prop === "string" && isBlockedStorageKey(prop)) {
+            return undefined;
+          }
+          if (prop === "length") {
+            return {
+              configurable: true,
+              enumerable: false,
+              value: getVisibleKeys(target).length,
+              writable: false
+            };
+          }
+          return Object.getOwnPropertyDescriptor(target, prop);
+        }
+      });
+    } catch {}
+
+    try {
+      if (proxyStorage) {
+        Object.defineProperty(window, storageName, {
+          configurable: true,
+          enumerable: true,
+          get: function () {
+            return proxyStorage;
+          }
+        });
+      }
+    } catch {}
+
+    syncBlockedKeyProperties(storage);
+    proto.__auraSupabaseFirewallPatched = true;
+  }
+
+  function patchCookieAccess() {
+    try {
+      var cookieDescriptor = Object.getOwnPropertyDescriptor(Document.prototype, "cookie");
+      if (!cookieDescriptor || !cookieDescriptor.configurable) return;
+
+      Object.defineProperty(document, "cookie", {
+        configurable: true,
+        enumerable: false,
+        get: function () {
+          return "";
+        },
+        set: function () {
+          return true;
+        }
+      });
+    } catch {}
+  }
+
+  function patchFetch() {
+    if (typeof window.fetch !== "function") return;
+    var rawFetch = window.fetch.bind(window);
+    window.fetch = function (input, init) {
+      if (requestLooksSensitive(input, init, null)) {
+        return Promise.reject(new Error("Blocked by Aura security policy"));
+      }
+      return rawFetch(input, init);
+    };
+  }
+
+  function patchXHR() {
+    if (typeof XMLHttpRequest === "undefined") return;
+    var rawOpen = XMLHttpRequest.prototype.open;
+    var rawSetHeader = XMLHttpRequest.prototype.setRequestHeader;
+    var rawSend = XMLHttpRequest.prototype.send;
+
+    XMLHttpRequest.prototype.open = function (method, url) {
+      this.__auraRequestUrl = String(url || "");
+      this.__auraHeaders = {};
+      return rawOpen.apply(this, arguments);
+    };
+
+    XMLHttpRequest.prototype.setRequestHeader = function (name, value) {
+      if (!this.__auraHeaders) this.__auraHeaders = {};
+      this.__auraHeaders[String(name || "").toLowerCase()] = String(value || "");
+      return rawSetHeader.apply(this, arguments);
+    };
+
+    XMLHttpRequest.prototype.send = function () {
+      if (requestLooksSensitive(this.__auraRequestUrl || "", null, this.__auraHeaders || null)) {
+        throw new Error("Blocked by Aura security policy");
+      }
+      return rawSend.apply(this, arguments);
+    };
+  }
+
+  function patchBeacon() {
+    if (typeof navigator.sendBeacon !== "function") return;
+    var rawBeacon = navigator.sendBeacon.bind(navigator);
+    navigator.sendBeacon = function (url, data) {
+      if (requestLooksSensitive(url, null, null)) return false;
+      return rawBeacon(url, data);
+    };
+  }
+
+  function patchWebSocket() {
+    if (typeof WebSocket === "undefined") return;
+    var RawWebSocket = WebSocket;
+    window.WebSocket = function (url, protocols) {
+      if (requestLooksSensitive(String(url || ""), null, null)) {
+        throw new Error("Blocked by Aura security policy");
+      }
+      return new RawWebSocket(url, protocols);
+    };
+    window.WebSocket.prototype = RawWebSocket.prototype;
+  }
+
+  patchStorage(window.localStorage, "localStorage");
+  patchStorage(window.sessionStorage, "sessionStorage");
+  patchCookieAccess();
+  patchFetch();
+  patchXHR();
+  patchBeacon();
+  patchWebSocket();
+})();</script><meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>SoraStudio — The Future of Development</title>
+<meta content="Build extraordinary applications with the next-generation development platform." name="description"/>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="assets/css2_9f79da182bcf.css" rel="stylesheet"/>
+<!-- Tailwind -->
+<script src="assets/resource_3fa48481346f.es"></script>
+<!-- Iconify -->
+<script src="assets/iconify-icon_e19829e7f0e8.js"></script>
+<style>
+:root {
+--font-sans: 'Geist', 'Inter', system-ui, -apple-system, sans-serif;
+--font-mono: 'Geist Mono', 'SF Mono', monospace;
+}
+body {
+font-family: var(--font-sans);
+background-color: #000000;
+color: #ffffff;
+}
+/* Smooth scrolling */
+html { scroll-behavior: smooth; }
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #000; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #555; }
+/* Animations */
+.fade-in-up { animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(20px); }
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-500 { animation-delay: 500ms; }
+@keyframes fadeInUp {
+to { opacity: 1; transform: translateY(0); }
+}
+/* Glass Effects */
+.glass-panel {
+background: rgba(255, 255, 255, 0.03);
+backdrop-filter: blur(12px);
+-webkit-backdrop-filter: blur(12px);
+border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.glass-nav {
+background: rgba(0, 0, 0, 0.5);
+backdrop-filter: blur(20px);
+-webkit-backdrop-filter: blur(20px);
+border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+/* Typing Animation Cursor */
+.typing-cursor {
+display: inline-block;
+width: 2px;
+height: 1.2em;
+background-color: #0ea5e9;
+margin-left: 2px;
+vertical-align: middle;
+animation: blink 1s step-end infinite;
+}
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+/* Gradient Text */
+.text-gradient {
+background: linear-gradient(to bottom, #ffffff, #a1a1aa);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+}
+/* Glow Effects */
+.glow-point {
+position: absolute;
+width: 300px;
+height: 300px;
+background: radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, rgba(0,0,0,0) 70%);
+border-radius: 50%;
+pointer-events: none;
+z-index: 0;
+}
+/* Custom UI Elements */
+.toggle-checkbox:checked {
+right: 0;
+border-color: #0ea5e9;
+}
+.toggle-checkbox:checked + .toggle-label {
+background-color: #0ea5e9;
+}
+</style>
+<script>
+// Configure Tailwind to include our custom 3D transform utilities
+tailwind.config = {
+theme: {
+extend: {
+// Add any custom theme extensions here if needed
+}
+},
+plugins: [
+function({ addUtilities }) {
+const rotateXUtilities = {};
+const rotateYUtilities = {};
+const rotateZUtilities = {};
+const rotateValues = [0, 5, 10, 15, 20, 30, 45, 75];
+// Generate rotate-x utilities
+rotateValues.forEach((value) => {
+rotateXUtilities[`.rotate-x-${value}`] = {
+'--tw-rotate-x': `${value}deg`,
+transform: `
+translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+rotateX(var(--tw-rotate-x, 0))
+rotateY(var(--tw-rotate-y, 0))
+rotateZ(var(--tw-rotate-z, 0))
+skewX(var(--tw-skew-x, 0))
+skewY(var(--tw-skew-y, 0))
+scaleX(var(--tw-scale-x, 1))
+scaleY(var(--tw-scale-y, 1))
+`.replace(/\\s+/g, ' ').trim(),
+};
+if (value !== 0) {
+rotateXUtilities[`.-rotate-x-${value}`] = {
+'--tw-rotate-x': `-${value}deg`,
+transform: `
+translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+rotateX(var(--tw-rotate-x, 0))
+rotateY(var(--tw-rotate-y, 0))
+rotateZ(var(--tw-rotate-z, 0))
+skewX(var(--tw-skew-x, 0))
+skewY(var(--tw-skew-y, 0))
+scaleX(var(--tw-scale-x, 1))
+scaleY(var(--tw-scale-y, 1))
+`.replace(/\\s+/g, ' ').trim(),
+};
+}
+});
+// Generate rotate-y utilities
+rotateValues.forEach((value) => {
+rotateYUtilities[`.rotate-y-${value}`] = {
+'--tw-rotate-y': `${value}deg`,
+transform: `
+translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+rotateX(var(--tw-rotate-x, 0))
+rotateY(var(--tw-rotate-y, 0))
+rotateZ(var(--tw-rotate-z, 0))
+skewX(var(--tw-skew-x, 0))
+skewY(var(--tw-skew-y, 0))
+scaleX(var(--tw-scale-x, 1))
+scaleY(var(--tw-scale-y, 1))
+`.replace(/\\s+/g, ' ').trim(),
+};
+if (value !== 0) {
+rotateYUtilities[`.-rotate-y-${value}`] = {
+'--tw-rotate-y': `-${value}deg`,
+transform: `
+translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+rotateX(var(--tw-rotate-x, 0))
+rotateY(var(--tw-rotate-y, 0))
+rotateZ(var(--tw-rotate-z, 0))
+skewX(var(--tw-skew-x, 0))
+skewY(var(--tw-skew-y, 0))
+scaleX(var(--tw-scale-x, 1))
+scaleY(var(--tw-scale-y, 1))
+`.replace(/\\s+/g, ' ').trim(),
+};
+}
+});
+// Generate rotate-z utilities
+rotateValues.forEach((value) => {
+rotateZUtilities[`.rotate-z-${value}`] = {
+'--tw-rotate-z': `${value}deg`,
+transform: `
+translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+rotateX(var(--tw-rotate-x, 0))
+rotateY(var(--tw-rotate-y, 0))
+rotateZ(var(--tw-rotate-z, 0))
+skewX(var(--tw-skew-x, 0))
+skewY(var(--tw-skew-y, 0))
+scaleX(var(--tw-scale-x, 1))
+scaleY(var(--tw-scale-y, 1))
+`.replace(/\\s+/g, ' ').trim(),
+};
+if (value !== 0) {
+rotateZUtilities[`.-rotate-z-${value}`] = {
+'--tw-rotate-z': `-${value}deg`,
+transform: `
+translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+rotateX(var(--tw-rotate-x, 0))
+rotateY(var(--tw-rotate-y, 0))
+rotateZ(var(--tw-rotate-z, 0))
+skewX(var(--tw-skew-x, 0))
+skewY(var(--tw-skew-y, 0))
+scaleX(var(--tw-scale-x, 1))
+scaleY(var(--tw-scale-y, 1))
+`.replace(/\\s+/g, ' ').trim(),
+};
+}
+});
+// Perspective utilities
+const perspectiveUtilities = {
+".perspective-none": { perspective: "none" },
+".perspective-dramatic": { perspective: "100px" },
+".perspective-near": { perspective: "300px" },
+".perspective-normal": { perspective: "500px" },
+".perspective-midrange": { perspective: "800px" },
+".perspective-distant": { perspective: "1200px" },
+};
+// Transform style utilities
+const transformStyleUtilities = {
+".transform-style-preserve-3d": { "transform-style": "preserve-3d" },
+".transform-style-flat": { "transform-style": "flat" },
+};
+addUtilities({
+...rotateXUtilities,
+...rotateYUtilities,
+...rotateZUtilities,
+...perspectiveUtilities,
+...transformStyleUtilities,
+});
+}
+]
+};
+</script><link href="assets/css2_0fc20595ebff.css" id="all-fonts-link-font-roboto" rel="stylesheet"/><style id="all-fonts-style-font-roboto">
+.font-roboto { font-family: 'Roboto', sans-serif !important; }
+</style><link href="assets/css2_23afcbef9bdd.css" id="all-fonts-link-font-montserrat" rel="stylesheet"/><style id="all-fonts-style-font-montserrat">
+.font-montserrat { font-family: 'Montserrat', sans-serif !important; }
+</style><link href="assets/css2_82ced711bf49.css" id="all-fonts-link-font-poppins" rel="stylesheet"/><style id="all-fonts-style-font-poppins">
+.font-poppins { font-family: 'Poppins', sans-serif !important; }
+</style><link href="assets/css2_fa22aa91016e.css" id="all-fonts-link-font-playfair" rel="stylesheet"/><style id="all-fonts-style-font-playfair">
+.font-playfair { font-family: 'Playfair Display', serif !important; }
+</style><link href="assets/css2_2b2d87bc82d8.css" id="all-fonts-link-font-instrument-serif" rel="stylesheet"/><style id="all-fonts-style-font-instrument-serif">
+.font-instrument-serif { font-family: 'Instrument Serif', serif !important; }
+</style><link href="assets/css2_4fef849c83da.css" id="all-fonts-link-font-merriweather" rel="stylesheet"/><style id="all-fonts-style-font-merriweather">
+.font-merriweather { font-family: 'Merriweather', serif !important; }
+</style><link href="assets/css2_a7b22b336fe1.css" id="all-fonts-link-font-bricolage" rel="stylesheet"/><style id="all-fonts-style-font-bricolage">
+.font-bricolage { font-family: 'Bricolage Grotesque', sans-serif !important; }
+</style><link href="assets/css2_0b2072b66163.css" id="all-fonts-link-font-jakarta" rel="stylesheet"/><style id="all-fonts-style-font-jakarta">
+.font-jakarta { font-family: 'Plus Jakarta Sans', sans-serif !important; }
+</style><link href="assets/css2_9b8bf743d4a8.css" id="all-fonts-link-font-manrope" rel="stylesheet"/><style id="all-fonts-style-font-manrope">
+.font-manrope { font-family: 'Manrope', sans-serif !important; }
+</style><link href="assets/css2_8e191ef32247.css" id="all-fonts-link-font-space-grotesk" rel="stylesheet"/><style id="all-fonts-style-font-space-grotesk">
+.font-space-grotesk { font-family: 'Space Grotesk', sans-serif !important; }
+</style><link href="assets/css2_70fd47a02eed.css" id="all-fonts-link-font-work-sans" rel="stylesheet"/><style id="all-fonts-style-font-work-sans">
+.font-work-sans { font-family: 'Work Sans', sans-serif !important; }
+</style><link href="assets/css2_b52fc18295f8.css" id="all-fonts-link-font-pt-serif" rel="stylesheet"/><style id="all-fonts-style-font-pt-serif">
+.font-pt-serif { font-family: 'PT Serif', serif !important; }
+</style><link href="assets/css2_62759cd015bd.css" id="all-fonts-link-font-geist-mono" rel="stylesheet"/><style id="all-fonts-style-font-geist-mono">
+.font-geist-mono { font-family: 'Geist Mono', monospace !important; }
+</style><link href="assets/css2_f495c2faa2a6.css" id="all-fonts-link-font-space-mono" rel="stylesheet"/><style id="all-fonts-style-font-space-mono">
+.font-space-mono { font-family: 'Space Mono', monospace !important; }
+</style><link href="assets/css2_6f16cdd6fd9f.css" id="all-fonts-link-font-quicksand" rel="stylesheet"/><style id="all-fonts-style-font-quicksand">
+.font-quicksand { font-family: 'Quicksand', sans-serif !important; }
+</style><link href="assets/css2_94cb6f0c406a.css" id="all-fonts-link-font-nunito" rel="stylesheet"/><style id="all-fonts-style-font-nunito">
+.font-nunito { font-family: 'Nunito', sans-serif !important; }
+</style><link href="assets/css2_6c160a0c4e6f.css" id="all-fonts-link-font-newsreader" rel="stylesheet"/><style id="all-fonts-style-font-newsreader">
+.font-newsreader { font-family: 'Newsreader', serif !important; }
+</style><link href="assets/css2_bd407d5ceb4b.css" id="all-fonts-link-font-google-sans-flex" rel="stylesheet"/><style id="all-fonts-style-font-google-sans-flex">
+.font-google-sans-flex { font-family: 'Google Sans Flex', sans-serif !important; }
+</style><link href="assets/css2_176e25227b5e.css" id="all-fonts-link-font-oswald" rel="stylesheet"/><style id="all-fonts-style-font-oswald">
+.font-oswald { font-family: 'Oswald', sans-serif !important; }
+</style><link href="assets/css2_e5ca562f8909.css" id="all-fonts-link-font-dm-sans" rel="stylesheet"/><style id="all-fonts-style-font-dm-sans">
+.font-dm-sans { font-family: 'DM Sans', sans-serif !important; }
+</style><link href="assets/css2_bd311904ea29.css" id="all-fonts-link-font-cormorant" rel="stylesheet"/><style id="all-fonts-style-font-cormorant">
+.font-cormorant { font-family: 'Cormorant Garamond', serif !important; }
+</style><style id="border-gradient-shared-style">
+[style*="--border-gradient"]::before {
+content: "";
+position: absolute;
+inset: 0;
+padding: 1px;
+border-radius: var(--border-radius-before, inherit);
+-webkit-mask: linear-gradient(#fff 0 0) content-box,
+linear-gradient(#fff 0 0);
+-webkit-mask-composite: xor;
+mask-composite: exclude;
+background: var(--border-gradient);
+pointer-events: none;
+}</style> <style>
+/* 3D Transform utilities */
+.rotate-x-0 { --tw-rotate-x: 0deg; transform: translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0)) rotateX(var(--tw-rotate-x, 0)) rotateY(var(--tw-rotate-y, 0)) rotateZ(var(--tw-rotate-z, 0)) skewX(var(--tw-skew-x, 0)) skewY(var(--tw-skew-y, 0)) scaleX(var(--tw-scale-x, 1)) scaleY(var(--tw-scale-y, 1)) !important; }
+.rotate-x-10 { --tw-rotate-x: 10deg; transform: translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0)) rotateX(var(--tw-rotate-x, 0)) rotateY(var(--tw-rotate-y, 0)) rotateZ(var(--tw-rotate-z, 0)) skewX(var(--tw-skew-x, 0)) skewY(var(--tw-skew-y, 0)) scaleX(var(--tw-scale-x, 1)) scaleY(var(--tw-scale-y, 1)) !important; }
+.-rotate-x-10 { --tw-rotate-x: -10deg; transform: translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0)) rotateX(var(--tw-rotate-x, 0)) rotateY(var(--tw-rotate-y, 0)) rotateZ(var(--tw-rotate-z, 0)) skewX(var(--tw-skew-x, 0)) skewY(var(--tw-skew-y, 0)) scaleX(var(--tw-scale-x, 1)) scaleY(var(--tw-scale-y, 1)) !important; }
+.rotate-y-0 { --tw-rotate-y: 0deg; transform: translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0)) rotateX(var(--tw-rotate-x, 0)) rotateY(var(--tw-rotate-y, 0)) rotateZ(var(--tw-rotate-z, 0)) skewX(var(--tw-skew-x, 0)) skewY(var(--tw-skew-y, 0)) scaleX(var(--tw-scale-x, 1)) scaleY(var(--tw-scale-y, 1)) !important; }
+.rotate-y-10 { --tw-rotate-y: 10deg; transform: translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0)) rotateX(var(--tw-rotate-x, 0)) rotateY(var(--tw-rotate-y, 0)) rotateZ(var(--tw-rotate-z, 0)) skewX(var(--tw-skew-x, 0)) skewY(var(--tw-skew-y, 0)) scaleX(var(--tw-scale-x, 1)) scaleY(var(--tw-scale-y, 1)) !important; }
+.perspective-none { perspective: none !important; }
+.perspective-dramatic { perspective: 100px !important; }
+.perspective-near { perspective: 300px !important; }
+.perspective-normal { perspective: 500px !important; }
+.perspective-midrange { perspective: 800px !important; }
+.perspective-distant { perspective: 1200px !important; }
+.transform-style-preserve-3d { transform-style: preserve-3d !important; }
+.transform-style-flat { transform-style: flat !important; }
+</style><style data-scroll-fix="true">
+        /* Scroll fixes for offline viewing */
+        html, body {
+            overflow: auto !important;
+            overflow-x: hidden !important;
+            height: auto !important;
+            min-height: 100% !important;
+            scroll-behavior: auto !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+        
+        /* Force visibility - many sites use JS animations for initial display */
+        body, .wrapper, main, #__next, #app, .page, .content {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: none !important;
+        }
+        
+        /* Disable loader/preloader overlays */
+        .loader, .preloader, .loading, [class*="loader"], [class*="preloader"] {
+            display: none !important;
+            opacity: 0 !important;
+        }
+        
+        /* Show elements that might be hidden for animation */
+        .word-inner, .char, .line, [data-aos], [data-scroll],
+        .hero-text span, .hero-fade, [class*="hero"] span {
+            opacity: 1 !important;
+            transform: none !important;
+            visibility: visible !important;
+        }
+        
+        /* Reset Tailwind animation utility classes */
+        .translate-y-full, .translate-x-full, .-translate-y-full, .-translate-x-full,
+        .translate-y-1\/2, .-translate-y-1\/2, .translate-y-\[100\%\], .translate-y-\[110\%\] {
+            transform: none !important;
+        }
+        
+        /* Force visibility on common hidden-for-animation patterns */
+        .opacity-0, [class*="opacity-0"] {
+            opacity: 1 !important;
+        }
+        
+        /* Reset scale transforms used for animations */
+        .scale-0, .scale-50, .scale-75 {
+            transform: none !important;
+        }
+        
+        html.lenis, html.lenis-smooth, 
+        body.lenis, body.lenis-smooth,
+        .lenis-wrapper, .lenis-content,
+        [data-lenis-prevent], [data-scroll-container] {
+            overflow: visible !important;
+            height: auto !important;
+        }
+        
+        /* Fix flex containers that might cut off content */
+        body.flex.items-center,
+        body.flex.justify-center {
+            align-items: flex-start !important;
+            min-height: 100vh;
+            height: auto !important;
+        }
+        
+        /* Ensure main content scrolls */
+        main, #__next, #__nuxt, #app, .main-content {
+            overflow: visible !important;
+            height: auto !important;
+        }
+        </style></head>
+<body class="min-h-full overflow-x-hidden bg-black selection:bg-sky-500/30">
+<!-- Unicorn Studio Background -->
+<div class="absolute inset-0 -z-10 pointer-events-none">
+<div class="w-full h-full" data-us-project="jAuGBjg92zfXiGbRlnyG"></div>
+</div>
+<script style="mask-image: linear-gradient(180deg, transparent, black 30%, black 75%, transparent); -webkit-mask-image: linear-gradient(90deg, transparent, black 30%, black 75%, transparent);" type="text/javascript">
+      !function(){if(!window.UnicornStudio){window.UnicornStudio={isInitialized:!1};var i=document.createElement("script");i.src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v2.0.2/dist/unicornStudio.umd.js",i.onload=function(){window.UnicornStudio.isInitialized||(UnicornStudio.init(),window.UnicornStudio.isInitialized=!0)},(document.head || document.body).appendChild(i)}}();
+    </script>
+<!-- Navigation -->
+<nav class="fixed top-0 w-full z-50 glass-nav transition-all duration-300">
+<div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+<div class="flex gap-3 cursor-pointer group group-hover:border-sky-500/50 gap-x-3 gap-y-3 items-center" onclick="window.location.href='/home'" role="button">
+<div class="relative flex items-center justify-center w-8 h-8 rounded-lg bg-white/5 border border-white/10 group-hover:border-purple-500/50 transition-colors">
+<iconify-icon class="text-white transition-colors group-hover:text-sky-400" icon="solar:infinity-linear" width="20"></iconify-icon>
+</div>
+<span class="text-sm font-medium text-white/90 tracking-tight">
+            Sora
+            <span class="text-white/40">Studio</span>
+</span>
+</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="hover:text-white transition-colors text-xs font-medium text-white/60" href="#">
+            Platform
+          </a>
+<a class="hover:text-white transition-colors text-xs font-medium text-white/60" href="#">
+            Solutions
+          </a>
+<a class="hover:text-white transition-colors text-xs font-medium text-white/60" href="#">
+            Pricing
+          </a>
+<a class="hover:text-white transition-colors text-xs font-medium text-white/60" href="#">
+            Changelog
+          </a>
+</div>
+<div class="flex gap-4 gap-x-4 gap-y-4 items-center">
+<button class="hidden md:flex hover:text-white transition-colors cursor-pointer text-xs font-medium text-white/60" onclick="window.location.href='/log-in'" role="button">
+            Log In
+          </button>
+<button class="group overflow-hidden hover:bg-neutral-200 transition-all cursor-pointer text-xs font-medium text-black bg-white rounded-full pt-2 pr-4 pb-2 pl-4 relative" onclick="window.location.href='/sign-up'" role="button">
+<span class="z-10 flex items-center gap-1 relative">
+              Start Building
+              <iconify-icon class="group-hover:translate-x-0.5 transition-transform" icon="solar:arrow-right-linear"></iconify-icon>
+</span>
+</button>
+<button class="md:hidden text-white/80">
+<iconify-icon icon="solar:hamburger-menu-linear" width="24"></iconify-icon>
+</button>
+</div>
+</div>
+</nav>
+<!-- Hero Section -->
+<main class="lg:pt-32 lg:pb-24 z-10 pt-32 pr-6 pb-20 pl-6 relative">
+<div class="text-center max-w-7xl z-10 mr-auto ml-auto relative">
+<!-- Badge -->
+<div class="fade-in-up inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm mb-8 hover:border-sky-500/30 hover:bg-white/10 transition-colors cursor-pointer group shadow-[0_0_10px_-5px_rgba(255,255,255,0.1)]">
+<span class="flex h-2 w-2 relative">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-sky-500"></span>
+</span>
+<span class="text-xs font-medium text-white tracking-wide group-hover:text-sky-100 transition-colors">
+            Sora AI 2.0 is now live
+          </span>
+<iconify-icon class="text-white/40 group-hover:text-white transition-colors" icon="solar:arrow-right-linear" width="12"></iconify-icon>
+</div>
+<!-- Headline -->
+<h1 class="fade-in-up delay-100 sm:text-7xl lg:text-8xl leading-[1.05] text-5xl font-semibold tracking-tighter max-w-5xl mr-auto mb-8 ml-auto relative" style="mask-image: linear-gradient(180deg, transparent, black 30%, black 75%, transparent); -webkit-mask-image: linear-gradient(180deg, transparent, black 30%, black 75%, transparent);">
+<!-- Background Glow for better visibility/contrast -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-sky-500/20 blur-[120px] -z-10 rounded-full pointer-events-none mix-blend-screen"></div>
+<span class="text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-white/80 drop-shadow-sm">Architect the</span>
+<br class="hidden sm:block"/>
+<span class="inline-block bg-clip-text text-transparent bg-gradient-to-r from-sky-200 via-white to-sky-200 relative drop-shadow-[0_0_35px_rgba(56,189,248,0.4)] overflow-visible">
+            future of software.
+          </span>
+</h1>
+<p class="fade-in-up delay-200 text-lg sm:text-xl text-neutral-300 font-light max-w-2xl mx-auto leading-relaxed mb-10 drop-shadow-md">
+          The integrated development environment designed for perfectionists.
+          Deploy instantly to the edge with zero configuration.
+        </p>
+<!-- CTA Buttons -->
+<div class="fade-in-up delay-300 flex flex-col sm:flex-row gap-4 gap-x-4 gap-y-4 items-center justify-center">
+<!-- Primary Creative Button: Follow Glow Cursor -->
+<button class="group sm:w-auto overflow-hidden transition-all duration-300 hover:shadow-[0_0_40px_-10px_rgba(14,165,233,0.6)] hover:scale-[1.02] w-full rounded-full pt-[1px] pr-[1px] pb-[1px] pl-[1px] relative" onmousemove="const rect = this.getBoundingClientRect(); this.style.setProperty('--x', (event.clientX - rect.left) + 'px'); this.style.setProperty('--y', (event.clientY - rect.top) + 'px');" style="--x: 192.33343505859375px; --y: 27.019989013671875px;">
+<!-- Dynamic Glow Background -->
+<span class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style="background: radial-gradient(300px circle at var(--x) var(--y), #0ea5e9, #3b82f6, transparent 60%);"></span>
+<!-- Default Border State -->
+<span class="absolute inset-0 bg-white/20 opacity-100 group-hover:opacity-0 transition-opacity duration-300"></span>
+<!-- Button Content -->
+<span class="flex items-center justify-center gap-2 transition-all duration-300 group-hover:bg-black/90 text-sm font-semibold text-white bg-black w-full h-full border-white/5 border rounded-full pt-3.5 pr-8 pb-3.5 pl-8 relative backdrop-blur-3xl">
+              Start Deploying
+              <iconify-icon class="text-sky-400 transition-transform duration-300 group-hover:translate-x-1" icon="lucide:arrow-right"></iconify-icon>
+</span>
+</button>
+<!-- Secondary Button: Glass Effect -->
+<button class="group flex transition-all duration-300 hover:bg-white/15 hover:border-white/25 hover:text-white hover:shadow-[0_0_25px_rgba(255,255,255,0.1)] overflow-hidden sm:w-auto text-sm font-medium text-white bg-white/20 w-full rounded-full pt-3.5 pr-8 pb-3.5 pl-8 relative shadow-[0_10px_30px_-18px_rgba(0,0,0,0.9)] backdrop-blur-xl gap-x-2 gap-y-2 items-center justify-center" style="position: relative; --border-gradient: linear-gradient(45deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0)); --border-radius-before: 9999px">
+<!-- glass sheen -->
+<span class="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-white/15 via-white/0 to-white/0"></span>
+<iconify-icon class="relative z-10 opacity-80 transition-opacity duration-300 group-hover:opacity-100" icon="solar:play-circle-linear" width="18"></iconify-icon>
+<span class="relative z-10">Watch Demo</span>
+</button>
+</div>
+<!-- Trusted By -->
+</div>
+</main>
+<!-- IDE Section -->
+<section class="z-10 sm:px-6 lg:px-8 pr-4 pb-32 pl-4 relative">
+<div class="max-w-6xl mr-auto ml-auto">
+<!-- Glow background for IDE -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-4xl blur-[100px] rounded-full -z-10 bg-sky-900/10">
+</div>
+<div class="glass-panel overflow-hidden bg-[radial-gradient(circle_at_top_left,var(--tw-gradient-stops))] from-blue-500/10 via-blue-500/0 to-blue-500/10 rounded-2xl backdrop-blur-xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5),0_0_60px_-15px_rgba(56,189,248,0.3)]" style="position: relative; --border-gradient: linear-gradient(45deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.1)); --border-radius-before: 16px">
+<!-- Border Beam Animation -->
+<div class="absolute inset-0 z-20 pointer-events-none rounded-2xl overflow-hidden" style="mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); mask-composite: exclude; -webkit-mask-composite: xor; padding: 1px;">
+<div class="absolute top-1/2 left-1/2 w-[200%] h-[200%] -translate-x-1/2 -translate-y-1/2 animate-[spin_4s_linear_infinite] bg-[conic-gradient(from_0deg,transparent_0_340deg,#38bdf8_360deg)] opacity-100">
+</div>
+</div>
+<!-- Toolbar -->
+<div class="flex items-center justify-between px-4 py-3 border-b border-white/5 bg-white/[0.02]">
+<div class="flex items-center gap-2">
+<div class="flex gap-1.5 mr-4">
+<div class="w-2.5 h-2.5 rounded-full bg-red-500/20 border border-red-500/50"></div>
+<div 20="" 50"="" bg-green-500="" border="" border-green-500="" class="w-2.5 h-2.5 rounded-full bg-div class=" h-2.5="" rounded-full="" w-2.5=""></div>
+</div>
+<div class="flex items-center gap-2 px-3 py-1 rounded bg-white/5 border border-white/5 text-[10px] font-mono text-white/60">
+<iconify-icon icon="solar:lock-keyhole-linear" width="10"></iconify-icon>
+            sora-core/app.tsx
+          </div>
+</div>
+<div class="flex items-center gap-3">
+<span class="flex items-center gap-1 text-[10px] text-green-400 font-mono">
+<span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
+          Live Connected
+          </span>
+<div class="h-4 w-[1px] bg-white/10"></div>
+<iconify-icon class="text-white/40 hover:text-white cursor-pointer transition-colors" icon="solar:play-linear" width="14"></iconify-icon>
+<iconify-icon class="text-white/40 hover:text-white cursor-pointer transition-colors" icon="solar:settings-linear" width="14"></iconify-icon>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 min-h-[500px]">
+<!-- Sidebar -->
+<div class="hidden lg:block lg:col-span-3 text-xs font-mono bg-black/20 border-white/5 border-r pt-4 pr-4 pb-4 pl-4">
+<div class="flex items-center gap-2 text-white/40 mb-4 hover:text-white transition-colors cursor-pointer">
+<iconify-icon icon="solar:folder-with-files-linear"></iconify-icon>
+<span>src</span>
+</div>
+<div class="pl-4 space-y-3">
+<div class="flex items-center gap-2 text-white/40 hover:text-white transition-colors cursor-pointer">
+<iconify-icon icon="solar:folder-linear"></iconify-icon>
+<span class="">components</span>
+</div>
+<div class="pl-4 space-y-2">
+<div class="flex items-center gap-2 text-sky-400 bg-sky-500/10 -mx-2 px-2 py-1 rounded border border-sky-500/20 cursor-pointer">
+<iconify-icon icon="solar:code-file-linear"></iconify-icon>
+<span class="">Hero.tsx</span>
+</div>
+<div class="flex items-center gap-2 text-white/40 hover:text-white transition-colors cursor-pointer">
+<iconify-icon icon="solar:code-file-linear"></iconify-icon>
+<span class="">Nav.tsx</span>
+</div>
+</div>
+<div class="flex items-center gap-2 text-white/40 hover:text-white transition-colors cursor-pointer">
+<iconify-icon class="" icon="solar:folder-linear"></iconify-icon>
+<span class="">lib</span>
+</div>
+<div class="flex items-center gap-2 text-white/40 hover:text-white transition-colors cursor-pointer">
+<iconify-icon icon="solar:document-text-linear"></iconify-icon>
+<span>config.ts</span>
+</div>
+</div>
+</div>
+<!-- Code Area -->
+<div class="col-span-1 lg:col-span-9 sm:text-sm leading-7 overflow-hidden text-xs text-white/80 font-mono pt-6 pr-6 pb-6 pl-6 relative">
+<!-- Line Numbers -->
+<div class="select-none text-white/20 text-right w-10 pr-3 absolute top-6 bottom-0 left-0">
+            123456789101112131415
+          </div>
+<!-- Code Content with Typing Effect -->
+<div class="pl-8 pt-10" id="typewriter-code">
+<div class="text-neutral-500">
+              // Initialize Sora Neural Core
+            </div>
+<div class="">
+<span class="text-sky-400">import</span>
+              {
+              <span class="text-yellow-200">NeuralInterface</span>
+              }
+              <span class="text-sky-400">from</span>
+<span class="text-green-300">'@sora/core'</span>
+              ;
+            </div>
+<div class="">
+<span class="text-sky-400">import</span>
+              {
+              <span class="text-yellow-200">QuantumState</span>
+              }
+              <span class="text-sky-400">from</span>
+<span class="text-green-300">'@sora/state'</span>
+              ;
+            </div>
+<div class="">
+<span class="text-sky-400">export default function</span>
+<span class="text-blue-300">SystemDeploy</span>
+              () {
+            </div>
+<div class="pl-4">
+<span class="text-sky-400">const</span>
+              [status, setStatus] =
+              <span class="text-blue-300">useQuantumState</span>
+              (
+              <span class="text-green-300">'idle'</span>
+              );
+            </div>
+<div class="pl-4">
+<span class="text-sky-400">const</span>
+<span class="text-blue-300">initiateSequence</span>
+              =
+              <span class="text-sky-400">async</span>
+              () =&gt; {
+            </div>
+<div class="pl-8">
+<span class="text-sky-400">await</span>
+<span class="text-blue-300">NeuralInterface</span>
+              .
+              <span class="text-blue-300">connect</span>
+              ({
+            </div>
+<div class="pl-12">
+              mode:
+              <span class="text-green-300">'autonomous'</span>
+              ,
+            </div>
+<div class="pl-12">
+              latency:
+              <span class="text-orange-300">0</span>
+              ,
+            </div>
+<div class="pl-12">
+              security:
+              <span class="text-green-300">'max_grade'</span>
+</div>
+<div class="pl-8">});</div>
+<div class="pl-8">
+<span class="text-neutral-400">
+                    // Dynamic injection point
+                  </span>
+</div>
+<div class="pl-8 flex items-center">
+<span class="text-white" id="typing-text">setStatus('active');</span>
+<span class="typing-cursor"></span>
+</div>
+<div class="pl-4">};</div>
+<div class="">}</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Features Grid -->
+<section class="z-10 pt-24 pr-6 pb-24 pl-6 relative">
+<div class="max-w-7xl mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 gap-x-6 gap-y-6">
+<!-- Card 1: Edge Deploy (Minimalist) -->
+<div class="glass-panel p-8 rounded-3xl group relative overflow-hidden transition-all duration-500 hover:bg-white/[0.03] hover:border-white/20 hover:shadow-2xl">
+<div class="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center mb-6 text-white group-hover:scale-110 transition-all duration-300 border border-white/10 shadow-inner">
+<iconify-icon class="text-white/60 group-hover:text-white transition-colors" height="24" icon="lucide:zap" width="24"></iconify-icon>
+</div>
+<h3 class="text-lg font-medium tracking-tight text-white mb-2">
+      Instant Edge Deploy
+    </h3>
+<p class="text-sm text-neutral-400 leading-relaxed mb-6">
+      Push to git and propagate to 350+ global edge nodes in under 50ms.
+    </p>
+<div class="flex items-center gap-3 pt-4 border-t border-white/5">
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full bg-[#111] border border-white/10 flex items-center justify-center text-[8px] text-neutral-500 font-mono">JP</div>
+<div class="w-6 h-6 rounded-full bg-[#111] border border-white/10 flex items-center justify-center text-[8px] text-neutral-500 font-mono">US</div>
+<div class="w-6 h-6 rounded-full bg-[#111] border border-white/10 flex items-center justify-center text-[8px] text-neutral-500 font-mono">EU</div>
+</div>
+<span class="text-xs font-mono text-neutral-400 flex items-center gap-1.5">
+<span class="relative flex h-1.5 w-1.5">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+</span>
+        Operational
+      </span>
+</div>
+</div>
+<!-- Card 2: Security (Minimalist) -->
+<div class="glass-panel p-8 rounded-3xl group relative overflow-hidden transition-all duration-500 hover:bg-white/[0.03] hover:border-white/20 hover:shadow-2xl">
+<div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-0 group-hover:opacity-5 transition-opacity"></div>
+<div class="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center mb-6 text-white group-hover:scale-110 transition-all duration-300 border border-white/10 shadow-inner">
+<iconify-icon class="text-white/60 group-hover:text-white transition-colors" height="24" icon="lucide:shield-check" width="24"></iconify-icon>
+</div>
+<h3 class="text-lg font-medium tracking-tight text-white mb-2">
+      Quantum Security
+    </h3>
+<p class="text-sm text-neutral-400 leading-relaxed mb-6">
+      Enterprise-grade protection with automated DDoS mitigation and zero-trust access policies.
+    </p>
+<div class="flex flex-col gap-2 pt-2">
+<div class="flex items-center justify-between text-[10px] uppercase tracking-wider font-medium text-neutral-500">
+<span>Encryption</span>
+<span class="text-white/40">AES-256-GCM</span>
+</div>
+<div class="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+<div class="w-full h-full bg-white/20 rounded-full animate-[shimmer_3s_infinite] relative overflow-hidden">
+<div class="absolute top-0 left-0 bottom-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full animate-[shimmer_2s_infinite]"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 3: Data (Minimalist) -->
+<div class="glass-panel p-8 rounded-3xl group relative overflow-hidden transition-all duration-500 hover:bg-white/[0.03] hover:border-white/20 hover:shadow-2xl">
+<div class="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center mb-6 text-white group-hover:scale-110 transition-all duration-300 border border-white/10 shadow-inner">
+<iconify-icon class="text-white/60 group-hover:text-white transition-colors" height="24" icon="lucide:database" width="24"></iconify-icon>
+</div>
+<h3 class="text-lg font-medium tracking-tight text-white mb-2">
+      Serverless Data
+    </h3>
+<p class="text-sm text-neutral-400 leading-relaxed mb-4">
+      Spin up Redis and Postgres instances in seconds that scale automatically with traffic.
+    </p>
+<div class="mt-auto pt-4 flex gap-1 items-end h-8 opacity-60 group-hover:opacity-100 transition-opacity">
+<div class="w-1.5 h-[40%] bg-white/10 rounded-sm group-hover:h-[60%] transition-all duration-500"></div>
+<div class="w-1.5 h-[60%] bg-white/20 rounded-sm group-hover:h-[80%] transition-all duration-500 delay-75"></div>
+<div class="w-1.5 h-[30%] bg-white/10 rounded-sm group-hover:h-[50%] transition-all duration-500 delay-100"></div>
+<div class="w-1.5 h-[80%] bg-white/30 rounded-sm group-hover:h-[90%] transition-all duration-500 delay-150"></div>
+<div class="w-1.5 h-[50%] bg-white/20 rounded-sm group-hover:h-[70%] transition-all duration-500 delay-200"></div>
+<div class="w-1.5 h-[90%] bg-white rounded-sm shadow-[0_0_10px_rgba(255,255,255,0.2)]"></div>
+</div>
+</div>
+<!-- Wide Card: AI Copilot (Minimalist) -->
+<div class="md:col-span-2 glass-panel p-8 rounded-3xl relative overflow-hidden group hover:border-white/20 transition-all duration-500">
+<div class="relative z-10 flex flex-col sm:flex-row h-full justify-between sm:items-center gap-8">
+<div class="max-w-md">
+<div class="flex items-center gap-3 mb-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] uppercase font-semibold tracking-wider text-white/80 bg-white/5 border border-white/10">
+<iconify-icon icon="lucide:sparkles" width="10"></iconify-icon>
+            AI V2.0
+          </span>
+</div>
+<h3 class="text-2xl font-medium tracking-tight text-white mb-3">
+          Neural Copilot
+        </h3>
+<p class="text-neutral-400 leading-relaxed mb-6">
+          Let Sora analyze your codebase to suggest optimizations, generate test suites, and write documentation automatically.
+        </p>
+<div class="flex items-center gap-3">
+<button class="group/btn flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-black text-xs font-medium hover:bg-neutral-200 transition-colors">
+            Start Analysis
+            <iconify-icon class="group-hover/btn:translate-x-0.5 transition-transform" icon="lucide:arrow-right" width="12"></iconify-icon>
+</button>
+<button class="flex items-center gap-2 px-4 py-2 rounded-lg text-white/50 text-xs font-medium hover:text-white hover:bg-white/5 transition-colors">
+            View Docs
+          </button>
+</div>
+</div>
+<!-- Animated Code Visual (Monochrome) -->
+<div class="relative w-full max-w-[280px] hidden sm:block perspective-midrange group-hover:scale-[1.02] transition-transform duration-500">
+<div class="absolute -inset-1 bg-gradient-to-r from-white/5 to-white/10 rounded-xl blur opacity-20 group-hover:opacity-40 transition-opacity duration-500"></div>
+<div class="relative rounded-xl bg-[#0B0B0B] border border-white/10 p-4 shadow-2xl rotate-y-10 -rotate-x-10 group-hover:rotate-y-0 group-hover:rotate-x-0 transition-transform duration-700 ease-out origin-center">
+<!-- Window Controls -->
+<div class="flex items-center gap-1.5 mb-3 border-b border-white/5 pb-3 opacity-50">
+<div class="w-2 h-2 rounded-full bg-white/30"></div>
+<div class="w-2 h-2 rounded-full bg-white/30"></div>
+<div class="w-2 h-2 rounded-full bg-white/30"></div>
+</div>
+<!-- Code Lines -->
+<div class="space-y-2 font-mono text-[10px]">
+<div class="flex gap-2">
+-white/50"&gt;async <span class="text-white/70">function</span> <span class="text-white">optimize</span>() {
+            </div>
+<div class="flex gap-2">
+<span class="text-white/20 select-none">2</span>
+<span class="pl-2 text-white/30">// Analyzing...</span>
+</div>
+<div class="flex gap-2 relative">
+<span class="text-white/20 select-none">3</span>
+<span class="pl-2 text-white typing-cursor">await copilot.fix()</span>
+<!-- Floating AI Suggestion (Minimal) -->
+<div class="absolute left-8 top-5 z-20 whitespace-nowrap bg-[#1a1a1a] border border-white/20 text-white px-2 py-1 rounded text-[9px] flex items-center gap-1.5 shadow-xl opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-500 delay-100">
+<iconify-icon icon="lucide:check-circle-2" width="10"></iconify-icon>
+                Performance +40%
+              </div>
+</div>
+<div class="flex gap-2">
+<span class="text-white/20 select-none">4</span>
+<span class="text-white">}</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Stat Card: Metrics (Minimalist) -->
+<div class="glass-panel p-8 rounded-3xl flex flex-col justify-between relative overflow-hidden group hover:border-white/20 transition-all duration-500">
+<div class="flex items-center justify-between mb-2 relative z-10">
+<span class="text-xs font-medium text-neutral-500 uppercase tracking-widest">Uptime SLA</span>
+<div class="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/5 border border-white/10">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+<span class="text-[9px] font-bold text-white/80">LIVE</span>
+</div>
+</div>
+<div class="relative z-10 my-4 h-16 w-full flex items-end gap-[2px] opacity-60 group-hover:opacity-100 transition-opacity">
+<!-- Generated bar chart visual (Monochrome) -->
+<div class="w-1 bg-white/10 h-[60%] rounded-t-sm"></div>
+<div class="w-1 bg-white/20 h-[80%] rounded-t-sm"></div>
+<div class="w-1 bg-white/30 h-[40%] rounded-t-sm"></div>
+<div class="w-1 bg-white/10 h-[70%] rounded-t-sm"></div>
+<div class="w-1 bg-white/40 h-[90%] rounded-t-sm"></div>
+<div class="w-1 bg-white/50 h-[100%] rounded-t-sm"></div>
+<div class="w-1 bg-white/20 h-[50%] rounded-t-sm"></div>
+<div class="w-1 bg-white/30 h-[75%] rounded-t-sm"></div>
+<div class="w-1 bg-white/10 h-[65%] rounded-t-sm"></div>
+<div class="w-1 bg-white/40 h-[85%] rounded-t-sm"></div>
+<div class="w-1 bg-white/50 h-[95%] rounded-t-sm"></div>
+<div class="w-1 bg-white/20 h-[55%] rounded-t-sm"></div>
+<div class="w-1 bg-white/60 h-[100%] rounded-t-sm"></div>
+<div class="w-1 bg-white/30 h-[80%] rounded-t-sm"></div>
+<div class="w-1 bg-white/10 h-[60%] rounded-t-sm"></div>
+<div class="w-1 bg-white/40 h-[90%] rounded-t-sm"></div>
+<div class="w-1 bg-white/70 h-[100%] rounded-t-sm"></div>
+<div class="w-1 bg-white h-[100%] rounded-t-sm shadow-[0_0_8px_rgba(255,255,255,0.3)]"></div>
+</div>
+<h3 class="text-4xl font-medium tracking-tight text-white mb-1 counter relative z-10" data-target="99.99">
+      99.99<span class="text-lg text-white/30">%</span>
+</h3>
+<p class="text-xs text-neutral-500 relative z-10">Last 30 days performance</p>
+</div>
+</div>
+</div>
+</section>
+<section class="relative z-10 pt-24 pb-24">
+<div class="group fade-in-up max-w-5xl mx-auto px-6 relative">
+<!-- Floating Element 1 (Top Right) -->
+<div class="absolute -top-6 -right-8 z-30 hidden lg:block transition-transform duration-700 ease-out hover:-translate-y-2">
+<div class="flex items-center gap-4 p-4 rounded-2xl bg-black/60 backdrop-blur-xl border border-white/10 shadow-2xl shadow-black/50 ring-1 ring-white/5">
+<div class="relative flex items-center justify-center w-10 h-10 rounded-xl bg-green-500/10 border border-green-500/20">
+<svg class="text-green-400" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg">
+<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+<path d="m9 11 3 3L22 4"></path>
+</svg>
+<div class="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-black animate-pulse">
+</div>
+</div>
+<div>
+<div class="text-sm font-medium text-white leading-none mb-1.5">Production Ready</div>
+<div class="flex items-center gap-2">
+<span class="text-xs text-white/40 font-mono">Build #2940</span>
+<span class="w-1 h-1 rounded-full bg-white/20"></span>
+<span class="text-xs text-green-400 font-mono">14ms</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Floating Element 2 (Left Side) -->
+<div class="absolute top-20 -left-12 z-30 hidden lg:block transition-transform duration-700 ease-out hover:translate-x-2">
+<div class="shadow-black/50 bg-black/60 w-48 border-white/10 border ring-white/5 ring-1 rounded-2xl p-5 shadow-2xl backdrop-blur-xl">
+<style>
+          @keyframes bar1 {
+
+            0%,
+            100% {
+              height: 40%
+            }
+
+            50% {
+              height: 70%
+            }
+          }
+
+          @keyframes bar2 {
+
+            0%,
+            100% {
+              height: 60%
+            }
+
+            50% {
+              height: 30%
+            }
+          }
+
+          @keyframes bar3 {
+
+            0%,
+            100% {
+              height: 30%
+            }
+
+            50% {
+              height: 60%
+            }
+          }
+
+          @keyframes bar4 {
+
+            0%,
+            100% {
+              height: 80%
+            }
+
+            50% {
+              height: 40%
+            }
+          }
+
+          @keyframes bar5 {
+
+            0%,
+            100% {
+              height: 100%
+            }
+
+            50% {
+              height: 60%
+            }
+          }
+
+          @keyframes bar6 {
+
+            0%,
+            100% {
+              height: 50%
+            }
+
+            50% {
+              height: 80%
+            }
+          }
+
+          @keyframes bar7 {
+
+            0%,
+            100% {
+              height: 30%
+            }
+
+            50% {
+              height: 50%
+            }
+          }
+        </style>
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<svg class="text-sky-400" fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 2v20"></path>
+<path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+</svg>
+<span class="text-[10px] font-medium text-white/60 tracking-wider uppercase">Network</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="relative flex h-1.5 w-1.5">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500"></span>
+</span>
+<span class="text-[10px] font-mono text-green-400">LIVE</span>
+</div>
+</div>
+<div class="flex items-end justify-between gap-1 h-10 mb-3">
+<div class="w-1.5 bg-white/10 rounded-full" style="animation: bar1 1.2s ease-in-out infinite"></div>
+<div class="w-1.5 bg-white/10 rounded-full" style="animation: bar2 1.5s ease-in-out infinite"></div>
+<div class="w-1.5 bg-white/20 rounded-full" style="animation: bar3 1.1s ease-in-out infinite"></div>
+<div class="w-1.5 bg-sky-500/50 rounded-full" style="animation: bar4 1.3s ease-in-out infinite"></div>
+<div class="w-1.5 bg-sky-500 rounded-full shadow-[0_0_10px_rgba(14,165,233,0.5)]" style="animation: bar5 1.4s ease-in-out infinite"></div>
+<div class="w-1.5 bg-white/10 rounded-full" style="animation: bar6 1.6s ease-in-out infinite"></div>
+<div class="w-1.5 bg-white/5 rounded-full" style="animation: bar7 1.8s ease-in-out infinite"></div>
+</div>
+<div class="flex justify-between items-center text-xs">
+<span class="text-white/40">Throughput</span>
+<span class="text-white font-mono">940/s</span>
+</div>
+</div>
+</div>
+<!-- Main Codebox Container -->
+<div class="relative z-20 group/codebox">
+<!-- Ghost Codebox 2 (furthest) -->
+<div class="pointer-events-none absolute inset-0 translate-x-6 -translate-y-6 rotate-[1.5deg] z-0 opacity-10 w-[95%] ml-auto rounded-2xl bg-[#0a0a0a] border border-white/5 backdrop-blur-sm transition-all duration-700 ease-out origin-top-right group-hover/codebox:opacity-30 group-hover/codebox:translate-x-10 group-hover/codebox:-translate-y-10 group-hover/codebox:rotate-2">
+<div class="w-full h-11 border-b border-white/5 bg-white/[0.02] rounded-t-2xl"></div>
+</div>
+<!-- Ghost Codebox 1 (middle) -->
+<div class="pointer-events-none absolute inset-0 translate-x-3 -translate-y-3 rotate-[0.75deg] z-10 opacity-20 w-[98%] ml-auto rounded-2xl bg-[#0c0c0c] border border-white/10 backdrop-blur-sm transition-all duration-500 ease-out origin-top-right group-hover/codebox:opacity-60 group-hover/codebox:translate-x-5 group-hover/codebox:-translate-y-5 group-hover/codebox:rotate-1">
+<div class="w-full h-11 border-b border-white/5 bg-white/[0.02] rounded-t-2xl"></div>
+</div>
+<!-- Main Active Codebox -->
+<div class="relative z-20 rounded-2xl bg-[#0c0c0c] border border-white/10 overflow-hidden shadow-2xl transition-transform duration-500 group-hover/codebox:scale-[1.005]">
+<div class="flex items-center justify-between px-4 py-3 bg-white/5 border-b border-white/5">
+<div class="flex gap-2">
+<div class="w-3 h-3 rounded-full bg-red-500/50"></div>
+<div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+<div class="w-3 h-3 rounded-full bg-green-500/50"></div>
+</div>
+<div class="text-[10px] font-mono text-white/40">zsh — 80x24</div>
+<div class="w-4"></div>
+</div>
+<div class="p-6 font-mono text-sm">
+<style>
+            @keyframes terminal-reveal {
+              0% {
+                opacity: 0;
+                transform: translateY(8px)
+              }
+
+              100% {
+                opacity: 1;
+                transform: translateY(0)
+              }
+            }
+
+            .term-line {
+              opacity: 0;
+              animation: terminal-reveal 0.4s ease-out forwards;
+            }
+          </style>
+<div class="mb-4 term-line" style="animation-delay: 0.2s">
+<span class="text-green-400">➜</span>
+<span class="text-cyan-300">~</span>
+<span class="text-white">sora init my-next-app</span>
+</div>
+<div class="mb-4 text-white/60 term-line" style="animation-delay: 0.8s">
+<div class="mb-1">Initializing project structure...</div>
+<div class="mb-1">Detected framework: Next.js 14</div>
+<div class="">Installing dependencies... <span class="text-green-400 ml-2">Done</span></div>
+</div>
+<div class="mb-4 term-line" style="animation-delay: 2.2s">
+<span class="text-green-400">➜</span>
+<span class="text-cyan-300">~/my-next-app</span>
+<span class="text-white">sora deploy --prod</span>
+</div>
+<div class="mb-4 text-white/60 term-line" style="animation-delay: 3s">
+<div class="mb-1">Building optimized production bundle...</div>
+<div class="mb-1 flex items-center gap-2">
+<span class="text-yellow-400">⚠</span>
+              Optimizing images (42 assets)
+            </div>
+<div class="mb-1">Encrypting environment variables...</div>
+<div>Uploading to Edge Network (12 regions)...</div>
+</div>
+<div class="mb-4 text-white term-line" style="animation-delay: 4.8s">
+<span class="text-green-400 mr-2">✔</span>
+            Deployment complete!
+            <span class="text-sky-400 underline decoration-sky-400/30 ml-2">https://my-next-app.sora.app</span>
+</div>
+<div class="flex items-center term-line" style="animation-delay: 5.5s">
+<span class="text-green-400 mr-2">➜</span>
+<span class="text-cyan-300 mr-2">~/my-next-app</span>
+<span class="w-2 h-4 bg-white/50 animate-pulse"></span>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-12 text-center relative z-10">
+<h2 class="text-3xl font-medium tracking-tight mb-4">Command the Cloud</h2>
+<p class="text-white/50">Full power from your terminal. CI/CD included.</p>
+</div>
+</div>
+</section>
+<section class="py-24 border-t border-white/5 bg-neutral-950 relative z-10">
+<div class="max-w-7xl mx-auto px-6">
+<div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+<div>
+<span class="text-sky-500 font-mono text-xs tracking-widest uppercase mb-2 block">
+              Incoming Transmissions
+            </span>
+<h2 class="text-3xl font-medium text-white">Developer Protocols</h2>
+</div>
+<button class="text-xs font-mono text-white/60 border border-white/10 px-4 py-2 rounded hover:bg-white/5 transition-colors">
+            VIEW_ALL_LOGS
+          </button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-white/[0.02] border border-white/5 p-6 rounded-none relative group hover:border-sky-500/30 transition-colors">
+<div class="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/20 group-hover:border-sky-500 transition-colors"></div>
+<div class="absolute top-0 right-0 w-2 h-2 border-t border-r border-white/20 group-hover:border-sky-500 transition-colors"></div>
+<div class="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-white/20 group-hover:border-sky-500 transition-colors"></div>
+<div class="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/20 group-hover:border-sky-500 transition-colors"></div>
+<div class="flex items-center gap-3 mb-4">
+<img alt="Dev" class="w-8 h-8 rounded-full grayscale opacity-70 object-cover" src="assets/b202409f-816e-4451-8ac9-bd0b04_e916b105cee3.webp"/>
+<div class="font-mono text-xs text-white/40">
+                ID:
+                <span class="text-white">DEV_294</span>
+</div>
+</div>
+<p class="text-sm text-white/70 mb-4 leading-relaxed">
+              "Sora's autonomous scaling handles our spikes without manual
+              intervention. It's like having a dedicated DevOps team in the
+              code."
+            </p>
+<div class="flex gap-2">
+<span class="text-[10px] bg-white/5 px-2 py-1 text-white/30 rounded">
+                CTO
+              </span>
+<span class="text-[10px] bg-white/5 px-2 py-1 text-white/30 rounded">
+                FINTECH
+              </span>
+</div>
+</div>
+<div class="bg-white/[0.02] border border-white/5 p-6 rounded-none relative group hover:border-sky-500/30 transition-colors">
+<div class="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/20 group-hover:border-sky-500 transition-colors"></div>
+<div class="absolute top-0 right-0 w-2 h-2 border-t border-r border-white/20 group-hover:border-sky-500 transition-colors"></div>
+<div class="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-white/20 group-hover:border-sky-500 transition-colors"></div>
+<div class="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/20 group-hover:border-sky-500 transition-colors"></div>
+<div class="flex items-center gap-3 mb-4">
+<img alt="Dev" class="w-8 h-8 rounded-full grayscale opacity-70 object-cover" src="assets/a9f2a6f7-f473-484f-9db4-504cae_d66be10cc3aa.webp"/>
+<div class="font-mono text-xs text-white/40">
+                ID:
+                <span class="text-white">ENG_882</span>
+</div>
+</div>
+<p class="text-sm text-white/70 mb-4 leading-relaxed">
+              "The neural interface prediction model reduced our build times by
+              80%. I can't imagine going back to standard CI tools."
+            </p>
+<div class="flex gap-2">
+<span class="text-[10px] bg-white/5 px-2 py-1 text-white/30 rounded">
+                LEAD
+              </span>
+<span class="text-[10px] bg-white/5 px-2 py-1 text-white/30 rounded">
+                SAAS
+              </span>
+</div>
+</div>
+<div class="bg-white/[0.02] border border-white/5 p-6 rounded-none relative group hover:border-sky-500/30 transition-colors">
+<div class="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/20 group-hover:border-sky-500 transition-colors"></div>
+<div class="absolute top-0 right-0 w-2 h-2 border-t border-r border-white/20 group-hover:border-sky-500 transition-colors"></div>
+<div class="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-white/20 group-hover:border-sky-500 transition-colors"></div>
+<div class="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/20 group-hover:border-sky-500 transition-colors"></div>
+<div class="flex items-center gap-3 mb-4">
+<img alt="Dev" class="w-8 h-8 rounded-full grayscale opacity-70 object-cover" src="assets/ca2dff12-04ff-4713-9404-e3cb60_87cde19ab04b.jpg"/>
+<div class="font-mono text-xs text-white/40">
+                ID:
+                <span class="text-white">SYS_001</span>
+</div>
+</div>
+<p class="text-sm text-white/70 mb-4 leading-relaxed">
+              "Latency dropped to near-zero. The edge propagation is instant.
+              Security is top-tier without configuration headaches."
+            </p>
+<div class="flex gap-2">
+<span class="text-[10px] bg-white/5 px-2 py-1 text-white/30 rounded">
+                ARCHITECT
+              </span>
+<span class="text-[10px] bg-white/5 px-2 py-1 text-white/30 rounded">
+                ECOMM
+              </span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-32 relative z-10 border-t border-white/5 overflow-hidden">
+<div class="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+<div class="max-w-7xl mr-auto ml-auto pr-6 pl-6 relative">
+<div class="mb-20 max-w-2xl">
+<h2 class="text-4xl md:text-5xl font-medium tracking-tight mb-6">
+            Neural Architecture
+          </h2>
+<p class="text-lg text-white/50 font-light leading-relaxed">
+            Our proprietary distributed state machine synchronizes data across
+            the globe in real-time. Built on a mesh of quantum-resistant nodes.
+          </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+<div class="relative h-[450px] w-full bg-[#0A0A0A] rounded-3xl border border-white/5 overflow-hidden group">
+<!-- Dynamic Background Grid -->
+<div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_80%)]"></div>
+<!-- Central Core Animation -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
+<div class="relative flex items-center justify-center w-32 h-32">
+<!-- Core Pulse -->
+<div class="absolute inset-0 rounded-full bg-white/5 animate-ping duration-[3s]"></div>
+<div class="absolute inset-0 rounded-full bg-white/5 blur-2xl"></div>
+<!-- Main Node -->
+<div class="relative w-24 h-24 bg-[#0A0A0A] rounded-full border border-white/10 flex items-center justify-center shadow-2xl z-10 backdrop-blur-xl">
+<iconify-icon class="text-white text-3xl" icon="solar:server-square-cloud-linear"></iconify-icon>
+</div>
+<!-- Orbital Rings -->
+<div class="absolute inset-0 -m-4 border border-white/5 rounded-full animate-[spin_12s_linear_infinite]">
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_10px_white]"></div>
+</div>
+<div class="absolute inset-0 -m-12 border border-dashed border-white/5 rounded-full animate-[spin_24s_linear_infinite_reverse]"></div>
+<div class="absolute inset-0 -m-20 border border-white/5 rounded-full opacity-30 animate-[spin_30s_linear_infinite]">
+<div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 bg-white/50 rounded-full"></div>
+</div>
+</div>
+</div>
+<!-- Satellite Nodes -->
+<!-- Node 1 -->
+<div class="absolute top-[15%] left-[15%] z-20 animate-[float_6s_ease-in-out_infinite]">
+<div class="w-12 h-12 bg-[#0A0A0A] rounded-xl border border-white/10 flex items-center justify-center shadow-lg backdrop-blur-md group/icon hover:border-white/30 transition-colors">
+<iconify-icon class="text-white/40 group-hover/icon:text-white transition-colors" icon="solar:database-linear"></iconify-icon>
+</div>
+</div>
+<!-- Node 2 -->
+<div class="absolute bottom-[20%] right-[15%] z-20 animate-[float_8s_ease-in-out_infinite_1s]">
+<div class="w-12 h-12 bg-[#0A0A0A] rounded-xl border border-white/10 flex items-center justify-center shadow-lg backdrop-blur-md group/icon hover:border-white/30 transition-colors">
+<iconify-icon class="text-white/40 group-hover/icon:text-white transition-colors" icon="solar:shield-check-linear"></iconify-icon>
+</div>
+</div>
+<!-- Node 3 -->
+<div class="absolute top-[25%] right-[10%] z-20 animate-[float_7s_ease-in-out_infinite_2s]">
+<div class="w-12 h-12 bg-[#0A0A0A] rounded-xl border border-white/10 flex items-center justify-center shadow-lg backdrop-blur-md group/icon hover:border-white/30 transition-colors">
+<iconify-icon class="text-white/40 group-hover/icon:text-white transition-colors" icon="solar:code-circle-linear"></iconify-icon>
+</div>
+</div>
+<!-- Connection Lines -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none">
+<defs>
+<lineargradient id="lineGrad" x1="0%" x2="100%" y1="0%" y2="0%">
+<stop offset="0%" stop-color="rgba(255,255,255,0.02)"></stop>
+<stop offset="50%" stop-color="rgba(255,255,255,0.15)"></stop>
+<stop offset="100%" stop-color="rgba(255,255,255,0.02)"></stop>
+</lineargradient>
+</defs>
+<line class="opacity-50" stroke="url(#lineGrad)" stroke-width="1" x1="50%" x2="18%" y1="50%" y2="18%"></line>
+<line class="opacity-50" stroke="url(#lineGrad)" stroke-width="1" x1="50%" x2="82%" y1="50%" y2="77%"></line>
+<line class="opacity-50" stroke="url(#lineGrad)" stroke-width="1" x1="50%" x2="87%" y1="50%" y2="28%"></line>
+</svg>
+<!-- Decorative ambient glow -->
+<div class="absolute top-0 right-0 w-64 h-64 bg-white/5 blur-[80px] pointer-events-none"></div>
+<div class="absolute bottom-0 left-0 w-64 h-64 bg-white/5 blur-[80px] pointer-events-none"></div>
+<style>
+              @keyframes float {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-10px); }
+              }
+            </style>
+</div>
+<div class="space-y-8">
+<div class="flex gap-5 group">
+<div class="flex border-white/[0.08] shrink-0 group-hover:bg-white/[0.08] group-hover:border-white/20 transition-all duration-300 bg-neutral-900 w-12 h-12 border rounded-full items-center justify-center">
+<span class="font-mono text-sm text-neutral-500 group-hover:text-white transition-colors">01</span>
+</div>
+<div class="">
+<h3 class="text-xl font-medium text-white mb-2 group-hover:text-sky-300 transition-colors">
+                  Edge Computation
+                </h3>
+<p class="text-white/50 text-sm leading-relaxed">
+                  Logic executes at the edge, closest to the user.
+                  <span class="text-white/80 font-mono text-xs border border-white/10 px-1.5 py-0.5 rounded bg-white/5">5ms</span>
+                  max latency guarantee.
+                </p>
+</div>
+</div>
+<div class="flex gap-5 group">
+<div class="flex border-white/[0.08] shrink-0 group-hover:bg-white/[0.08] group-hover:border-white/20 transition-all duration-300 bg-neutral-900 w-12 h-12 border rounded-full items-center justify-center">
+<span class="font-mono text-sm text-neutral-500 group-hover:text-white transition-colors">02</span>
+</div>
+<div class="">
+<h3 class="text-xl font-medium text-white mb-2 group-hover:text-purple-300 transition-colors">
+                  Atomic Replication
+                </h3>
+<p class="text-white/50 text-sm leading-relaxed">
+                  Data state is replicated atomically across regions. Conflict
+                  resolution handled by AI arbiters.
+                </p>
+</div>
+</div>
+<div class="flex gap-5 group">
+<div class="flex border-white/[0.08] shrink-0 group-hover:bg-white/[0.08] group-hover:border-white/20 transition-all duration-300 bg-neutral-900 w-12 h-12 border rounded-full items-center justify-center">
+<span class="font-mono text-sm text-neutral-500 group-hover:text-white transition-colors">03</span>
+</div>
+<div class="">
+<h3 class="text-xl font-medium text-white mb-2 group-hover:text-green-300 transition-colors">
+                  Self-Healing Mesh
+                </h3>
+<p class="text-white/50 text-sm leading-relaxed">
+                  Nodes automatically reroute traffic during outages. Zero
+                  downtime architecture.
+                </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Integration Slider (Simulated) -->
+<section class="border-y z-10 border-white/5 pt-20 pb-20 relative bg-white/[0.01]">
+<style>
+        @keyframes subtle-glow {
+            0%, 100% { opacity: 0.2; filter: grayscale(100%); transform: scale(0.95); }
+            50% { opacity: 1; filter: grayscale(0%); transform: scale(1.05); }
+        }
+      </style>
+<div class="max-w-7xl mx-auto px-6 text-center mb-16">
+<h2 class="text-3xl font-normal tracking-tight mb-4 text-white">
+          Integrates with everything
+        </h2>
+<p class="text-white/50 font-light">
+          Connect Sora to your existing workflow in seconds.
+        </p>
+</div>
+<div class="max-w-5xl mx-auto px-6">
+<div class="flex flex-wrap justify-center gap-12 md:gap-16 items-center">
+<!-- Github -->
+<div class="relative transition-all duration-500" style="animation: subtle-glow 4s ease-in-out infinite; animation-delay: 0s;">
+<iconify-icon icon="logos:github-icon" width="32"></iconify-icon>
+</div>
+<!-- Slack -->
+<div class="relative transition-all duration-500" style="animation: subtle-glow 4s ease-in-out infinite; animation-delay: 2.1s;">
+<iconify-icon icon="logos:slack-icon" width="32"></iconify-icon>
+</div>
+<!-- Figma -->
+<div class="relative transition-all duration-500" style="animation: subtle-glow 4s ease-in-out infinite; animation-delay: 1.2s;">
+<iconify-icon icon="logos:figma" width="32"></iconify-icon>
+</div>
+<!-- Linear -->
+<div class="relative transition-all duration-500" style="animation: subtle-glow 4s ease-in-out infinite; animation-delay: 3.5s;">
+<iconify-icon icon="logos:linear-icon" width="32"></iconify-icon>
+</div>
+<!-- Notion -->
+<div class="relative transition-all duration-500" style="animation: subtle-glow 4s ease-in-out infinite; animation-delay: 0.5s;">
+<iconify-icon icon="logos:notion-icon" width="32"></iconify-icon>
+</div>
+<!-- Stripe -->
+<div class="relative transition-all duration-500" style="animation: subtle-glow 4s ease-in-out infinite; animation-delay: 2.8s;">
+<iconify-icon icon="logos:stripe" width="32"></iconify-icon>
+</div>
+<!-- Vercel -->
+<div class="relative transition-all duration-500" style="animation: subtle-glow 4s ease-in-out infinite; animation-delay: 1.5s;">
+<iconify-icon icon="logos:vercel-icon" width="32"></iconify-icon>
+</div>
+<!-- React -->
+<div class="relative transition-all duration-500" style="animation: subtle-glow 4s ease-in-out infinite; animation-delay: 3.0s;">
+<iconify-icon icon="logos:react" width="32"></iconify-icon>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA Section -->
+<section class="py-32 px-6 relative z-10">
+<!-- Gradient Background -->
+<div class="bg-gradient-to-b from-black to-sky-950/20 absolute top-0 right-0 bottom-0 left-0"></div>
+<div class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-sky-500/50 to-transparent"></div>
+<div class="max-w-4xl mx-auto text-center relative">
+<div class="glow-point top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 !w-[500px] !h-[500px] opacity-20"></div>
+<h2 class="text-5xl md:text-6xl font-medium tracking-tight text-white mb-8">
+          Ready to
+          <span class="text-transparent bg-clip-text bg-gradient-to-b from-white to-white/40">
+            ship
+          </span>
+          ?
+        </h2>
+<p class="text-xl text-white/50 mb-10 font-light">
+      Join 200,000+ developers shipping faster with Sora.
+    </p>
+<div class="glass-panel p-1 rounded-full max-w-md mx-auto flex items-center relative">
+<input class="w-full bg-transparent border-none outline-none text-white px-6 py-3 text-sm placeholder:text-white/30" placeholder="Enter your email address" type="email"/>
+<button class="absolute right-1 top-1 bottom-1 px-6 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition-colors">
+            Get Access
+          </button>
+</div>
+<p class="mt-4 text-xs text-white/30">
+      14-day free trial • No credit card required
+    </p>
+</div>
+</section>
+<!-- Footer -->
+<footer class="overflow-hidden bg-black z-10 pt-20 pb-12 relative">
+<!-- Creative Top Border & Glow -->
+<div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent"></div>
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-2xl h-px bg-gradient-to-r from-transparent via-sky-500/40 to-transparent blur-[2px]"></div>
+<div class="absolute -top-[300px] left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-sky-900/10 blur-[100px] rounded-full pointer-events-none -z-10"></div>
+<div class="max-w-7xl mx-auto px-6 relative z-10">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 mb-16">
+<!-- Brand Section -->
+<div class="lg:col-span-4">
+<div class="flex items-center gap-3 mb-6">
+<div class="flex items-center justify-center w-8 h-8 rounded-lg bg-white/5 border border-white/10 shadow-[0_0_15px_-3px_rgba(255,255,255,0.05)]">
+<iconify-icon class="text-white" icon="lucide:infinity" width="18"></iconify-icon>
+</div>
+<span class="text-lg font-medium tracking-tight text-white">SoraStudio</span>
+</div>
+<p class="text-white/40 mb-8 max-w-sm leading-relaxed text-sm">
+    Designing the future of digital interaction through precision
+    engineering and human-centric design.
+  </p>
+<!-- Newsletter Input -->
+<div class="w-full max-w-xs relative">
+<div class="flex hover:bg-white/[0.05] focus-within:bg-white/[0.05] focus-within:border-white/20 transition-all border-white/10 border rounded-lg p-1 relative items-center">
+<input class="border-none outline-none placeholder:text-white/20 text-sm text-white bg-transparent w-full px-3 py-2" placeholder="Subscribe to changelog" type="email"/>
+<button class="p-1.5 rounded-md bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors flex-shrink-0">
+<iconify-icon icon="lucide:arrow-right" width="16"></iconify-icon>
+</button>
+</div>
+</div>
+</div>
+<!-- Links Grid -->
+<div class="lg:col-span-8 grid grid-cols-2 sm:grid-cols-3 gap-8 lg:pl-12">
+<div class="flex flex-col gap-4">
+<h4 class="font-medium text-white text-sm">Product</h4>
+<ul class="space-y-3 text-sm text-white/40">
+<li class="hover:text-white transition-colors cursor-pointer hover:translate-x-0.5 transform duration-200">Features</li>
+<li class="hover:text-white transition-colors cursor-pointer hover:translate-x-0.5 transform duration-200">Integrations</li>
+<li class="hover:text-white transition-colors cursor-pointer hover:translate-x-0.5 transform duration-200">Pricing</li>
+<li class="hover:text-white transition-colors cursor-pointer hover:translate-x-0.5 transform duration-200 flex items-center gap-2">
+              Changelog 
+              <span class="text-[10px] font-medium text-sky-400 bg-sky-500/10 border-sky-500/20 border rounded-full pt-0.5 pr-1.5 pb-0.5 pl-1.5 flex-none">New</span>
+</li>
+</ul>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="font-medium text-white text-sm">Resources</h4>
+<ul class="space-y-3 text-sm text-white/40">
+<li class="hover:text-white transition-colors cursor-pointer hover:translate-x-0.5 transform duration-200">Documentation</li>
+<li class="hover:text-white transition-colors cursor-pointer hover:translate-x-0.5 transform duration-200">API Reference</li>
+<li class="hover:text-white transition-colors cursor-pointer hover:translate-x-0.5 transform duration-200">Community</li>
+<li class="hover:text-white transition-colors cursor-pointer hover:translate-x-0.5 transform duration-200">Help Center</li>
+</ul>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="font-medium text-white text-sm">Company</h4>
+<ul class="space-y-3 text-sm text-white/40">
+<li class="hover:text-white transition-colors cursor-pointer hover:translate-x-0.5 transform duration-200">About</li>
+<li class="hover:text-white transition-colors cursor-pointer hover:translate-x-0.5 transform duration-200">Blog</li>
+<li class="hover:text-white transition-colors cursor-pointer hover:translate-x-0.5 transform duration-200">Careers</li>
+<li class="hover:text-white transition-colors cursor-pointer hover:translate-x-0.5 transform duration-200">Legal</li>
+</ul>
+</div>
+</div>
+</div>
+<!-- Footer Bottom -->
+<div class="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-white/5 gap-6">
+<div class="flex flex-col sm:flex-row items-center gap-6 text-xs text-white/30">
+<span class="">© 2024 SoraStudio Inc. All rights reserved.</span>
+<div class="flex gap-6">
+<a class="hover:text-white transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-white transition-colors" href="#">Terms of Service</a>
+</div>
+</div>
+<!-- Social Icons & Back to Top -->
+<div class="flex items-center gap-4">
+<a class="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 border border-white/5 text-white/40 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all duration-300" href="#">
+<iconify-icon icon="lucide:twitter" width="16"></iconify-icon>
+</a>
+<a class="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 border border-white/5 text-white/40 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all duration-300" href="#">
+<iconify-icon icon="lucide:github" width="16"></iconify-icon>
+</a>
+<a class="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 border border-white/5 text-white/40 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all duration-300" href="#">
+<iconify-icon icon="lucide:linkedin" width="16"></iconify-icon>
+</a>
+<a class="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 border border-white/5 text-white/40 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all duration-300" href="#">
+<iconify-icon icon="simple-icons:discord" width="16"></iconify-icon>
+</a>
+<!-- Divider & Top Arrow Button -->
+<div class="w-px h-4 bg-white/10 mx-1"></div>
+<button aria-label="Back to top" class="flex hover:text-white hover:bg-white/10 hover:border-white/20 transition-all duration-300 text-white/40 bg-white/5 w-8 h-8 border-white/5 border rounded-lg items-center justify-center" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+<iconify-icon class="" height="16" icon="lucide:arrow-up" style="color: rgb(255, 255, 255)" width="16"></iconify-icon>
+</button>
+</div>
+</div>
+</div>
+</footer>
+<!-- Scripts -->
+<script>
+      document.addEventListener('DOMContentLoaded', () => {
+          // Typing Animation
+          const textToType = "setStatus('active');";
+          const typingElement = document.getElementById('typing-text');
+          let index = 0;
+
+          function typeWriter() {
+              if (index < textToType.length) {
+                  typingElement.innerHTML += textToType.charAt(index);
+                  index++;
+                  setTimeout(typeWriter, 100);
+              } else {
+                  setTimeout(() => {
+                      typingElement.innerHTML = "";
+                      index = 0;
+                      typeWriter();
+                  }, 3000);
+              }
+          }
+
+          // Start typing delay
+          setTimeout(typeWriter, 1000);
+
+          // Counter Animation
+          const counters = document.querySelectorAll('.counter');
+          const observer = new IntersectionObserver((entries) => {
+              entries.forEach(entry => {
+                  if (entry.isIntersecting) {
+                      const counter = entry.target;
+                      const target = parseFloat(counter.getAttribute('data-target'));
+                      const duration = 2000;
+                      const start = performance.now();
+
+                      function step(timestamp) {
+                          const progress = Math.min((timestamp - start) / duration, 1);
+                          // Ease out quart
+                          const ease = 1 - Math.pow(1 - progress, 4);
+
+                          counter.innerText = (target * ease).toFixed(2) + "%";
+
+                          if (progress < 1) {
+                              window.requestAnimationFrame(step);
+                          } else {
+                              counter.innerText = target + "%";
+                          }
+                      }
+
+                      window.requestAnimationFrame(step);
+                      observer.unobserve(counter);
+                  }
+              });
+          }, { threshold: 0.5 });
+
+          counters.forEach(c => observer.observe(c));
+      });
+    </script>
+<script data-img-fallback-handler="">!function(){var f=["https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/917d6f93-fb36-439a-8c48-884b67b35381_1600w.jpg","https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/4734259a-bad7-422f-981e-ce01e79184f2_1600w.jpg","https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/c543a9e1-f226-4ced-80b0-feb8445a75b9_1600w.jpg","https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/5bab247f-35d9-400d-a82b-fd87cfe913d2_1600w.webp","https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/30104e3c-5eea-4b93-93e9-5313698a7156_1600w.webp"],h=new Set;function g(s){for(var x=0,i=0;i<s.length;i++)x=(x<<5)-x+s.charCodeAt(i)|0;return f[Math.abs(x)%f.length]}function r(t){var s=t.src;if(s&&!h.has(s)){h.add(s);t.src=g(s)}}window.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG")r(t)},!0);function c(){document.querySelectorAll("img").forEach(function(i){if(i.complete&&!i.naturalWidth&&i.src)r(i)})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",c);else c()}()</script></body></html>

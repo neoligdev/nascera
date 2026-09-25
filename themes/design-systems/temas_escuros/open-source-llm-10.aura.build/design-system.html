@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Design System — Langfuse Pattern Library</title>
+<link href="assets/css2_1aa00095e743.css" rel="stylesheet"/>
+<script src="assets/iconify-icon_e19829e7f0e8.js"></script>
+<script src="assets/resource_3fa48481346f.es"></script>
+<style>
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #020205;
+}
+.font-mono {
+  font-family: 'Space Mono', monospace;
+}
+/* Enhanced Glass Effect */
+.glass-panel {
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.07) 0%,
+    rgba(255, 255, 255, 0.03) 40%,
+    rgba(255, 255, 255, 0.01) 100%
+  );
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(50px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-left: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.2),
+    0 20px 60px -10px rgba(0, 0, 0, 0.6),
+    inset 0 0 40px rgba(255, 255, 255, 0.02);
+}
+/* Hide Scrollbar but allow scrolling */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+/* Blobs */
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.6;
+  z-index: -1;
+  animation: drift 10s infinite alternate ease-in-out;
+}
+.blob-1 { background: #4f46e5; width: 600px; height: 600px; top: -10%; left: -10%; }
+.blob-2 { background: #db2777; width: 500px; height: 500px; bottom: -10%; right: -5%; animation-delay: -5s; }
+.blob-3 { background: #0ea5e9; width: 400px; height: 400px; top: 40%; left: 30%; opacity: 0.3; }
+@keyframes drift {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(30px, 50px); }
+}
+.text-glow { text-shadow: 0 0 40px rgba(255, 255, 255, 0.3); }
+/* Button Interactions */
+.icon-btn {
+  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px -5px rgba(0,0,0,0.5);
+}
+.icon-btn.active {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.15);
+}
+.stat-value { letter-spacing: -0.06em; }
+/* Animations */
+.tab-content { animation: fadeIn 0.5s ease-out forwards; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+/* Feature Reveal Animation */
+.feature-card {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.feature-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.check-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  color: #4ade80;
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+}
+/* DS-specific structural helpers — no new visual design */
+.ds-type-row {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 1.75rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.ds-type-row:last-child { border-bottom: none; }
+.ds-type-name {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: rgba(255,255,255,0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  width: 130px;
+  flex-shrink: 0;
+}
+.ds-type-spec {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: rgba(255,255,255,0.25);
+  white-space: nowrap;
+  text-align: right;
+  flex-shrink: 0;
+}
+.ds-swatch {
+  border-radius: 1rem;
+  height: 80px;
+}
+.ds-mini-blob {
+  position: absolute;
+  border-radius: 50%;
+  animation: drift 10s infinite alternate ease-in-out;
+}
+</style>
+</head>
+<body class="h-screen w-full flex items-start justify-center relative selection:bg-indigo-500/30">
+
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="blob blob-3"></div>
+<div class="fixed inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-150 contrast-150 pointer-events-none mix-blend-overlay"></div>
+<div class="fixed inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:100px_100px] pointer-events-none"></div>
+
+<div class="relative w-[96vw] max-w-[1700px] h-[94vh] transition-all duration-700">
+<div class="glass-panel w-full h-full rounded-[3rem] relative overflow-y-auto no-scrollbar scroll-smooth" id="main-scroll-container">
+<div class="absolute inset-0 w-full h-full bg-gradient-to-br from-white/5 via-transparent to-transparent pointer-events-none z-0"></div>
+
+<!-- ─── STICKY HEADER / DS NAV ─── -->
+<div class="sticky top-0 z-50 px-6 sm:px-12 lg:px-16 pt-12 pb-4 bg-gradient-to-b from-[#020205]/80 to-transparent backdrop-blur-sm">
+<div class="flex justify-between items-center border-b border-white/5 pb-8">
+  <!-- Brand -->
+  <div class="flex items-center gap-3">
+    <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+      <iconify-icon class="text-black" icon="solar:infinity-bold" width="24"></iconify-icon>
+    </div>
+    <span class="text-2xl text-white font-medium tracking-tight">Design System</span>
+  </div>
+  <!-- DS Navigation -->
+  <nav class="hidden md:flex items-center gap-1 bg-white/5 p-1.5 rounded-full border border-white/10 backdrop-blur-md shadow-lg">
+    <button class="px-4 py-2 rounded-full text-white text-sm font-medium bg-white/10 shadow-inner hover:bg-white/20 transition-all" onclick="scrollToTop()">Hero</button>
+    <button class="px-4 py-2 rounded-full text-white/60 hover:text-white hover:bg-white/5 text-sm font-medium transition-all" onclick="scrollToSection('typography')">Type</button>
+    <button class="px-4 py-2 rounded-full text-white/60 hover:text-white hover:bg-white/5 text-sm font-medium transition-all" onclick="scrollToSection('colors')">Colors</button>
+    <button class="px-4 py-2 rounded-full text-white/60 hover:text-white hover:bg-white/5 text-sm font-medium transition-all" onclick="scrollToSection('components')">Components</button>
+    <button class="px-4 py-2 rounded-full text-white/60 hover:text-white hover:bg-white/5 text-sm font-medium transition-all" onclick="scrollToSection('layout')">Layout</button>
+    <button class="px-4 py-2 rounded-full text-white/60 hover:text-white hover:bg-white/5 text-sm font-medium transition-all" onclick="scrollToSection('motion')">Motion</button>
+    <button class="px-4 py-2 rounded-full text-white/60 hover:text-white hover:bg-white/5 text-sm font-medium transition-all" onclick="scrollToSection('icons')">Icons</button>
+  </nav>
+  <!-- Header Actions -->
+  <div class="flex items-center gap-4">
+    <div class="hidden lg:flex items-center gap-2 bg-black/30 px-4 py-2 rounded-full border border-white/5">
+      <iconify-icon class="text-amber-400" icon="solar:star-bold" width="16"></iconify-icon>
+      <span class="text-sm text-white font-mono">v1.0</span>
+    </div>
+    <div class="w-px h-6 bg-white/10 hidden lg:block"></div>
+    <button class="text-white/60 hover:text-white transition-colors">
+      <iconify-icon icon="solar:user-circle-linear" width="28"></iconify-icon>
+    </button>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 0: HERO — Exact clone, text adapted
+═══════════════════════════════════════════════════════════ -->
+<div class="min-h-[calc(90vh-140px)] px-6 sm:px-12 lg:px-16 flex flex-col justify-between pb-12 relative z-10" id="hero">
+  <div class="flex flex-col lg:flex-row justify-between lg:items-end mt-8 gap-4">
+    <div>
+      <h1 class="text-5xl lg:text-7xl text-white font-medium tracking-tighter mb-4 text-glow drop-shadow-2xl leading-[1.1]">The design system<br/> and pattern library.</h1>
+    </div>
+    <div class="flex flex-col items-start lg:items-end gap-2 mb-2">
+      <div class="flex items-center gap-2">
+        <div class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.8)] animate-pulse"></div>
+        <span class="text-xs font-mono text-emerald-400/80 tracking-widest uppercase">Components Ready</span>
+      </div>
+      <div class="flex gap-2">
+        <span class="px-3 py-1 rounded bg-white/5 border border-white/10 text-white/60 text-[10px] font-mono">INTER</span>
+        <span class="px-3 py-1 rounded bg-white/5 border border-white/10 text-white/60 text-[10px] font-mono">SPACE MONO</span>
+      </div>
+    </div>
+  </div>
+  <!-- Central Content -->
+  <div class="flex flex-col lg:flex-row flex-grow items-start lg:items-center gap-8 lg:gap-12 z-10 my-12">
+    <div class="flex lg:flex-col gap-4">
+      <button class="icon-btn active w-20 h-20 lg:w-24 lg:h-24 rounded-[1.5rem] flex flex-col gap-2 items-center justify-center text-white group" onclick="switchTab('trace', this)">
+        <iconify-icon class="group-hover:scale-110 transition-transform duration-300" height="32" icon="solar:code-square-linear" width="32"></iconify-icon>
+        <span class="text-[10px] font-mono tracking-widest opacity-70">TRACE</span>
+      </button>
+      <button class="icon-btn w-20 h-20 lg:w-24 lg:h-24 rounded-[1.5rem] flex flex-col gap-2 items-center justify-center text-white/40 hover:text-white group" onclick="switchTab('evals', this)">
+        <iconify-icon class="group-hover:scale-110 transition-transform duration-300" height="32" icon="solar:chart-2-linear" width="32"></iconify-icon>
+        <span class="text-[10px] font-mono tracking-widest opacity-70">EVALS</span>
+      </button>
+      <button class="icon-btn w-20 h-20 lg:w-24 lg:h-24 rounded-[1.5rem] flex flex-col gap-2 items-center justify-center text-white/40 hover:text-white group" onclick="switchTab('demo', this)">
+        <iconify-icon class="group-hover:scale-110 transition-transform duration-300" height="32" icon="solar:play-circle-linear" width="32"></iconify-icon>
+        <span class="text-[10px] font-mono tracking-widest opacity-70">DEMO</span>
+      </button>
+    </div>
+    <div class="flex-grow w-full h-full min-h-[400px] relative">
+      <!-- TAB 1: TRACE -->
+      <div class="tab-content grid md:grid-cols-3 gap-6 h-full absolute inset-0" id="tab-trace">
+        <div class="bg-white/[0.03] border border-white/5 rounded-[2.5rem] p-8 flex flex-col justify-between hover:bg-white/[0.06] transition-colors duration-500 group relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-500/20 blur-[60px] rounded-full group-hover:bg-indigo-500/30 transition-all"></div>
+          <div class="relative z-10">
+            <div class="flex justify-between items-start mb-4">
+              <iconify-icon class="text-white/40" icon="solar:eye-linear" width="32"></iconify-icon>
+              <span class="text-xs font-mono text-indigo-300 bg-indigo-500/10 px-2 py-1 rounded border border-indigo-500/20">TYPE</span>
+            </div>
+            <div class="text-lg text-white/80 font-medium mb-1">Typography</div>
+            <p class="text-white/40 text-sm font-light leading-relaxed">Inter & Space Mono. Scale, weight, and spacing tokens documented.</p>
+          </div>
+          <div class="text-6xl lg:text-7xl text-white font-light stat-value mt-2 group-hover:text-indigo-200 transition-colors">Aa<span class="text-3xl text-white/30 ml-1">Bb</span></div>
+        </div>
+        <div class="bg-white/[0.03] border border-white/5 rounded-[2.5rem] p-8 flex flex-col justify-between hover:bg-white/[0.06] transition-colors duration-500 group relative overflow-hidden">
+          <div class="absolute bottom-0 left-0 w-32 h-32 bg-emerald-500/20 blur-[60px] rounded-full group-hover:bg-emerald-500/30 transition-all"></div>
+          <div class="relative z-10">
+            <div class="flex justify-between items-start mb-4">
+              <iconify-icon class="text-white/40" icon="solar:server-square-linear" width="32"></iconify-icon>
+              <span class="text-xs font-mono text-emerald-300 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20">COLOR</span>
+            </div>
+            <div class="text-lg text-white/80 font-medium mb-1">Color System</div>
+            <p class="text-white/40 text-sm font-light leading-relaxed">Dark surfaces, glassmorphism, and accent gradients catalogued.</p>
+          </div>
+          <div class="text-6xl lg:text-7xl text-white font-light stat-value mt-2 group-hover:text-emerald-200 transition-colors">7<span class="text-3xl text-white/30 ml-1">hues</span></div>
+        </div>
+        <div class="bg-white/[0.03] border border-white/5 rounded-[2.5rem] p-8 flex flex-col justify-between hover:bg-white/[0.06] transition-colors duration-500 group relative overflow-hidden">
+          <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-pink-500/20 blur-[60px] rounded-full group-hover:bg-pink-500/30 transition-all"></div>
+          <div class="relative z-10">
+            <div class="flex justify-between items-start mb-4">
+              <iconify-icon class="text-white/40" icon="solar:cloud-linear" width="32"></iconify-icon>
+              <span class="text-xs font-mono text-pink-300 bg-pink-500/10 px-2 py-1 rounded border border-pink-500/20">MOTION</span>
+            </div>
+            <div class="text-lg text-white/80 font-medium mb-1">Motion System</div>
+            <p class="text-white/40 text-sm font-light leading-relaxed">Drift, fadeIn, reveal, hover lift, and scroll animations.</p>
+          </div>
+          <div class="text-6xl lg:text-7xl text-white font-light stat-value mt-2 group-hover:text-pink-200 transition-colors">5<span class="text-3xl text-white/30 ml-1">anims</span></div>
+        </div>
+      </div>
+      <!-- TAB 2: EVALS -->
+      <div class="tab-content grid md:grid-cols-3 gap-6 h-full absolute inset-0 hidden" id="tab-evals">
+        <div class="bg-white/[0.03] border border-white/5 rounded-[2.5rem] p-8 flex flex-col justify-between hover:bg-white/[0.06] transition-colors duration-500 group relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-amber-500/20 blur-[60px] rounded-full group-hover:bg-amber-500/30 transition-all"></div>
+          <div class="relative z-10">
+            <div class="flex justify-between items-start mb-4">
+              <iconify-icon class="text-white/40" icon="solar:magic-stick-3-linear" width="32"></iconify-icon>
+              <span class="text-xs font-mono text-amber-300 bg-amber-500/10 px-2 py-1 rounded border border-amber-500/20">BTN</span>
+            </div>
+            <div class="text-lg text-white/80 font-medium mb-1">Buttons</div>
+            <p class="text-white/40 text-sm font-light leading-relaxed">Icon buttons, pill nav, primary CTA, and secondary actions.</p>
+          </div>
+          <div class="text-6xl lg:text-7xl text-white font-light stat-value mt-2 group-hover:text-amber-200 transition-colors">3<span class="text-3xl text-white/30 ml-1">types</span></div>
+        </div>
+        <div class="bg-white/[0.03] border border-white/5 rounded-[2.5rem] p-8 flex flex-col justify-between hover:bg-white/[0.06] transition-colors duration-500 group relative overflow-hidden">
+          <div class="absolute bottom-0 left-0 w-32 h-32 bg-cyan-500/20 blur-[60px] rounded-full group-hover:bg-cyan-500/30 transition-all"></div>
+          <div class="relative z-10">
+            <div class="flex justify-between items-start mb-4">
+              <iconify-icon class="text-white/40" icon="solar:users-group-two-rounded-linear" width="32"></iconify-icon>
+              <span class="text-xs font-mono text-cyan-300 bg-cyan-500/10 px-2 py-1 rounded border border-cyan-500/20">CARD</span>
+            </div>
+            <div class="text-lg text-white/80 font-medium mb-1">Cards</div>
+            <p class="text-white/40 text-sm font-light leading-relaxed">Stat cards, feature cards, pricing tiers, and doc links.</p>
+          </div>
+          <div class="text-6xl lg:text-7xl text-white font-light stat-value mt-2 group-hover:text-cyan-200 transition-colors">4<span class="text-3xl text-white/30 ml-1">styles</span></div>
+        </div>
+        <div class="bg-white/[0.03] border border-white/5 rounded-[2.5rem] p-8 flex flex-col justify-between hover:bg-white/[0.06] transition-colors duration-500 group relative overflow-hidden">
+          <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-purple-500/20 blur-[60px] rounded-full group-hover:bg-purple-500/30 transition-all"></div>
+          <div class="relative z-10">
+            <div class="flex justify-between items-start mb-4">
+              <iconify-icon class="text-white/40" icon="solar:database-linear" width="32"></iconify-icon>
+              <span class="text-xs font-mono text-purple-300 bg-purple-500/10 px-2 py-1 rounded border border-purple-500/20">ICON</span>
+            </div>
+            <div class="text-lg text-white/80 font-medium mb-1">Icons</div>
+            <p class="text-white/40 text-sm font-light leading-relaxed">Solar icon set via Iconify. Linear and bold weight variants.</p>
+          </div>
+          <div class="text-6xl lg:text-7xl text-white font-light stat-value mt-2 group-hover:text-purple-200 transition-colors">25<span class="text-3xl text-white/30 ml-1">icons</span></div>
+        </div>
+      </div>
+      <!-- TAB 3: DEMO -->
+      <div class="tab-content w-full h-full absolute inset-0 hidden" id="tab-demo">
+        <div class="w-full h-full bg-[#0d0d12] border border-white/10 rounded-[2.5rem] p-8 relative overflow-hidden flex flex-col">
+          <div class="flex items-center justify-between mb-6 border-b border-white/5 pb-4">
+            <div class="flex items-center gap-2">
+              <div class="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/50"></div>
+              <div class="w-3 h-3 rounded-full bg-yellow-500/20 border border-yellow-500/50"></div>
+              <div class="w-3 h-3 rounded-full bg-green-500/20 border border-green-500/50"></div>
+            </div>
+            <div class="text-xs font-mono text-white/30">design-system — bash — 80x24</div>
+          </div>
+          <div class="font-mono text-sm text-white/80 space-y-2 overflow-hidden">
+            <div class="flex gap-2"><span class="text-emerald-400">➜</span><span class="text-white/50">~</span> <span class="text-white">npm install langfuse</span></div>
+            <div class="text-white/30 text-xs pb-2">added 4 packages in 0.4s</div>
+            <div class="flex gap-2"><span class="text-emerald-400">➜</span><span class="text-white/50">~</span> <span class="text-white">export LANGFUSE_PUBLIC_KEY="pk-lf-..."</span></div>
+            <div class="flex gap-2"><span class="text-emerald-400">➜</span><span class="text-white/50">~</span> <span class="text-white">node design_system.js</span></div>
+            <div class="pt-2 pl-4 border-l-2 border-white/10 space-y-1">
+              <div class="text-blue-400">INFO: <span class="text-white/70">Loading design tokens...</span></div>
+              <div class="text-blue-400">INFO: <span class="text-white/70">Compiling pattern library: <span class="text-yellow-200">"design-system2.html"</span></span></div>
+              <div class="text-blue-400">INFO: <span class="text-white/70">25 icons · 7 color tokens · 5 animations (0.12s)</span></div>
+              <div class="text-emerald-400">SUCCESS: <span class="text-white/70">Pattern library compiled. Open at:</span></div>
+              <a class="text-indigo-400 underline decoration-indigo-400/30 underline-offset-4" href="#">./design-system2.html</a>
+            </div>
+            <div class="flex gap-2 pt-2"><span class="text-emerald-400">➜</span><span class="text-white/50">~</span> <span class="w-2 h-4 bg-white/50 animate-pulse inline-block align-middle"></span></div>
+          </div>
+          <div class="absolute bottom-0 right-0 w-64 h-64 bg-emerald-500/10 blur-[80px] pointer-events-none"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="flex items-end justify-between z-10 pt-4 border-t border-white/5">
+    <div class="w-full md:w-1/2 bg-black/20 h-20 rounded-2xl border border-white/10 flex items-center justify-between px-6 relative overflow-hidden group cursor-pointer backdrop-blur-sm">
+      <div class="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+      <div class="flex items-center gap-4 z-10">
+        <iconify-icon class="text-white/60" icon="solar:terminal-linear" width="24"></iconify-icon>
+        <div class="flex flex-col">
+          <span class="font-mono text-xs text-white/40 mb-1">EXPLORE</span>
+          <span class="font-mono text-lg text-white/90">Scroll to discover</span>
+        </div>
+      </div>
+      <div class="h-8 w-px bg-white/10 mx-2 hidden sm:block"></div>
+      <div class="hidden sm:flex items-center gap-2 z-10 opacity-60 grayscale group-hover:grayscale-0 transition-all duration-500">
+        <iconify-icon class="text-white" icon="solar:box-minimalistic-linear" width="20"></iconify-icon>
+        <span class="font-mono text-base text-white">7 Sections</span>
+      </div>
+    </div>
+    <div class="hidden md:flex flex-col items-end gap-3 pb-1">
+      <button class="group flex items-center gap-3 text-white/60 hover:text-white text-sm font-medium transition-colors py-2 animate-bounce" onclick="scrollToSection('typography')">
+        <span>Scroll</span>
+        <iconify-icon icon="solar:arrow-down-linear" width="16"></iconify-icon>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 1: TYPOGRAPHY
+═══════════════════════════════════════════════════════════ -->
+<div class="px-6 sm:px-12 lg:px-16 pt-32 pb-24 relative z-10 border-t border-white/5" id="typography">
+  <div class="flex flex-col items-center mb-16 text-center feature-card">
+    <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-indigo-300 text-[10px] font-mono tracking-widest uppercase mb-4">01 — Typography</span>
+    <h2 class="text-4xl md:text-5xl text-white font-medium tracking-tight text-glow mb-6">Type scale & hierarchy.</h2>
+  </div>
+  <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-8 feature-card">
+    <!-- Heading 1 -->
+    <div class="ds-type-row">
+      <span class="ds-type-name">Heading 1</span>
+      <h1 class="text-5xl lg:text-7xl text-white font-medium tracking-tighter text-glow drop-shadow-2xl leading-[1.1] flex-1">Design Systems</h1>
+      <span class="ds-type-spec">72px / 1.1 · Inter 500 · tracking-tighter · glow</span>
+    </div>
+    <!-- Heading 2 -->
+    <div class="ds-type-row">
+      <span class="ds-type-name">Heading 2</span>
+      <h2 class="text-4xl md:text-5xl text-white font-medium tracking-tight text-glow flex-1">Pattern Library</h2>
+      <span class="ds-type-spec">48px / 1.25 · Inter 500 · tracking-tight · glow</span>
+    </div>
+    <!-- Heading 3 -->
+    <div class="ds-type-row">
+      <span class="ds-type-name">Heading 3</span>
+      <h3 class="text-white text-lg font-medium flex-1">Component Name</h3>
+      <span class="ds-type-spec">18px / 1.5 · Inter 500</span>
+    </div>
+    <!-- Heading 4 -->
+    <div class="ds-type-row">
+      <span class="ds-type-name">Heading 4</span>
+      <h4 class="text-white font-medium flex-1">Documentation Section</h4>
+      <span class="ds-type-spec">16px / 1.5 · Inter 500</span>
+    </div>
+    <!-- Stat Value -->
+    <div class="ds-type-row">
+      <span class="ds-type-name">Stat Value</span>
+      <div class="text-6xl lg:text-7xl text-white font-light stat-value flex-1">100<span class="text-3xl text-white/30 ml-1">%</span></div>
+      <span class="ds-type-spec">72px / 1 · Inter 300 · tracking −0.06em</span>
+    </div>
+    <!-- Bold M -->
+    <div class="ds-type-row">
+      <span class="ds-type-name">Bold M</span>
+      <div class="text-lg text-white/80 font-medium flex-1">Observability Platform</div>
+      <span class="ds-type-spec">18px / 1.5 · Inter 500 · white/80</span>
+    </div>
+    <!-- Regular S -->
+    <div class="ds-type-row">
+      <span class="ds-type-name">Regular S</span>
+      <p class="text-white/40 text-sm font-light leading-relaxed flex-1">Detailed traces for every request. Debug complex chains in seconds with visual tooling and full execution graphs.</p>
+      <span class="ds-type-spec">14px / 1.625 · Inter 300 · white/40</span>
+    </div>
+    <!-- Regular M -->
+    <div class="ds-type-row">
+      <span class="ds-type-name">Regular M</span>
+      <div class="text-white/70 text-sm flex-1">50k traces per month included in all paid plans.</div>
+      <span class="ds-type-spec">14px / 1.5 · Inter 400 · white/70</span>
+    </div>
+    <!-- Mono L -->
+    <div class="ds-type-row">
+      <span class="ds-type-name">Mono L</span>
+      <span class="font-mono text-lg text-white/90 flex-1">npm install langfuse</span>
+      <span class="ds-type-spec">18px / 1.5 · Space Mono · white/90</span>
+    </div>
+    <!-- Mono S -->
+    <div class="ds-type-row">
+      <span class="ds-type-name">Mono S</span>
+      <span class="font-mono text-xs text-white/40 flex-1">GET STARTED</span>
+      <span class="ds-type-spec">12px / 1.5 · Space Mono · white/40</span>
+    </div>
+    <!-- Badge Label -->
+    <div class="ds-type-row">
+      <span class="ds-type-name">Badge Label</span>
+      <span class="text-[10px] font-mono text-indigo-300 tracking-widest uppercase flex-1">Platform capabilities</span>
+      <span class="ds-type-spec">10px / 1.5 · Space Mono · uppercase · tracking-widest</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 2: COLORS & SURFACES
+═══════════════════════════════════════════════════════════ -->
+<div class="px-6 sm:px-12 lg:px-16 py-24 relative z-10 border-t border-white/5 bg-black/20" id="colors">
+  <div class="flex flex-col items-center mb-16 text-center feature-card">
+    <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-emerald-300 text-[10px] font-mono tracking-widest uppercase mb-4">02 — Colors & Surfaces</span>
+    <h2 class="text-4xl md:text-5xl text-white font-medium tracking-tight text-glow mb-6">Color & surface system.</h2>
+  </div>
+
+  <!-- Backgrounds -->
+  <h3 class="text-white text-lg font-medium mb-6 feature-card">Backgrounds & Surfaces</h3>
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16 feature-card">
+    <div>
+      <div class="ds-swatch mb-3 border border-white/10" style="background:#020205;"></div>
+      <div class="font-mono text-[10px] text-white/40 uppercase tracking-widest mb-1">Page BG</div>
+      <div class="font-mono text-xs text-white/60">#020205</div>
+      <div class="font-mono text-[10px] text-white/25 mt-1">body background-color</div>
+    </div>
+    <div>
+      <div class="ds-swatch mb-3 glass-panel" style="border-radius:1rem;"></div>
+      <div class="font-mono text-[10px] text-white/40 uppercase tracking-widest mb-1">Glass Panel</div>
+      <div class="font-mono text-xs text-white/60">backdrop-blur(50px)</div>
+      <div class="font-mono text-[10px] text-white/25 mt-1">main card container</div>
+    </div>
+    <div>
+      <div class="ds-swatch mb-3 border border-white/5" style="background:rgba(255,255,255,0.03);border-radius:1rem;"></div>
+      <div class="font-mono text-[10px] text-white/40 uppercase tracking-widest mb-1">Card Surface</div>
+      <div class="font-mono text-xs text-white/60">white/[0.03]</div>
+      <div class="font-mono text-[10px] text-white/25 mt-1">stat cards, inner panels</div>
+    </div>
+    <div>
+      <div class="ds-swatch mb-3 border border-white/5" style="background:rgba(255,255,255,0.02);border-radius:1rem;"></div>
+      <div class="font-mono text-[10px] text-white/40 uppercase tracking-widest mb-1">Feature Card</div>
+      <div class="font-mono text-xs text-white/60">white/[0.02]</div>
+      <div class="font-mono text-[10px] text-white/25 mt-1">feature & doc cards</div>
+    </div>
+  </div>
+
+  <!-- Accent Colors -->
+  <h3 class="text-white text-lg font-medium mb-6 feature-card">Accent & Blob Colors</h3>
+  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 mb-16 feature-card">
+    <div>
+      <div class="ds-swatch mb-3" style="background:#4f46e5;border-radius:1rem;box-shadow:0 0 40px rgba(79,70,229,0.4);"></div>
+      <div class="font-mono text-[10px] text-white/40 uppercase tracking-widest mb-1">Indigo</div>
+      <div class="font-mono text-xs text-white/60">#4f46e5</div>
+      <div class="font-mono text-[10px] text-white/25 mt-1">Blob 1 · Primary CTA</div>
+    </div>
+    <div>
+      <div class="ds-swatch mb-3" style="background:#db2777;border-radius:1rem;box-shadow:0 0 40px rgba(219,39,119,0.4);"></div>
+      <div class="font-mono text-[10px] text-white/40 uppercase tracking-widest mb-1">Pink</div>
+      <div class="font-mono text-xs text-white/60">#db2777</div>
+      <div class="font-mono text-[10px] text-white/25 mt-1">Blob 2 · Docs section</div>
+    </div>
+    <div>
+      <div class="ds-swatch mb-3" style="background:#0ea5e9;border-radius:1rem;box-shadow:0 0 40px rgba(14,165,233,0.4);"></div>
+      <div class="font-mono text-[10px] text-white/40 uppercase tracking-widest mb-1">Sky</div>
+      <div class="font-mono text-xs text-white/60">#0ea5e9</div>
+      <div class="font-mono text-[10px] text-white/25 mt-1">Blob 3 · accent</div>
+    </div>
+    <div>
+      <div class="ds-swatch mb-3" style="background:#10b981;border-radius:1rem;box-shadow:0 0 40px rgba(16,185,129,0.4);"></div>
+      <div class="font-mono text-[10px] text-white/40 uppercase tracking-widest mb-1">Emerald</div>
+      <div class="font-mono text-xs text-white/60">emerald-500</div>
+      <div class="font-mono text-[10px] text-white/25 mt-1">Status · self-hosted</div>
+    </div>
+    <div>
+      <div class="ds-swatch mb-3" style="background:#f59e0b;border-radius:1rem;box-shadow:0 0 40px rgba(245,158,11,0.4);"></div>
+      <div class="font-mono text-[10px] text-white/40 uppercase tracking-widest mb-1">Amber</div>
+      <div class="font-mono text-xs text-white/60">amber-500</div>
+      <div class="font-mono text-[10px] text-white/25 mt-1">Stars · evals badge</div>
+    </div>
+    <div>
+      <div class="ds-swatch mb-3" style="background:#06b6d4;border-radius:1rem;box-shadow:0 0 40px rgba(6,182,212,0.4);"></div>
+      <div class="font-mono text-[10px] text-white/40 uppercase tracking-widest mb-1">Cyan</div>
+      <div class="font-mono text-xs text-white/60">cyan-500</div>
+      <div class="font-mono text-[10px] text-white/25 mt-1">SDK badge</div>
+    </div>
+  </div>
+
+  <!-- Text Color Scale -->
+  <h3 class="text-white text-lg font-medium mb-6 feature-card">Text Color Scale</h3>
+  <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-8 feature-card mb-16">
+    <div class="space-y-4">
+      <div class="flex items-center gap-4">
+        <div class="w-3 h-3 rounded-full flex-shrink-0" style="background:rgba(255,255,255,1.0);"></div>
+        <span class="font-mono text-[10px] text-white/30 w-20 flex-shrink-0">white</span>
+        <span class="text-white font-medium flex-1">Full opacity — headings, active state text</span>
+        <span class="font-mono text-[10px] text-white/30">rgba(255,255,255,1.0)</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="w-3 h-3 rounded-full flex-shrink-0" style="background:rgba(255,255,255,0.9);"></div>
+        <span class="font-mono text-[10px] text-white/30 w-20 flex-shrink-0">white/90</span>
+        <span class="text-white/90 flex-1">Near-full — primary content, mono code bar</span>
+        <span class="font-mono text-[10px] text-white/30">rgba(255,255,255,0.9)</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="w-3 h-3 rounded-full flex-shrink-0" style="background:rgba(255,255,255,0.8);"></div>
+        <span class="font-mono text-[10px] text-white/30 w-20 flex-shrink-0">white/80</span>
+        <span class="text-white/80 flex-1">Card titles, prominent feature labels</span>
+        <span class="font-mono text-[10px] text-white/30">rgba(255,255,255,0.8)</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="w-3 h-3 rounded-full flex-shrink-0" style="background:rgba(255,255,255,0.7);"></div>
+        <span class="font-mono text-[10px] text-white/30 w-20 flex-shrink-0">white/70</span>
+        <span class="text-white/70 flex-1">Feature list items, pricing description text</span>
+        <span class="font-mono text-[10px] text-white/30">rgba(255,255,255,0.7)</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="w-3 h-3 rounded-full flex-shrink-0" style="background:rgba(255,255,255,0.6);"></div>
+        <span class="font-mono text-[10px] text-white/30 w-20 flex-shrink-0">white/60</span>
+        <span class="text-white/60 flex-1">Nav inactive, icon defaults, header actions</span>
+        <span class="font-mono text-[10px] text-white/30">rgba(255,255,255,0.6)</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="w-3 h-3 rounded-full flex-shrink-0" style="background:rgba(255,255,255,0.5);"></div>
+        <span class="font-mono text-[10px] text-white/30 w-20 flex-shrink-0">white/50</span>
+        <span class="text-white/50 flex-1">Pricing tier subtitles, secondary descriptions</span>
+        <span class="font-mono text-[10px] text-white/30">rgba(255,255,255,0.5)</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="w-3 h-3 rounded-full flex-shrink-0" style="background:rgba(255,255,255,0.4);"></div>
+        <span class="font-mono text-[10px] text-white/30 w-20 flex-shrink-0">white/40</span>
+        <span class="text-white/40 flex-1">Body text, card descriptions, icon resting state</span>
+        <span class="font-mono text-[10px] text-white/30">rgba(255,255,255,0.4)</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="w-3 h-3 rounded-full flex-shrink-0" style="background:rgba(255,255,255,0.3);"></div>
+        <span class="font-mono text-[10px] text-white/30 w-20 flex-shrink-0">white/30</span>
+        <span class="text-white/30 flex-1">Stat suffix, dividers, terminal labels, footer</span>
+        <span class="font-mono text-[10px] text-white/30">rgba(255,255,255,0.3)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gradients -->
+  <h3 class="text-white text-lg font-medium mb-6 feature-card">Gradients & Special Surfaces</h3>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 feature-card">
+    <div>
+      <div class="ds-swatch mb-3 relative overflow-hidden" style="background:linear-gradient(to bottom, rgba(255,255,255,0.08), rgba(255,255,255,0.02));border:1px solid rgba(99,102,241,0.5);border-radius:1rem;box-shadow:0 0 50px -20px rgba(99,102,241,0.3);"></div>
+      <div class="font-mono text-[10px] text-white/40 uppercase tracking-widest mb-1">Pro Card Gradient</div>
+      <div class="font-mono text-[10px] text-white/30">from-white/[0.08] to-white/[0.02]<br/>border-indigo-500/50 · glow shadow</div>
+    </div>
+    <div>
+      <div class="ds-swatch mb-3" style="background:linear-gradient(to bottom, rgba(2,2,5,0.8), transparent);border-radius:1rem;border:1px solid rgba(255,255,255,0.05);"></div>
+      <div class="font-mono text-[10px] text-white/40 uppercase tracking-widest mb-1">Sticky Header Overlay</div>
+      <div class="font-mono text-[10px] text-white/30">from-[#020205]/80 to-transparent<br/>backdrop-blur-sm · gradient mask</div>
+    </div>
+    <div>
+      <div class="ds-swatch mb-3 relative overflow-hidden" style="background:rgba(0,0,0,0.4);border-radius:1rem;border:1px solid rgba(255,255,255,0.1);">
+        <div style="position:absolute;inset:0;background:linear-gradient(to right, rgba(255,255,255,0.05), transparent);"></div>
+      </div>
+      <div class="font-mono text-[10px] text-white/40 uppercase tracking-widest mb-1">Code Bar Hover Overlay</div>
+      <div class="font-mono text-[10px] text-white/30">bg-gradient-to-r from-white/5 to-transparent<br/>opacity-0 → 1 on group-hover · 500ms</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 3: UI COMPONENTS
+═══════════════════════════════════════════════════════════ -->
+<div class="px-6 sm:px-12 lg:px-16 pt-24 pb-24 relative z-10 border-t border-white/5" id="components">
+  <div class="flex flex-col items-center mb-16 text-center feature-card">
+    <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-pink-300 text-[10px] font-mono tracking-widest uppercase mb-4">03 — UI Components</span>
+    <h2 class="text-4xl md:text-5xl text-white font-medium tracking-tight text-glow mb-6">Components & states.</h2>
+  </div>
+
+  <!-- Buttons -->
+  <h3 class="text-white text-lg font-medium mb-6 feature-card">Buttons</h3>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16 feature-card">
+    <!-- Primary -->
+    <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-8">
+      <div class="font-mono text-[10px] text-white/30 uppercase tracking-widest mb-6">Primary CTA</div>
+      <button class="w-full py-3 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium transition-colors shadow-lg shadow-indigo-500/25 mb-4">Start Free Trial</button>
+      <div class="space-y-1">
+        <div class="font-mono text-[10px] text-white/30">bg-indigo-500 · rounded-xl · shadow-indigo-500/25</div>
+        <div class="font-mono text-[10px] text-white/20">:hover → bg-indigo-600 · transition-colors</div>
+      </div>
+    </div>
+    <!-- Secondary -->
+    <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-8">
+      <div class="font-mono text-[10px] text-white/30 uppercase tracking-widest mb-6">Secondary CTA</div>
+      <button class="w-full py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm font-medium transition-colors mb-4">Get Started</button>
+      <div class="space-y-1">
+        <div class="font-mono text-[10px] text-white/30">bg-white/5 · border-white/10 · rounded-xl</div>
+        <div class="font-mono text-[10px] text-white/20">:hover → bg-white/10 · transition-colors</div>
+      </div>
+    </div>
+    <!-- Icon Buttons -->
+    <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-8">
+      <div class="font-mono text-[10px] text-white/30 uppercase tracking-widest mb-6">Icon Buttons (default / active)</div>
+      <div class="flex gap-3 mb-4">
+        <div class="icon-btn w-16 h-16 rounded-[1.2rem] flex flex-col gap-1 items-center justify-center text-white/40">
+          <iconify-icon height="24" icon="solar:code-square-linear" width="24"></iconify-icon>
+          <span class="text-[8px] font-mono tracking-widest opacity-70">DEFAULT</span>
+        </div>
+        <div class="icon-btn active w-16 h-16 rounded-[1.2rem] flex flex-col gap-1 items-center justify-center text-white">
+          <iconify-icon height="24" icon="solar:chart-2-linear" width="24"></iconify-icon>
+          <span class="text-[8px] font-mono tracking-widest opacity-70">ACTIVE</span>
+        </div>
+        <div class="icon-btn w-16 h-16 rounded-[1.2rem] flex flex-col gap-1 items-center justify-center text-white/40" style="transform:translateY(-4px);background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.2);box-shadow:0 10px 30px -5px rgba(0,0,0,0.5);">
+          <iconify-icon height="24" icon="solar:play-circle-linear" width="24"></iconify-icon>
+          <span class="text-[8px] font-mono tracking-widest opacity-70">HOVER↑</span>
+        </div>
+      </div>
+      <div class="font-mono text-[10px] text-white/30">transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)<br/>:hover → translateY(-4px) · bg-white/10</div>
+    </div>
+  </div>
+
+  <!-- Navigation Pills -->
+  <h3 class="text-white text-lg font-medium mb-6 feature-card">Navigation Pills</h3>
+  <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-8 mb-16 feature-card">
+    <nav class="flex items-center gap-1 bg-white/5 p-1.5 rounded-full border border-white/10 backdrop-blur-md shadow-lg w-fit mb-4">
+      <button class="px-6 py-2 rounded-full text-white text-sm font-medium bg-white/10 shadow-inner hover:bg-white/20 transition-all">Active</button>
+      <button class="px-6 py-2 rounded-full text-white/60 hover:text-white hover:bg-white/5 text-sm font-medium transition-all">Inactive</button>
+      <button class="px-6 py-2 rounded-full text-white/60 hover:text-white hover:bg-white/5 text-sm font-medium transition-all">Hover me</button>
+    </nav>
+    <div class="font-mono text-[10px] text-white/30 space-y-1">
+      <div>Container: bg-white/5 · p-1.5 · rounded-full · border-white/10 · backdrop-blur-md</div>
+      <div>Active item: bg-white/10 · shadow-inner · rounded-full</div>
+      <div>Inactive: text-white/60 · :hover text-white + bg-white/5</div>
+    </div>
+  </div>
+
+  <!-- Badges & Tags -->
+  <h3 class="text-white text-lg font-medium mb-6 feature-card">Badges & Tags</h3>
+  <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-8 mb-16 feature-card">
+    <div class="font-mono text-[10px] text-white/30 uppercase tracking-widest mb-4">Section Badges (rounded-full)</div>
+    <div class="flex flex-wrap gap-3 mb-8">
+      <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-indigo-300 text-[10px] font-mono tracking-widest uppercase">Platform capabilities</span>
+      <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-emerald-300 text-[10px] font-mono tracking-widest uppercase">Start for free</span>
+      <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-pink-300 text-[10px] font-mono tracking-widest uppercase">Documentation</span>
+    </div>
+    <div class="font-mono text-[10px] text-white/30 uppercase tracking-widest mb-4">Card Badges (color-coded, rounded)</div>
+    <div class="flex flex-wrap gap-3 mb-8">
+      <span class="text-xs font-mono text-indigo-300 bg-indigo-500/10 px-2 py-1 rounded border border-indigo-500/20">CORE</span>
+      <span class="text-xs font-mono text-emerald-300 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20">OSS</span>
+      <span class="text-xs font-mono text-pink-300 bg-pink-500/10 px-2 py-1 rounded border border-pink-500/20">CLOUD</span>
+      <span class="text-xs font-mono text-amber-300 bg-amber-500/10 px-2 py-1 rounded border border-amber-500/20">AUTO</span>
+      <span class="text-xs font-mono text-cyan-300 bg-cyan-500/10 px-2 py-1 rounded border border-cyan-500/20">HUMAN</span>
+      <span class="text-xs font-mono text-purple-300 bg-purple-500/10 px-2 py-1 rounded border border-purple-500/20">DATA</span>
+    </div>
+    <div class="font-mono text-[10px] text-white/30 uppercase tracking-widest mb-4">Compliance Badges (square corners)</div>
+    <div class="flex flex-wrap gap-3 mb-8">
+      <span class="px-3 py-1 rounded bg-white/5 border border-white/10 text-white/60 text-[10px] font-mono">SOC2 TYPE II</span>
+      <span class="px-3 py-1 rounded bg-white/5 border border-white/10 text-white/60 text-[10px] font-mono">ISO 27001</span>
+    </div>
+    <div class="font-mono text-[10px] text-white/30 uppercase tracking-widest mb-4">Floating Badge (pricing highlight)</div>
+    <div class="relative inline-flex pt-4">
+      <div class="bg-indigo-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">Most Popular</div>
+    </div>
+  </div>
+
+  <!-- Cards Showcase -->
+  <h3 class="text-white text-lg font-medium mb-6 feature-card">Cards</h3>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16 feature-card">
+    <!-- Stat Card -->
+    <div class="bg-white/[0.03] border border-white/5 rounded-[2.5rem] p-8 flex flex-col justify-between hover:bg-white/[0.06] transition-colors duration-500 group relative overflow-hidden">
+      <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-500/20 blur-[60px] rounded-full group-hover:bg-indigo-500/30 transition-all"></div>
+      <div class="relative z-10">
+        <div class="flex justify-between items-start mb-4">
+          <iconify-icon class="text-white/40" icon="solar:eye-linear" width="32"></iconify-icon>
+          <span class="text-xs font-mono text-indigo-300 bg-indigo-500/10 px-2 py-1 rounded border border-indigo-500/20">CORE</span>
+        </div>
+        <div class="text-lg text-white/80 font-medium mb-1">Stat Card</div>
+        <p class="text-white/40 text-sm font-light leading-relaxed">Large stat with accent color glow. Hover transitions background and stat color.</p>
+      </div>
+      <div class="text-6xl lg:text-7xl text-white font-light stat-value mt-2 group-hover:text-indigo-200 transition-colors">100<span class="text-3xl text-white/30 ml-1">%</span></div>
+    </div>
+    <!-- Feature Card -->
+    <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-8 hover:bg-white/[0.05] transition-all duration-300 group">
+      <div class="w-12 h-12 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+        <iconify-icon class="text-blue-400" icon="solar:graph-up-linear" width="24"></iconify-icon>
+      </div>
+      <h3 class="text-white text-lg font-medium mb-3">Feature Card</h3>
+      <p class="text-white/40 text-sm leading-relaxed">Icon container scales 110% on group hover. Background transitions from white/[0.02] to white/[0.05].</p>
+    </div>
+    <!-- Doc Link Card -->
+    <a class="block bg-white/[0.02] border border-white/5 rounded-2xl p-6 hover:bg-white/[0.06] hover:border-white/10 transition-all group" href="#">
+      <div class="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center mb-4 group-hover:bg-white/10 transition-colors">
+        <iconify-icon class="text-white" icon="solar:rocket-2-linear" width="20"></iconify-icon>
+      </div>
+      <h4 class="text-white font-medium mb-1 group-hover:text-pink-200 transition-colors">Doc Link Card</h4>
+      <p class="text-white/40 text-xs">Title transitions to pink-200 on hover. Icon bg intensifies to white/10. Border visible on hover.</p>
+    </a>
+  </div>
+
+  <!-- Pricing Cards -->
+  <h3 class="text-white text-lg font-medium mb-6 feature-card">Pricing Cards (all three tiers)</h3>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16 feature-card">
+    <div class="bg-white/[0.02] border border-white/10 rounded-3xl p-8 flex flex-col relative group">
+      <div class="mb-6">
+        <div class="text-lg text-white font-medium mb-2">Hobby</div>
+        <div class="text-sm text-white/50">For side projects and learning.</div>
+      </div>
+      <div class="text-4xl text-white font-medium tracking-tight mb-8">$0<span class="text-lg text-white/40 font-normal">/mo</span></div>
+      <div class="flex-grow space-y-4 mb-8">
+        <div class="flex items-start text-sm text-white/70"><span class="check-icon"><iconify-icon icon="solar:check-read-linear"></iconify-icon></span>50k traces / month</div>
+        <div class="flex items-start text-sm text-white/70"><span class="check-icon"><iconify-icon icon="solar:check-read-linear"></iconify-icon></span>1 user seat</div>
+        <div class="flex items-start text-sm text-white/70"><span class="check-icon"><iconify-icon icon="solar:check-read-linear"></iconify-icon></span>Community Support</div>
+      </div>
+      <button class="w-full py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm font-medium transition-colors">Get Started</button>
+    </div>
+    <div class="bg-gradient-to-b from-white/[0.08] to-white/[0.02] border border-indigo-500/50 rounded-3xl p-8 flex flex-col relative shadow-[0_0_50px_-20px_rgba(99,102,241,0.3)] transform scale-105 z-10">
+      <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-indigo-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">Most Popular</div>
+      <div class="mb-6">
+        <div class="text-lg text-white font-medium mb-2">Pro</div>
+        <div class="text-sm text-white/50">For startups and small teams.</div>
+      </div>
+      <div class="text-4xl text-white font-medium tracking-tight mb-8">$59<span class="text-lg text-white/40 font-normal">/mo</span></div>
+      <div class="flex-grow space-y-4 mb-8">
+        <div class="flex items-start text-sm text-white/90"><span class="check-icon bg-indigo-500/20 text-indigo-300"><iconify-icon icon="solar:check-read-linear"></iconify-icon></span>100k traces / month</div>
+        <div class="flex items-start text-sm text-white/90"><span class="check-icon bg-indigo-500/20 text-indigo-300"><iconify-icon icon="solar:check-read-linear"></iconify-icon></span>5 user seats</div>
+        <div class="flex items-start text-sm text-white/90"><span class="check-icon bg-indigo-500/20 text-indigo-300"><iconify-icon icon="solar:check-read-linear"></iconify-icon></span>Evaluations</div>
+      </div>
+      <button class="w-full py-3 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium transition-colors shadow-lg shadow-indigo-500/25">Start Free Trial</button>
+    </div>
+    <div class="bg-white/[0.02] border border-white/10 rounded-3xl p-8 flex flex-col relative group">
+      <div class="mb-6">
+        <div class="text-lg text-white font-medium mb-2">Enterprise</div>
+        <div class="text-sm text-white/50">For large scale production.</div>
+      </div>
+      <div class="text-4xl text-white font-medium tracking-tight mb-8">Custom</div>
+      <div class="flex-grow space-y-4 mb-8">
+        <div class="flex items-start text-sm text-white/70"><span class="check-icon"><iconify-icon icon="solar:check-read-linear"></iconify-icon></span>Unlimited traces</div>
+        <div class="flex items-start text-sm text-white/70"><span class="check-icon"><iconify-icon icon="solar:check-read-linear"></iconify-icon></span>SSO &amp; SAML</div>
+        <div class="flex items-start text-sm text-white/70"><span class="check-icon"><iconify-icon icon="solar:check-read-linear"></iconify-icon></span>SLA Support</div>
+      </div>
+      <button class="w-full py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm font-medium transition-colors">Contact Sales</button>
+    </div>
+  </div>
+
+  <!-- Input & Search -->
+  <h3 class="text-white text-lg font-medium mb-6 feature-card">Search Input</h3>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16 feature-card">
+    <div>
+      <div class="font-mono text-[10px] text-white/30 uppercase tracking-widest mb-3">Default</div>
+      <div class="relative bg-black/40 border border-white/10 rounded-full flex items-center px-4 py-3 gap-3">
+        <iconify-icon class="text-white/40" icon="solar:magnifer-linear"></iconify-icon>
+        <input class="bg-transparent border-none outline-none text-white text-sm w-full placeholder-white/30 font-mono" placeholder="Search documentation..." type="text"/>
+        <div class="px-2 py-0.5 rounded bg-white/10 border border-white/10 text-[10px] text-white/40 font-mono">⌘K</div>
+      </div>
+      <div class="font-mono text-[10px] text-white/25 mt-2">bg-black/40 · border-white/10 · rounded-full</div>
+    </div>
+    <div>
+      <div class="font-mono text-[10px] text-white/30 uppercase tracking-widest mb-3">Focus State</div>
+      <div class="relative group">
+        <div class="absolute inset-0 bg-pink-500/20 blur-xl opacity-100 transition-opacity"></div>
+        <div class="relative bg-black/40 border border-pink-500/50 rounded-full flex items-center px-4 py-3 gap-3 focus-within:border-pink-500/50">
+          <iconify-icon class="text-white/40" icon="solar:magnifer-linear"></iconify-icon>
+          <input class="bg-transparent border-none outline-none text-white text-sm w-full placeholder-white/30 font-mono" placeholder="Search documentation..." type="text"/>
+          <div class="px-2 py-0.5 rounded bg-white/10 border border-white/10 text-[10px] text-white/40 font-mono">⌘K</div>
+        </div>
+      </div>
+      <div class="font-mono text-[10px] text-white/25 mt-2">:focus-within → border-pink-500/50 · bg-pink-500/20 blur-xl glow</div>
+    </div>
+  </div>
+
+  <!-- Toggle -->
+  <h3 class="text-white text-lg font-medium mb-6 feature-card">Pill Toggle</h3>
+  <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-8 feature-card">
+    <div class="flex items-center gap-4 bg-white/5 p-1 rounded-full border border-white/10 w-fit mb-4">
+      <div class="px-4 py-1.5 bg-white/10 rounded-full text-xs font-medium text-white shadow-sm">Monthly</div>
+      <div class="px-4 py-1.5 text-xs font-medium text-white/40">Yearly <span class="text-emerald-400 ml-1">-20%</span></div>
+    </div>
+    <div class="font-mono text-[10px] text-white/30">Container: bg-white/5 · p-1 · rounded-full · border-white/10<br/>Active: bg-white/10 · shadow-sm · rounded-full</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 4: LAYOUT & SPACING
+═══════════════════════════════════════════════════════════ -->
+<div class="px-6 sm:px-12 lg:px-16 py-24 relative z-10 border-t border-white/5 bg-black/20" id="layout">
+  <div class="flex flex-col items-center mb-16 text-center feature-card">
+    <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-amber-300 text-[10px] font-mono tracking-widest uppercase mb-4">04 — Layout & Spacing</span>
+    <h2 class="text-4xl md:text-5xl text-white font-medium tracking-tight text-glow mb-6">Containers, grids & rhythm.</h2>
+  </div>
+
+  <!-- Main Container -->
+  <h3 class="text-white text-lg font-medium mb-6 feature-card">Main Container</h3>
+  <div class="feature-card mb-16">
+    <div class="border border-dashed border-white/10 rounded-[3rem] p-6 relative">
+      <span class="absolute top-4 left-8 font-mono text-[10px] text-white/20 uppercase tracking-widest">Outer: w-[96vw] max-w-[1700px] h-[94vh] rounded-[3rem]</span>
+      <div class="glass-panel rounded-[2rem] p-8 mt-4">
+        <span class="font-mono text-[10px] text-white/40 uppercase tracking-widest">glass-panel · overflow-y-auto · no-scrollbar · scroll-smooth</span>
+        <div class="border-t border-white/5 mt-6 pt-6 flex flex-col md:flex-row gap-4">
+          <div class="flex-1 bg-white/[0.02] border border-white/5 rounded-2xl p-4">
+            <div class="font-mono text-[10px] text-white/30">Sticky Header · z-50<br/>px-6 sm:px-12 lg:px-16 pt-12 pb-4</div>
+          </div>
+          <div class="flex-1 bg-white/[0.02] border border-white/5 rounded-2xl p-4">
+            <div class="font-mono text-[10px] text-white/30">Sections<br/>border-t border-white/5<br/>pt-32 pb-24</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Grids -->
+  <h3 class="text-white text-lg font-medium mb-6 feature-card">Grid Patterns</h3>
+  <div class="space-y-10 feature-card">
+    <!-- 3-col grid -->
+    <div>
+      <div class="font-mono text-[10px] text-white/30 uppercase tracking-widest mb-3">3-Column Features Grid · grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6</div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-6 h-20 flex items-center justify-center">
+          <span class="font-mono text-[10px] text-white/30">Feature Col 1</span>
+        </div>
+        <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-6 h-20 flex items-center justify-center">
+          <span class="font-mono text-[10px] text-white/30">Feature Col 2</span>
+        </div>
+        <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-6 h-20 flex items-center justify-center">
+          <span class="font-mono text-[10px] text-white/30">Feature Col 3</span>
+        </div>
+      </div>
+    </div>
+    <!-- 4-col grid -->
+    <div>
+      <div class="font-mono text-[10px] text-white/30 uppercase tracking-widest mb-3">4-Column Docs Grid · grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6</div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-6 h-16 flex items-center justify-center">
+          <span class="font-mono text-[10px] text-white/30">Doc Col 1</span>
+        </div>
+        <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-6 h-16 flex items-center justify-center">
+          <span class="font-mono text-[10px] text-white/30">Doc Col 2</span>
+        </div>
+        <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-6 h-16 flex items-center justify-center">
+          <span class="font-mono text-[10px] text-white/30">Doc Col 3</span>
+        </div>
+        <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-6 h-16 flex items-center justify-center">
+          <span class="font-mono text-[10px] text-white/30">Doc Col 4</span>
+        </div>
+      </div>
+    </div>
+    <!-- Hero split layout -->
+    <div>
+      <div class="font-mono text-[10px] text-white/30 uppercase tracking-widest mb-3">Hero Split · flex-col lg:flex-row justify-between lg:items-end gap-4</div>
+      <div class="flex flex-col lg:flex-row justify-between lg:items-end gap-4 bg-white/[0.02] border border-white/5 rounded-3xl p-6">
+        <div class="flex-1 bg-white/[0.03] rounded-2xl h-24 flex items-center px-4">
+          <span class="font-mono text-[10px] text-white/30">H1 Heading block — flex-1</span>
+        </div>
+        <div class="flex flex-col items-end gap-2 bg-white/[0.03] rounded-2xl px-4 h-24 justify-center min-w-[180px]">
+          <span class="font-mono text-[10px] text-white/30">Status + badges</span>
+          <span class="font-mono text-[10px] text-white/20">items-end · flex-col</span>
+        </div>
+      </div>
+    </div>
+    <!-- Sidebar + content layout -->
+    <div>
+      <div class="font-mono text-[10px] text-white/30 uppercase tracking-widest mb-3">Icon Sidebar + Content · flex gap-8 lg:gap-12 · flex-grow on content</div>
+      <div class="flex gap-4 lg:gap-12 bg-white/[0.02] border border-white/5 rounded-3xl p-6">
+        <div class="flex flex-col gap-3">
+          <div class="bg-white/[0.03] border border-white/5 rounded-[1.5rem] w-16 h-16 flex items-center justify-center">
+            <span class="font-mono text-[8px] text-white/30">BTN</span>
+          </div>
+          <div class="bg-white/[0.03] border border-white/5 rounded-[1.5rem] w-16 h-16 flex items-center justify-center">
+            <span class="font-mono text-[8px] text-white/30">BTN</span>
+          </div>
+          <div class="bg-white/[0.03] border border-white/5 rounded-[1.5rem] w-16 h-16 flex items-center justify-center">
+            <span class="font-mono text-[8px] text-white/30">BTN</span>
+          </div>
+        </div>
+        <div class="flex-grow bg-white/[0.03] border border-white/5 rounded-2xl min-h-[140px] flex items-center justify-center">
+          <span class="font-mono text-[10px] text-white/30">flex-grow · min-h-[400px] · relative · tab content area</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 5: MOTION & INTERACTION
+═══════════════════════════════════════════════════════════ -->
+<div class="px-6 sm:px-12 lg:px-16 pt-24 pb-24 relative z-10 border-t border-white/5" id="motion">
+  <div class="flex flex-col items-center mb-16 text-center feature-card">
+    <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-cyan-300 text-[10px] font-mono tracking-widest uppercase mb-4">05 — Motion & Interaction</span>
+    <h2 class="text-4xl md:text-5xl text-white font-medium tracking-tight text-glow mb-6">Motion gallery.</h2>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12 feature-card">
+
+    <!-- Blob Drift -->
+    <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-8">
+      <div class="font-mono text-[10px] text-white/30 uppercase tracking-widest mb-4">Blob Drift — background ambience</div>
+      <div class="relative h-36 rounded-2xl overflow-hidden" style="background:#020205;">
+        <div style="position:absolute;border-radius:50%;filter:blur(30px);opacity:0.75;animation:drift 10s infinite alternate ease-in-out;background:#4f46e5;width:90px;height:90px;top:-15%;left:-10%;"></div>
+        <div style="position:absolute;border-radius:50%;filter:blur(30px);opacity:0.75;animation:drift 10s infinite alternate ease-in-out;animation-delay:-5s;background:#db2777;width:75px;height:75px;bottom:-15%;right:-5%;"></div>
+        <div style="position:absolute;border-radius:50%;filter:blur(30px);opacity:0.3;animation:drift 10s infinite alternate ease-in-out;animation-delay:-2s;background:#0ea5e9;width:60px;height:60px;top:40%;left:35%;"></div>
+      </div>
+      <div class="mt-4 space-y-1">
+        <div class="font-mono text-[10px] text-white/30">@keyframes drift</div>
+        <div class="font-mono text-[10px] text-white/25">0%: translate(0,0) → 100%: translate(30px,50px)</div>
+        <div class="font-mono text-[10px] text-white/25">duration: 10s · infinite · alternate · ease-in-out</div>
+        <div class="font-mono text-[10px] text-white/25">blob-2: animation-delay −5s</div>
+      </div>
+    </div>
+
+    <!-- FadeIn -->
+    <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-8">
+      <div class="font-mono text-[10px] text-white/30 uppercase tracking-widest mb-4">Tab FadeIn — on tab switch</div>
+      <div class="relative h-36 rounded-2xl bg-black/30 flex items-center justify-center overflow-hidden">
+        <div id="fadeInDemo" class="tab-content bg-white/[0.06] border border-white/10 rounded-2xl px-6 py-3 text-white/80 text-sm font-medium cursor-pointer select-none" onclick="triggerFadeIn()">Click to replay ↺</div>
+      </div>
+      <div class="mt-4 space-y-1">
+        <div class="font-mono text-[10px] text-white/30">@keyframes fadeIn</div>
+        <div class="font-mono text-[10px] text-white/25">from: opacity:0 + translateY(10px)</div>
+        <div class="font-mono text-[10px] text-white/25">to: opacity:1 + translateY(0)</div>
+        <div class="font-mono text-[10px] text-white/25">duration: 0.5s · ease-out · .tab-content</div>
+      </div>
+    </div>
+
+    <!-- Scroll Reveal -->
+    <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-8">
+      <div class="font-mono text-[10px] text-white/30 uppercase tracking-widest mb-4">Scroll Reveal — .feature-card</div>
+      <div class="relative h-36 rounded-2xl bg-black/30 flex items-center justify-center overflow-hidden">
+        <div id="revealDemo" class="feature-card bg-white/[0.06] border border-white/10 rounded-2xl px-6 py-3 text-white/80 text-sm font-medium cursor-pointer select-none" onclick="triggerReveal()">Click to replay ↺</div>
+      </div>
+      <div class="mt-4 space-y-1">
+        <div class="font-mono text-[10px] text-white/30">opacity:0 + translateY(30px) → .visible</div>
+        <div class="font-mono text-[10px] text-white/25">opacity:1 + translateY(0)</div>
+        <div class="font-mono text-[10px] text-white/25">transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1)</div>
+        <div class="font-mono text-[10px] text-white/25">trigger: IntersectionObserver · root: container · threshold 0.1</div>
+      </div>
+    </div>
+
+    <!-- Icon Button Hover Lift -->
+    <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-8">
+      <div class="font-mono text-[10px] text-white/30 uppercase tracking-widest mb-4">Icon Button Hover Lift — hover me</div>
+      <div class="relative h-36 rounded-2xl bg-black/30 flex items-center justify-center gap-6">
+        <div class="flex flex-col items-center gap-2">
+          <div class="icon-btn w-16 h-16 rounded-[1.2rem] flex flex-col gap-1 items-center justify-center text-white/40 group cursor-pointer">
+            <iconify-icon class="group-hover:scale-110 transition-transform duration-300" height="24" icon="solar:code-square-linear" width="24"></iconify-icon>
+            <span class="text-[8px] font-mono opacity-70">HOVER</span>
+          </div>
+          <span class="font-mono text-[8px] text-white/25">default</span>
+        </div>
+        <div class="flex flex-col items-center gap-2">
+          <div class="icon-btn active w-16 h-16 rounded-[1.2rem] flex flex-col gap-1 items-center justify-center text-white cursor-pointer">
+            <iconify-icon height="24" icon="solar:chart-2-linear" width="24"></iconify-icon>
+            <span class="text-[8px] font-mono opacity-70">ACTIVE</span>
+          </div>
+          <span class="font-mono text-[8px] text-white/25">active</span>
+        </div>
+      </div>
+      <div class="mt-4 space-y-1">
+        <div class="font-mono text-[10px] text-white/30">transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)</div>
+        <div class="font-mono text-[10px] text-white/25">:hover → translateY(−4px) · bg-white/10 · border-white/20</div>
+        <div class="font-mono text-[10px] text-white/25">:hover → box-shadow: 0 10px 30px −5px rgba(0,0,0,0.5)</div>
+        <div class="font-mono text-[10px] text-white/25">.active → bg-white/15 · border-white/40 · glow shadow</div>
+      </div>
+    </div>
+
+    <!-- animate-pulse -->
+    <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-8">
+      <div class="font-mono text-[10px] text-white/30 uppercase tracking-widest mb-4">animate-pulse — status indicators</div>
+      <div class="relative h-36 rounded-2xl bg-black/30 flex flex-col items-center justify-center gap-6">
+        <div class="flex items-center gap-2">
+          <div class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.8)] animate-pulse"></div>
+          <span class="text-xs font-mono text-emerald-400/80 tracking-widest uppercase">System Normal</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="font-mono text-xs text-white/50">cursor</span>
+          <span class="w-2 h-4 bg-white/50 animate-pulse inline-block"></span>
+        </div>
+      </div>
+      <div class="mt-4 space-y-1">
+        <div class="font-mono text-[10px] text-white/30">Tailwind animate-pulse</div>
+        <div class="font-mono text-[10px] text-white/25">Status dot: + shadow-[0_0_10px_rgba(52,211,153,0.8)]</div>
+        <div class="font-mono text-[10px] text-white/25">Terminal cursor blink · bg-white/50</div>
+      </div>
+    </div>
+
+    <!-- animate-bounce + icon scale -->
+    <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-8">
+      <div class="font-mono text-[10px] text-white/30 uppercase tracking-widest mb-4">animate-bounce + group-hover:scale-110</div>
+      <div class="relative h-36 rounded-2xl bg-black/30 flex items-center justify-center gap-10">
+        <div class="flex flex-col items-center gap-2">
+          <button class="group flex flex-col items-center gap-1 text-white/60 hover:text-white text-sm font-medium transition-colors animate-bounce">
+            <iconify-icon icon="solar:arrow-down-linear" width="20"></iconify-icon>
+            <span class="text-xs font-mono">Scroll</span>
+          </button>
+          <span class="font-mono text-[8px] text-white/25">bounce</span>
+        </div>
+        <div class="flex flex-col items-center gap-2">
+          <button class="group flex items-center justify-center w-12 h-12 bg-white/[0.03] border border-white/10 rounded-2xl">
+            <iconify-icon class="text-white/40 group-hover:scale-110 group-hover:text-white transition-all duration-300" height="24" icon="solar:code-square-linear" width="24"></iconify-icon>
+          </button>
+          <span class="font-mono text-[8px] text-white/25">scale-110</span>
+        </div>
+      </div>
+      <div class="mt-4 space-y-1">
+        <div class="font-mono text-[10px] text-white/30">animate-bounce → scroll CTA button</div>
+        <div class="font-mono text-[10px] text-white/25">group-hover:scale-110 transition-transform duration-300</div>
+        <div class="font-mono text-[10px] text-white/25">group-hover:grayscale-0 transition-all duration-500</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Code Bar Hover -->
+  <h3 class="text-white text-lg font-medium mb-6 feature-card">Hover Gradient Overlay — Code Bar</h3>
+  <div class="feature-card">
+    <div class="w-full bg-black/20 h-20 rounded-2xl border border-white/10 flex items-center justify-between px-6 relative overflow-hidden group cursor-pointer backdrop-blur-sm">
+      <div class="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+      <div class="flex items-center gap-4 z-10">
+        <iconify-icon class="text-white/60" icon="solar:terminal-linear" width="24"></iconify-icon>
+        <div class="flex flex-col">
+          <span class="font-mono text-xs text-white/40 mb-1">GET STARTED</span>
+          <span class="font-mono text-lg text-white/90">npm install langfuse</span>
+        </div>
+      </div>
+      <div class="h-8 w-px bg-white/10 mx-2 hidden sm:block"></div>
+      <div class="hidden sm:flex items-center gap-2 z-10 opacity-60 grayscale group-hover:grayscale-0 transition-all duration-500">
+        <iconify-icon class="text-white" icon="solar:box-minimalistic-linear" width="20"></iconify-icon>
+        <span class="font-mono text-base text-white">LangChain</span>
+      </div>
+    </div>
+    <div class="font-mono text-[10px] text-white/25 mt-3">Hover: bg-gradient-to-r from-white/5 · opacity 0→1 · 500ms · Right logo: grayscale → grayscale-0 · 500ms</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 6: ICONS
+═══════════════════════════════════════════════════════════ -->
+<div class="px-6 sm:px-12 lg:px-16 pt-24 pb-32 relative z-10 border-t border-white/5 bg-black/20" id="icons">
+  <div class="flex flex-col items-center mb-16 text-center feature-card">
+    <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-purple-300 text-[10px] font-mono tracking-widest uppercase mb-4">06 — Icons</span>
+    <h2 class="text-4xl md:text-5xl text-white font-medium tracking-tight text-glow mb-6">Solar icon set.</h2>
+  </div>
+
+  <div class="bg-white/[0.02] border border-white/5 rounded-3xl p-8 feature-card">
+    <div class="font-mono text-[10px] text-white/30 uppercase tracking-widest mb-8">Solar · via Iconify · Linear &amp; Bold weights · hover to highlight</div>
+    <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-6 mb-12">
+      <!-- Each icon: same markup pattern as original -->
+      <div class="flex flex-col items-center gap-2">
+        <div class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-white/10 transition-colors group">
+          <iconify-icon class="text-white group-hover:scale-110 transition-transform duration-300" icon="solar:infinity-bold" width="24"></iconify-icon>
+        </div>
+        <span class="font-mono text-[8px] text-white/30 text-center leading-tight">infinity<br/>bold</span>
+      </div>
+      <div class="flex flex-col items-center gap-2">
+        <div class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-white/10 transition-colors group">
+          <iconify-icon class="text-white/60 group-hover:text-white group-hover:scale-110 transition-all duration-300" icon="solar:code-square-linear" width="24"></iconify-icon>
+        </div>
+        <span class="font-mono text-[8px] text-white/30 text-center leading-tight">code-square<br/>linear</span>
+      </div>
+      <div class="flex flex-col items-center gap-2">
+        <div class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-white/10 transition-colors group">
+          <iconify-icon class="text-white/60 group-hover:text-white group-hover:scale-110 transition-all duration-300" icon="solar:chart-2-linear" width="24"></iconify-icon>
+        </div>
+        <span class="font-mono text-[8px] text-white/30 text-center leading-tight">chart-2<br/>linear</span>
+      </div>
+      <div class="flex flex-col items-center gap-2">
+        <div class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-white/10 transition-colors group">
+          <iconify-icon class="text-white/60 group-hover:text-white group-hover:scale-110 transition-all duration-300" icon="solar:play-circle-linear" width="24"></iconify-icon>
+        </div>
+        <span class="font-mono text-[8px] text-white/30 text-center leading-tight">play-circle<br/>linear</span>
+      </div>
+      <div class="flex flex-col items-center gap-2">
+        <div class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-white/10 transition-colors group">
+          <iconify-icon class="text-white/40 group-hover:text-white group-hover:scale-110 transition-all duration-300" icon="solar:eye-linear" width="24"></iconify-icon>
+        </div>
+        <span class="font-mono text-[8px] text-white/30 text-center leading-tight">eye<br/>linear</span>
+      </div>
+      <div class="flex flex-col items-center gap-2">
+        <div class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-white/10 transition-colors group">
+          <iconify-icon class="text-white/40 group-hover:text-white group-hover:scale-110 transition-all duration-300" icon="solar:server-square-linear" width="24"></iconify-icon>
+        </div>
+        <span class="font-mono text-[8px] text-white/30 text-center leading-tight">server-square<br/>linear</span>
+      </div>
+      <div class="flex flex-col items-center gap-2">
+        <div class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-white/10 transition-colors group">
+          <iconify-icon class="text-white/40 group-hover:text-white group-hover:scale-110 transition-all duration-300" icon="solar:cloud-linear" width="24"></iconify-icon>
+        </div>
+        <span class="font-mono text-[8px] text-white/30 text-center leading-tight">cloud<br/>linear</span>
+      </div>
+      <div class="flex flex-col items-center gap-2">
+        <div class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-white/10 transition-colors group">
+          <iconify-icon class="text-amber-400 group-hover:scale-110 transition-transform duration-300" icon="solar:star-bold" width="24"></iconify-icon>
+        </div>
+        <span class="font-mono text-[8px] text-white/30 text-center leading-tight">star<br/>bold</span>
+      </div>
+      <div class="flex flex-col items-center gap-2">
+        <div class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-white/10 transition-colors group">
+          <iconify-icon class="text-white/60 group-hover:text-white group-hover:scale-110 transition-all duration-300" icon="solar:user-circle-linear" width="24"></iconify-icon>
+        </div>
+        <span class="font-mono text-[8px] text-white/30 text-center leading-tight">user-circle<br/>linear</span>
+      </div>
+      <div class="flex flex-col items-center gap-2">
+        <div class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-white/10 transition-colors group">
+          <iconify-icon class="text-white/60 group-hover:text-white group-hover:scale-110 transition-all duration-300" icon="solar:terminal-linear" width="24"></iconify-icon>
+        </div>
+        <span class="font-mono text-[8px] text-white/30 text-center leading-tight">terminal<br/>linear</span>
+      </div>
+      <div class="flex flex-col items-center gap-2">
+        <div class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-white/10 transition-colors group">
+          <iconify-icon class="text-white/60 group-hover:text-white group-hover:scale-110 transition-all duration-300" icon="solar:box-minimalistic-linear" width="24"></iconify-icon>
+        </div>
+        <span class="font-mono text-[8px] text-white/30 text-center leading-tight">box-minimalistic<br/>linear</span>
+      </div>
+      <div class="flex flex-col items-center gap-2">
+        <div class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-white/10 transition-colors group">
+          <iconify-icon class="text-white/60 group-hover:text-white group-hover:scale-110 transition-all duration-300" icon="solar:arrow-down-linear" width="24"></iconify-icon>
+        </div>
+        <span class="font-mono text-[8px] text-white/30 text-center leading-tight">arrow-down<br/>linear</span>
+      </div>
+      <div class="flex flex-col items-center gap-2">
+        <div class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-white/10 transition-colors group">
+          <iconify-icon class="text-blue-400 group-hover:scale-110 transition-transform duration-300" icon="solar:graph-up-linear" width="24"></iconify-icon>
+        </div>
+        <span class="font-mono text-[8px] text-white/30 text-center leading-tight">graph-up<br/>linear</span>
+      </div>
+      <div class="flex flex-col items-center gap-2">
+        <div class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-white/10 transition-colors group">
+          <iconify-icon class="text-purple-400 group-hover:scale-110 transition-transform duration-300" icon="solar:bug-linear" width="24"></iconify-icon>
+        </div>
+        <span class="font-mono text-[8px] text-white/30 text-center leading-tight">bug<br/>linear</span>
+      </div>
+      <div class="flex flex-col items-center gap-2">
+        <div class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-white/10 transition-colors group">
+          <iconify-icon class="text-amber-400 group-hover:scale-110 transition-transform duration-300" icon="solar:filters-linear" width="24"></iconify-icon>
+        </div>
+        <span class="font-mono text-[8px] text-white/30 text-center leading-tight">filters<br/>linear</span>
+      </div>
+      <div class="flex flex-col items-center gap-2">
+        <div class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-white/10 transition-colors group">
+          <iconify-icon class="text-emerald-400 group-hover:scale-110 transition-transform duration-300" icon="solar:shield-check-linear" width="24"></iconify-icon>
+        </div>
+        <span class="font-mono text-[8px] text-white/30 text-center leading-tight">shield-check<br/>linear</span>
+      </div>
+      <div class="flex flex-col items-center gap-2">
+        <div class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-white/10 transition-colors group">
+          <iconify-icon class="text-rose-400 group-hover:scale-110 transition-transform duration-300" icon="solar:bell-bing-linear" width="24"></iconify-icon>
+        </div>
+        <span class="font-mono text-[8px] text-white/30 text-center leading-tight">bell-bing<br/>linear</span>
+      </div>
+      <div class="flex flex-col items-center gap-2">
+        <div class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-white/10 transition-colors group">
+          <iconify-icon class="text-cyan-400 group-hover:scale-110 transition-transform duration-300" icon="solar:code-file-linear" width="24"></iconify-icon>
+        </div>
+        <span class="font-mono text-[8px] text-white/30 text-center leading-tight">code-file<br/>linear</span>
+      </div>
+      <div class="flex flex-col items-center gap-2">
+        <div class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-white/10 transition-colors group">
+          <iconify-icon class="text-amber-400 group-hover:scale-110 transition-transform duration-300" icon="solar:magic-stick-3-linear" width="24"></iconify-icon>
+        </div>
+        <span class="font-mono text-[8px] text-white/30 text-center leading-tight">magic-stick-3<br/>linear</span>
+      </div>
+      <div class="flex flex-col items-center gap-2">
+        <div class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-white/10 transition-colors group">
+          <iconify-icon class="text-cyan-400 group-hover:scale-110 transition-transform duration-300" icon="solar:users-group-two-rounded-linear" width="24"></iconify-icon>
+        </div>
+        <span class="font-mono text-[8px] text-white/30 text-center leading-tight">users-group<br/>linear</span>
+      </div>
+      <div class="flex flex-col items-center gap-2">
+        <div class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-white/10 transition-colors group">
+          <iconify-icon class="text-purple-400 group-hover:scale-110 transition-transform duration-300" icon="solar:database-linear" width="24"></iconify-icon>
+        </div>
+        <span class="font-mono text-[8px] text-white/30 text-center leading-tight">database<br/>linear</span>
+      </div>
+      <div class="flex flex-col items-center gap-2">
+        <div class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-white/10 transition-colors group">
+          <iconify-icon class="text-white/60 group-hover:text-pink-200 group-hover:scale-110 transition-all duration-300" icon="solar:rocket-2-linear" width="24"></iconify-icon>
+        </div>
+        <span class="font-mono text-[8px] text-white/30 text-center leading-tight">rocket-2<br/>linear</span>
+      </div>
+      <div class="flex flex-col items-center gap-2">
+        <div class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-white/10 transition-colors group">
+          <iconify-icon class="text-white/60 group-hover:text-pink-200 group-hover:scale-110 transition-all duration-300" icon="solar:plug-circle-linear" width="24"></iconify-icon>
+        </div>
+        <span class="font-mono text-[8px] text-white/30 text-center leading-tight">plug-circle<br/>linear</span>
+      </div>
+      <div class="flex flex-col items-center gap-2">
+        <div class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-white/10 transition-colors group">
+          <iconify-icon class="text-white/40 group-hover:text-white group-hover:scale-110 transition-all duration-300" icon="solar:magnifer-linear" width="24"></iconify-icon>
+        </div>
+        <span class="font-mono text-[8px] text-white/30 text-center leading-tight">magnifer<br/>linear</span>
+      </div>
+      <div class="flex flex-col items-center gap-2">
+        <div class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-white/10 transition-colors group">
+          <iconify-icon class="text-emerald-400 group-hover:scale-110 transition-transform duration-300" icon="solar:check-read-linear" width="24"></iconify-icon>
+        </div>
+        <span class="font-mono text-[8px] text-white/30 text-center leading-tight">check-read<br/>linear</span>
+      </div>
+    </div>
+
+    <!-- Size Variants -->
+    <div class="border-t border-white/5 pt-8 mb-8">
+      <div class="font-mono text-[10px] text-white/30 uppercase tracking-widest mb-4">Size Variants</div>
+      <div class="flex items-end gap-8 flex-wrap">
+        <div class="flex flex-col items-center gap-2">
+          <iconify-icon class="text-white/60" icon="solar:code-square-linear" width="16"></iconify-icon>
+          <span class="font-mono text-[8px] text-white/30">16px</span>
+        </div>
+        <div class="flex flex-col items-center gap-2">
+          <iconify-icon class="text-white/60" icon="solar:code-square-linear" width="20"></iconify-icon>
+          <span class="font-mono text-[8px] text-white/30">20px</span>
+        </div>
+        <div class="flex flex-col items-center gap-2">
+          <iconify-icon class="text-white/60" icon="solar:code-square-linear" width="24"></iconify-icon>
+          <span class="font-mono text-[8px] text-white/30">24px</span>
+        </div>
+        <div class="flex flex-col items-center gap-2">
+          <iconify-icon class="text-white/60" icon="solar:code-square-linear" width="28"></iconify-icon>
+          <span class="font-mono text-[8px] text-white/30">28px</span>
+        </div>
+        <div class="flex flex-col items-center gap-2">
+          <iconify-icon class="text-white/60" icon="solar:code-square-linear" width="32"></iconify-icon>
+          <span class="font-mono text-[8px] text-white/30">32px</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Color Inheritance -->
+    <div class="border-t border-white/5 pt-6">
+      <div class="font-mono text-[10px] text-white/30 uppercase tracking-widest mb-4">Color Inheritance (currentColor)</div>
+      <div class="flex items-center gap-8 flex-wrap">
+        <div class="flex items-center gap-2">
+          <iconify-icon class="text-white/40" icon="solar:star-bold" width="20"></iconify-icon>
+          <span class="font-mono text-[10px] text-white/40">white/40</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <iconify-icon class="text-amber-400" icon="solar:star-bold" width="20"></iconify-icon>
+          <span class="font-mono text-[10px] text-amber-400">amber-400</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <iconify-icon class="text-emerald-400" icon="solar:star-bold" width="20"></iconify-icon>
+          <span class="font-mono text-[10px] text-emerald-400">emerald-400</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <iconify-icon class="text-indigo-300" icon="solar:star-bold" width="20"></iconify-icon>
+          <span class="font-mono text-[10px] text-indigo-300">indigo-300</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <iconify-icon class="text-pink-300" icon="solar:star-bold" width="20"></iconify-icon>
+          <span class="font-mono text-[10px] text-pink-300">pink-300</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <iconify-icon class="text-cyan-400" icon="solar:star-bold" width="20"></iconify-icon>
+          <span class="font-mono text-[10px] text-cyan-400">cyan-400</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <iconify-icon class="text-purple-400" icon="solar:star-bold" width="20"></iconify-icon>
+          <span class="font-mono text-[10px] text-purple-400">purple-400</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="mt-24 border-t border-white/5 pt-10 flex flex-col md:flex-row justify-between items-center text-white/30 text-xs font-mono">
+    <div class="flex items-center gap-6 mb-4 md:mb-0">
+      <a class="hover:text-white transition-colors" href="#">GITHUB</a>
+      <a class="hover:text-white transition-colors" href="#">DISCORD</a>
+      <a class="hover:text-white transition-colors" href="#">TWITTER</a>
+      <a class="hover:text-white transition-colors" href="#">LINKEDIN</a>
+    </div>
+    <div class="flex items-center gap-4">
+      <a class="hover:text-white transition-colors" href="#">IMPRINT</a>
+      <a class="hover:text-white transition-colors" href="#">PRIVACY</a>
+      <span>DESIGN SYSTEM © 2024</span>
+    </div>
+  </div>
+</div>
+
+</div><!-- /glass-panel -->
+</div><!-- /outer container -->
+
+<script>
+  // Tab switching — scoped to hero section icon buttons only
+  function switchTab(tabName, btn) {
+    const heroBtns = document.querySelectorAll('#hero .icon-btn');
+    heroBtns.forEach(b => {
+      b.classList.remove('active', 'text-white');
+      b.classList.add('text-white/40');
+    });
+    btn.classList.add('active', 'text-white');
+    btn.classList.remove('text-white/40');
+
+    const contents = document.querySelectorAll('.tab-content');
+    contents.forEach(c => c.classList.add('hidden'));
+
+    const target = document.getElementById('tab-' + tabName);
+    if (target) {
+      target.classList.remove('hidden');
+      target.style.animation = 'none';
+      target.offsetHeight; /* trigger reflow */
+      target.style.animation = null;
+    }
+  }
+
+  // Internal scroll logic
+  const scrollContainer = document.getElementById('main-scroll-container');
+
+  function scrollToSection(id) {
+    const element = document.getElementById(id);
+    if (element) {
+      scrollContainer.scrollTo({ top: element.offsetTop, behavior: 'smooth' });
+    }
+  }
+
+  function scrollToTop() {
+    scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Intersection Observer for scroll reveal (.feature-card)
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { root: scrollContainer, threshold: 0.1 });
+
+  document.querySelectorAll('.feature-card').forEach(el => observer.observe(el));
+
+  // Motion demo helpers
+  function triggerFadeIn() {
+    const el = document.getElementById('fadeInDemo');
+    el.style.animation = 'none';
+    el.offsetHeight; /* trigger reflow */
+    el.style.animation = null;
+  }
+
+  function triggerReveal() {
+    const el = document.getElementById('revealDemo');
+    el.classList.remove('visible');
+    el.offsetHeight; /* trigger reflow */
+    setTimeout(() => el.classList.add('visible'), 50);
+  }
+</script>
+</body>
+</html>

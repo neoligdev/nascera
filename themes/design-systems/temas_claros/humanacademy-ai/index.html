@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <!-- Meta Pixel + GTM com carregamento adiado.
+         Os stubs (fila do fbq e dataLayer) existem desde o primeiro byte,
+         então nenhum evento se perde: fbq('track') e dataLayer.push são
+         enfileirados e despachados quando os scripts reais chegarem.
+         Os scripts externos (fbevents.js, gtm.js e tudo que o GTM puxa:
+         TikTok, gtag, Clarity) só carregam no idle ou na primeira
+         interação, tirando ~centenas de ms de main thread do caminho
+         crítico do mobile sem perder atribuição. -->
+    <script>
+      !function(f){if(f.fbq)return;var n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];}(window);
+      fbq('init', '1581600402785413');
+      fbq('track', 'PageView');
+      // Mark this path as tracked so the SPA route handler doesn't double-fire.
+      window.__metaPixelLastPath = window.location.pathname;
+
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
+
+      (function () {
+        var loaded = false;
+        function loadTags() {
+          if (loaded) return;
+          loaded = true;
+          [
+            'https://connect.facebook.net/en_US/fbevents.js',
+            'https://www.googletagmanager.com/gtm.js?id=GTM-K627N58N'
+          ].forEach(function (src) {
+            var s = document.createElement('script');
+            s.async = true;
+            s.src = src;
+            document.head.appendChild(s);
+          });
+        }
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(loadTags, { timeout: 3500 });
+        } else {
+          setTimeout(loadTags, 3000);
+        }
+        ['pointerdown', 'keydown', 'touchstart', 'scroll'].forEach(function (ev) {
+          window.addEventListener(ev, loadTags, { once: true, passive: true });
+        });
+      })();
+    </script>
+    <title>Human Academy | Use IA para transformar seu trabalho</title>
+
+    <meta name="description" content="Aprenda a criar, crescer, automatizar e construir com IA. Cursos, ferramentas e comunidade pra aplicar no trabalho real, num único passe.">
+    <meta name="author" content="Human Academy" />
+
+    <!-- Preconnect to font CDN -->
+    <link rel="preconnect" href="_ext/api.fontshare.com/index.json" crossorigin />
+    <link rel="dns-prefetch" href="_ext/api.fontshare.com/index.json" />
+    <!-- Fontshare sem bloquear render: carrega como print e vira all no onload -->
+    <link rel="stylesheet" href="_ext/api.fontshare.com/v2/css__qcb9a25ca.css" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="_ext/api.fontshare.com/v2/css__qcb9a25ca.css" /></noscript>
+
+    <!-- Preconnect to storage CDN for CMS media (no project ref exposed) -->
+    <link rel="preconnect" href="https://hmqqruklabgscfdkmnbf.supabase.co" crossorigin />
+
+    <!-- Pixel e GTM só carregam no idle/primeira interação. Resolver o DNS
+         desde já tira o custo de lookup do momento em que eles entram, sem
+         abrir conexão competindo com o render (por isso dns-prefetch, e não
+         preconnect). -->
+    <link rel="dns-prefetch" href="https://connect.facebook.net" />
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/3a1c7cb9-899d-4f71-88df-7a2e2de9126a/id-preview-a3f12bbc--73619d7b-450a-4f09-b78b-4ea144c53da0.lovable.app-1771167252966.png">
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@HumanAcademy_AI" />
+    <meta name="twitter:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/3a1c7cb9-899d-4f71-88df-7a2e2de9126a/id-preview-a3f12bbc--73619d7b-450a-4f09-b78b-4ea144c53da0.lovable.app-1771167252966.png">
+    
+    
+    
+    
+    
+  
+  
+  
+  
+  
+  
+  
+  <meta property="og:title" content="Human Academy | Use IA para transformar seu trabalho">
+  <meta name="twitter:title" content="Human Academy | Use IA para transformar seu trabalho">
+  <meta property="og:description" content="Aprenda a criar, crescer, automatizar e construir com IA. Cursos, ferramentas e comunidade pra aplicar no trabalho real, num único passe.">
+  <meta name="twitter:description" content="Aprenda a criar, crescer, automatizar e construir com IA. Cursos, ferramentas e comunidade pra aplicar no trabalho real, num único passe.">
+  <link rel="icon" type="image/x-icon" href="_ext/www.humanacademy.ai/favicon.ico">
+  <script type="module" crossorigin src="_ext/www.humanacademy.ai/assets/index-BkkK_w59.js"></script>
+  <link rel="modulepreload" crossorigin href="_ext/www.humanacademy.ai/assets/rolldown-runtime-C_ttsnZz.js">
+  <link rel="modulepreload" crossorigin href="_ext/www.humanacademy.ai/assets/query-BYnN4WbX.js">
+  <link rel="modulepreload" crossorigin href="_ext/www.humanacademy.ai/assets/vendor-CJ94suX_.js">
+  <link rel="modulepreload" crossorigin href="_ext/www.humanacademy.ai/assets/dist-CILLf5GT.js">
+  <link rel="modulepreload" crossorigin href="_ext/www.humanacademy.ai/assets/dist-BFew69iB.js">
+  <link rel="modulepreload" crossorigin href="_ext/www.humanacademy.ai/assets/dist-Ce9bEsiQ.js">
+  <link rel="modulepreload" crossorigin href="_ext/www.humanacademy.ai/assets/tslib.es6-C-_1qz06.js">
+  <link rel="modulepreload" crossorigin href="_ext/www.humanacademy.ai/assets/client-CQ0ezcCx.js">
+  <link rel="modulepreload" crossorigin href="_ext/www.humanacademy.ai/assets/ui-CTZUZpGl.js">
+  <link rel="modulepreload" crossorigin href="_ext/www.humanacademy.ai/assets/createLucideIcon-DengoS-c.js">
+  <link rel="modulepreload" crossorigin href="_ext/www.humanacademy.ai/assets/courses-DCoJh2bf.js">
+  <link rel="stylesheet" crossorigin href="_ext/www.humanacademy.ai/assets/index-1Ci6Bfx3.css">
+</head>
+
+  <body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K627N58N"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <!-- Meta Pixel (noscript) -->
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1581600402785413&ev=PageView&noscript=1"/></noscript>
+    <!-- End Meta Pixel (noscript) -->
+    <div id="root"></div>
+  </body>
+</html>

@@ -1,0 +1,1 @@
+import{C as s}from"./query-BYnN4WbX.js";import{a as e,o as r}from"./index-BkkK_w59.js";import a from"./OQueTemDentro-9J4X9UiX.js";var m=s(),i=()=>(0,m.jsxs)("div",{className:"min-h-screen",children:[(0,m.jsx)(r,{}),(0,m.jsx)("main",{className:"pt-24",children:(0,m.jsx)(a,{})}),(0,m.jsx)(e,{})]});export{i as default};

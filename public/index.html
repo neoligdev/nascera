@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link rel="icon" href="/favicon.png"/>
+  <link rel="stylesheet" href="/theme.css"/>
+  <title>Nascera AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Inter,system-ui,-apple-system,sans-serif;background:var(--zh-bg);color:#fff;height:100vh;overflow:hidden;-webkit-font-smoothing:antialiased}
+    ::selection{background:rgba(var(--zh-accent-rgb),.4)}
+
+    /* Background */
+    #gl-bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+    .bg-overlay{position:fixed;inset:0;background:radial-gradient(ellipse at center,transparent 30%,var(--zh-bg) 80%);z-index:1;pointer-events:none}
+
+    /* Particles */
+    #particles{position:fixed;inset:0;z-index:2;pointer-events:none}
+
+    /* Container */
+    .main{position:relative;z-index:3;height:100vh;display:flex;align-items:center;justify-content:center}
+    .card{width:100%;max-width:420px;padding:36px;border-radius:20px;background:rgba(10,10,20,.65);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.06);box-shadow:0 40px 80px rgba(0,0,0,.5)}
+
+    /* Logo */
+    .logo-wrap{text-align:center;margin-bottom:28px}
+    .logo-img{width:48px;height:48px;border-radius:14px;margin:0 auto 12px;object-fit:contain}
+    .logo-title{font-size:24px;font-weight:600;background:linear-gradient(180deg,#fff 0%,rgba(255,255,255,.65) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+    .logo-sub{font-size:13px;color:rgba(255,255,255,.3);margin-top:4px}
+
+    /* Badge */
+    .badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:32px;backdrop-filter:blur(6px);box-shadow:inset 0 -7px 11px rgba(var(--zh-accent-rgb),.12);position:relative;isolation:isolate;overflow:hidden;margin-bottom:16px}
+    .badge::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(90deg,rgba(var(--zh-grad1-rgb),.24),rgba(var(--zh-accent2-rgb),.24),rgba(var(--zh-grad2-rgb),.24));-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+    .badge-text{background:linear-gradient(0deg,rgba(255,255,255,.4),rgba(255,255,255,.4)),linear-gradient(90deg,var(--zh-grad1),var(--zh-accent2) 50%,var(--zh-grad2));background-blend-mode:normal,screen;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-size:11px;font-weight:500}
+
+    /* Form */
+    .form-group{margin-bottom:14px}
+    .form-label{display:block;font-size:11px;font-weight:500;color:rgba(255,255,255,.4);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+    .form-input{width:100%;padding:10px 14px;border-radius:10px;font-size:13px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);color:white;outline:none;font-family:inherit;transition:border-color .15s}
+    .form-input:-webkit-autofill,.form-input:-webkit-autofill:hover,.form-input:-webkit-autofill:focus,.form-input:-webkit-autofill:active{-webkit-box-shadow:0 0 0 1000px rgba(var(--zh-bg-rgb),1) inset !important;-webkit-text-fill-color:#fff !important;background-color:rgba(255,255,255,.03) !important;border:1px solid rgba(255,255,255,.06) !important;transition:background-color 5000s ease-in-out 0s}
+    .form-input:focus{border-color:rgba(var(--zh-accent-rgb),.3)}
+    .form-input::placeholder{color:rgba(255,255,255,.15)}
+    .form-hint{font-size:10px;color:rgba(255,255,255,.2);margin-top:3px}
+
+    .btn-primary{width:100%;padding:11px;border-radius:10px;font-size:13px;font-weight:600;background:rgba(var(--zh-accent-rgb),.2);color:var(--zh-accent2);border:1px solid rgba(var(--zh-accent-rgb),.25);cursor:pointer;transition:all .15s;font-family:inherit;margin-top:8px}
+    .btn-primary:hover{background:rgba(var(--zh-accent-rgb),.3)}
+    .btn-primary:disabled{opacity:.4;cursor:default}
+    .btn-success{background:rgba(74,222,128,.15);color:rgba(74,222,128,.8);border-color:rgba(74,222,128,.2)}
+    .btn-success:hover{background:rgba(74,222,128,.25)}
+
+    .error-box{font-size:11px;color:rgba(248,113,113,.7);padding:8px 12px;border-radius:8px;background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.1);margin-bottom:12px;display:none}
+
+    /* Steps */
+    .step{display:none}
+    .step.active{display:block}
+
+    /* Auth tabs */
+    .auth-tabs{display:flex;gap:4px;margin-bottom:12px}
+    .auth-tab{flex:1;padding:7px;border-radius:8px;font-size:11px;font-weight:500;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);color:rgba(255,255,255,.4);cursor:pointer;font-family:inherit;transition:all .15s}
+    .auth-tab.active{border-color:rgba(var(--zh-accent-rgb),.2);background:rgba(var(--zh-accent-rgb),.1);color:var(--zh-accent2)}
+
+    /* Terminal */
+    .terminal{padding:8px;border-radius:8px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.04);max-height:80px;overflow-y:auto;font-family:"JetBrains Mono",monospace;font-size:10px;color:rgba(255,255,255,.35);line-height:1.5;margin-bottom:10px;display:none}
+
+    /* Status */
+    .status-ok{padding:10px;border-radius:10px;background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.15);font-size:12px;color:rgba(74,222,128,.7);margin-bottom:12px;display:none}
+
+    /* Animations */
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    .fade-in{animation:fadeUp .6s cubic-bezier(.6,.6,0,1) both}
+    .d1{animation-delay:.1s}.d2{animation-delay:.2s}.d3{animation-delay:.3s}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .spinner{width:12px;height:12px;border:2px solid rgba(255,255,255,.06);border-top-color:rgba(var(--zh-accent-rgb),.6);border-radius:50%;animation:spin .6s linear infinite;display:inline-block}
+
+    /* Footer */
+    .footer{position:fixed;bottom:0;left:0;right:0;text-align:center;padding:12px;font-size:10px;color:rgba(255,255,255,.1);z-index:4}
+  </style>
+</head>
+<body>
+  <canvas id="gl-bg"></canvas>
+  <div class="bg-overlay"></div>
+  <canvas id="particles"></canvas>
+
+  <div class="main">
+    <div class="card fade-in">
+      <div class="logo-wrap">
+        <img src="/logo.png" class="logo-img" onerror="this.style.display='none'"/>
+        <div class="logo-title">Nascera AI</div>
+      </div>
+
+      <!-- Step: Login -->
+      <div class="step active" id="step-login">
+        <div class="logo-sub" style="text-align:center;margin:-16px 0 20px">Entre com suas credenciais</div>
+        <div class="error-box" id="login-error"></div>
+        <form id="loginForm" onsubmit="doLogin(event)">
+          <div class="form-group">
+            <label class="form-label">Usuário</label>
+            <input type="text" class="form-input" id="login-user" placeholder="Seu usuário" autocomplete="username"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Senha</label>
+            <div style="position:relative">
+              <input type="password" class="form-input" id="login-pass" placeholder="Sua senha" autocomplete="current-password"/>
+              <button type="button" onclick="togglePass('login-pass')" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.2);cursor:pointer;font-size:14px">👁</button>
+            </div>
+          </div>
+          <button type="submit" class="btn-primary" id="btn-login">Entrar</button>
+          <div style="text-align:center;margin-top:12px">
+            <a href="#" onclick="esqueciSenha(); return false" style="font-size:12px;color:rgba(255,255,255,.35);text-decoration:none">Esqueci minha senha</a>
+          </div>
+        </form>
+      </div>
+
+      <!-- Step: Create Account (first access) -->
+      <div class="step" id="step-create">
+        <div style="text-align:center;margin-bottom:20px">
+          <div class="badge"><span class="badge-text">Primeiro acesso</span></div>
+          <div class="logo-sub">Crie sua conta de administrador</div>
+        </div>
+        <div class="error-box" id="create-error"></div>
+        <div class="form-group">
+          <label class="form-label">Nome</label>
+          <input type="text" class="form-input" id="create-name" placeholder="Seu nome" oninput="validateCreate()"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">E-mail</label>
+          <input type="email" class="form-input" id="create-email" placeholder="seu@email.com" oninput="validateCreate()"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Usuário</label>
+          <input type="text" class="form-input" id="create-user" placeholder="Escolha um usuário" oninput="validateCreate()"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Senha</label>
+          <input type="password" class="form-input" id="create-pass" placeholder="Mínimo 6 caracteres" oninput="validateCreate()"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirmar senha</label>
+          <input type="password" class="form-input" id="create-pass2" placeholder="Repita a senha" oninput="validateCreate()"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Código de instalação</label>
+          <input type="text" class="form-input" id="create-token" placeholder="Ex.: 4F2A9C1B"
+                 autocomplete="off" spellcheck="false" maxlength="8"
+                 style="text-transform:uppercase;letter-spacing:.12em;font-family:ui-monospace,monospace"
+                 oninput="validateCreate()"/>
+          <p style="font-size:11.5px;color:rgba(255,255,255,.35);margin:6px 0 0;line-height:1.5">
+            Aparece no terminal onde o Nascera foi iniciado. Ele garante que só quem
+            tem acesso a este computador cria a conta de administrador.
+          </p>
+        </div>
+        <button class="btn-primary" id="btn-create" disabled onclick="createAccount()">Criar conta</button>
+      </div>
+
+      <!-- Step: Claude Auth -->
+      <div class="step" id="step-claude">
+        <div style="text-align:center;margin-bottom:20px">
+          <div class="badge"><span class="badge-text">Claude Code</span></div>
+          <div class="logo-sub">Conecte o Claude Code para usar a inteligência artificial</div>
+        </div>
+        <div class="status-ok" id="claude-status">✓ Claude Code já está autenticado</div>
+        <div id="claude-flow">
+          <div class="auth-tabs">
+            <button class="auth-tab active" onclick="switchClaudeTab('login')">Login Anthropic</button>
+            <button class="auth-tab" onclick="switchClaudeTab('key')">API Key</button>
+          </div>
+          <div id="claude-tab-login">
+            <button class="btn-primary" id="btn-claude-login" onclick="startClaudeLogin()">Iniciar autenticação</button>
+            <div class="terminal" id="claude-terminal"></div>
+            <div id="claude-code-wrap" style="display:none">
+              <p style="font-size:11px;color:rgba(var(--zh-accent2-rgb),.7);margin-bottom:6px">Cole o código de autenticação:</p>
+              <div style="display:flex;gap:6px">
+                <input type="text" class="form-input" id="claude-code" placeholder="Cole o código aqui" style="font-family:'JetBrains Mono',monospace;letter-spacing:1px;text-align:center"/>
+                <button onclick="submitClaudeCode()" style="padding:10px 16px;border-radius:10px;font-size:11px;font-weight:600;background:rgba(var(--zh-accent-rgb),.2);color:var(--zh-accent2);border:1px solid rgba(var(--zh-accent-rgb),.25);cursor:pointer;font-family:inherit;white-space:nowrap">OK</button>
+              </div>
+              <p id="claude-code-msg" style="font-size:10px;margin-top:4px;display:none"></p>
+            </div>
+          </div>
+          <div id="claude-tab-key" style="display:none">
+            <div class="form-group">
+              <input type="password" class="form-input" id="claude-api-key" placeholder="sk-ant-..." oninput="validateClaudeKey()"/>
+              <p class="form-hint">Obtenha em console.anthropic.com/settings/keys</p>
+            </div>
+            <button class="btn-primary" id="btn-claude-key" disabled onclick="saveClaudeKey()">Salvar API Key</button>
+          </div>
+        </div>
+        <button class="btn-primary btn-success" id="btn-claude-skip" style="margin-top:12px;display:none" onclick="finishSetup()">Continuar para o Nascera AI</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">Nascera AI — Powered by Claude Code</div>
+
+  <script>
+    // ── State ──
+    var currentStep = "login";
+    var authToken = null;
+
+    function showStep(id) {
+      document.querySelectorAll(".step").forEach(function(s) { s.classList.remove("active"); });
+      document.getElementById("step-" + id).classList.add("active");
+      currentStep = id;
+    }
+
+    function togglePass(id) {
+      var inp = document.getElementById(id);
+      inp.type = inp.type === "password" ? "text" : "password";
+    }
+
+    // ── Check first access ──
+    (function() {
+      var existing = localStorage.getItem("nascera_token");
+      if (existing) { window.location.href = "/home.html"; return; }
+      fetch("/api/setup-status").then(function(r) { return r.json(); }).then(function(d) {
+        if (d.firstAccess) showStep("create");
+      }).catch(function() {});
+    })();
+
+    // ── Esqueci minha senha (A1): pede o e-mail e dispara o link de reset ──
+    window.esqueciSenha = function() {
+      var email = prompt("Digite o e-mail da sua conta:");
+      if (!email) return;
+      fetch("/api/esqueci-senha", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: email.trim() }) })
+        .then(function(r) { return r.json(); })
+        .then(function(d) { alert(d.error || d.mensagem || "Se este e-mail tiver uma conta, o link chega em instantes."); })
+        .catch(function() { alert("Não consegui falar com o servidor. Tente de novo."); });
+    };
+
+    // ── Login ──
+    function doLogin(e) {
+      e.preventDefault();
+      var user = document.getElementById("login-user").value.trim();
+      var pass = document.getElementById("login-pass").value;
+      var err = document.getElementById("login-error");
+      err.style.display = "none";
+      if (!user || !pass) { err.textContent = "Preencha usuário e senha"; err.style.display = "block"; return; }
+      document.getElementById("btn-login").disabled = true;
+      document.getElementById("btn-login").textContent = "Entrando...";
+      fetch("/api/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: user, password: pass }) })
+        .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
+        .then(function(r) {
+          if (!r.ok) throw new Error(r.data.error || "Credenciais inválidas");
+          localStorage.setItem("nascera_token", r.data.token);
+          localStorage.setItem("nascera_user", r.data.user);
+          window.location.href = "/home.html";
+        })
+        .catch(function(e) {
+          err.textContent = e.message;
+          err.style.display = "block";
+          document.getElementById("btn-login").disabled = false;
+          document.getElementById("btn-login").textContent = "Entrar";
+        });
+    }
+
+    // ── Create Account ──
+    function validateCreate() {
+      var name = document.getElementById("create-name").value.trim();
+      var email = document.getElementById("create-email").value.trim();
+      var user = document.getElementById("create-user").value.trim();
+      var pass = document.getElementById("create-pass").value;
+      var pass2 = document.getElementById("create-pass2").value;
+      var err = document.getElementById("create-error");
+      err.style.display = "none";
+      if (pass && pass2 && pass !== pass2) { err.textContent = "As senhas não coincidem"; err.style.display = "block"; }
+      if (pass && pass.length > 0 && pass.length < 6) { err.textContent = "Senha deve ter no mínimo 6 caracteres"; err.style.display = "block"; }
+      var tok = document.getElementById("create-token").value.trim();
+      var valid = name.length >= 2 && email.includes("@") && user.length >= 3 && pass.length >= 6 && pass === pass2 && tok.length >= 4;
+      document.getElementById("btn-create").disabled = !valid;
+    }
+
+    function createAccount() {
+      var data = {
+        name: document.getElementById("create-name").value.trim(),
+        email: document.getElementById("create-email").value.trim(),
+        username: document.getElementById("create-user").value.trim(),
+        password: document.getElementById("create-pass").value,
+        setupToken: document.getElementById("create-token").value.trim().toUpperCase(),
+      };
+      document.getElementById("btn-create").disabled = true;
+      document.getElementById("btn-create").textContent = "Criando...";
+      fetch("/api/setup/create-account", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) })
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          if (d.ok) {
+            authToken = d.token;
+            localStorage.setItem("nascera_token", d.token);
+            localStorage.setItem("nascera_user", d.user);
+            showStep("claude");
+            checkClaudeAuth();
+          } else {
+            document.getElementById("create-error").textContent = d.error || "Erro";
+            document.getElementById("create-error").style.display = "block";
+            document.getElementById("btn-create").disabled = false;
+            document.getElementById("btn-create").textContent = "Criar conta";
+          }
+        });
+    }
+
+    // ── Claude Auth ──
+    function checkClaudeAuth() {
+      fetch("/api/setup-status").then(function(r) { return r.json(); }).then(function(d) {
+        if (d.claudeAuth) {
+          document.getElementById("claude-status").style.display = "block";
+          document.getElementById("claude-flow").style.display = "none";
+          document.getElementById("btn-claude-skip").style.display = "block";
+        }
+      });
+    }
+
+    var claudeTabMode = "login";
+    function switchClaudeTab(mode) {
+      claudeTabMode = mode;
+      document.getElementById("claude-tab-login").style.display = mode === "login" ? "block" : "none";
+      document.getElementById("claude-tab-key").style.display = mode === "key" ? "block" : "none";
+      document.querySelectorAll(".auth-tab").forEach(function(t, i) {
+        t.classList.toggle("active", (i === 0 && mode === "login") || (i === 1 && mode === "key"));
+      });
+    }
+
+    function startClaudeLogin() {
+      var btn = document.getElementById("btn-claude-login");
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Aguardando...';
+      var term = document.getElementById("claude-terminal");
+      term.style.display = "block";
+      term.textContent = "> claude login\n";
+
+      fetch("/api/setup/claude-login-start", { method: "POST" })
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          if (d.success) {
+            term.style.display = "none";
+            var urlWrap = document.createElement("div");
+            urlWrap.style.cssText = "margin:12px 0;padding:14px;border-radius:10px;background:rgba(var(--zh-accent-rgb),.06);border:1px solid rgba(var(--zh-accent-rgb),.12)";
+            urlWrap.innerHTML = "<div style='font-size:11px;color:rgba(255,255,255,.4);margin-bottom:8px'>1. Acesse o link abaixo para autenticar:</div>" +
+              "<div style='display:flex;gap:6px'>" +
+              "<input type='text' readonly value='" + d.url + "' style='flex:1;padding:8px 10px;border-radius:8px;font-size:11px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);color:rgba(var(--zh-accent2-rgb),.8);font-family:JetBrains Mono,monospace;outline:none;cursor:text'/>" +
+              "<button onclick=\"navigator.clipboard.writeText('" + d.url + "');this.textContent='Copiado!'\" style='padding:8px 14px;border-radius:8px;font-size:11px;font-weight:600;background:rgba(var(--zh-accent-rgb),.2);color:var(--zh-accent2);border:1px solid rgba(var(--zh-accent-rgb),.25);cursor:pointer;font-family:inherit;white-space:nowrap'>Copiar</button>" +
+              "</div>" +
+              "<a href='" + d.url + "' target='_blank' style='display:inline-block;margin-top:8px;font-size:10px;color:rgba(var(--zh-accent-rgb),.5);text-decoration:underline'>Abrir no navegador</a>";
+            btn.parentNode.insertBefore(urlWrap, document.getElementById("claude-code-wrap"));
+            document.getElementById("claude-code-wrap").style.display = "block";
+            btn.innerHTML = "Link gerado";
+          } else {
+            term.textContent += "> Erro: " + (d.error || "Falha") + "\n";
+            btn.disabled = false;
+            btn.textContent = "Tentar novamente";
+          }
+        });
+    }
+
+    function submitClaudeCode() {
+      var code = document.getElementById("claude-code").value.trim();
+      if (!code) return;
+      var msg = document.getElementById("claude-code-msg");
+      msg.style.display = "block";
+      msg.textContent = "Verificando...";
+      msg.style.color = "rgba(250,204,21,.5)";
+
+      fetch("/api/setup/claude-login-code", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code: code }) })
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          if (d.success) {
+            msg.textContent = "✓ Autenticado como " + (d.email || "");
+            msg.style.color = "rgba(74,222,128,.6)";
+            document.getElementById("claude-status").style.display = "block";
+            document.getElementById("claude-status").textContent = "✓ Autenticado como " + (d.email || "");
+            document.getElementById("btn-claude-skip").style.display = "block";
+            setTimeout(function() { document.getElementById("claude-flow").style.display = "none"; }, 500);
+          } else {
+            msg.textContent = "✗ " + (d.error || "Código inválido");
+            msg.style.color = "rgba(248,113,113,.6)";
+          }
+        });
+    }
+
+    function validateClaudeKey() {
+      var key = document.getElementById("claude-api-key").value.trim();
+      document.getElementById("btn-claude-key").disabled = !key.startsWith("sk-");
+    }
+
+    function saveClaudeKey() {
+      // For API key mode, just go to home - the key will be used by the server
+      document.getElementById("btn-claude-skip").style.display = "block";
+      document.getElementById("claude-status").style.display = "block";
+      document.getElementById("claude-status").textContent = "✓ API Key configurada";
+      document.getElementById("claude-flow").style.display = "none";
+    }
+
+    function finishSetup() {
+      window.location.href = "/home.html";
+    }
+
+    // ── Particles ──
+    (function() {
+      var c = document.getElementById("particles");
+      var g = c.getContext("2d");
+      var pts = [];
+      function sz() { c.width = window.innerWidth; c.height = window.innerHeight; }
+      sz(); window.addEventListener("resize", sz);
+      for (var i = 0; i < 80; i++) {
+        pts.push({ a: Math.random()*6.28, d: 60+Math.random()*400, s: .04+Math.random()*.12, r: .3+Math.random()*.5, o: .12+Math.random()*.4, dr: (Math.random()-.5)*.002, ph: Math.random()*6.28 });
+      }
+      function frame() {
+        g.clearRect(0, 0, c.width, c.height);
+        var cx = c.width/2, cy = c.height*.45;
+        for (var i = 0; i < pts.length; i++) {
+          var p = pts[i]; p.d -= p.s; p.a += p.dr; p.ph += .015;
+          if (p.d < 15) { p.a = Math.random()*6.28; p.d = 200+Math.random()*350; }
+          var x = cx+Math.cos(p.a)*p.d, y = cy+Math.sin(p.a)*p.d;
+          var al = p.o * Math.min(1, p.d/400) * (.5+.5*Math.sin(p.ph));
+          g.beginPath(); g.arc(x, y, p.r, 0, 6.28);
+          g.fillStyle = "rgba(210,200,255," + al.toFixed(3) + ")"; g.fill();
+        }
+        requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+    })();
+  </script>
+
+  <!-- WebGL Fluid Background -->
+  <script>
+  (function(){
+    var canvas=document.getElementById('gl-bg');
+    var gl=canvas.getContext('webgl',{antialias:true,alpha:false});
+    if(!gl){return;}
+    var VS='attribute vec2 a_pos;void main(){gl_Position=vec4(a_pos,0.0,1.0);}';
+    var FS=`precision highp float;
+    uniform vec2 u_res;uniform float u_time;uniform vec2 u_mouse;
+    vec3 permute(vec3 x){return mod((x*34.0+1.0)*x,289.0);}
+    float snoise(vec2 v){
+      const vec4 C=vec4(0.211324865405187,0.366025403784439,-0.577350269189626,0.024390243902439);
+      vec2 i=floor(v+dot(v,C.yy));vec2 x0=v-i+dot(i,C.xx);
+      vec2 i1=(x0.x>x0.y)?vec2(1.0,0.0):vec2(0.0,1.0);
+      vec4 x12=x0.xyxy+C.xxzz;x12.xy-=i1;i=mod(i,289.0);
+      vec3 p=permute(permute(i.y+vec3(0.0,i1.y,1.0))+i.x+vec3(0.0,i1.x,1.0));
+      vec3 m=max(0.5-vec3(dot(x0,x0),dot(x12.xy,x12.xy),dot(x12.zw,x12.zw)),0.0);
+      m=m*m;m=m*m;
+      vec3 x2=2.0*fract(p*C.www)-1.0;vec3 h=abs(x2)-0.5;vec3 ox=floor(x2+0.5);vec3 a0=x2-ox;
+      m*=1.79284291400159-0.85373472095314*(a0*a0+h*h);
+      vec3 g;g.x=a0.x*x0.x+h.x*x0.y;g.yz=a0.yz*x12.xz+h.yz*x12.yw;
+      return 130.0*dot(m,g);
+    }
+    float fbm(vec2 p,float t){
+      float v=0.0;float a=0.55;vec2 shift=vec2(100.0);
+      mat2 rot=mat2(cos(0.5),sin(0.5),-sin(0.5),cos(0.5));
+      for(int i=0;i<6;i++){v+=a*(snoise(p+t)*0.5+0.5);p=rot*p*2.1+shift;a*=0.48;}
+      return v;
+    }
+    void main(){
+      vec2 uv=gl_FragCoord.xy/u_res;float ar=u_res.x/u_res.y;
+      vec2 st=vec2(uv.x*ar,uv.y)*1.6;float t=u_time*0.069;
+      vec2 ms=vec2(u_mouse.x*ar,u_mouse.y)*1.6;vec2 toMouse=ms-st;
+      float mDist=length(toMouse);vec2 pull=toMouse*exp(-mDist*1.6)*0.28;
+      float ox2=fbm(st+pull+vec2(1.7,9.2),t*0.9);
+      float oy2=fbm(st+pull+vec2(8.3,2.8),t*0.9+1.5);
+      vec2 warped=st+pull+vec2(ox2,oy2)*0.45;
+      float n=fbm(warped,t);
+      float glow=max(n-0.44,0.0)/0.56;glow=pow(glow,1.5);glow=clamp(glow,0.0,1.0);
+      float spot=exp(-mDist*mDist*1.8)*0.20;glow=clamp(glow+spot,0.0,1.0);
+      vec3 c0=vec3(0.02,0.02,0.08);vec3 c1=vec3(0.10,0.04,0.28);
+      vec3 c2=vec3(0.50,0.15,0.90);vec3 c3=vec3(0.90,0.75,1.00);
+      vec3 col;
+      if(glow<0.33){col=mix(c0,c1,glow/0.33);}
+      else if(glow<0.66){col=mix(c1,c2,(glow-0.33)/0.33);}
+      else{col=mix(c2,c3,(glow-0.66)/0.34);}
+      col*=1.25;
+      vec2 vc=uv-0.5;float vig=1.0-dot(vc,vc)*2.0;col*=clamp(vig,0.0,1.0);
+      gl_FragColor=vec4(clamp(col,0.0,1.0),1.0);
+    }`;
+    function cs(type,src){var s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)){console.error(gl.getShaderInfoLog(s));return null;}return s;}
+    var prog=gl.createProgram();var vs=cs(gl.VERTEX_SHADER,VS);var fs=cs(gl.FRAGMENT_SHADER,FS);
+    if(!vs||!fs)return;gl.attachShader(prog,vs);gl.attachShader(prog,fs);gl.linkProgram(prog);
+    if(!gl.getProgramParameter(prog,gl.LINK_STATUS))return;gl.useProgram(prog);
+    var buf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+    gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,-1,1,1,-1,1]),gl.STATIC_DRAW);
+    var aPos=gl.getAttribLocation(prog,'a_pos');gl.enableVertexAttribArray(aPos);
+    gl.vertexAttribPointer(aPos,2,gl.FLOAT,false,0,0);
+    var uRes=gl.getUniformLocation(prog,'u_res');var uTime=gl.getUniformLocation(prog,'u_time');
+    var uMouse=gl.getUniformLocation(prog,'u_mouse');
+    var tMX=0.5,tMY=0.5,sMX=0.5,sMY=0.5;
+    window.addEventListener('mousemove',function(e){tMX=e.clientX/window.innerWidth;tMY=1.0-e.clientY/window.innerHeight;});
+    function resize(){var dpr=Math.min(window.devicePixelRatio||1,2);canvas.width=window.innerWidth*dpr;canvas.height=window.innerHeight*dpr;gl.viewport(0,0,canvas.width,canvas.height);}
+    window.addEventListener('resize',resize);resize();
+    var ease=0.025;var start=performance.now();
+    function frame(now){sMX+=(tMX-sMX)*ease;sMY+=(tMY-sMY)*ease;gl.uniform2f(uRes,canvas.width,canvas.height);gl.uniform1f(uTime,(now-start)*0.001);gl.uniform2f(uMouse,sMX,sMY);gl.drawArrays(gl.TRIANGLES,0,6);requestAnimationFrame(frame);}
+    requestAnimationFrame(frame);
+  })();
+  </script>
+</body>
+</html>

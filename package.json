@@ -1,0 +1,48 @@
+{
+  "name": "nascera",
+  "version": "1.5.0",
+  "description": "Fluxora Web Terminal — Claude Code Interface",
+  "main": "server.js",
+  "engines": {
+    "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "node --test testes/*.test.js",
+    "test:pg": "node testes/billing-debito.pg.js",
+    "test:aceite": "bash testes/sprint0-aceite.sh",
+    "test:rotas": "node testes/rotas-autorizacao.js",
+    "test:smoke": "node testes/rotas-smoke.js",
+    "test:fake": "node --test testes/build-chat-fake.js",
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "@anthropic-ai/claude-agent-sdk": "^0.3.220",
+    "async-mutex": "^0.5.0",
+    "axios": "^1.13.6",
+    "bytenode": "^1.5.7",
+    "cheerio": "^1.2.0",
+    "compression": "^1.8.1",
+    "dompurify": "^3.4.13",
+    "dotenv": "^17.4.2",
+    "express": "^4.21.0",
+    "express-rate-limit": "^8.6.2",
+    "helmet": "^8.3.0",
+    "http-proxy-middleware": "^3.0.5",
+    "jsonwebtoken": "^9.0.2",
+    "node-pty": "^1.1.0",
+    "nodemailer": "^9.0.5",
+    "pg": "^8.22.0",
+    "puppeteer": "^24.40.0",
+    "puppeteer-core": "^24.40.0",
+    "sharp": "^0.35.3",
+    "ssh2": "^1.17.0",
+    "write-file-atomic": "^8.0.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.2.0",
+    "typescript": "^7.0.2"
+  }
+}

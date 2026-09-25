@@ -1,0 +1,2340 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"/>
+  <link rel="icon" href="/favicon.png"/>
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <link rel="stylesheet" href="/theme.css"/>
+  <title>Nascera Admin</title>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html { background: var(--zh-bg); }
+    body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif; margin: 0; height: 100vh; overflow: hidden; background: var(--zh-bg); color: #fff; -webkit-font-smoothing: antialiased; display: flex; }
+    ::selection { background: rgba(var(--zh-accent-rgb),.5); color: #fff; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: inherit; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.05); border-radius: 99px; }
+    @keyframes fadeUp { 0%{opacity:0;transform:translateY(16px)} 100%{opacity:1;transform:translateY(0)} }
+    .fade-in { animation: fadeUp .5s cubic-bezier(.6,.6,0,1) both; }
+
+    /* ── Sidebar (mesma do home) ── */
+    .sidebar { width: 250px; min-width: 250px; background: var(--zh-bg); border-right: 1px solid rgba(255,255,255,.04); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    .sidebar-link { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px; font-size: 13px; color: rgba(255,255,255,.55); transition: .2s cubic-bezier(.6,.6,0,1); cursor: pointer; text-decoration: none; }
+    .sidebar-link:hover { color: rgba(255,255,255,.8); background: rgba(255,255,255,.04); }
+    .sidebar-link.active { color: #fff; background: rgba(var(--zh-accent-rgb),.08); }
+    .sidebar-section { font-size: 10px; text-transform: uppercase; letter-spacing: .1em; color: rgba(255,255,255,.2); padding: 20px 12px 6px; font-weight: 600; }
+
+    /* ── Conteúdo ── */
+    .main { flex: 1; height: 100vh; overflow-y: auto; padding: 34px 38px 60px; }
+    .page-badge { display: inline-block; padding: 5px 14px; border-radius: 32px; font-size: 11px; font-weight: 600; color: rgba(var(--zh-accent2-rgb),.8); background: rgba(var(--zh-accent-rgb),.08); border: 1px solid rgba(var(--zh-accent-rgb),.15); margin-bottom: 10px; }
+    .page-title { font-size: 26px; font-weight: 700; margin: 0 0 4px; background: linear-gradient(180deg,#fff,rgba(255,255,255,.7)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .page-sub { font-size: 13px; color: rgba(239,237,253,.35); margin: 0 0 26px; }
+
+    /* ── Cards (mesmo padrão do sistema) ── */
+    .card { background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.06); border-radius: 16px; padding: 18px 20px; }
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; margin-bottom: 22px; }
+    .stat-card { background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.06); border-radius: 16px; padding: 16px 18px; transition: .15s; }
+    .stat-card:hover { background: rgba(var(--zh-accent-rgb),.04); border-color: rgba(var(--zh-accent-rgb),.15); }
+    .stat-label { font-size: 11px; color: rgba(255,255,255,.35); display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+    .stat-value { font-size: 24px; font-weight: 700; color: rgba(255,255,255,.9); }
+    .stat-hint { font-size: 10.5px; color: rgba(255,255,255,.25); margin-top: 3px; }
+
+    /* ── Tabelas ── */
+    .tbl-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    th { text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: rgba(255,255,255,.25); font-weight: 600; padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,.05); white-space: nowrap; }
+    td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,.03); color: rgba(255,255,255,.65); vertical-align: middle; }
+    tr:hover td { background: rgba(var(--zh-accent-rgb),.03); }
+    .chip { display: inline-block; padding: 2px 9px; border-radius: 99px; font-size: 10px; font-weight: 600; }
+    .chip-purple { background: rgba(var(--zh-accent-rgb),.12); color: var(--zh-accent2); }
+    .chip-green { background: rgba(74,222,128,.1); color: #4ade80; }
+    .chip-gray { background: rgba(255,255,255,.05); color: rgba(255,255,255,.4); }
+    .chip-amber { background: rgba(251,191,36,.1); color: #fbbf24; }
+    .chip-red { background: rgba(239,68,68,.1); color: #f87171; }
+
+    /* ── Botões ── */
+    .btn { padding: 8px 14px; border-radius: 10px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid transparent; font-family: inherit; transition: .15s; }
+    .btn-primary { background: rgba(var(--zh-accent-rgb),.15); color: var(--zh-accent2); border-color: rgba(var(--zh-accent-rgb),.2); }
+    .btn-primary:hover { background: rgba(var(--zh-accent-rgb),.25); }
+    .btn-danger { background: rgba(248,113,113,.08); color: #f87171; border-color: rgba(248,113,113,.15); }
+    .btn-danger:hover { background: rgba(248,113,113,.18); }
+    .btn-ghost { background: rgba(255,255,255,.04); color: rgba(255,255,255,.6); border-color: rgba(255,255,255,.06); }
+    .btn-ghost:hover { background: rgba(255,255,255,.08); color: #fff; }
+    .btn-xs { padding: 4px 10px; font-size: 11px; border-radius: 8px; }
+
+    /* ── Inputs ── */
+    .inp { width: 100%; padding: 9px 12px; border-radius: 10px; font-size: 12.5px; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08); color: #fff; outline: none; font-family: inherit; transition: .15s; }
+    .inp:focus { border-color: rgba(var(--zh-accent-rgb),.4); }
+    .inp-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; color: rgba(255,255,255,.3); font-weight: 600; display: block; margin: 0 0 5px; }
+    select.inp { appearance: none; }
+
+    .section { display: none; }
+    .section.active { display: block; }
+    .act-row { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 10px; font-size: 12px; color: rgba(255,255,255,.5); border-bottom: 1px solid rgba(255,255,255,.03); }
+    .act-row:hover { background: rgba(var(--zh-accent-rgb),.03); }
+    .act-time { font-size: 10.5px; color: rgba(255,255,255,.25); white-space: nowrap; margin-left: auto; font-family: ui-monospace, monospace; }
+    .logbox { background: rgba(0,0,0,.35); border: 1px solid rgba(255,255,255,.05); border-radius: 12px; padding: 12px 14px; font-family: ui-monospace, monospace; font-size: 10.5px; line-height: 1.6; color: rgba(255,255,255,.45); white-space: pre-wrap; max-height: 300px; overflow-y: auto; }
+
+    /* ── Modal ── */
+    .overlay { position: fixed; inset: 0; z-index: 50; display: none; align-items: center; justify-content: center; background: rgba(var(--zh-bg-rgb),.8); backdrop-filter: blur(12px); padding: 16px; }
+    .overlay.open { display: flex; }
+    .modal { width: 100%; max-width: 420px; background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.06); border-radius: 20px; backdrop-filter: blur(16px); padding: 24px; }
+    .modal h3 { margin: 0 0 4px; font-size: 17px; font-weight: 600; background: linear-gradient(180deg,#fff,rgba(255,255,255,.7)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .modal .msub { font-size: 12px; color: rgba(239,237,253,.35); margin: 0 0 16px; }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="flex items-center gap-2.5 px-4 py-3.5" style="display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.04)">
+      <img src="/logo.png" alt="Nascera" style="height:22px"/>
+      <span style="font-size:14px;font-weight:600;color:rgba(255,255,255,.75)">Nascera</span>
+      <span class="chip chip-purple" style="margin-left:2px">Admin</span>
+    </div>
+    <nav style="padding:12px 10px;flex:1;overflow-y:auto">
+      <div class="sidebar-section" style="padding-top:4px">Negócio</div>
+      <a class="sidebar-link active" data-sec="overview" onclick="showSection('overview')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+        <span>Visão Geral</span>
+      </a>
+      <a class="sidebar-link" data-sec="users" onclick="showSection('users')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+        <span>Clientes</span>
+      </a>
+      <a class="sidebar-link" data-sec="billing" onclick="showSection('billing')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+        <span>Receita & Planos</span>
+      </a>
+      <div class="sidebar-section">Produto</div>
+      <a class="sidebar-link" data-sec="projects" onclick="showSection('projects')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+        <span>Projetos</span>
+      </a>
+      <a class="sidebar-link" data-sec="engine" onclick="showSection('engine')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        <span>IA & Motor</span>
+      </a>
+      <a class="sidebar-link" data-sec="domains" onclick="showSection('domains')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+        <span>Domínios</span>
+      </a>
+      <div class="sidebar-section">Sistema</div>
+      <a class="sidebar-link" data-sec="email" onclick="showSection('email')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 6L2 7"/></svg>
+        <span>E-mail</span>
+      </a>
+      <a class="sidebar-link" data-sec="theme" onclick="showSection('theme')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="19" cy="13" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="10" cy="20" r="2.5"/><path d="M12 2a10 10 0 100 20c1 0 1.5-.7 1.5-1.5 0-1.5-1-1.5-1-3 0-1 .8-1.5 2-1.5h2A5.5 5.5 0 0022 10c0-4.4-4.5-8-10-8z"/></svg>
+        <span>Aparência</span>
+      </a>
+      <a class="sidebar-link" data-sec="update" onclick="showSection('update')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M21 2v6h-6M3 22v-6h6"/><path d="M3.5 9a9 9 0 0114.9-3.4L21 8M20.5 15a9 9 0 01-14.9 3.4L3 16"/></svg>
+        <span>Atualizações</span>
+        <span id="upd-selo" class="chip chip-purple" style="display:none;margin-left:auto;font-size:9.5px;padding:1px 6px">novo</span>
+      </a>
+      <a class="sidebar-link" data-sec="system" onclick="showSection('system')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        <span>Servidor & Logs</span>
+      </a>
+      <a class="sidebar-link" data-sec="activity" onclick="showSection('activity')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        <span>Atividade</span>
+      </a>
+      <a class="sidebar-link" data-sec="config" onclick="showSection('config')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 008.6 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H2a2 2 0 110-4h.09A1.65 1.65 0 003.6 8.6a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H8a1.65 1.65 0 001-1.51V2a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V8a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        <span>Configurações</span>
+      </a>
+    </nav>
+    <div style="padding:12px 16px;border-top:1px solid rgba(255,255,255,.04);display:flex;align-items:center;gap:8px">
+      <a href="/home.html" class="sidebar-link" style="flex:1">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        <span>Voltar ao Nascera</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- Conteúdo -->
+  <main class="main">
+    <!-- ═══ VISÃO GERAL ═══ -->
+    <div class="section active fade-in" id="sec-overview">
+      <div class="page-badge">Painel do dono</div>
+      <h1 class="page-title">Visão Geral</h1>
+      <p class="page-sub">Tudo que está acontecendo no seu Nascera, num lugar só.</p>
+      <div class="stat-grid" id="ov-stats"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px" id="ov-cols">
+        <div class="card">
+          <div class="stat-label" style="margin-bottom:12px">Claude Code</div>
+          <div id="ov-claude" style="font-size:12.5px;color:rgba(255,255,255,.55);line-height:1.9">Carregando...</div>
+        </div>
+        <div class="card">
+          <div class="stat-label" style="margin-bottom:12px">Atividade recente</div>
+          <div id="ov-activity" style="max-height:260px;overflow-y:auto"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ CLIENTES ═══ -->
+    <div class="section fade-in" id="sec-users">
+      <div class="page-badge">Negócio</div>
+      <h1 class="page-title">Clientes</h1>
+      <p class="page-sub">Quem usa o sistema: acesso, papel, status da conta e IA própria. Suspender preserva os projetos — excluir é o último recurso.</p>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+          <input id="users-busca" placeholder="Buscar por usuário, nome ou e-mail…" oninput="renderUsers()"
+                 style="flex:1;min-width:220px;max-width:360px;padding:8px 12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:8px;color:#fff;font-size:12.5px;outline:none">
+          <button class="btn btn-primary" onclick="openUserModal()">+ Novo cliente</button>
+        </div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>Usuário</th><th>Nome</th><th>E-mail</th><th>Papel</th><th>Status</th><th>Criado em</th><th style="text-align:right">Ações</th></tr></thead>
+          <tbody id="users-tbody"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- ═══ PROJETOS ═══ -->
+    <div class="section fade-in" id="sec-projects">
+      <div class="page-badge">Produto</div>
+      <h1 class="page-title">Projetos</h1>
+      <p class="page-sub">Todos os projetos criados, com dono, tamanho, versões e custo de IA.</p>
+      <div class="card">
+        <div style="margin-bottom:12px">
+          <input id="projects-busca" placeholder="Buscar por projeto, slug ou dono…" oninput="renderProjects()"
+                 style="width:100%;max-width:360px;padding:8px 12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:8px;color:#fff;font-size:12.5px;outline:none">
+        </div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>Projeto</th><th>Dono</th><th>Nível</th><th>Modelo</th><th>Versões</th><th>Publicado</th><th>Tamanho</th><th>Custo IA</th><th style="text-align:right">Ações</th></tr></thead>
+          <tbody id="projects-tbody"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- ═══ IA & MOTOR ═══ -->
+    <div class="section fade-in" id="sec-engine">
+      <div class="page-badge">Produto</div>
+      <h1 class="page-title">IA & Motor</h1>
+      <p class="page-sub">Sessões vivas, modelos locais e quem paga o token — sua conta ou a IA própria de cada cliente.</p>
+
+      <!-- IA própria (BYOK) — o admin decide se o cliente pode conectar a própria chave -->
+      <div class="card" style="margin-bottom:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+          <div style="flex:1;min-width:260px">
+            <div class="stat-label" style="margin:0 0 4px">IA própria dos clientes</div>
+            <p style="font-size:11.5px;color:rgba(255,255,255,.35);margin:0;line-height:1.5">
+              Liberado, cada cliente pode conectar a <b>própria</b> chave da Anthropic (API ou assinatura via
+              <code style="font-size:10.5px">claude setup-token</code>). Os builds dele passam a rodar por conta dele —
+              <b>o token não sai do seu bolso</b> e os turnos não debitam créditos. Vale para sessões novas.
+            </p>
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;white-space:nowrap">
+            <input type="checkbox" id="iap-toggle" onchange="salvarIaPropria()" style="width:16px;height:16px;accent-color:var(--zh-accent)">
+            <span style="font-size:12.5px;color:rgba(255,255,255,.7)">Permitir IA própria</span>
+          </label>
+        </div>
+        <div id="iap-conectados" style="margin-top:12px"></div>
+      </div>
+      <div class="card">
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>Sessão</th><th>Estado</th><th>Modo</th><th>Modelo</th><th>Turnos</th><th>Custo</th><th>Ativa há</th><th>Ociosa há</th><th style="text-align:right">Ações</th></tr></thead>
+          <tbody id="engine-tbody"></tbody>
+        </table></div>
+        <p id="engine-empty" style="display:none;font-size:12px;color:rgba(255,255,255,.3);text-align:center;padding:20px 0">Nenhuma sessão viva no momento. Sessões aparecem quando alguém abre um projeto.</p>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <div class="stat-label" style="margin:0">Modelos locais</div>
+          <button class="btn btn-ghost" style="padding:5px 10px;font-size:11.5px" onclick="loadModelosLocais()">Atualizar</button>
+        </div>
+        <p style="font-size:11.5px;color:rgba(255,255,255,.3);margin:0 0 14px">Rode o Nascera em cima de um modelo open source na sua própria máquina, sem consumir créditos. O motor continua o mesmo — só troca quem responde.</p>
+        <div id="ml-caixa"><div style="color:rgba(255,255,255,.35);font-size:13px">Verificando…</div></div>
+      </div>
+    </div>
+
+    <!-- ═══ RECEITA & PLANOS ═══ -->
+    <div class="section fade-in" id="sec-billing">
+      <div class="page-badge">Negócio</div>
+      <h1 class="page-title">Receita & Planos</h1>
+      <p class="page-sub">O dinheiro que entra (vendas e webhook da Hotmart) e como os clientes pagam: planos, créditos e custo por modelo.</p>
+
+      <!-- Vendas & Hotmart (A0.1/A0.3): a venda credita sozinha, o ledger enxerga tudo -->
+      <div class="card" style="margin-bottom:14px">
+        <div class="stat-label" style="margin-bottom:10px">Vendas & Hotmart</div>
+        <div id="vendas-resumo" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:14px"></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;padding:12px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:10px;margin-bottom:14px">
+          <div>
+            <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:4px">URL do webhook (cole na Hotmart, em Ferramentas → Webhook)</div>
+            <input id="hm-url" readonly onclick="this.select()" style="width:100%;padding:7px 10px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08);border-radius:7px;color:rgba(255,255,255,.6);font-size:11.5px;font-family:ui-monospace,monospace">
+          </div>
+          <div>
+            <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:4px">Hottok (token de verificação da Hotmart) <span id="hm-hottok-estado" style="color:#4ade80"></span></div>
+            <input id="hm-hottok" type="password" placeholder="Cole o hottok da sua conta Hotmart" autocomplete="off" style="width:100%;padding:7px 10px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08);border-radius:7px;color:#fff;font-size:11.5px">
+          </div>
+          <div>
+            <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:4px">Plano aplicado na compra aprovada</div>
+            <select id="hm-plano" style="width:100%;padding:7px 10px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08);border-radius:7px;color:#fff;font-size:11.5px"></select>
+          </div>
+          <div>
+            <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:4px">Chave Pix (aparece na tela de compra do cliente)</div>
+            <input id="px-chave" placeholder="CPF, e-mail, telefone ou aleatória" autocomplete="off" style="width:100%;padding:7px 10px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08);border-radius:7px;color:#fff;font-size:11.5px">
+          </div>
+          <div>
+            <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:4px">Titular da chave (opcional)</div>
+            <input id="px-titular" placeholder="Nome que o cliente vê" autocomplete="off" style="width:100%;padding:7px 10px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08);border-radius:7px;color:#fff;font-size:11.5px">
+          </div>
+          <div style="display:flex;align-items:flex-end">
+            <button class="btn btn-primary" style="width:100%" onclick="salvarHotmart()">Salvar configurações</button>
+          </div>
+        </div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>Data</th><th>Cliente</th><th>Valor</th><th>Meio</th><th>Plano</th><th>Referência</th><th>Status</th></tr></thead>
+          <tbody id="vendas-tbody"></tbody>
+        </table></div>
+        <p id="vendas-vazio" style="display:none;font-size:12px;color:rgba(255,255,255,.3);text-align:center;padding:16px 0">Nenhuma venda registrada ainda. Elas entram sozinhas pelo webhook — ou quando você registra um pagamento ao conceder créditos.</p>
+      </div>
+
+      <!-- Modo -->
+      <div class="card" style="margin-bottom:14px">
+        <div class="stat-label" style="margin-bottom:12px">Modelo de cobrança</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px" id="bill-modes"></div>
+        <p style="font-size:10.5px;color:rgba(255,255,255,.25);margin:12px 0 0" id="bill-mode-hint"></p>
+      </div>
+
+      <!-- Config de créditos -->
+      <div class="card" style="margin-bottom:14px;display:none" id="bill-credits-cfg">
+        <div class="stat-label" style="margin-bottom:12px">Motor de créditos</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">
+          <div>
+            <label class="inp-label">US$ por crédito</label>
+            <input class="inp" id="bill-usd" type="number" step="0.01" min="0.01"/>
+            <p style="font-size:10px;color:rgba(251,191,36,.55);margin:5px 0 0">A alavanca de preço do produto. Mudar reprecifica o saldo exibido retroativamente.</p>
+          </div>
+          <div>
+            <label class="inp-label">Teto diário padrão (US$)</label>
+            <input class="inp" id="bill-daily" type="number" step="1" min="0"/>
+            <p style="font-size:10px;color:rgba(255,255,255,.25);margin:5px 0 0">Freio de gasto desgovernado num dia. 0 desliga.</p>
+          </div>
+          <div>
+            <label class="inp-label">Fuso das janelas</label>
+            <input class="inp" id="bill-tz" type="text" placeholder="America/Sao_Paulo"/>
+            <p style="font-size:10px;color:rgba(255,255,255,.25);margin:5px 0 0">Diário e mensal viram NESTE fuso, não no do servidor.</p>
+          </div>
+          <div>
+            <label class="inp-label">Markup padrão (%)</label>
+            <div style="display:flex;align-items:center;gap:6px">
+              <span style="font-size:13px;color:rgba(255,255,255,.35);font-family:ui-monospace,monospace">+</span>
+              <input class="inp" id="bill-markup" type="number" step="5" min="0" oninput="renderBillModels();renderBillPlans();renderBillSim()"/>
+              <span style="font-size:13px;color:rgba(255,255,255,.35);font-family:ui-monospace,monospace">%</span>
+            </div>
+            <p style="font-size:10px;color:rgba(255,255,255,.25);margin:5px 0 0">Quanto você cobra ACIMA do custo base (+100% = dobro). Modelo sem markup próprio usa este.</p>
+          </div>
+          <div>
+            <label class="inp-label">Câmbio US$ → R$</label>
+            <input class="inp" id="bill-fx" type="number" step="0.01" min="0.01" oninput="renderBillPlans();renderBillSim()"/>
+            <p style="font-size:10px;color:rgba(255,255,255,.25);margin:5px 0 0">Converte o preço do plano em consumo liberado (US$) e o lucro em reais.</p>
+          </div>
+          <div>
+            <label class="inp-label">Sessões de 5h por semana</label>
+            <input class="inp" id="bill-sessions" type="number" step="1" min="1" max="50" oninput="renderBillPlans();renderBillSim()"/>
+            <p style="font-size:10px;color:rgba(255,255,255,.25);margin:5px 0 0">Divide a semana em janelas de 5h (modelo Claude). Teto da sessão = semana ÷ este número.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modelos & custo por token -->
+      <div class="card" style="margin-bottom:14px;display:none" id="bill-models-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div class="stat-label" style="margin:0">Modelos &amp; custo por token</div>
+          <button class="btn btn-ghost btn-xs" onclick="billAddModel()">+ Modelo</button>
+        </div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>ID (casa por substring)</th><th>Nome</th><th>Entrada<br/>US$/Mtok</th><th>Saída<br/>US$/Mtok</th><th>Cache leit.</th><th>Cache escr.</th><th>Markup (%)</th><th>Cobrado<br/>US$/Mtok</th><th></th></tr></thead>
+          <tbody id="bill-models-tbody"></tbody>
+        </table></div>
+        <p style="font-size:10.5px;color:rgba(255,255,255,.25);margin:10px 0 0">Custo base = preço da Anthropic por milhão de tokens. Cobrado = base + markup — é o que desconta do orçamento do plano. O ID casa por substring com o modelo real do turno e o mais específico vence ("opus-5" ganha de "opus"); modelo fora da lista usa o custo informado pelo SDK com o markup padrão.</p>
+      </div>
+
+      <!-- Simulador de lucro (logo abaixo do markup: mexeu, viu o resultado) -->
+      <div class="card" style="margin-bottom:14px;display:none" id="bill-sim-card">
+        <div class="stat-label" style="margin-bottom:12px">Simulador de lucro</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:14px">
+          <div>
+            <label class="inp-label">Plano</label>
+            <select class="inp" id="sim-plan" onchange="renderBillSim()"></select>
+          </div>
+          <div>
+            <label class="inp-label">Modelo usado</label>
+            <select class="inp" id="sim-model" onchange="renderBillSim()"></select>
+          </div>
+          <div>
+            <label class="inp-label">Uso consumido (% do plano)</label>
+            <input class="inp" id="sim-pct" type="number" min="0" max="100" step="5" value="100" onchange="renderBillSim()" oninput="renderBillSim()"/>
+          </div>
+        </div>
+        <div id="sim-out" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px"></div>
+        <p style="font-size:10.5px;color:rgba(255,255,255,.25);margin:12px 0 0" id="sim-note"></p>
+      </div>
+
+      <!-- Mensalidade: o preço LIBERA o consumo (nunca negativo por construção) -->
+      <div class="card" style="margin-bottom:14px" id="bill-plans-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div class="stat-label" style="margin:0">Mensalidade — planos</div>
+          <button class="btn btn-ghost btn-xs" onclick="billAddPlan()">+ Plano</button>
+        </div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>Slug</th><th>Nome</th><th>Preço (R$)</th><th>Consumo liberado<br/>US$/mês (seu preço)</th><th>Semana<br/>US$</th><th>Sessão 5h<br/>US$</th><th>Bônus (US$)</th><th>Sua margem</th><th></th></tr></thead>
+          <tbody id="bill-plans-tbody"></tbody>
+        </table></div>
+        <p style="font-size:10.5px;color:rgba(255,255,255,.25);margin:10px 0 0">O consumo liberado É o preço convertido em US$ — o cliente recebe exatamente o que pagou, medido no <b>SEU preço de venda</b> (custo Anthropic × markup), igual a Anthropic mede o uso de vocês pelo preço de tabela dela. Consumir US$ 218 "de uso" custa US$ 109 de verdade com markup +100% — a diferença é sua margem: <b>nunca fica negativo, no mínimo repassa o custo</b>. Bônus é subsídio deliberado (free/trial).</p>
+        <div id="bill-warnings" style="margin-top:10px"></div>
+        <div style="display:flex;gap:10px;margin-top:14px;align-items:center">
+          <button class="btn btn-primary" onclick="saveBillingConfig()">Salvar configurações</button>
+          <span id="bill-save-status" style="font-size:11px;color:rgba(74,222,128,.7);display:none">Salvo!</span>
+        </div>
+      </div>
+
+      <!-- Usuários -->
+      <div class="card">
+        <div class="stat-label" style="margin-bottom:12px">Contas dos usuários</div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>Usuário</th><th>Plano</th><th>Sessão · Semana</th><th>Disponível</th><th>Gasto no mês</th><th>Custo real / lucro</th><th>Cortesias</th><th>Saldo avulso</th><th style="text-align:right">Ações</th></tr></thead>
+          <tbody id="bill-users-tbody"></tbody>
+        </table></div>
+        <p style="font-size:10.5px;color:rgba(255,255,255,.25);margin:10px 0 0">Disponível = restante do ciclo do plano (a cortesia e o saldo avulso são consumidos primeiro no débito, mas não somam na exibição — regra do cliente X8).</p>
+      </div>
+    </div>
+
+    <!-- ═══ E-MAIL ═══ -->
+    <div class="section fade-in" id="sec-email">
+      <div class="page-badge">Sistema</div>
+      <h1 class="page-title">E-mail</h1>
+      <p class="page-sub">SMTP, templates por evento e o log de envios. Com isto configurado, boas-vindas, recuperação de senha e avisos saem sozinhos.</p>
+
+      <div class="card" style="margin-bottom:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div class="stat-label" style="margin:0">Servidor SMTP <span id="em-estado"></span></div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
+          <div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:4px">Host</div>
+            <input id="em-host" placeholder="smtp.gmail.com / smtp.resend.com…" style="width:100%;padding:7px 10px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08);border-radius:7px;color:#fff;font-size:11.5px"></div>
+          <div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:4px">Porta (587 STARTTLS · 465 TLS)</div>
+            <input id="em-port" type="number" placeholder="587" style="width:100%;padding:7px 10px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08);border-radius:7px;color:#fff;font-size:11.5px"></div>
+          <div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:4px">Usuário (vazio = igual ao remetente)</div>
+            <input id="em-usuario" autocomplete="off" style="width:100%;padding:7px 10px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08);border-radius:7px;color:#fff;font-size:11.5px"></div>
+          <div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:4px">Senha / App Password <span id="em-senha-estado" style="color:#4ade80"></span></div>
+            <input id="em-senha" type="password" autocomplete="new-password" placeholder="Cole a senha ou app password" style="width:100%;padding:7px 10px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08);border-radius:7px;color:#fff;font-size:11.5px"></div>
+          <div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:4px">Remetente (from)</div>
+            <input id="em-remetente" placeholder="contato@seudominio.com" style="width:100%;padding:7px 10px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08);border-radius:7px;color:#fff;font-size:11.5px"></div>
+          <div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:4px">Nome do remetente</div>
+            <input id="em-remetente-nome" placeholder="Nascera" style="width:100%;padding:7px 10px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08);border-radius:7px;color:#fff;font-size:11.5px"></div>
+          <div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:4px">URL pública do Nascera (para os links dos e-mails)</div>
+            <input id="em-urlbase" placeholder="https://app.seudominio.com" style="width:100%;padding:7px 10px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08);border-radius:7px;color:#fff;font-size:11.5px"></div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;align-items:center">
+          <button class="btn btn-primary" onclick="salvarEmail()">Salvar SMTP</button>
+          <input id="em-teste-para" placeholder="seu@email.com" style="padding:7px 10px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08);border-radius:7px;color:#fff;font-size:11.5px;width:220px">
+          <button class="btn btn-ghost" onclick="testarEmail()">Enviar e-mail de teste</button>
+          <span id="em-teste-resultado" style="font-size:11.5px"></span>
+        </div>
+        <p style="font-size:10.5px;color:rgba(255,255,255,.25);margin:12px 0 0;line-height:1.5">
+          Para não cair em spam: configure <b>SPF</b> e <b>DKIM</b> no DNS do seu domínio (o painel do seu provedor de e-mail — Gmail Workspace, Resend, SES, Zoho — mostra os registros exatos). Gmail pessoal: use uma <b>senha de app</b> (myaccount.google.com/apppasswords).
+        </p>
+      </div>
+
+      <div class="card" style="margin-bottom:14px">
+        <div class="stat-label" style="margin-bottom:10px">Templates por evento</div>
+        <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;align-items:center">
+          <select id="tpl-evento" onchange="mostrarTemplate()" style="padding:7px 10px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08);border-radius:7px;color:#fff;font-size:11.5px"></select>
+          <span id="tpl-badge"></span>
+          <span style="font-size:10.5px;color:rgba(255,255,255,.25)">Variáveis: {{nome}} {{usuario}} {{link}} {{plano}} {{valor}} {{pct}} {{motivo}} {{produto}}</span>
+        </div>
+        <input id="tpl-assunto" placeholder="Assunto" style="width:100%;padding:8px 10px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08);border-radius:7px;color:#fff;font-size:12px;margin-bottom:8px">
+        <textarea id="tpl-corpo" rows="7" style="width:100%;padding:10px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08);border-radius:7px;color:#fff;font-size:12px;font-family:inherit;resize:vertical"></textarea>
+        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="salvarTemplate()">Salvar template</button>
+          <button class="btn btn-ghost" onclick="restaurarTemplate()">Restaurar padrão</button>
+          <button class="btn btn-ghost" onclick="previewTemplate()">Ver com dados de exemplo</button>
+        </div>
+        <div id="tpl-preview" style="display:none;margin-top:12px;padding:14px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:9px;font-size:12.5px;white-space:pre-wrap;line-height:1.55"></div>
+      </div>
+
+      <div class="card">
+        <div class="stat-label" style="margin-bottom:10px">Últimos envios</div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>Quando</th><th>Para</th><th>Evento</th><th>Assunto</th><th>Status</th></tr></thead>
+          <tbody id="em-log-tbody"></tbody>
+        </table></div>
+        <p id="em-log-vazio" style="display:none;font-size:12px;color:rgba(255,255,255,.3);text-align:center;padding:14px 0">Nenhum envio ainda.</p>
+      </div>
+    </div>
+
+    <!-- ═══ APARÊNCIA ═══ -->
+    <div class="section fade-in" id="sec-theme">
+      <div class="page-badge">Identidade</div>
+      <h1 class="page-title">Aparência</h1>
+      <p class="page-sub">As cores, o vídeo e as imagens do sistema inteiro. Mexeu, a tela muda na hora — salve para valer para todo mundo.</p>
+
+      <div class="card" style="margin-bottom:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <div class="stat-label" style="margin:0">Cores</div>
+          <span style="font-size:10.5px;color:rgba(255,255,255,.25)">clique no quadrado para escolher</span>
+        </div>
+        <div id="th-colors" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px"></div>
+      </div>
+
+      <div class="card" style="margin-bottom:14px">
+        <div class="stat-label" style="margin-bottom:14px">Vídeo do buraco negro</div>
+        <div style="display:grid;grid-template-columns:minmax(240px,340px) 1fr;gap:20px;align-items:start" id="th-video-wrap">
+          <div style="border-radius:14px;overflow:hidden;background:#000;aspect-ratio:16/10;position:relative;border:1px solid rgba(255,255,255,.07)">
+            <video id="th-video" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover">
+              <source src="/blackhole.webm" type="video/webm"/>
+              <source src="/blackhole.mp4" type="video/mp4"/>
+            </video>
+          </div>
+          <div id="th-video-controls"></div>
+        </div>
+        <label style="display:flex;align-items:center;gap:9px;cursor:pointer;margin-top:16px">
+          <input type="checkbox" id="th-video-on" style="width:15px;height:15px;accent-color:var(--zh-accent);cursor:pointer"/>
+          <span style="font-size:12.5px;color:rgba(255,255,255,.75)">Mostrar o vídeo na tela inicial</span>
+        </label>
+      </div>
+
+      <div class="card" style="margin-bottom:14px">
+        <div class="stat-label" style="margin-bottom:14px">Imagens</div>
+        <div id="th-images" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px"></div>
+        <input type="file" id="th-file" accept="image/png,image/jpeg,image/webp,image/gif,image/x-icon,.ico" style="display:none"/>
+        <p style="font-size:10.5px;color:rgba(255,255,255,.25);margin:12px 0 0">Arraste uma imagem para o quadrado ou clique em <b>Enviar imagem</b> — PNG, JPG, WEBP, GIF ou ICO, até 5 MB. O envio já salva a imagem. Também dá para digitar um caminho (<code>/logo.png</code>) ou uma URL https.</p>
+      </div>
+
+      <div class="card" style="margin-bottom:14px">
+        <div class="stat-label" style="margin-bottom:14px">Formas</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px" id="th-ui"></div>
+      </div>
+
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;position:sticky;bottom:0;padding:14px 0;background:linear-gradient(transparent,var(--zh-bg) 30%)">
+        <button class="btn btn-primary" onclick="salvarTema()">Salvar aparência</button>
+        <button class="btn btn-ghost" onclick="previewTema()">Testar sem salvar</button>
+        <button class="btn btn-danger" onclick="resetarTema()">Restaurar padrão</button>
+        <span id="th-status" style="font-size:11px;color:rgba(74,222,128,.75);display:none"></span>
+      </div>
+    </div>
+
+    <!-- ═══ DOMÍNIOS ═══ -->
+    <div class="section fade-in" id="sec-domains">
+      <div class="page-badge">Publicação</div>
+      <h1 class="page-title">Domínios</h1>
+      <p class="page-sub">Onde os sites dos clientes atendem. O DNS aponta para cá; o NASCERA resolve qual site servir pelo Host.</p>
+
+      <div id="dom-local-warn" style="display:none;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.25);border-radius:12px;padding:14px 16px;margin-bottom:14px">
+        <div style="font-size:12.5px;font-weight:600;color:#fbbf24;margin-bottom:6px">Este servidor está em rede local</div>
+        <div style="font-size:11.5px;color:rgba(255,255,255,.5);line-height:1.65" id="dom-local-warn-body"></div>
+      </div>
+
+      <div class="card" style="margin-bottom:14px">
+        <div class="stat-label" style="margin-bottom:12px">Para onde os clientes apontam</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">
+          <div>
+            <label class="inp-label">IP do servidor (registro A)</label>
+            <div style="display:flex;gap:6px">
+              <input class="inp" id="dom-ip" type="text" placeholder="ainda não definido" style="flex:1"/>
+              <button class="btn btn-ghost btn-xs" onclick="detectarIp()" id="dom-detect-btn" style="white-space:nowrap">Detectar</button>
+            </div>
+            <p style="font-size:10px;color:rgba(255,255,255,.25);margin:5px 0 0" id="dom-ip-hint">O IP público desta máquina. É o que o cliente coloca no registro A.</p>
+          </div>
+          <div>
+            <label class="inp-label">Alvo de CNAME (opcional)</label>
+            <input class="inp" id="dom-cname" type="text" placeholder="sites.seudominio.com.br"/>
+            <p style="font-size:10px;color:rgba(255,255,255,.25);margin:5px 0 0">Um host que aponte para cá. Facilita trocar de servidor sem mexer no DNS de cada cliente.</p>
+          </div>
+          <div>
+            <label class="inp-label">Domínio do painel (protegido)</label>
+            <input class="inp" id="dom-panel" type="text" placeholder="painel.seudominio.com.br"/>
+            <p style="font-size:10px;color:rgba(255,255,255,.25);margin:5px 0 0">Nunca poderá ser cadastrado como site — trava anti-sequestro do painel.</p>
+          </div>
+          <div>
+            <label class="inp-label">Porta de origem dos sites</label>
+            <input class="inp" id="dom-port" type="number" min="1" max="65535"/>
+            <p style="font-size:10px;color:rgba(255,255,255,.25);margin:5px 0 0">Para onde o proxy encaminha (publish-server). Padrão 4002.</p>
+          </div>
+        </div>
+        <div style="margin-top:16px">
+          <div class="stat-label" style="margin-bottom:10px">HTTPS</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px" id="dom-ssl-modes"></div>
+          <p style="font-size:10.5px;color:rgba(255,255,255,.25);margin:12px 0 0" id="dom-ssl-hint"></p>
+          <div id="dom-caddy-box" style="display:none;margin-top:14px;padding:13px 15px;border-radius:12px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06)">
+            <label style="display:flex;align-items:center;gap:9px;cursor:pointer">
+              <input type="checkbox" id="dom-autocaddy" style="width:15px;height:15px;accent-color:var(--zh-accent);cursor:pointer"/>
+              <span style="font-size:12.5px;font-weight:600;color:rgba(255,255,255,.8)">Aplicar o Caddy automaticamente</span>
+            </label>
+            <p style="font-size:10.5px;color:rgba(255,255,255,.3);margin:7px 0 0 24px;line-height:1.55">
+              Cada domínio verificado entra no proxy sozinho (escreve o Caddyfile e recarrega) — o cliente não espera por você.
+              Exige que o NASCERA rode com permissão no <code>/etc/caddy</code>; o instalador da VPS já deixa assim.
+            </p>
+            <div style="margin-top:12px;margin-left:24px">
+              <label class="inp-label" style="font-size:10px">E-mail do Let's Encrypt</label>
+              <input class="inp" id="dom-le-email" type="email" placeholder="voce@suaempresa.com.br" style="max-width:280px"/>
+              <p style="font-size:10px;color:rgba(255,255,255,.25);margin:5px 0 0">Recebe avisos de expiração. Fica na config (o Caddyfile é reescrito a cada verificação).</p>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:16px;align-items:center;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="saveDomainsConfig()">Salvar configurações</button>
+          <button class="btn btn-ghost" onclick="baixarCaddyfile()">Baixar Caddyfile</button>
+          <span id="dom-save-status" style="font-size:11px;color:rgba(74,222,128,.7);display:none">Salvo!</span>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:14px" id="dom-howto">
+        <div class="stat-label" style="margin-bottom:10px">Como o HTTPS acontece</div>
+        <div id="dom-howto-body" style="font-size:12px;color:rgba(255,255,255,.45);line-height:1.75"></div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div class="stat-label" style="margin:0">Domínios cadastrados</div>
+          <span id="dom-count" style="font-size:11px;color:rgba(255,255,255,.3)"></span>
+        </div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>Domínio</th><th>Projeto</th><th>Status</th><th>Dono</th><th>Última checagem</th><th style="text-align:right">Ações</th></tr></thead>
+          <tbody id="dom-tbody"></tbody>
+        </table></div>
+        <p id="dom-empty" style="display:none;font-size:12px;color:rgba(255,255,255,.3);text-align:center;padding:20px 0">Nenhum domínio cadastrado ainda. Os clientes adicionam pelo botão "Domínio" dentro de cada projeto.</p>
+      </div>
+    </div>
+
+    <!-- ═══ ATUALIZAÇÕES ═══ -->
+    <div class="section fade-in" id="sec-update">
+      <div class="page-badge">Sistema</div>
+      <h1 class="page-title">Atualizações</h1>
+      <p class="page-sub">Sua plataforma se atualiza sozinha a partir do servidor do Nascera. Seus usuários, projetos e configurações não são tocados.</p>
+      <div class="card" style="margin-bottom:14px">
+        <div id="upd-caixa" style="min-height:110px">
+          <div style="color:rgba(255,255,255,.4);font-size:13px">Consultando o servidor…</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="stat-label" style="margin-bottom:10px">Histórico</div>
+        <div id="upd-historico"></div>
+      </div>
+    </div>
+
+    <!-- ═══ SERVIDOR & LOGS ═══ -->
+    <div class="section fade-in" id="sec-system">
+      <div class="page-badge">Infra</div>
+      <h1 class="page-title">Servidor & Logs</h1>
+      <p class="page-sub">Saúde do processo e últimas linhas dos logs.</p>
+      <div class="stat-grid" id="sys-stats"></div>
+      <div class="card" style="margin-bottom:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <div class="stat-label" style="margin:0">Ações</div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-ghost" onclick="loadSystem()">Atualizar</button>
+          <button class="btn btn-danger" onclick="restartServer()">Reiniciar servidor</button>
+        </div>
+        <p style="font-size:10.5px;color:rgba(255,255,255,.25);margin:10px 0 0">O reinício derruba as sessões vivas do motor. O pm2 reergue o servidor em ~2s.</p>
+      </div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="stat-label" style="margin-bottom:10px">Log de saída (nascera-v2-out.log)</div>
+        <div class="logbox" id="log-out">Carregando...</div>
+      </div>
+      <div class="card">
+        <div class="stat-label" style="margin-bottom:10px">Log de erros (nascera-v2-error.log)</div>
+        <div class="logbox" id="log-err">Carregando...</div>
+      </div>
+    </div>
+
+    <!-- ═══ ATIVIDADE ═══ -->
+    <div class="section fade-in" id="sec-activity">
+      <div class="page-badge">Auditoria</div>
+      <h1 class="page-title">Atividade</h1>
+      <p class="page-sub">Últimos eventos do sistema: logins, criações, ações administrativas.</p>
+      <div class="card" id="activity-list"></div>
+    </div>
+
+    <!-- ═══ CONFIGURAÇÕES ═══ -->
+    <div class="section fade-in" id="sec-config">
+      <div class="page-badge">Padrões</div>
+      <h1 class="page-title">Configurações</h1>
+      <p class="page-sub">Padrões aplicados a novos projetos e comportamento do sistema.</p>
+      <div class="card" style="max-width:520px;margin-bottom:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <div class="stat-label" style="margin:0">Motor de IA</div>
+          <button class="btn btn-ghost" style="padding:5px 10px;font-size:11.5px" onclick="loadMotores()">Atualizar</button>
+        </div>
+        <p style="font-size:11.5px;color:rgba(255,255,255,.3);margin:0 0 14px">Quem executa as tarefas. Trocar reinicia as sessões abertas.</p>
+        <div id="mt-caixa"><div style="color:rgba(255,255,255,.35);font-size:13px">Verificando…</div></div>
+      </div>
+      <div class="card" style="max-width:520px;margin-bottom:14px">
+        <div class="stat-label" style="margin-bottom:6px">Geração de imagens</div>
+        <p style="font-size:11.5px;color:rgba(255,255,255,.3);margin:0 0 14px">Nenhum motor de IA gera imagem — isso é um serviço à parte. Conecte sua chave da OpenAI para as imagens saírem sob medida.</p>
+        <div id="img-caixa"><div style="color:rgba(255,255,255,.35);font-size:13px">Verificando…</div></div>
+      </div>
+      <div class="card" style="max-width:520px">
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div>
+            <label class="inp-label">Modelo padrão dos builds</label>
+            <select class="inp" id="cfg-model">
+              <option value="">Auto (padrão da conta)</option>
+              <option value="sonnet">Sonnet — rápido, ótimo para sites</option>
+              <option value="default">Default da conta (recomendado)</option>
+              <option value="opus[1m]">Opus (1M de contexto)</option>
+              <option value="claude-fable-5[1m]">Fable — o mais capaz</option>
+              <option value="haiku">Haiku — o mais rápido</option>
+            </select>
+            <p style="font-size:10.5px;color:rgba(255,255,255,.25);margin:5px 0 0">Usado quando o projeto não escolheu um modelo. O usuário pode trocar no chat.</p>
+          </div>
+          <div>
+            <label class="inp-label">Nível de detalhe padrão</label>
+            <select class="inp" id="cfg-level">
+              <option value="1">1 — Rascunho</option>
+              <option value="2">2 — Enxuto</option>
+              <option value="3">3 — Equilibrado</option>
+              <option value="4">4 — Completo</option>
+              <option value="5">5 — Máximo</option>
+            </select>
+          </div>
+          <div>
+            <label class="inp-label">Retenção da lixeira (dias)</label>
+            <input class="inp" id="cfg-trash" type="number" min="1" max="90"/>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <input type="checkbox" id="cfg-telemetry" style="width:15px;height:15px;accent-color:var(--zh-accent)"/>
+            <label for="cfg-telemetry" style="font-size:12.5px;color:rgba(255,255,255,.6);cursor:pointer">Enviar telemetria ao servidor de licenças</label>
+          </div>
+          <button class="btn btn-primary" onclick="saveConfig()" id="cfg-save">Salvar configurações</button>
+          <p id="cfg-status" style="font-size:11px;color:rgba(74,222,128,.7);display:none;margin:0">Salvo!</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal criar/editar usuário -->
+  <div class="overlay" id="user-overlay">
+    <div class="modal">
+      <h3 id="um-title">Novo usuário</h3>
+      <p class="msub" id="um-sub">A senha é obrigatória para novas contas.</p>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div><label class="inp-label">Usuário</label><input class="inp" id="um-username"/></div>
+        <div><label class="inp-label">Nome</label><input class="inp" id="um-name"/></div>
+        <div><label class="inp-label">E-mail</label><input class="inp" id="um-email"/></div>
+        <div><label class="inp-label">Senha <span id="um-pass-hint" style="text-transform:none;letter-spacing:0">(deixe vazio para manter)</span></label><input class="inp" id="um-password" type="password"/></div>
+        <div><label class="inp-label">Papel</label><select class="inp" id="um-role"><option value="user">Usuário</option><option value="admin">Admin</option></select></div>
+        <p id="um-error" style="display:none;font-size:11.5px;color:#f87171;margin:0"></p>
+        <div style="display:flex;gap:10px;justify-content:flex-end">
+          <button class="btn btn-ghost" onclick="closeUserModal()">Cancelar</button>
+          <button class="btn btn-primary" id="um-save" onclick="saveUser()">Salvar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+var token = localStorage.getItem('nascera_token');
+if (!token) location.href = '/';
+var headers = { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' };
+
+function api(path, opts) {
+  opts = opts || {};
+  opts.headers = headers;
+  return fetch(path, opts).then(function(r) {
+    if (r.status === 401) { localStorage.clear(); location.href = '/'; throw new Error('unauthorized'); }
+    if (r.status === 403) { document.body.innerHTML = '<div style="height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px"><h2 style="font-weight:600">Acesso restrito</h2><p style="color:rgba(255,255,255,.4);font-size:13px">Este painel é só para administradores.</p><a href="/home.html" style="color:var(--zh-accent2);font-size:13px">Voltar ao Nascera</a></div>'; throw new Error('forbidden'); }
+    return r.json();
+  });
+}
+
+function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmtAgo(iso) {
+  if (!iso) return '—';
+  var s = (Date.now() - new Date(iso).getTime()) / 1000;
+  if (s < 60) return 'agora';
+  if (s < 3600) return Math.floor(s/60) + 'min atrás';
+  if (s < 86400) return Math.floor(s/3600) + 'h atrás';
+  return Math.floor(s/86400) + 'd atrás';
+}
+function fmtDur(ms) {
+  var s = Math.floor(ms/1000);
+  if (s < 60) return s + 's';
+  if (s < 3600) return Math.floor(s/60) + 'min';
+  return Math.floor(s/3600) + 'h' + Math.floor((s%3600)/60) + 'min';
+}
+function fmtDate(iso) { return iso ? new Date(iso).toLocaleDateString('pt-BR') : '—'; }
+function fmtKb(kb) {
+  if (!kb) return '—';
+  if (kb < 1024) return kb + ' KB';
+  return (kb/1024).toFixed(1) + ' MB';
+}
+
+// ── Navegação ──
+var loaded = {};
+function showSection(sec) {
+  document.querySelectorAll('.section').forEach(function(el) { el.classList.remove('active'); });
+  document.querySelectorAll('.sidebar-link[data-sec]').forEach(function(el) { el.classList.toggle('active', el.getAttribute('data-sec') === sec); });
+  document.getElementById('sec-' + sec).classList.add('active');
+  var loaders = { overview: loadOverview, users: loadUsers, projects: loadProjects, engine: loadEngine, billing: loadBilling, theme: loadTheme, domains: loadDomains, system: loadSystem, activity: loadActivity, config: loadConfig, update: loadUpdate, email: loadEmail };
+  if (loaders[sec]) loaders[sec]();
+}
+
+// ── E-mail (A1): SMTP + templates + log ───────────────────────────────
+var _emTemplates = [];
+function loadEmail() {
+  api('/api/admin/email').then(function(d) {
+    if (d.error) return;
+    document.getElementById('em-estado').innerHTML = d.configurado
+      ? '<span class="chip chip-green">configurado</span>'
+      : '<span class="chip chip-amber">não configurado</span>';
+    document.getElementById('em-host').value = d.host || '';
+    document.getElementById('em-port').value = d.port || 587;
+    document.getElementById('em-usuario').value = d.usuario || '';
+    document.getElementById('em-remetente').value = d.remetente || '';
+    document.getElementById('em-remetente-nome').value = d.remetenteNome || '';
+    document.getElementById('em-urlbase').value = d.urlBase || '';
+    document.getElementById('em-senha-estado').textContent = d.senhaConfigurada ? '· salva' : '';
+    _emTemplates = d.templates || [];
+    var nomes = { 'boas-vindas': 'Boas-vindas (compra → conta)', 'esqueci-senha': 'Esqueci minha senha', 'compra-confirmada': 'Compra confirmada', 'credito-80': 'Créditos a 80%', 'suspensao': 'Conta suspensa' };
+    var sel = document.getElementById('tpl-evento');
+    var atual = sel.value;
+    sel.innerHTML = _emTemplates.map(function(t) {
+      return '<option value="' + t.evento + '">' + (nomes[t.evento] || t.evento) + '</option>';
+    }).join('');
+    if (atual) sel.value = atual;
+    mostrarTemplate();
+    var log = d.log || [];
+    document.getElementById('em-log-vazio').style.display = log.length ? 'none' : 'block';
+    document.getElementById('em-log-tbody').innerHTML = log.map(function(e) {
+      var st = e.status === 'enviado' ? '<span class="chip chip-green">enviado</span>'
+             : e.status === 'fake' ? '<span class="chip chip-gray">teste</span>'
+             : '<span class="chip chip-red" title="' + esc(e.erro || '') + '">erro</span>';
+      return '<tr><td>' + fmtDate(e.ts) + '</td><td>' + esc(e.para) + '</td><td>' + esc(e.evento || '—') + '</td><td>' + esc(e.assunto || '') + '</td><td>' + st + '</td></tr>';
+    }).join('');
+  });
+}
+function salvarEmail() {
+  var body = {
+    host: document.getElementById('em-host').value.trim(),
+    port: parseInt(document.getElementById('em-port').value, 10) || 587,
+    usuario: document.getElementById('em-usuario').value.trim(),
+    remetente: document.getElementById('em-remetente').value.trim(),
+    remetenteNome: document.getElementById('em-remetente-nome').value.trim(),
+    urlBase: document.getElementById('em-urlbase').value.trim(),
+  };
+  var senha = document.getElementById('em-senha').value;
+  if (senha) body.senha = senha;
+  api('/api/admin/email', { method: 'PUT', body: JSON.stringify(body) }).then(function(r) {
+    if (r.error) return alert(r.error);
+    document.getElementById('em-senha').value = '';
+    loadEmail();
+  });
+}
+function testarEmail() {
+  var para = document.getElementById('em-teste-para').value.trim();
+  var out = document.getElementById('em-teste-resultado');
+  if (!para) { out.style.color = '#f87171'; out.textContent = 'Informe o destino.'; return; }
+  out.style.color = 'rgba(255,255,255,.45)'; out.textContent = 'Enviando…';
+  api('/api/admin/email/testar', { method: 'POST', body: JSON.stringify({ para: para }) }).then(function(r) {
+    if (r.ok) { out.style.color = '#4ade80'; out.textContent = 'Enviado! Confira a caixa de entrada (e o spam).'; }
+    else { out.style.color = '#f87171'; out.textContent = r.error || 'Falhou'; }
+    loadEmail();
+  });
+}
+function mostrarTemplate() {
+  var ev = document.getElementById('tpl-evento').value;
+  var t = _emTemplates.find(function(x) { return x.evento === ev; });
+  if (!t) return;
+  document.getElementById('tpl-assunto').value = t.assunto;
+  document.getElementById('tpl-corpo').value = t.corpo;
+  document.getElementById('tpl-badge').innerHTML = t.personalizado
+    ? '<span class="chip chip-purple">personalizado</span>' : '<span class="chip chip-gray">padrão</span>';
+  document.getElementById('tpl-preview').style.display = 'none';
+}
+function salvarTemplate() {
+  api('/api/admin/email/templates', { method: 'PUT', body: JSON.stringify({
+    evento: document.getElementById('tpl-evento').value,
+    assunto: document.getElementById('tpl-assunto').value,
+    corpo: document.getElementById('tpl-corpo').value,
+  }) }).then(function(r) { if (r.error) alert(r.error); else loadEmail(); });
+}
+function restaurarTemplate() {
+  if (!confirm('Voltar este template ao padrão embutido?')) return;
+  api('/api/admin/email/templates', { method: 'PUT', body: JSON.stringify({
+    evento: document.getElementById('tpl-evento').value, assunto: '', corpo: '',
+  }) }).then(function(r) { if (r.error) alert(r.error); else loadEmail(); });
+}
+function previewTemplate() {
+  api('/api/admin/email/preview', { method: 'POST', body: JSON.stringify({
+    evento: document.getElementById('tpl-evento').value,
+    assunto: document.getElementById('tpl-assunto').value,
+    corpo: document.getElementById('tpl-corpo').value,
+  }) }).then(function(r) {
+    if (r.error) return alert(r.error);
+    var p = document.getElementById('tpl-preview');
+    p.style.display = 'block';
+    p.textContent = 'Assunto: ' + r.assunto + '\n\n' + r.corpo;
+  });
+}
+
+// ── Atualizações ──────────────────────────────────────────────────────
+var _upd = null;
+function loadUpdate() {
+  var cx = document.getElementById('upd-caixa');
+  cx.innerHTML = '<div style="color:rgba(255,255,255,.4);font-size:13px">Consultando o servidor…</div>';
+  api('/api/admin/update/status').then(function(s) { renderHistorico(s.historico || []); });
+  api('/api/admin/update/check').then(function(d) {
+    _upd = d;
+    if (d.erro || d.ok === false) {
+      cx.innerHTML = '<div class="stat-label" style="margin-bottom:6px">Versão instalada</div>'
+        + '<div style="font-size:22px;font-weight:700">' + esc(d.versaoAtual || '—') + '</div>'
+        + '<p style="color:rgba(248,113,113,.8);font-size:12.5px;margin:12px 0 0">' + esc(d.erro || 'Não foi possível consultar o servidor de atualizações.') + '</p>'
+        + '<button class="btn btn-ghost" style="margin-top:12px" onclick="loadUpdate()">Tentar de novo</button>';
+      return;
+    }
+    document.getElementById('upd-selo').style.display = d.temAtualizacao ? 'inline-block' : 'none';
+    if (!d.temAtualizacao) {
+      cx.innerHTML = '<div style="display:flex;align-items:center;gap:14px">'
+        + '<div style="width:38px;height:38px;border-radius:50%;background:rgba(74,222,128,.12);display:flex;align-items:center;justify-content:center;font-size:19px">✓</div>'
+        + '<div><div style="font-size:15px;font-weight:600">Tudo em dia</div>'
+        + '<div style="color:rgba(255,255,255,.4);font-size:12.5px">Você está na versão <b>' + esc(d.versaoAtual) + '</b>, a mais recente publicada.</div></div></div>'
+        + '<button class="btn btn-ghost" style="margin-top:14px" onclick="loadUpdate()">Verificar de novo</button>';
+      return;
+    }
+    cx.innerHTML = '<div style="display:flex;align-items:center;gap:14px;margin-bottom:14px">'
+      + '<div style="width:38px;height:38px;border-radius:50%;background:rgba(var(--zh-accent-rgb),.16);display:flex;align-items:center;justify-content:center;font-size:18px">↑</div>'
+      + '<div><div style="font-size:15px;font-weight:600">Versão ' + esc(d.versaoNova) + ' disponível</div>'
+      + '<div style="color:rgba(255,255,255,.4);font-size:12.5px">Você está na ' + esc(d.versaoAtual)
+      + (d.tamanho ? ' · pacote de ' + (d.tamanho / 1048576).toFixed(1) + ' MB' : '') + '</div></div></div>'
+      + (d.notas ? '<div style="background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px 14px;font-size:12.5px;color:rgba(255,255,255,.68);white-space:pre-wrap;margin-bottom:14px">' + esc(d.notas) + '</div>' : '')
+      + '<button class="btn btn-primary" onclick="aplicarUpdate()">Atualizar agora</button>'
+      + '<p style="font-size:11px;color:rgba(255,255,255,.3);margin:10px 0 0">O Nascera sai do ar por alguns segundos ao reiniciar. Seus usuários, projetos, cobranças, domínios e aparência ficam como estão.</p>';
+  });
+}
+
+function aplicarUpdate() {
+  if (!confirm('Atualizar o Nascera para a versão ' + _upd.versaoNova + '?\n\nO sistema reinicia sozinho ao terminar. Um backup é feito antes.')) return;
+  var cx = document.getElementById('upd-caixa');
+  cx.innerHTML = '<div class="stat-label" style="margin-bottom:8px">Atualizando</div><div id="upd-etapa" style="font-size:14px">iniciando…</div>'
+    + '<div style="height:4px;border-radius:4px;background:rgba(255,255,255,.06);margin-top:14px;overflow:hidden"><div id="upd-barra" style="height:100%;width:8%;background:var(--zh-accent);transition:width .5s"></div></div>';
+  var etapas = { verificando: 10, baixando: 35, conferindo: 55, extraindo: 65, 'salvando backup': 75, aplicando: 85, 'instalando dependências': 93, reiniciando: 100 };
+  var acompanhar = setInterval(function() {
+    api('/api/admin/update/status').then(function(s) {
+      if (s.etapa) {
+        document.getElementById('upd-etapa').textContent = s.etapa;
+        document.getElementById('upd-barra').style.width = (etapas[s.etapa] || 20) + '%';
+      }
+      if (s.erro) { clearInterval(acompanhar); cx.innerHTML = '<p style="color:rgba(248,113,113,.85);font-size:13px">' + esc(s.erro) + '</p><button class="btn btn-ghost" style="margin-top:12px" onclick="loadUpdate()">Voltar</button>'; }
+      else if (s.concluido) { clearInterval(acompanhar); esperarVoltar(); }
+    }).catch(function() { /* o servidor está reiniciando — normal */ });
+  }, 1500);
+
+  api('/api/admin/update/apply', { method: 'POST' }).then(function(r) {
+    if (r && r.error) { clearInterval(acompanhar); cx.innerHTML = '<p style="color:rgba(248,113,113,.85);font-size:13px">' + esc(r.error) + '</p><button class="btn btn-ghost" style="margin-top:12px" onclick="loadUpdate()">Voltar</button>'; }
+  }).catch(function() { /* conexão cai no restart — esperado */ });
+}
+
+// Fica batendo até o servidor voltar de pé com o código novo.
+function esperarVoltar() {
+  var cx = document.getElementById('upd-caixa');
+  cx.innerHTML = '<div class="stat-label" style="margin-bottom:8px">Quase lá</div><div style="font-size:14px">Reiniciando o Nascera…</div>';
+  var tentativas = 0;
+  var bate = setInterval(function() {
+    tentativas++;
+    fetch('/api/health', { cache: 'no-store' }).then(function(r) {
+      if (!r.ok) return;
+      clearInterval(bate);
+      cx.innerHTML = '<div style="font-size:15px;font-weight:600;margin-bottom:6px">Atualizado ✓</div>'
+        + '<div style="color:rgba(255,255,255,.45);font-size:12.5px">Recarregando o painel…</div>';
+      setTimeout(function() { location.reload(); }, 1500);
+    }).catch(function() {});
+    if (tentativas > 60) {
+      clearInterval(bate);
+      cx.innerHTML = '<p style="font-size:13px;color:rgba(251,191,36,.85)">O Nascera está demorando a voltar. Se ele não subir sozinho, veja os logs do servidor — o backup da versão anterior está na pasta <code>.backups</code>.</p>';
+    }
+  }, 2000);
+}
+
+function renderHistorico(h) {
+  var el = document.getElementById('upd-historico');
+  if (!h || !h.length) { el.innerHTML = '<p style="color:rgba(255,255,255,.3);font-size:12.5px;margin:0">Nenhuma atualização aplicada por aqui ainda.</p>'; return; }
+  el.innerHTML = h.map(function(x) {
+    return '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:12.5px">'
+      + '<span>Versão <b>' + esc(x.versao) + '</b> <span style="color:rgba(255,255,255,.3)">· ' + (x.arquivos || 0) + ' itens</span></span>'
+      + '<span style="color:rgba(255,255,255,.35)">' + fmtData(x.em) + '</span></div>';
+  }).join('');
+}
+function fmtData(iso) { try { return new Date(iso).toLocaleString('pt-BR'); } catch { return '—'; } }
+
+// ── Visão geral ──
+function statCard(label, value, hint) {
+  return '<div class="stat-card"><div class="stat-label">' + label + '</div><div class="stat-value">' + value + '</div>' + (hint ? '<div class="stat-hint">' + hint + '</div>' : '') + '</div>';
+}
+function loadOverview() {
+  api('/api/admin/overview').then(function(d) {
+    document.getElementById('ov-stats').innerHTML =
+      statCard('Usuários', d.users.total, d.users.admins + ' admin' + (d.users.admins > 1 ? 's' : '')) +
+      statCard('Projetos', d.projects.total, d.projects.published + ' publicados · ' + d.projects.inTrash + ' na lixeira') +
+      statCard('Disco (projetos)', d.projects.diskMb + ' MB', null) +
+      statCard('Custo de IA acumulado', 'US$ ' + (d.projects.totalCostUsd || 0).toFixed(2), 'somando todos os projetos') +
+      statCard('Sessões do motor', d.engine.sessions, d.engine.running + ' trabalhando agora') +
+      statCard('Uptime do servidor', fmtDur(d.system.uptimeSec * 1000), 'porta ' + d.system.port);
+    var c = d.claude || {};
+    document.getElementById('ov-claude').innerHTML = c.loggedIn
+      ? '<span class="chip chip-green">Conectado</span><br/>E-mail: <span style="color:rgba(255,255,255,.85)">' + esc(c.email) + '</span><br/>Método: ' + esc(c.authMethod || '—') + '<br/>Plano: <span class="chip chip-purple">' + esc(c.subscriptionType || '—') + '</span>'
+      : '<span class="chip chip-amber">Desconectado</span><br/><span style="font-size:11.5px">Conecte em Configurações do Nascera.</span>';
+  });
+  api('/api/admin/activity').then(function(list) {
+    document.getElementById('ov-activity').innerHTML = list.slice(0, 12).map(function(a) {
+      return '<div class="act-row"><span>' + esc(labelFor(a)) + '</span><span class="act-time">' + fmtAgo(a.at || a.timestamp) + '</span></div>';
+    }).join('') || '<p style="font-size:12px;color:rgba(255,255,255,.3)">Sem eventos ainda.</p>';
+  });
+}
+function labelFor(a) {
+  var t = a.type || '';
+  var u = a.user ? a.user + ' — ' : '';
+  var map = {
+    login: u + 'entrou no sistema',
+    login_failed: 'tentativa de login falhou' + (a.data && a.data.username ? ' (' + a.data.username + ')' : ''),
+    project_created: u + 'criou um projeto',
+    admin_user_created: u + 'criou o usuário ' + (a.data && a.data.username || ''),
+    admin_user_updated: u + 'editou o usuário ' + (a.data && a.data.username || ''),
+    admin_user_deleted: u + 'excluiu o usuário ' + (a.data && a.data.username || ''),
+    admin_config_updated: u + 'alterou as configurações',
+    admin_session_closed: u + 'encerrou uma sessão do motor',
+    admin_restart: u + 'reiniciou o servidor',
+  };
+  return map[t] || (u + t.replace(/_/g, ' '));
+}
+
+// ── Usuários ──
+var editingUser = null;
+var usersCache = [];
+function loadUsers() {
+  api('/api/admin/users').then(function(list) {
+    usersCache = list || [];
+    renderUsers();
+  });
+}
+function renderUsers() {
+  var q = (document.getElementById('users-busca') && document.getElementById('users-busca').value || '').toLowerCase();
+  var list = usersCache.filter(function(u) {
+    return !q || (u.username + ' ' + (u.name || '') + ' ' + (u.email || '')).toLowerCase().indexOf(q) >= 0;
+  });
+  document.getElementById('users-tbody').innerHTML = list.map(function(u) {
+    var status = u.suspended
+      ? '<span class="chip chip-red" title="' + esc(u.suspendedReason || '') + '">Suspenso</span>'
+      : '<span class="chip chip-green">Ativo</span>';
+    if (u.iaPropria) status += ' <span class="chip chip-purple" title="Usa a própria chave — turnos não debitam créditos">IA própria</span>';
+    return '<tr' + (u.suspended ? ' style="opacity:.55"' : '') + '>' +
+      '<td style="color:rgba(255,255,255,.85);font-weight:500">' + esc(u.username) + '</td>' +
+      '<td>' + esc(u.name) + '</td>' +
+      '<td>' + esc(u.email) + '</td>' +
+      '<td><span class="chip ' + (u.role === 'admin' ? 'chip-purple' : 'chip-gray') + '">' + (u.role === 'admin' ? 'Admin' : 'Cliente') + '</span></td>' +
+      '<td>' + status + '</td>' +
+      '<td>' + fmtDate(u.createdAt) + '</td>' +
+      '<td style="text-align:right;white-space:nowrap">' +
+        '<button class="btn btn-ghost btn-xs" title="Gera um link de 7 dias para o cliente definir a própria senha (envie por WhatsApp)" onclick="linkAcesso(\'' + esc(u.username) + '\')">Link de acesso</button> ' +
+        '<button class="btn btn-ghost btn-xs" onclick=\'openUserModal(' + JSON.stringify(u).replace(/'/g, '&#39;') + ')\'>Editar</button> ' +
+        (u.suspended
+          ? '<button class="btn btn-ghost btn-xs" style="color:#4ade80" onclick="suspenderUser(\'' + esc(u.username) + '\', false)">Reativar</button> '
+          : '<button class="btn btn-ghost btn-xs" style="color:#f59e0b" onclick="suspenderUser(\'' + esc(u.username) + '\', true)">Suspender</button> ') +
+        '<button class="btn btn-danger btn-xs" onclick="deleteUser(\'' + esc(u.username) + '\')">Excluir</button>' +
+      '</td></tr>';
+  }).join('');
+}
+function suspenderUser(username, suspender) {
+  var body = { suspended: suspender };
+  if (suspender) {
+    var motivo = prompt('Motivo da suspensão (fica registrado e visível para você):', 'Pagamento pendente');
+    if (motivo === null) return;
+    body.suspendedReason = motivo;
+  } else if (!confirm('Reativar o acesso de "' + username + '"?')) return;
+  api('/api/admin/users/' + encodeURIComponent(username), { method: 'PATCH', body: JSON.stringify(body) })
+    .then(function(r) { if (r.error) alert(r.error); else loadUsers(); });
+}
+function linkAcesso(username) {
+  api('/api/admin/users/' + encodeURIComponent(username) + '/link-acesso', { method: 'POST' }).then(function(r) {
+    if (r.error) return alert(r.error);
+    var url = location.origin + r.link;
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url);
+    prompt('Link copiado! Vale por ' + r.expiraEmDias + ' dias e só funciona UMA vez.\nEnvie ao cliente (WhatsApp/e-mail):', url);
+  });
+}
+function openUserModal(u) {
+  editingUser = u || null;
+  document.getElementById('um-title').textContent = u ? 'Editar usuário' : 'Novo usuário';
+  document.getElementById('um-sub').textContent = u ? 'Deixe a senha vazia para não alterar.' : 'A senha é obrigatória para novas contas.';
+  document.getElementById('um-username').value = u ? u.username : '';
+  document.getElementById('um-username').disabled = !!u;
+  document.getElementById('um-name').value = u ? u.name : '';
+  document.getElementById('um-email').value = u ? u.email : '';
+  document.getElementById('um-password').value = '';
+  document.getElementById('um-role').value = u ? u.role : 'user';
+  document.getElementById('um-pass-hint').style.display = u ? '' : 'none';
+  document.getElementById('um-error').style.display = 'none';
+  document.getElementById('user-overlay').classList.add('open');
+}
+function closeUserModal() { document.getElementById('user-overlay').classList.remove('open'); }
+function saveUser() {
+  var username = document.getElementById('um-username').value.trim();
+  var body = {
+    name: document.getElementById('um-name').value.trim(),
+    email: document.getElementById('um-email').value.trim(),
+    role: document.getElementById('um-role').value,
+  };
+  var pass = document.getElementById('um-password').value;
+  var req;
+  if (editingUser) {
+    if (pass) body.password = pass;
+    req = api('/api/admin/users/' + encodeURIComponent(username), { method: 'PATCH', body: JSON.stringify(body) });
+  } else {
+    body.username = username; body.password = pass;
+    req = api('/api/admin/users', { method: 'POST', body: JSON.stringify(body) });
+  }
+  req.then(function(r) {
+    if (r.ok) { closeUserModal(); loadUsers(); }
+    else { var e = document.getElementById('um-error'); e.textContent = r.error || 'Erro'; e.style.display = 'block'; }
+  });
+}
+function deleteUser(username) {
+  if (!confirm('Excluir o usuário "' + username + '"? Os projetos dele não são apagados.')) return;
+  api('/api/admin/users/' + encodeURIComponent(username), { method: 'DELETE' }).then(function(r) {
+    if (r.error) alert(r.error); else loadUsers();
+  });
+}
+
+// ── Projetos ──
+var LEVEL_NAMES = { 1: 'Rascunho', 2: 'Enxuto', 3: 'Equilibrado', 4: 'Completo', 5: 'Máximo' };
+var projectsCache = [];
+function loadProjects() {
+  api('/api/admin/projects').then(function(list) {
+    projectsCache = list || [];
+    renderProjects();
+  });
+}
+function renderProjects() {
+  var q = (document.getElementById('projects-busca') && document.getElementById('projects-busca').value || '').toLowerCase();
+  var list = projectsCache.filter(function(p) {
+    return !q || ((p.name || '') + ' ' + (p.slug || '') + ' ' + (p.owner || '')).toLowerCase().indexOf(q) >= 0;
+  });
+  document.getElementById('projects-tbody').innerHTML = list.map(function(p) {
+      return '<tr>' +
+        '<td><div style="color:rgba(255,255,255,.85);font-weight:500">' + esc(p.name) + '</div><div style="font-size:10.5px;color:rgba(255,255,255,.25);font-family:ui-monospace,monospace">' + esc(p.slug) + '</div></td>' +
+        '<td>' + (p.owner ? esc(p.owner) : '<span class="chip chip-amber" title="Projeto sem dono — visível para todos os admins">sem dono</span>') + '</td>' +
+        '<td><span class="chip chip-gray">' + (LEVEL_NAMES[p.buildLevel] || p.buildLevel) + '</span></td>' +
+        '<td>' + esc(p.model || 'auto') + '</td>' +
+        '<td>v' + p.currentVersion + '</td>' +
+        '<td>' + (p.publishedVersion > 0 ? '<span class="chip chip-green">v' + p.publishedVersion + '</span>' : '<span class="chip chip-gray">não</span>') + '</td>' +
+        '<td>' + fmtKb(p.sizeKb) + '</td>' +
+        '<td>' + (p.costUsd ? 'US$ ' + p.costUsd.toFixed(2) : '—') + '</td>' +
+        '<td style="text-align:right;white-space:nowrap">' +
+          '<button class="btn btn-ghost btn-xs" onclick="window.open(\'/app.html?projectId=' + p.id + '\',\'_blank\')">Abrir</button> ' +
+          '<button class="btn btn-danger btn-xs" onclick="trashProject(\'' + p.id + '\', \'' + esc(p.name).replace(/'/g, '') + '\')">Lixeira</button>' +
+        '</td></tr>';
+    }).join('') || '<tr><td colspan="9" style="text-align:center;color:rgba(255,255,255,.3);padding:24px">Nenhum projeto encontrado.</td></tr>';
+}
+function trashProject(id, name) {
+  if (!confirm('Mover "' + name + '" para a lixeira?')) return;
+  api('/api/projects/' + id, { method: 'DELETE' }).then(function() { loadProjects(); });
+}
+
+// ── Motor ──
+// ── Modelos locais ────────────────────────────────────────────────────
+var _mlTimers = {};
+
+function loadModelosLocais() {
+  var cx = document.getElementById('ml-caixa');
+  if (!cx) return;
+  api('/api/admin/modelos-locais').then(function(d) {
+    if (d.error) { cx.innerHTML = '<p style="color:rgba(248,113,113,.8);font-size:12.5px">' + esc(d.error) + '</p>'; return; }
+
+    // Sem Ollama não há o que escolher — a tela vira instrução, não catálogo.
+    if (!d.instalado) {
+      cx.innerHTML = '<p style="font-size:13px;color:rgba(255,255,255,.6);margin:0 0 10px">O <b>Ollama</b> é quem baixa e executa os modelos. Ele não está instalado nesta máquina.</p>'
+        + '<pre style="background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.06);border-radius:9px;padding:11px 13px;font-size:11.5px;color:rgba(255,255,255,.6);margin:0;overflow-x:auto">' + esc(d.comoInstalar) + '</pre>';
+      return;
+    }
+    if (!d.rodando) {
+      cx.innerHTML = '<p style="font-size:13px;color:rgba(251,191,36,.85);margin:0 0 10px">O Ollama está instalado, mas não está rodando.</p>'
+        + '<pre style="background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.06);border-radius:9px;padding:11px 13px;font-size:11.5px;color:rgba(255,255,255,.6);margin:0">' + esc(d.comoIniciar) + '</pre>';
+      return;
+    }
+
+    var html = '<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;font-size:12px;color:rgba(255,255,255,.45)">'
+      + '<span style="width:7px;height:7px;border-radius:50%;background:#4ade80;box-shadow:0 0 6px #4ade80"></span>'
+      + 'Ollama ' + esc(d.versao || '') + ' · ' + d.ramGb + ' GB de RAM nesta máquina</div>';
+
+    // Quem está respondendo agora
+    html += '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 13px;border-radius:10px;background:rgba(var(--zh-accent-rgb),.07);border:1px solid rgba(var(--zh-accent-rgb),.18);margin-bottom:16px">'
+      + '<div><div style="font-size:12.5px;font-weight:600">' + (d.emUso ? 'Respondendo com <b>' + esc(d.emUso) + '</b> (local, sem custo)' : 'Respondendo com <b>Claude</b> (nuvem)') + '</div>'
+      + '<div style="font-size:11px;color:rgba(255,255,255,.35);margin-top:2px">' + (d.emUso ? 'Nenhum crédito é consumido nos turnos.' : 'Os turnos consomem créditos normalmente.') + '</div></div>'
+      + (d.emUso ? '<button class="btn btn-ghost" style="padding:6px 12px;font-size:11.5px;white-space:nowrap" onclick="usarModelo(\'\')">Voltar ao Claude</button>' : '')
+      + '</div>';
+
+    html += (d.modelos || []).map(function(m) {
+      var baixado = m.instalado;
+      var emUso = d.emUso === m.id;
+      return '<div style="padding:12px 13px;border-radius:11px;background:rgba(255,255,255,.02);border:1px solid ' + (emUso ? 'rgba(var(--zh-accent-rgb),.35)' : 'rgba(255,255,255,.06)') + ';margin-bottom:9px">'
+        + '<div style="display:flex;align-items:flex-start;gap:10px">'
+          + '<div style="flex:1;min-width:0">'
+            + '<div style="font-size:13px;font-weight:600;color:rgba(255,255,255,.85)">' + esc(m.nome)
+              + (m.recomendado ? ' <span class="chip chip-purple" style="font-size:9.5px;padding:1px 6px">recomendado</span>' : '')
+              + (emUso ? ' <span class="chip chip-purple" style="font-size:9.5px;padding:1px 6px">em uso</span>' : '') + '</div>'
+            + '<div style="font-size:11.5px;color:rgba(255,255,255,.4);line-height:1.5;margin-top:3px">' + esc(m.resumo) + '</div>'
+            + '<div style="font-size:11px;color:rgba(255,255,255,.28);margin-top:5px">' + m.gb + ' GB para baixar · precisa de ~' + m.ramMin + ' GB de RAM</div>'
+            + (m.aviso ? '<div style="font-size:11px;color:rgba(251,191,36,.8);margin-top:5px">' + esc(m.aviso) + '</div>' : '')
+            + (m.avisoFerramentas ? '<div style="font-size:11px;color:' + (m.ferramentas === 'nao' ? 'rgba(248,113,113,.8)' : 'rgba(255,255,255,.35)') + ';margin-top:5px">' + esc(m.avisoFerramentas) + '</div>' : '')
+          + '</div>'
+          + '<div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">'
+            + (baixado
+                ? (emUso ? '' : '<button class="btn btn-primary" style="padding:6px 12px;font-size:11.5px" onclick="usarModelo(\'' + esc(m.id) + '\')">Usar</button>')
+                  + '<button class="btn btn-ghost" style="padding:6px 12px;font-size:11.5px" onclick="testarModelo(\'' + esc(m.id) + '\')">Testar</button>'
+                : '<button class="btn btn-ghost" style="padding:6px 12px;font-size:11.5px" onclick="baixarModelo(\'' + esc(m.id) + '\')">Baixar</button>')
+          + '</div>'
+        + '</div>'
+        + '<div id="ml-prog-' + cssId(m.id) + '"></div>'
+        + '<div id="ml-teste-' + cssId(m.id) + '"></div>'
+      + '</div>';
+    }).join('');
+
+    // Modelos que a pessoa já tinha no Ollama, fora do catálogo
+    var extras = (d.modelos_instalados_extras || []);
+    cx.innerHTML = html + (extras.length ? '' : '');
+  });
+}
+
+// ids de modelo têm ':' e '.', que não valem em seletor de CSS
+function cssId(id) { return String(id).replace(/[^\w]/g, '_'); }
+
+function baixarModelo(id) {
+  var alvo = document.getElementById('ml-prog-' + cssId(id));
+  alvo.innerHTML = '<div style="margin-top:10px;font-size:11.5px;color:rgba(255,255,255,.5)">Iniciando…</div>';
+  api('/api/admin/modelos-locais/baixar', { method: 'POST', body: JSON.stringify({ id: id }) }).then(function(r) {
+    if (r.error) { alvo.innerHTML = '<div style="margin-top:10px;font-size:11.5px;color:rgba(248,113,113,.8)">' + esc(r.error) + '</div>'; return; }
+    acompanharDownload(id);
+  });
+}
+
+function acompanharDownload(id) {
+  var alvo = document.getElementById('ml-prog-' + cssId(id));
+  clearInterval(_mlTimers[id]);
+  _mlTimers[id] = setInterval(function() {
+    api('/api/admin/modelos-locais/progresso/' + encodeURIComponent(id)).then(function(p) {
+      if (!p || p.desconhecido) return;
+      if (p.erro) {
+        clearInterval(_mlTimers[id]);
+        alvo.innerHTML = '<div style="margin-top:10px;font-size:11.5px;color:rgba(248,113,113,.8)">' + esc(p.erro) + '</div>';
+        return;
+      }
+      var pct = p.total ? Math.round((p.recebido / p.total) * 100) : 0;
+      var gb = p.total ? (p.recebido / 1073741824).toFixed(1) + ' / ' + (p.total / 1073741824).toFixed(1) + ' GB' : '';
+      alvo.innerHTML = '<div style="margin-top:10px">'
+        + '<div style="display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.45);margin-bottom:4px"><span>' + esc(p.status) + '</span><span>' + gb + '</span></div>'
+        + '<div style="height:4px;border-radius:4px;background:rgba(255,255,255,.06);overflow:hidden"><div style="height:100%;width:' + pct + '%;background:var(--zh-accent);transition:width .4s"></div></div></div>';
+      if (p.fim) {
+        clearInterval(_mlTimers[id]);
+        alvo.innerHTML = '<div style="margin-top:10px;font-size:11.5px;color:rgba(74,222,128,.8)">Baixado. Agora dá para testar e usar.</div>';
+        setTimeout(loadModelosLocais, 1200);
+      }
+    });
+  }, 1200);
+}
+
+// Responder texto não prova nada: sem ferramenta o modelo não constrói projeto.
+function testarModelo(id) {
+  var alvo = document.getElementById('ml-teste-' + cssId(id));
+  alvo.innerHTML = '<div style="margin-top:10px;font-size:11.5px;color:rgba(255,255,255,.5)">Testando (pode levar um minuto na primeira vez — o modelo precisa carregar na memória)…</div>';
+  api('/api/admin/modelos-locais/testar', { method: 'POST', body: JSON.stringify({ id: id }) }).then(function(r) {
+    if (!r.ok) { alvo.innerHTML = '<div style="margin-top:10px;font-size:11.5px;color:rgba(248,113,113,.8)">' + esc(r.erro || 'falhou') + '</div>'; return; }
+    var cor = r.usaFerramentas ? 'rgba(74,222,128,.85)' : 'rgba(251,191,36,.85)';
+    alvo.innerHTML = '<div style="margin-top:10px;font-size:11.5px;color:' + cor + '">'
+      + (r.usaFerramentas ? 'Funciona: respondeu e usou ferramentas em ' + r.segundos + 's.' : esc(r.aviso)) + '</div>';
+  });
+}
+
+function usarModelo(id) {
+  var msg = id
+    ? 'Passar a responder com "' + id + '"?\n\nAs sessões abertas serão reiniciadas. Os turnos deixam de consumir créditos.'
+    : 'Voltar a responder com o Claude?\n\nAs sessões abertas serão reiniciadas.';
+  if (!confirm(msg)) return;
+  api('/api/admin/modelos-locais/usar', { method: 'PUT', body: JSON.stringify({ id: id }) }).then(function(r) {
+    if (r.error) { alert(r.error); return; }
+    loadModelosLocais();
+  });
+}
+
+// ── IA própria (BYOK) — toggle do admin + quem está conectado ─────────
+function loadIaPropria() {
+  api('/api/admin/ia-propria').then(function(d) {
+    if (d.error) return;
+    document.getElementById('iap-toggle').checked = !!d.permitir;
+    var cx = document.getElementById('iap-conectados');
+    if (!d.conectados || !d.conectados.length) {
+      cx.innerHTML = d.permitir
+        ? '<p style="font-size:11px;color:rgba(255,255,255,.25);margin:0">Nenhum cliente conectou a própria IA ainda. Eles fazem isso nas configurações da conta.</p>'
+        : '';
+      return;
+    }
+    cx.innerHTML = '<div style="font-size:11px;color:rgba(255,255,255,.35);margin-bottom:6px">Conectados (isentos de crédito):</div>' +
+      d.conectados.map(function(c) {
+        return '<span class="chip chip-purple" style="margin:0 6px 6px 0" title="' + esc(c.tipo === 'oauth' ? 'Assinatura (setup-token)' : 'Chave de API') + ' · ' + esc(c.sufixo || '') + '">' +
+          esc(c.username) + ' · ' + (c.tipo === 'oauth' ? 'assinatura' : 'API') + '</span>';
+      }).join('');
+  });
+}
+function salvarIaPropria() {
+  var permitir = document.getElementById('iap-toggle').checked;
+  api('/api/admin/ia-propria', { method: 'PUT', body: JSON.stringify({ permitir: permitir }) }).then(function(r) {
+    if (r.error) { alert(r.error); loadIaPropria(); }
+  });
+}
+
+function loadEngine() {
+  loadModelosLocais();
+  loadIaPropria();
+  api('/api/admin/sessions').then(function(list) {
+    var tb = document.getElementById('engine-tbody');
+    document.getElementById('engine-empty').style.display = list.length ? 'none' : 'block';
+    tb.innerHTML = list.map(function(s) {
+      return '<tr>' +
+        '<td><div style="color:rgba(255,255,255,.85)">' + esc(s.projectName || s.key) + '</div><div style="font-size:10px;color:rgba(255,255,255,.25);font-family:ui-monospace,monospace">' + esc(String(s.key).substring(0, 20)) + '</div></td>' +
+        '<td>' + (s.running ? '<span class="chip chip-green">trabalhando</span>' : '<span class="chip chip-gray">ociosa</span>') + (s.pendingInteractions ? ' <span class="chip chip-amber">aguarda resposta</span>' : '') + '</td>' +
+        '<td>' + esc(s.mode) + '</td>' +
+        '<td>' + esc(s.model || 'auto') + '</td>' +
+        '<td>' + (s.turnCount || 0) + '</td>' +
+        '<td>' + (s.totalCostUsd ? 'US$ ' + s.totalCostUsd.toFixed(2) : '—') + '</td>' +
+        '<td>' + fmtDur(s.uptimeMs) + '</td>' +
+        '<td>' + fmtDur(s.idleMs) + '</td>' +
+        '<td style="text-align:right"><button class="btn btn-danger btn-xs" onclick="closeSession(\'' + esc(s.key) + '\')">Encerrar</button></td>' +
+      '</tr>';
+    }).join('');
+  });
+}
+function closeSession(key) {
+  if (!confirm('Encerrar esta sessão? O usuário pode reabrir o projeto e continuar (resume).')) return;
+  api('/api/admin/sessions/' + encodeURIComponent(key) + '/close', { method: 'POST' }).then(function() { loadEngine(); });
+}
+
+// ── Cobranças ──
+var _billCfg = null;
+var MODE_INFO = {
+  off:          { name: 'Desligado',   desc: 'Sem cobrança. Todo mundo usa livremente.' },
+  subscription: { name: 'Mensalidade simples', desc: 'Plano fixo por mês. Sem medição de uso — o plano é só rótulo e preço.' },
+  credits:      { name: 'Mensalidade + Uso', desc: 'Modelo Claude: o preço do plano LIBERA um consumo medido (sessão 5h + semana). Nunca fica negativo — no mínimo repassa o custo.' },
+};
+var MODE_HINTS = {
+  off: 'Nenhum portão ativo — turnos não são bloqueados nem debitados.',
+  subscription: 'A cobrança acontece fora do sistema (gateway de pagamento). O NASCERA não bloqueia por uso.',
+  credits: 'O preço da mensalidade vira o consumo liberado; cada modelo desconta pelo custo + markup (a margem). O usuário vê % da sessão de 5h e da semana, como no Claude. Admins são isentos.',
+};
+
+// ── Vendas & Hotmart (A0.1/A0.3) ──────────────────────────────────────
+function loadVendas() {
+  document.getElementById('hm-url').value = location.origin + '/api/webhooks/hotmart';
+  api('/api/admin/webhooks/hotmart').then(function(h) {
+    if (h.error) return;
+    document.getElementById('hm-hottok-estado').textContent = h.configurado ? '· configurado (' + (h.hottokMascarado || '') + ')' : '';
+    document.getElementById('hm-hottok').placeholder = h.configurado ? 'Configurado — cole outro para trocar' : 'Cole o hottok da sua conta Hotmart';
+    if (h.pix) {
+      document.getElementById('px-chave').value = h.pix.chave || '';
+      document.getElementById('px-titular').value = h.pix.titular || '';
+    }
+    var sel = document.getElementById('hm-plano');
+    var planos = (_billCfg && _billCfg.plans) || [];
+    sel.innerHTML = '<option value="">— escolher plano —</option>' + planos.map(function(p) {
+      return '<option value="' + esc(p.slug) + '"' + (h.planoPadrao === p.slug ? ' selected' : '') + '>' + esc(p.name) + ' (R$ ' + p.priceBrl + ')</option>';
+    }).join('');
+  });
+  api('/api/admin/vendas').then(function(d) {
+    if (d.error) return;
+    var r = d.resumo || {};
+    document.getElementById('vendas-resumo').innerHTML =
+      '<div><div class="stat-label">Receita do mês</div><div style="font-size:20px;font-weight:600;color:#4ade80">R$ ' + (r.mes || 0).toFixed(2) + '</div></div>' +
+      '<div><div class="stat-label">Vendas no mês</div><div style="font-size:20px;font-weight:600">' + (r.vendasMes || 0) + '</div></div>' +
+      '<div><div class="stat-label">Receita total</div><div style="font-size:20px;font-weight:600">R$ ' + (r.total || 0).toFixed(2) + '</div></div>' +
+      '<div><div class="stat-label">Reembolsos</div><div style="font-size:20px;font-weight:600;color:' + (r.reembolsos ? '#f87171' : 'rgba(255,255,255,.4)') + '">' + (r.reembolsos || 0) + '</div></div>';
+    var vendas = (d.vendas || []).slice(0, 12);
+    document.getElementById('vendas-vazio').style.display = vendas.length ? 'none' : 'block';
+    document.getElementById('vendas-tbody').innerHTML = vendas.map(function(v) {
+      var st = v.status === 'aprovada' ? '<span class="chip chip-green">aprovada</span>'
+             : v.status === 'reembolsada' ? '<span class="chip chip-red">reembolsada</span>'
+             : v.status === 'aguardando_confirmacao'
+               ? '<button class="btn btn-primary btn-xs" title="Cliente disse que fez o Pix — confira o extrato e confirme para ativar o plano" onclick="confirmarVenda(\'' + v.id + '\', \'' + esc(v.username || '') + '\')">Confirmar Pix</button>'
+             : '<span class="chip chip-amber" title="Compra sem mapeamento de plano — resolva concedendo o plano manualmente">pendente</span>';
+      return '<tr>' +
+        '<td>' + fmtDate(v.criadaEm) + '</td>' +
+        '<td>' + esc(v.username || v.email || '?') + '</td>' +
+        '<td>R$ ' + (v.valorBrl || 0).toFixed(2) + '</td>' +
+        '<td><span class="chip chip-gray">' + esc(v.meio || v.gateway) + '</span></td>' +
+        '<td>' + (v.plano ? esc(v.plano) : '—') + '</td>' +
+        '<td style="font-family:ui-monospace,monospace;font-size:10.5px;color:rgba(255,255,255,.35)">' + esc(String(v.referencia || '').slice(0, 18)) + '</td>' +
+        '<td>' + st + '</td></tr>';
+    }).join('');
+  });
+}
+function salvarHotmart() {
+  var body = {
+    planoPadrao: document.getElementById('hm-plano').value || null,
+    planoPorOferta: {},
+  };
+  var tok = document.getElementById('hm-hottok').value.trim();
+  if (tok) body.hottok = tok;
+  var pix = {
+    chave: document.getElementById('px-chave').value.trim(),
+    titular: document.getElementById('px-titular').value.trim(),
+  };
+  Promise.all([
+    api('/api/admin/webhooks/hotmart', { method: 'PUT', body: JSON.stringify(body) }),
+    api('/api/admin/pagamentos/pix', { method: 'PUT', body: JSON.stringify(pix) }),
+  ]).then(function(rs) {
+    var erro = rs.find(function(r) { return r.error; });
+    if (erro) return alert(erro.error);
+    document.getElementById('hm-hottok').value = '';
+    loadVendas();
+  });
+}
+function confirmarVenda(id, username) {
+  var ref = prompt('Confirmar o Pix de "' + username + '"?\nCole a referência do comprovante (id da transação):');
+  if (ref === null) return;
+  api('/api/admin/vendas/' + id + '/confirmar', { method: 'POST', body: JSON.stringify({ referencia: ref }) })
+    .then(function(r) {
+      if (r.error) return alert(r.error);
+      loadVendas();
+    });
+}
+
+function loadBilling() {
+  api('/api/admin/billing').then(function(d) {
+    _billCfg = d.config;
+    loadVendas();   // depois do config: o select de planos lê _billCfg
+    renderBillModes();
+    document.getElementById('bill-usd').value = d.config.usdPerCredit;
+    document.getElementById('bill-daily').value = d.config.defaultDailyLimitUsd;
+    document.getElementById('bill-tz').value = d.config.timezone;
+    document.getElementById('bill-markup').value = multToPct(d.config.defaultMarkup);
+    document.getElementById('bill-fx').value = d.config.usdToBrl;
+    document.getElementById('bill-sessions').value = d.config.sessionsPerWeek || 5;
+    renderBillModels();
+    renderBillPlans();
+    renderBillUsers(d.users);
+    renderBillSim();
+  });
+}
+
+// Consumo liberado DERIVA do preço (modelo Claude): preço/câmbio + bônus.
+// Plano zerado herda os créditos legados como cortesia de entrada.
+function billFx() { return parseFloat(document.getElementById('bill-fx').value) || _billCfg.usdToBrl || 5.5; }
+function billSessions() { return parseInt(document.getElementById('bill-sessions').value, 10) || _billCfg.sessionsPerWeek || 5; }
+function planCapUsd(p) {
+  var cap = (p.priceBrl || 0) / billFx() + (p.bonusUsd || 0);
+  if (cap > 0) return cap;
+  return (p.creditsPerMonth || 0) * _billCfg.usdPerCredit;
+}
+function planWeekCapUsd(p) { return planCapUsd(p) / 4; }
+function planSessionCapUsd(p) { return planWeekCapUsd(p) / billSessions(); }
+// Na tela o markup é PORCENTAGEM (+30%); por dentro vira multiplicador (1.3)
+function pctToMult(pct) { return 1 + (Math.max(0, pct) / 100); }
+function multToPct(mult) { return Math.round((mult - 1) * 100 * 10) / 10; }
+function effMarkup(m) {
+  var pct = parseFloat(document.getElementById('bill-markup').value);
+  var dm = isNaN(pct) ? (_billCfg.defaultMarkup || 1) : pctToMult(pct);
+  return (m && m.markup > 0) ? m.markup : dm;
+}
+
+// ── Modelos & custo por token ──
+function renderBillModels() {
+  var tb = document.getElementById('bill-models-tbody');
+  if (!tb) return;
+  tb.innerHTML = (_billCfg.models || []).map(function(m, i) {
+    var mk = effMarkup(m);
+    var num = function(field, val, w, step) {
+      return '<td><input class="inp" style="width:' + w + 'px;padding:6px 8px;font-size:11.5px" type="number" step="' + (step || '0.01') + '" min="0" value="' + val + '" onchange="_billCfg.models[' + i + '].' + field + '=parseFloat(this.value)||0;renderBillModels();renderBillSim()"/></td>';
+    };
+    return '<tr>' +
+      '<td><input class="inp" style="width:90px;padding:6px 8px;font-size:11.5px;font-family:ui-monospace,monospace" value="' + esc(m.id) + '" onchange="_billCfg.models[' + i + '].id=this.value.trim().toLowerCase();renderBillSim()"/></td>' +
+      '<td><input class="inp" style="width:120px;padding:6px 8px;font-size:11.5px" value="' + esc(m.name) + '" onchange="_billCfg.models[' + i + '].name=this.value"/></td>' +
+      num('inMtok', m.inMtok, 70) +
+      num('outMtok', m.outMtok, 70) +
+      num('cacheReadMtok', m.cacheReadMtok, 65) +
+      num('cacheWriteMtok', m.cacheWriteMtok, 65) +
+      '<td><div style="display:flex;align-items:center;gap:3px"><span style="color:rgba(255,255,255,.3);font-size:11px">+</span>' +
+        '<input class="inp" style="width:55px;padding:6px 8px;font-size:11.5px" type="number" step="5" min="0" placeholder="' + multToPct(effMarkup(null)) + '" value="' + (m.markup > 0 ? multToPct(m.markup) : '') + '" onchange="_billCfg.models[' + i + '].markup=this.value===\'\'?0:(1+(Math.max(0,parseFloat(this.value)||0)/100));renderBillModels();renderBillSim()" title="Quanto este modelo cobra acima do custo. Vazio = usa o markup padrão"/>' +
+        '<span style="color:rgba(255,255,255,.3);font-size:11px">%</span></div></td>' +
+      '<td style="font-family:ui-monospace,monospace;font-size:11px;white-space:nowrap" title="O que o usuário paga por milhão de tokens (base +' + multToPct(mk) + '%)">' + (m.inMtok * mk).toFixed(2) + ' / ' + (m.outMtok * mk).toFixed(2) + '</td>' +
+      '<td style="text-align:right"><button class="btn btn-danger btn-xs" onclick="_billCfg.models.splice(' + i + ',1);renderBillModels();renderBillSim()">×</button></td>' +
+    '</tr>';
+  }).join('');
+}
+
+function billAddModel() {
+  _billCfg.models = _billCfg.models || [];
+  _billCfg.models.push({ id: 'novo', name: 'Novo modelo', inMtok: 3, outMtok: 15, cacheReadMtok: 0.3, cacheWriteMtok: 3.75, markup: 0 });
+  renderBillModels();
+  renderBillSim();
+}
+
+// ── Simulador de lucro ──
+function renderBillSim() {
+  var card = document.getElementById('bill-sim-card');
+  if (!card || !_billCfg.plans) return;
+  var planSel = document.getElementById('sim-plan');
+  var modelSel = document.getElementById('sim-model');
+  var curP = planSel.value, curM = modelSel.value;
+  planSel.innerHTML = _billCfg.plans.map(function(p) {
+    return '<option value="' + esc(p.slug) + '"' + (p.slug === curP ? ' selected' : '') + '>' + esc(p.name) + '</option>';
+  }).join('');
+  modelSel.innerHTML = (_billCfg.models || []).map(function(m) {
+    return '<option value="' + esc(m.id) + '"' + (m.id === curM ? ' selected' : '') + '>' + esc(m.name) + '</option>';
+  }).join('');
+  var plan = _billCfg.plans.find(function(p) { return p.slug === planSel.value; }) || _billCfg.plans[0];
+  var model = (_billCfg.models || []).find(function(m) { return m.id === modelSel.value; }) || (_billCfg.models || [])[0];
+  if (!plan || !model) return;
+  var pct = Math.max(0, Math.min(100, parseFloat(document.getElementById('sim-pct').value) || 0));
+  var fx = parseFloat(document.getElementById('bill-fx').value) || _billCfg.usdToBrl || 5.5;
+  var mk = effMarkup(model);
+  var usedUsd = planCapUsd(plan) * pct / 100;   // consumido em US$ COBRADO
+  var baseUsd = mk > 0 ? usedUsd / mk : usedUsd; // custo real p/ nós
+  var receita = plan.priceBrl;
+  var custoBrl = baseUsd * fx;
+  var lucro = receita - custoBrl;
+  var margem = receita > 0 ? (lucro / receita) * 100 : 0;
+  var box = function(label, value, color) {
+    return '<div style="padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06)">' +
+      '<div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.3);margin-bottom:4px">' + label + '</div>' +
+      '<div style="font-size:16px;font-weight:600;font-family:ui-monospace,monospace;color:' + (color || 'rgba(255,255,255,.85)') + '">' + value + '</div></div>';
+  };
+  // até quanto de uso o plano aguenta sem perder dinheiro (a este markup)
+  var breakEven = (receita / fx) * mk;
+  document.getElementById('sim-out').innerHTML =
+    box('Consumo (seu preço, c/ markup)', 'US$ ' + usedUsd.toFixed(2)) +
+    box('Custo real (Anthropic)', 'US$ ' + baseUsd.toFixed(2), 'rgba(251,191,36,.85)') +
+    box('Receita do plano', 'R$ ' + receita.toFixed(2)) +
+    box('Custo em R$', 'R$ ' + custoBrl.toFixed(2), 'rgba(251,191,36,.85)') +
+    box('Lucro', 'R$ ' + lucro.toFixed(2), lucro >= 0 ? 'rgba(74,222,128,.85)' : 'rgba(248,113,113,.85)') +
+    box('Margem', receita > 0 ? margem.toFixed(1) + '%' : 'subsídio', receita > 0 ? (margem >= 0 ? 'rgba(74,222,128,.85)' : 'rgba(248,113,113,.85)') : 'rgba(251,191,36,.85)') +
+    (receita > 0 ? box('Break-even (uso)', 'US$ ' + breakEven.toFixed(0), 'rgba(var(--zh-accent-rgb),.85)') : '');
+  var note = document.getElementById('sim-note');
+  var texto = 'Cenário: usuário do plano ' + plan.name + ' consumiu ' + pct + '% do orçamento (US$ ' + planCapUsd(plan).toFixed(2) +
+    '/mês) usando só ' + model.name + ' com markup +' + multToPct(mk) + '%. Câmbio: R$ ' + fx.toFixed(2) + '/US$. ' +
+    'O consumo é medido no SEU preço (custo × markup), igual a Anthropic mede o seu — por isso "consumo" > "custo real": a diferença é a sua margem.';
+  if (lucro < 0 && receita > 0) {
+    texto += ' 🔴 Para este plano LUCRAR, o orçamento de uso tem que ficar ABAIXO de US$ ' + breakEven.toFixed(0) +
+      '/mês (break-even) — p/ margem de 70%, use ~US$ ' + (breakEven * 0.30).toFixed(0) + '.';
+    note.style.color = '#f87171';
+  } else {
+    note.style.color = '';
+  }
+  note.textContent = texto;
+}
+
+function renderBillModes() {
+  var el = document.getElementById('bill-modes');
+  el.innerHTML = ['off', 'subscription', 'credits'].map(function(m) {
+    var on = _billCfg.mode === m;
+    var i = MODE_INFO[m];
+    return '<div onclick="setBillMode(\'' + m + '\')" style="cursor:pointer;padding:14px 16px;border-radius:12px;transition:.15s;' +
+      (on ? 'background:rgba(var(--zh-accent-rgb),.1);border:1px solid rgba(var(--zh-accent-rgb),.4)' : 'background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06)') + '">' +
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">' +
+        '<div style="width:8px;height:8px;border-radius:99px;' + (on ? 'background:var(--zh-accent);box-shadow:0 0 8px rgba(var(--zh-accent-rgb),.6)' : 'background:rgba(255,255,255,.1)') + '"></div>' +
+        '<span style="font-size:13px;font-weight:600;color:rgba(255,255,255,' + (on ? '.9' : '.55') + ')">' + i.name + '</span></div>' +
+      '<p style="font-size:11px;color:rgba(255,255,255,.35);margin:0;line-height:1.45">' + i.desc + '</p></div>';
+  }).join('');
+  document.getElementById('bill-mode-hint').textContent = MODE_HINTS[_billCfg.mode] || '';
+  var showCredits = _billCfg.mode === 'credits' ? 'block' : 'none';
+  document.getElementById('bill-credits-cfg').style.display = showCredits;
+  document.getElementById('bill-models-card').style.display = showCredits;
+  document.getElementById('bill-sim-card').style.display = showCredits;
+}
+
+function setBillMode(m) {
+  _billCfg.mode = m;
+  renderBillModes();
+}
+
+function renderBillPlans() {
+  var tb = document.getElementById('bill-plans-tbody');
+  var fx = billFx();
+  var mk = effMarkup(null);
+  var margemPct = Math.round((1 - 1 / mk) * 100);
+  tb.innerHTML = _billCfg.plans.map(function(p, i) {
+    var cap = planCapUsd(p);
+    var isBonus = p.priceBrl === 0 && cap > 0;
+    return '<tr>' +
+      '<td><input class="inp" style="width:90px;padding:6px 8px;font-size:11.5px" value="' + esc(p.slug) + '" onchange="_billCfg.plans[' + i + '].slug=this.value"/></td>' +
+      '<td><input class="inp" style="width:150px;padding:6px 8px;font-size:11.5px" value="' + esc(p.name) + '" onchange="_billCfg.plans[' + i + '].name=this.value"/></td>' +
+      '<td><input class="inp" style="width:85px;padding:6px 8px;font-size:11.5px" type="number" min="0" value="' + p.priceBrl + '" onchange="_billCfg.plans[' + i + '].priceBrl=parseFloat(this.value)||0;renderBillPlans();renderBillSim()"/></td>' +
+      '<td style="font-family:ui-monospace,monospace;font-size:11.5px;color:rgba(255,255,255,.8)" title="DERIVADO do preço: R$ ' + (p.priceBrl || 0) + ' ÷ ' + fx.toFixed(2) + (p.bonusUsd > 0 ? ' + bônus US$ ' + p.bonusUsd : '') + (isBonus ? ' (só bônus/cortesia)' : '') + '">US$ ' + cap.toFixed(2) + '</td>' +
+      '<td style="font-family:ui-monospace,monospace;font-size:11px;color:rgba(255,255,255,.5)" title="Mensal ÷ 4">US$ ' + planWeekCapUsd(p).toFixed(2) + '</td>' +
+      '<td style="font-family:ui-monospace,monospace;font-size:11px;color:rgba(255,255,255,.5)" title="Semana ÷ ' + billSessions() + ' sessões">US$ ' + planSessionCapUsd(p).toFixed(2) + '</td>' +
+      '<td><input class="inp" style="width:70px;padding:6px 8px;font-size:11.5px" type="number" step="0.5" min="0" value="' + (p.bonusUsd > 0 ? p.bonusUsd : '') + '" placeholder="0" onchange="_billCfg.plans[' + i + '].bonusUsd=parseFloat(this.value)||0;renderBillPlans();renderBillSim()" title="Subsídio deliberado (free/trial): consumo extra além do que o preço cobre — sai do seu bolso."/></td>' +
+      '<td style="font-family:ui-monospace,monospace;font-size:11px;color:' + (p.bonusUsd > 0 ? '#fbbf24' : 'rgba(74,222,128,.8)') + '" title="' + (p.bonusUsd > 0 ? 'Bônus reduz a margem (subsídio)' : 'Margem = o markup: no consumo total sobra isso da receita') + '">' + (p.priceBrl > 0 ? '≥ ' + margemPct + '%' : (cap > 0 ? 'subsídio' : '—')) + '</td>' +
+      '<td style="text-align:right"><button class="btn btn-danger btn-xs" onclick="_billCfg.plans.splice(' + i + ',1);renderBillPlans();renderBillSim()">×</button></td>' +
+    '</tr>';
+  }).join('');
+  // Avisos: subsídio em plano pago e plano free sem nada
+  var html = _billCfg.plans.filter(function(p) { return p.priceBrl > 0 && p.bonusUsd > 0; }).map(function(p) {
+    return '<p style="font-size:11px;color:#fbbf24;margin:2px 0">⚠ "' + esc(p.name) + '" tem bônus de US$ ' + p.bonusUsd + ' além do preço — esse pedaço é subsídio seu.</p>';
+  }).join('');
+  html += _billCfg.plans.filter(function(p) { return planCapUsd(p) <= 0; }).map(function(p) {
+    return '<p style="font-size:11px;color:#f87171;margin:2px 0">🔴 "' + esc(p.name) + '" não libera consumo nenhum (sem preço, bônus ou créditos) — usuários deste plano ficam bloqueados.</p>';
+  }).join('');
+  document.getElementById('bill-warnings').innerHTML = html;
+}
+
+function billAddPlan() {
+  _billCfg.plans.push({ slug: 'novo-' + Date.now().toString(36), name: 'Novo plano', priceBrl: 100, bonusUsd: 0, creditsPerMonth: 0 });
+  renderBillPlans();
+  renderBillSim();
+}
+
+function saveBillingConfig() {
+  var mkPct = parseFloat(document.getElementById('bill-markup').value);
+  if (isNaN(mkPct)) {
+    alert('Informe o Markup padrão (%) antes de salvar — vazio zeraria sua margem.');
+    return;
+  }
+  var body = {
+    mode: _billCfg.mode,
+    usdPerCredit: parseFloat(document.getElementById('bill-usd').value),
+    defaultDailyLimitUsd: parseFloat(document.getElementById('bill-daily').value),
+    timezone: document.getElementById('bill-tz').value.trim() || 'America/Sao_Paulo',
+    defaultMarkup: pctToMult(parseFloat(document.getElementById('bill-markup').value) || 0),
+    usdToBrl: parseFloat(document.getElementById('bill-fx').value),
+    sessionsPerWeek: parseInt(document.getElementById('bill-sessions').value, 10) || 5,
+    models: _billCfg.models,
+    plans: _billCfg.plans.map(function(p) {
+      return { slug: p.slug, name: p.name, priceBrl: p.priceBrl, bonusUsd: p.bonusUsd || 0, creditsPerMonth: p.creditsPerMonth || 0 };
+    }),
+  };
+  api('/api/admin/billing/config', { method: 'PUT', body: JSON.stringify(body) }).then(function(r) {
+    if (r.error) { alert(r.error); return; }
+    var s = document.getElementById('bill-save-status');
+    s.style.display = 'inline';
+    setTimeout(function() { s.style.display = 'none'; }, 2500);
+    if (r.warnings && r.warnings.length) alert('Salvo com avisos:\n\n' + r.warnings.join('\n'));
+    loadBilling();
+  });
+}
+
+function fmtCr(milli) { return (milli / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 1 }); }
+
+function renderBillUsers(users) {
+  var tb = document.getElementById('bill-users-tbody');
+  tb.innerHTML = users.map(function(u) {
+    var planSel = '<select class="inp" style="width:150px;padding:6px 8px;font-size:11.5px" onchange="billSetPlan(\'' + esc(u.username) + '\', this.value)">' +
+      _billCfg.plans.map(function(p) { return '<option value="' + esc(p.slug) + '"' + (p.slug === u.plan ? ' selected' : '') + '>' + esc(p.name) + '</option>'; }).join('') + '</select>';
+    var wp = typeof u.weekUsedPct === 'number' ? Math.min(100, u.weekUsedPct) : 0;
+    var sp = typeof u.sessionUsedPct === 'number' ? Math.min(100, u.sessionUsedPct) : 0;
+    var pcolor = function(v) { return v >= 100 ? '#f87171' : v >= 80 ? '#60a5fa' : 'rgba(255,255,255,.55)'; };
+    return '<tr>' +
+      '<td style="color:rgba(255,255,255,.85);font-weight:500">' + esc(u.username) + '</td>' +
+      '<td>' + planSel + '</td>' +
+      '<td style="font-family:ui-monospace,monospace;font-size:11px" title="Sessão 5h: teto US$ ' + (u.sessionCapUsd || 0).toFixed(2) + ' · Semana: teto US$ ' + (u.weekCapUsd || 0).toFixed(2) + '"><span style="color:' + pcolor(sp) + '">' + sp + '%</span> <span style="color:rgba(255,255,255,.2)">·</span> <span style="color:' + pcolor(wp) + '">' + wp + '%</span></td>' +
+      '<td><span class="chip ' + (u.availableMilli > 0 ? 'chip-green' : 'chip-amber') + '">' + fmtCr(u.availableMilli) + ' cr</span></td>' +
+      '<td>US$ ' + u.monthlySpendUsd.toFixed(2) + ' <span style="color:rgba(255,255,255,.25);font-size:10px">de US$ ' + (u.monthCapUsd || 0).toFixed(2) + '</span></td>' +
+      '<td style="font-family:ui-monospace,monospace;font-size:11px" title="Custo base (Anthropic) no mês / margem: cobrado − custo">US$ ' + (u.monthBaseUsd || 0).toFixed(4) +
+        ' <span style="color:rgba(74,222,128,.6);font-size:10px">+US$ ' + Math.max(0, (u.monthChargedUsd || 0) - (u.monthBaseUsd || 0)).toFixed(4) + '</span></td>' +
+      '<td>' + (u.grantMilli > 0 ? fmtCr(u.grantMilli) + ' cr' : '—') + '</td>' +
+      '<td>' + (u.balanceMilli > 0 ? fmtCr(u.balanceMilli) + ' cr' : '—') + '</td>' +
+      '<td style="text-align:right;white-space:nowrap">' +
+        '<button class="btn btn-ghost btn-xs" onclick="billGrant(\'' + esc(u.username) + '\')">+ Cortesia</button> ' +
+        '<button class="btn btn-ghost btn-xs" onclick="billBalance(\'' + esc(u.username) + '\')">+ Saldo</button> ' +
+        '<button class="btn btn-danger btn-xs" onclick="billReset(\'' + esc(u.username) + '\')">Zerar gasto</button>' +
+      '</td></tr>';
+  }).join('');
+}
+
+function billSetPlan(username, plan) {
+  api('/api/admin/billing/users/' + encodeURIComponent(username), { method: 'POST', body: JSON.stringify({ plan: plan }) })
+    .then(function(r) { if (r.error) alert(r.error); loadBilling(); });
+}
+// A0.3: concessão que corresponde a DINHEIRO recebido entra no ledger de
+// vendas com valor + referência — a partir daí receita/conciliação existem.
+function pedirVenda(body) {
+  var pago = prompt('O cliente PAGOU por isso?\nValor recebido em R$ (deixe vazio se for cortesia sem pagamento):');
+  if (pago === null) return null;               // cancelou tudo
+  var valor = parseFloat(String(pago).replace(',', '.'));
+  if (valor > 0) {
+    var ref = prompt('Referência do pagamento (id do comprovante Pix/transação) — obrigatória:');
+    if (!ref || !ref.trim()) { alert('Sem referência não dá para registrar a venda. Nada foi concedido.'); return null; }
+    body.valorPagoBrl = valor;
+    body.meioPagamento = 'pix';
+    body.referenciaPagamento = ref.trim();
+  }
+  return body;
+}
+function billGrant(username) {
+  var v = prompt('Quantos créditos de cortesia para ' + username + '?\n(Cortesia é consumida ANTES do saldo)');
+  if (!v) return;
+  var body = pedirVenda({ grantCredits: parseFloat(v), grantLabel: 'Cortesia admin' });
+  if (!body) return;
+  api('/api/admin/billing/users/' + encodeURIComponent(username), { method: 'POST', body: JSON.stringify(body) })
+    .then(function(r) { if (r.error) alert(r.error); loadBilling(); });
+}
+function billBalance(username) {
+  var v = prompt('Quantos créditos avulsos adicionar ao saldo de ' + username + '? (negativo remove)');
+  if (!v) return;
+  var body = pedirVenda({ addBalanceCredits: parseFloat(v) });
+  if (!body) return;
+  api('/api/admin/billing/users/' + encodeURIComponent(username), { method: 'POST', body: JSON.stringify(body) })
+    .then(function(r) { if (r.error) alert(r.error); loadBilling(); });
+}
+function billReset(username) {
+  if (!confirm('Zerar o gasto (diário, semanal e mensal) de ' + username + '? O ciclo volta a ficar cheio.')) return;
+  api('/api/admin/billing/users/' + encodeURIComponent(username), { method: 'POST', body: JSON.stringify({ resetSpend: true }) })
+    .then(function(r) { if (r.error) alert(r.error); loadBilling(); });
+}
+
+// ── Aparência ──
+// O preview é feito ESCREVENDO as variáveis no :root desta página. Como o
+// admin usa as mesmas variáveis do sistema, o que você vê aqui é o que os
+// usuários verão — sem salvar nada até você mandar.
+var _tema = null, _temaPadrao = null;
+
+var COR_ROTULOS = {
+  accent:  ['Destaque principal', 'Botões, foco, brilhos — a cor da marca'],
+  accent2: ['Destaque claro', 'Links, ícones e textos de realce'],
+  grad1:   ['Gradiente — início', 'Ponta rosa dos títulos grandes'],
+  grad2:   ['Gradiente — fim', 'Ponta azul dos títulos grandes'],
+  bg:      ['Fundo', 'O preto profundo por trás de tudo'],
+  surface: ['Superfície', 'Cartões, barras e painéis'],
+  text:    ['Texto', 'Cor base da tipografia'],
+  success: ['Sucesso', 'Confirmações e status positivo'],
+  danger:  ['Erro', 'Falhas, remoções e bloqueios'],
+  warning: ['Atenção', 'Avisos e limites próximos'],
+  info:    ['Informação', 'Dicas e estados neutros'],
+};
+
+var VIDEO_CTRL = [
+  { k: 'hue',        rot: 'Matiz',      min: -180, max: 180, un: '°',  dica: 'Gira a roda de cores — é o que muda o roxo para outra cor' },
+  { k: 'saturation', rot: 'Saturação',  min: 0,   max: 300, un: '%',  dica: '0 deixa em preto e branco' },
+  { k: 'brightness', rot: 'Brilho',     min: 0,   max: 200, un: '%' },
+  { k: 'contrast',   rot: 'Contraste',  min: 0,   max: 200, un: '%' },
+  { k: 'blur',       rot: 'Desfoque',   min: 0,   max: 20,  un: 'px' },
+  { k: 'opacity',    rot: 'Opacidade',  min: 0,   max: 100, un: '%' },
+];
+
+var IMG_ROTULOS = {
+  logo:       ['Logotipo', 'Aparece no topo da barra lateral'],
+  favicon:    ['Favicon', 'Ícone da aba do navegador'],
+  heroSkills: ['Fundo de Skills/Ferramentas', 'Imagem do topo dessas páginas'],
+  loading:    ['Fundo de carregamento', 'Enquanto o projeto abre'],
+};
+
+function loadTheme() {
+  api('/api/admin/theme').then(function(d) {
+    _tema = d.theme; _temaPadrao = d.defaults;
+    renderTemaCores();
+    renderTemaVideo();
+    renderTemaImagens();
+    renderTemaUi();
+    aplicarPreview();
+  });
+}
+
+function renderTemaCores() {
+  document.getElementById('th-colors').innerHTML = Object.keys(_tema.colors).map(function(k) {
+    var r = COR_ROTULOS[k] || [k, ''];
+    var v = _tema.colors[k];
+    return '<div style="display:flex;gap:11px;align-items:flex-start;padding:11px 12px;border-radius:12px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06)">'
+      + '<input type="color" value="' + esc(v) + '" oninput="setCor(\'' + k + '\',this.value)" '
+      + 'style="width:36px;height:36px;padding:0;border:1px solid rgba(255,255,255,.12);border-radius:9px;background:none;cursor:pointer;flex-shrink:0"/>'
+      + '<div style="min-width:0;flex:1">'
+        + '<div style="font-size:12.5px;font-weight:600;color:rgba(255,255,255,.82)">' + r[0] + '</div>'
+        + '<div style="font-size:10.5px;color:rgba(255,255,255,.3);line-height:1.4;margin:2px 0 6px">' + r[1] + '</div>'
+        + '<input type="text" value="' + esc(v) + '" id="th-hex-' + k + '" onchange="setCor(\'' + k + '\',this.value,true)" '
+        + 'style="width:88px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:4px 7px;color:rgba(255,255,255,.7);font-size:11px;font-family:ui-monospace,monospace;outline:none"/>'
+      + '</div></div>';
+  }).join('');
+}
+
+function setCor(chave, valor, doTexto) {
+  valor = String(valor).trim();
+  if (!/^#[0-9a-fA-F]{6}$/.test(valor)) {
+    if (doTexto) { alert('Use o formato #rrggbb (ex.: #9382ff)'); renderTemaCores(); }
+    return;
+  }
+  _tema.colors[chave] = valor.toLowerCase();
+  if (doTexto) renderTemaCores();
+  else { var t = document.getElementById('th-hex-' + chave); if (t) t.value = valor; }
+  aplicarPreview();
+}
+
+function renderTemaVideo() {
+  document.getElementById('th-video-controls').innerHTML = VIDEO_CTRL.map(function(c) {
+    var v = _tema.video[c.k];
+    return '<div style="margin-bottom:13px">'
+      + '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">'
+        + '<span style="font-size:12px;color:rgba(255,255,255,.7)">' + c.rot + '</span>'
+        + '<span id="th-v-val-' + c.k + '" style="font-size:11px;font-family:ui-monospace,monospace;color:var(--zh-accent2)">' + v + c.un + '</span>'
+      + '</div>'
+      + '<input type="range" min="' + c.min + '" max="' + c.max + '" value="' + v + '" oninput="setVideo(\'' + c.k + '\',this.value,\'' + c.un + '\')" '
+      + 'style="width:100%;accent-color:var(--zh-accent);cursor:pointer"/>'
+      + (c.dica ? '<div style="font-size:10px;color:rgba(255,255,255,.25);margin-top:3px">' + c.dica + '</div>' : '')
+    + '</div>';
+  }).join('');
+  document.getElementById('th-video-on').checked = !!_tema.video.enabled;
+  document.getElementById('th-video-on').onchange = function() {
+    _tema.video.enabled = this.checked; aplicarPreview();
+  };
+}
+
+function setVideo(k, v, un) {
+  _tema.video[k] = parseFloat(v);
+  var el = document.getElementById('th-v-val-' + k);
+  if (el) el.textContent = v + un;
+  aplicarPreview();
+}
+
+function renderTemaImagens() {
+  document.getElementById('th-images').innerHTML = Object.keys(_tema.images).map(function(k) {
+    var r = IMG_ROTULOS[k] || [k, ''];
+    var v = _tema.images[k];
+    return '<div style="padding:12px 13px;border-radius:12px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06)">'
+      + '<div style="display:flex;gap:11px;align-items:center;margin-bottom:9px">'
+        + '<div id="th-img-alvo-' + k + '" title="Clique ou arraste uma imagem aqui" onclick="escolherImagem(\'' + k + '\')" '
+        + 'ondragover="arrastaSobre(event,\'' + k + '\')" ondragleave="arrastaSai(\'' + k + '\')" ondrop="soltarImagem(event,\'' + k + '\')" '
+        + 'style="width:46px;height:46px;border-radius:9px;background:rgba(255,255,255,.04);background-image:url(\'' + esc(v) + '\');background-size:cover;background-position:center;flex-shrink:0;border:1px solid rgba(255,255,255,.07);cursor:pointer;transition:border-color .15s,box-shadow .15s"></div>'
+        + '<div style="min-width:0">'
+          + '<div style="font-size:12.5px;font-weight:600;color:rgba(255,255,255,.82)">' + r[0] + '</div>'
+          + '<div style="font-size:10.5px;color:rgba(255,255,255,.3);line-height:1.4">' + r[1] + '</div>'
+        + '</div>'
+      + '</div>'
+      + '<button class="btn btn-ghost" onclick="escolherImagem(\'' + k + '\')" id="th-img-btn-' + k + '" '
+      + 'style="width:100%;padding:6px 9px;font-size:11.5px;margin-bottom:7px">Enviar imagem</button>'
+      + '<input class="inp" type="text" value="' + esc(v) + '" onchange="_tema.images[\'' + k + '\']=this.value.trim();renderTemaImagens()" '
+      + 'style="padding:6px 9px;font-size:11px;font-family:ui-monospace,monospace"/>'
+    + '</div>';
+  }).join('');
+}
+
+// ── envio de imagem ──────────────────────────────────────────────────
+// O arquivo vai cru no corpo do POST (sem multipart): o servidor confere os
+// bytes, grava em /uploads e devolve o tema já salvo com o caminho novo.
+function escolherImagem(chave) {
+  var inp = document.getElementById('th-file');
+  inp.value = '';
+  inp.onchange = function() { if (inp.files[0]) enviarImagem(chave, inp.files[0]); };
+  inp.click();
+}
+
+function arrastaSobre(ev, chave) {
+  ev.preventDefault();
+  var el = document.getElementById('th-img-alvo-' + chave);
+  if (el) { el.style.borderColor = 'var(--zh-accent)'; el.style.boxShadow = '0 0 0 3px rgba(var(--zh-accent-rgb),.25)'; }
+}
+function arrastaSai(chave) {
+  var el = document.getElementById('th-img-alvo-' + chave);
+  if (el) { el.style.borderColor = 'rgba(255,255,255,.07)'; el.style.boxShadow = 'none'; }
+}
+function soltarImagem(ev, chave) {
+  ev.preventDefault();
+  arrastaSai(chave);
+  var f = ev.dataTransfer && ev.dataTransfer.files && ev.dataTransfer.files[0];
+  if (f) enviarImagem(chave, f);
+}
+
+function enviarImagem(chave, arquivo) {
+  if (arquivo.size > 5 * 1024 * 1024) { alert('Imagem muito grande — o limite é 5 MB'); return; }
+  var btn = document.getElementById('th-img-btn-' + chave);
+  var rotulo = btn ? btn.textContent : '';
+  if (btn) { btn.textContent = 'Enviando…'; btn.disabled = true; }
+
+  fetch('/api/admin/theme/upload/' + chave, {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': arquivo.type || 'application/octet-stream' },
+    body: arquivo,
+  }).then(function(r) { return r.json(); }).then(function(d) {
+    if (btn) { btn.textContent = rotulo; btn.disabled = false; }
+    if (d.error) { alert(d.error); return; }
+    _tema = d.theme;                 // veio salvo do servidor, com o caminho novo
+    renderTemaImagens();
+    atualizarLogoAdmin();
+    temaStatus('Imagem enviada e salva.', 'rgba(74,222,128,.8)');
+  }).catch(function() {
+    if (btn) { btn.textContent = rotulo; btn.disabled = false; }
+    alert('Não deu para enviar a imagem. Tente de novo.');
+  });
+}
+
+// A logo da barra lateral está no HTML como /logo.png — depois de trocar,
+// ela precisa apontar para o arquivo novo sem exigir F5.
+function atualizarLogoAdmin() {
+  var img = document.querySelector('.sidebar img[alt="Nascera"], img[alt="Nascera"]');
+  if (img && _tema.images.logo) img.src = _tema.images.logo;
+  var fav = document.querySelector('link[rel~="icon"]');
+  if (fav && _tema.images.favicon) fav.href = _tema.images.favicon;
+}
+
+function renderTemaUi() {
+  document.getElementById('th-ui').innerHTML =
+    ctrlUi('radius', 'Arredondamento dos cartões', 0, 40, 'px') +
+    ctrlUi('glow', 'Intensidade dos brilhos', 0, 200, '%');
+}
+function ctrlUi(k, rot, min, max, un) {
+  var v = _tema.ui[k];
+  return '<div>'
+    + '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">'
+      + '<span style="font-size:12px;color:rgba(255,255,255,.7)">' + rot + '</span>'
+      + '<span id="th-ui-val-' + k + '" style="font-size:11px;font-family:ui-monospace,monospace;color:var(--zh-accent2)">' + v + un + '</span>'
+    + '</div>'
+    + '<input type="range" min="' + min + '" max="' + max + '" value="' + v + '" oninput="_tema.ui.' + k + '=parseFloat(this.value);document.getElementById(\'th-ui-val-' + k + '\').textContent=this.value+\'' + un + '\';aplicarPreview()" '
+    + 'style="width:100%;accent-color:var(--zh-accent);cursor:pointer"/></div>';
+}
+
+// Escreve as variáveis no :root desta página — preview instantâneo e honesto,
+// porque o admin consome exatamente as mesmas variáveis do resto do sistema.
+function aplicarPreview() {
+  if (!_tema) return;
+  var raiz = document.documentElement.style;
+  var c = _tema.colors;
+  var rgb = function(h) {
+    h = String(h).replace('#', '');
+    return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)].join(',');
+  };
+  Object.keys(c).forEach(function(k) {
+    var nome = k === 'accent' ? 'accent' : k;
+    raiz.setProperty('--zh-' + nome, c[k]);
+    raiz.setProperty('--zh-' + nome + '-rgb', rgb(c[k]));
+  });
+  raiz.setProperty('--zh-radius', _tema.ui.radius + 'px');
+  raiz.setProperty('--zh-glow', (_tema.ui.glow / 100));
+
+  var v = _tema.video;
+  var f = [
+    v.hue ? 'hue-rotate(' + v.hue + 'deg)' : '',
+    v.saturation !== 100 ? 'saturate(' + v.saturation + '%)' : '',
+    v.brightness !== 100 ? 'brightness(' + v.brightness + '%)' : '',
+    v.contrast !== 100 ? 'contrast(' + v.contrast + '%)' : '',
+    v.blur ? 'blur(' + v.blur + 'px)' : '',
+  ].filter(Boolean).join(' ') || 'none';
+  var vid = document.getElementById('th-video');
+  if (vid) {
+    vid.style.filter = f;
+    vid.style.opacity = v.opacity / 100;
+    vid.style.visibility = v.enabled ? 'visible' : 'hidden';
+  }
+}
+
+function previewTema() {
+  aplicarPreview();
+  temaStatus('Prévia aplicada só nesta tela — nada foi salvo ainda.', 'rgba(147,130,255,.8)');
+}
+
+function salvarTema() {
+  api('/api/admin/theme', { method: 'PUT', body: JSON.stringify(_tema) }).then(function(r) {
+    if (r.error) { alert(r.error); return; }
+    _tema = r.theme;
+    atualizarLogoAdmin();
+    temaStatus('Salvo! Todo o sistema já está com a aparência nova.', 'rgba(74,222,128,.8)');
+    // recarrega o theme.css para o admin também passar a ler do servidor
+    var l = document.querySelector('link[href^="/theme.css"]');
+    if (l) l.href = '/theme.css?v=' + Date.now();
+  });
+}
+
+function resetarTema() {
+  if (!confirm('Voltar todas as cores, o vídeo e as imagens ao padrão do NASCERA?')) return;
+  api('/api/admin/theme/reset', { method: 'POST' }).then(function(r) {
+    if (r.error) { alert(r.error); return; }
+    _tema = r.theme;
+    document.documentElement.removeAttribute('style');
+    renderTemaCores(); renderTemaVideo(); renderTemaImagens(); renderTemaUi(); aplicarPreview();
+    atualizarLogoAdmin();
+    temaStatus('Aparência restaurada ao padrão.', 'rgba(74,222,128,.8)');
+    var l = document.querySelector('link[href^="/theme.css"]');
+    if (l) l.href = '/theme.css?v=' + Date.now();
+  });
+}
+
+function temaStatus(txt, cor) {
+  var s = document.getElementById('th-status');
+  s.textContent = txt; s.style.color = cor; s.style.display = 'inline';
+  setTimeout(function() { s.style.display = 'none'; }, 4000);
+}
+
+// ── Domínios ──
+var _domCfg = {};
+var SSL_MODES = {
+  proxy:  { name: 'Proxy na frente', desc: 'Caddy/nginx termina o TLS e encaminha para o publish-server. Certificado automático e grátis (Let\'s Encrypt).' },
+  direct: { name: 'TLS já resolvido', desc: 'Algo antes de nós já entrega HTTPS (Cloudflare proxied, load balancer). O NASCERA só serve HTTP interno.' },
+  off:    { name: 'Sem HTTPS', desc: 'Só HTTP. Use apenas em rede interna ou testes — navegador marca como não seguro.' },
+};
+var SSL_HOWTO = {
+  proxy: 'O <b>Caddy</b> é o caminho mais curto: instale (<code>brew install caddy</code> ou <code>apt install caddy</code>), '
+    + 'clique em <b>Baixar Caddyfile</b> acima e rode <code>caddy run --config Caddyfile</code>. '
+    + 'Ele obtém e renova o certificado de cada domínio sozinho, e encaminha preservando o Host — que é o que o NASCERA usa para saber qual site servir. '
+    + 'Refaça o download sempre que verificar um domínio novo.',
+  direct: 'Aponte o domínio do cliente para a Cloudflare (modo proxied, laranja) com SSL "Full", ou coloque um load balancer com certificado na frente. '
+    + 'O tráfego chega aqui em HTTP puro, na porta de origem configurada acima. Garanta que essa porta não fique exposta na internet sem o proxy.',
+  off: 'Sem TLS os navegadores marcam o site como "Não seguro" e recursos modernos (câmera, geolocalização, service workers) não funcionam. '
+    + 'Use apenas para testar em rede local.',
+};
+
+function loadDomains() {
+  api('/api/admin/domains').then(function(d) {
+    _domCfg = d.config || {};
+    document.getElementById('dom-ip').value = _domCfg.serverIp || '';
+    document.getElementById('dom-cname').value = _domCfg.cnameTarget || '';
+    document.getElementById('dom-panel').value = _domCfg.panelDomain || '';
+    document.getElementById('dom-port').value = _domCfg.publishPort || 4002;
+    document.getElementById('dom-autocaddy').checked = !!_domCfg.autoCaddy;
+    document.getElementById('dom-le-email').value = _domCfg.leEmail || '';
+    renderSslModes();
+    renderDomainRows(d.domains || []);
+    if (!_domCfg.serverIp) detectarIp(true);   // primeira visita: já sugere
+  });
+}
+
+// Descobre o IP público (o servidor pergunta pra fora) e avisa se a máquina
+// só existe em rede local — caso em que domínio de verdade não chega aqui.
+function detectarIp(silencioso) {
+  var btn = document.getElementById('dom-detect-btn');
+  var hint = document.getElementById('dom-ip-hint');
+  if (btn) { btn.disabled = true; btn.textContent = '…'; }
+  api('/api/admin/domains/detect-ip').then(function(r) {
+    if (btn) { btn.disabled = false; btn.textContent = 'Detectar'; }
+    var campo = document.getElementById('dom-ip');
+    if (r.publicIp && (!campo.value || !silencioso)) campo.value = r.publicIp;
+
+    if (r.publicIp) {
+      hint.innerHTML = 'IP público detectado: <b style="color:rgba(255,255,255,.6)">' + esc(r.publicIp)
+        + '</b>. Confirme que é o IP FIXO deste servidor antes de repassar aos clientes.';
+    } else {
+      hint.textContent = 'Não consegui descobrir o IP público. Preencha com o IP fixo do servidor.';
+    }
+
+    var warn = document.getElementById('dom-local-warn');
+    if (r.isLocalOnly) {
+      warn.style.display = 'block';
+      var ips = (r.localIps || []).map(function(l) { return l.ip; }).join(', ') || 'nenhum';
+      document.getElementById('dom-local-warn-body').innerHTML =
+        'Esta máquina só tem endereços de rede local (' + esc(ips) + ')'
+        + (r.publicIp ? ', e o IP público <b>' + esc(r.publicIp) + '</b> é o do seu roteador/provedor' : '')
+        + '. Um domínio de verdade <b>não consegue chegar até aqui</b> pela internet — o DNS aponta para um IP público, '
+        + 'e as requisições parariam no seu roteador.<br><br>'
+        + '<b>Para testar agora, sem internet:</b> adicione no <code>/etc/hosts</code> a linha '
+        + '<code>127.0.0.1 seusite.com.br</code>, cadastre o domínio aqui e verifique — o registro TXT não vai existir, '
+        + 'então marque-o como ativo pelo botão Verificar só depois de apontar de verdade. '
+        + 'O roteamento por Host funciona igual em localhost: acesse <code>http://seusite.com.br:' + (_domCfg.publishPort || 4102) + '</code>.<br><br>'
+        + '<b>Para valer:</b> publique o NASCERA num servidor com IP público fixo (VPS), '
+        + 'ou exponha esta máquina com um túnel (Cloudflare Tunnel, ngrok) e use o modo "TLS já resolvido".';
+    } else {
+      warn.style.display = 'none';
+    }
+  }).catch(function() {
+    if (btn) { btn.disabled = false; btn.textContent = 'Detectar'; }
+  });
+}
+
+function renderSslModes() {
+  document.getElementById('dom-ssl-modes').innerHTML = ['proxy', 'direct', 'off'].map(function(m) {
+    var on = _domCfg.sslMode === m, i = SSL_MODES[m];
+    return '<div onclick="setSslMode(\'' + m + '\')" style="cursor:pointer;padding:13px 15px;border-radius:12px;transition:.15s;'
+      + (on ? 'background:rgba(var(--zh-accent-rgb),.1);border:1px solid rgba(var(--zh-accent-rgb),.4)' : 'background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06)') + '">'
+      + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">'
+      + '<div style="width:8px;height:8px;border-radius:99px;' + (on ? 'background:var(--zh-accent);box-shadow:0 0 8px rgba(var(--zh-accent-rgb),.6)' : 'background:rgba(255,255,255,.1)') + '"></div>'
+      + '<span style="font-size:13px;font-weight:600;color:rgba(255,255,255,' + (on ? '.9' : '.55') + ')">' + i.name + '</span></div>'
+      + '<p style="font-size:11px;color:rgba(255,255,255,.35);margin:0;line-height:1.45">' + i.desc + '</p></div>';
+  }).join('');
+  document.getElementById('dom-ssl-hint').textContent = 'A verificação de DNS é sempre feita pelo NASCERA; o modo acima só decide quem entrega o certificado.';
+  document.getElementById('dom-howto-body').innerHTML = SSL_HOWTO[_domCfg.sslMode] || '';
+  // o automatismo do Caddy só faz sentido no modo proxy
+  document.getElementById('dom-caddy-box').style.display = _domCfg.sslMode === 'proxy' ? 'block' : 'none';
+}
+
+function setSslMode(m) { _domCfg.sslMode = m; renderSslModes(); }
+
+function renderDomainRows(list) {
+  var tb = document.getElementById('dom-tbody');
+  document.getElementById('dom-count').textContent = list.length ? list.length + ' domínio' + (list.length > 1 ? 's' : '') : '';
+  document.getElementById('dom-empty').style.display = list.length ? 'none' : 'block';
+  tb.innerHTML = list.map(function(d) {
+    var cor = d.status === 'ativo' ? (d.pointing ? 'chip-green' : 'chip-amber') : 'chip-amber';
+    var txt = d.status === 'ativo' ? (d.pointing ? 'ativo' : 'posse ok') : 'aguardando DNS';
+    return '<tr>'
+      + '<td style="font-family:ui-monospace,monospace;color:rgba(255,255,255,.85)">' + esc(d.domain) + (d.primary ? ' <span style="color:rgba(var(--zh-accent-rgb),.6);font-size:10px">principal</span>' : '') + '</td>'
+      + '<td style="color:rgba(255,255,255,.5);font-size:11.5px">' + esc(d.slug || '—') + '</td>'
+      + '<td><span class="chip ' + cor + '">' + txt + '</span></td>'
+      + '<td style="color:rgba(255,255,255,.4);font-size:11.5px">' + esc(d.user || '—') + '</td>'
+      + '<td style="color:rgba(255,255,255,.3);font-size:11px">' + (d.lastCheckAt ? new Date(d.lastCheckAt).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '—') + '</td>'
+      + '<td style="text-align:right;white-space:nowrap">'
+      + '<button class="btn btn-ghost btn-xs" onclick="admVerifyDomain(\'' + esc(d.domain) + '\')">Verificar</button> '
+      + '<button class="btn btn-danger btn-xs" onclick="admRemoveDomain(\'' + esc(d.domain) + '\')">Remover</button>'
+      + '</td></tr>';
+  }).join('');
+}
+
+function saveDomainsConfig() {
+  api('/api/admin/domains/config', { method: 'PUT', body: JSON.stringify({
+    serverIp: document.getElementById('dom-ip').value.trim(),
+    cnameTarget: document.getElementById('dom-cname').value.trim(),
+    panelDomain: document.getElementById('dom-panel').value.trim(),
+    publishPort: parseInt(document.getElementById('dom-port').value, 10) || 4002,
+    sslMode: _domCfg.sslMode || 'proxy',
+    autoCaddy: document.getElementById('dom-autocaddy').checked,
+    leEmail: document.getElementById('dom-le-email').value.trim(),
+  }) }).then(function(r) {
+    if (r.error) { alert(r.error); return; }
+    var s = document.getElementById('dom-save-status');
+    s.textContent = (r.ssl && r.ssl.aplicado) ? 'Salvo! Caddy recarregado.' : 'Salvo!';
+    s.style.display = 'inline';
+    setTimeout(function() { s.style.display = 'none'; }, 3000);
+    loadDomains();
+  });
+}
+
+function baixarCaddyfile() {
+  fetch('/api/admin/domains/caddyfile', { headers: { 'Authorization': 'Bearer ' + token } })
+    .then(function(r) { return r.text(); })
+    .then(function(txt) {
+      var blob = new Blob([txt], { type: 'text/plain' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'Caddyfile';
+      a.click();
+      setTimeout(function() { URL.revokeObjectURL(a.href); }, 1000);
+    });
+}
+
+function admVerifyDomain(domain) {
+  api('/api/admin/domains/' + encodeURIComponent(domain) + '/verify', { method: 'POST' }).then(function(r) {
+    if (r.error) alert(r.error);
+    loadDomains();
+  });
+}
+
+function admRemoveDomain(domain) {
+  if (!confirm('Remover ' + domain + '? O site deixa de responder neste endereço.')) return;
+  api('/api/admin/domains/' + encodeURIComponent(domain), { method: 'DELETE' }).then(function(r) {
+    if (r.error) alert(r.error);
+    loadDomains();
+  });
+}
+
+// ── Servidor & Logs ──
+function loadSystem() {
+  api('/api/admin/overview').then(function(d) {
+    document.getElementById('sys-stats').innerHTML =
+      statCard('Node.js', d.system.nodeVersion, esc(d.system.platform)) +
+      statCard('Memória (RSS)', d.system.memoryMb + ' MB', 'load: ' + d.system.loadAvg.join(' / ')) +
+      statCard('Uptime', fmtDur(d.system.uptimeSec * 1000), 'porta ' + d.system.port) +
+      statCard('Motor', d.engine.sessions + ' sessões', d.engine.running + ' trabalhando');
+  });
+  api('/api/admin/logs').then(function(logs) {
+    document.getElementById('log-out').textContent = logs['nascera-v2-out.log'] || '(vazio)';
+    document.getElementById('log-err').textContent = logs['nascera-v2-error.log'] || '(vazio)';
+    var lo = document.getElementById('log-out'); lo.scrollTop = lo.scrollHeight;
+    var le = document.getElementById('log-err'); le.scrollTop = le.scrollHeight;
+  });
+}
+function restartServer() {
+  if (!confirm('Reiniciar o servidor agora? As sessões vivas do motor serão encerradas (os projetos retomam via resume).')) return;
+  api('/api/admin/restart', { method: 'POST' }).then(function() {
+    var el = document.getElementById('sys-stats');
+    el.innerHTML = statCard('Reiniciando…', '⏳', 'aguarde alguns segundos');
+    setTimeout(function() { location.reload(); }, 5000);
+  }).catch(function() { setTimeout(function() { location.reload(); }, 5000); });
+}
+
+// ── Atividade ──
+function loadActivity() {
+  api('/api/admin/activity').then(function(list) {
+    document.getElementById('activity-list').innerHTML = list.map(function(a) {
+      return '<div class="act-row"><span>' + esc(labelFor(a)) + '</span><span class="act-time">' + new Date(a.at || a.timestamp).toLocaleString('pt-BR') + '</span></div>';
+    }).join('') || '<p style="font-size:12px;color:rgba(255,255,255,.3)">Sem eventos ainda.</p>';
+  });
+}
+
+// ── Configurações ──
+// ── Motor de IA (Claude Code / GPT Codex) ─────────────────────────────
+function loadMotores() {
+  var cx = document.getElementById('mt-caixa');
+  if (!cx) return;
+  api('/api/admin/motores').then(function(d) {
+    if (d.error) { cx.innerHTML = '<p style="color:rgba(248,113,113,.8);font-size:12.5px">' + esc(d.error) + '</p>'; return; }
+    cx.innerHTML = (d.motores || []).filter(Boolean).map(function(m) {
+      var ativo = d.emUso === m.id;
+      var pronto = m.instalado && m.conectado;
+      return '<div style="padding:12px 13px;border-radius:11px;margin-bottom:9px;background:rgba(255,255,255,.02);border:1px solid '
+          + (ativo ? 'rgba(var(--zh-accent-rgb),.35)' : 'rgba(255,255,255,.06)') + '">'
+        + '<div style="display:flex;align-items:flex-start;gap:10px">'
+          + '<div style="flex:1;min-width:0">'
+            + '<div style="font-size:13px;font-weight:600;color:rgba(255,255,255,.85)">' + esc(m.nome)
+              + ' <span style="font-size:10.5px;color:rgba(255,255,255,.3);font-weight:400">' + esc(m.fornecedor) + '</span>'
+              + (ativo ? ' <span class="chip chip-purple" style="font-size:9.5px;padding:1px 6px">em uso</span>' : '') + '</div>'
+            + '<div style="font-size:11.5px;color:rgba(255,255,255,.4);line-height:1.5;margin-top:3px">' + esc(m.resumo) + '</div>'
+            + '<div style="font-size:11px;margin-top:6px;color:' + (pronto ? 'rgba(74,222,128,.75)' : 'rgba(251,191,36,.8)') + '">'
+              + (!m.instalado ? 'CLI não instalado'
+                 : !m.conectado ? 'Instalado (' + esc(m.versao || '') + ') mas não conectado'
+                 : 'Pronto · ' + esc(m.versao || '') + (m.conta ? ' · ' + esc(m.conta) : ''))
+            + '</div>'
+            // Sem o comando na tela, "não conectado" vira beco sem saída.
+            + (!m.instalado ? '<pre style="background:rgba(0,0,0,.35);border-radius:8px;padding:8px 10px;font-size:11px;color:rgba(255,255,255,.55);margin:8px 0 0;overflow-x:auto">' + esc(m.comoInstalar) + '</pre>' : '')
+            + (m.instalado && !m.conectado ? '<pre style="background:rgba(0,0,0,.35);border-radius:8px;padding:8px 10px;font-size:11px;color:rgba(255,255,255,.55);margin:8px 0 0">' + esc(m.comandoLogin) + '</pre>' : '')
+          + '</div>'
+          + '<div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">'
+            + (!m.instalado
+                ? '<button class="btn btn-ghost" style="padding:6px 12px;font-size:11.5px" onclick="instalarMotor(\'' + m.id + '\')">Instalar</button>'
+                : (ativo || !pronto ? '' : '<button class="btn btn-primary" style="padding:6px 12px;font-size:11.5px" onclick="usarMotor(\'' + m.id + '\')">Usar</button>'))
+          + '</div>'
+        + '</div>'
+        + '<div id="mt-msg-' + m.id + '"></div>'
+      + '</div>';
+    }).join('');
+  });
+}
+
+function instalarMotor(id) {
+  var alvo = document.getElementById('mt-msg-' + id);
+  alvo.innerHTML = '<div style="margin-top:9px;font-size:11.5px;color:rgba(255,255,255,.5)">Instalando… pode levar um minuto.</div>';
+  api('/api/admin/motores/instalar', { method: 'POST', body: JSON.stringify({ id: id }) }).then(function(r) {
+    if (!r.ok) { alvo.innerHTML = '<div style="margin-top:9px;font-size:11.5px;color:rgba(248,113,113,.8)">' + esc(r.erro || 'falhou') + '</div>'; return; }
+    alvo.innerHTML = '<div style="margin-top:9px;font-size:11.5px;color:rgba(74,222,128,.8)">Instalado. Agora conecte a conta pelo comando acima.</div>';
+    setTimeout(loadMotores, 1500);
+  });
+}
+
+function usarMotor(id) {
+  if (!confirm('Passar a usar este motor?\n\nAs sessões de chat abertas serão reiniciadas.')) return;
+  api('/api/admin/motores/usar', { method: 'PUT', body: JSON.stringify({ id: id }) }).then(function(r) {
+    if (r.error) { alert(r.error); return; }
+    loadMotores();
+  });
+}
+
+// ── Geração de imagens ────────────────────────────────────────────────
+function loadImagens() {
+  var cx = document.getElementById('img-caixa');
+  if (!cx) return;
+  api('/api/admin/imagens').then(function(d) {
+    if (d.error) { cx.innerHTML = '<p style="color:rgba(248,113,113,.8);font-size:12.5px">' + esc(d.error) + '</p>'; return; }
+    var temChave = d.openai && d.openai.configurada;
+    cx.innerHTML =
+      '<div style="display:flex;align-items:center;gap:8px;font-size:12px;margin-bottom:14px;color:rgba(255,255,255,.5)">'
+        + '<span style="width:7px;height:7px;border-radius:50%;background:' + (temChave ? '#4ade80' : 'rgba(251,191,36,.8)') + '"></span>'
+        + (temChave ? 'GPT Image ativo · ' + esc(d.openai.mascarada) : 'Banco de fotos (sem custo)')
+      + '</div>'
+      + '<p style="font-size:11.5px;color:rgba(255,255,255,.4);line-height:1.55;margin:0 0 12px">' + esc(d.explicacao) + '</p>'
+      + '<label class="inp-label">Chave da OpenAI</label>'
+      + '<input class="inp" type="password" id="img-chave" placeholder="' + (temChave ? esc(d.openai.mascarada) : 'sk-…') + '" autocomplete="off"/>'
+      // Dizer de onde vem a chave evita o suporte "onde eu pego isso?"
+      + '<p style="font-size:10.5px;color:rgba(255,255,255,.25);margin:6px 0 12px">Crie em platform.openai.com → API keys. É cobrada por imagem, separada da sua assinatura do ChatGPT.</p>'
+      + (temChave ? blocoModeloImagem(d.openai) : '')
+      + '<div style="display:flex;gap:8px;flex-wrap:wrap">'
+        + '<button class="btn btn-primary" style="padding:7px 14px;font-size:12px" onclick="salvarChaveImagem()">Salvar chave</button>'
+        + '<button class="btn btn-ghost" style="padding:7px 14px;font-size:12px" onclick="testarImagem()">Testar geração</button>'
+        + (temChave ? '<button class="btn btn-ghost" style="padding:7px 14px;font-size:12px" onclick="removerChaveImagem()">Remover</button>' : '')
+      + '</div>'
+      + '<div id="img-msg" style="font-size:11.5px;margin-top:10px"></div>';
+  });
+}
+
+// A medida que cada modelo aceita fica à vista porque é ela que decide se a
+// imagem serve no layout — e foi por causa dela que um lote inteiro de
+// imagens pagas acabou descartado.
+function blocoModeloImagem(o) {
+  var opcoes = (o.modelos || []).map(function(m) {
+    return '<option value="' + esc(m.id) + '"' + (m.id === o.modelo ? ' selected' : '') + '>'
+      + esc(m.nome) + (m.recomendado ? ' — recomendado' : '') + ' · ' + esc(m.medida) + '</option>';
+  }).join('');
+  var quals = (o.qualidades || []).map(function(q) {
+    var rotulo = { low: 'Baixa — mais barata', medium: 'Média', high: 'Alta — mais cara', auto: 'Automática' }[q] || q;
+    return '<option value="' + esc(q) + '"' + (q === o.qualidade ? ' selected' : '') + '>' + esc(rotulo) + '</option>';
+  }).join('');
+  return '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">'
+    + '<div style="flex:1;min-width:200px">'
+      + '<label class="inp-label">Modelo</label>'
+      + '<select class="inp" id="img-modelo" onchange="salvarModeloImagem()">' + opcoes + '</select>'
+    + '</div>'
+    + '<div style="flex:1;min-width:140px">'
+      + '<label class="inp-label">Qualidade</label>'
+      + '<select class="inp" id="img-qualidade" onchange="salvarModeloImagem()">' + quals + '</select>'
+    + '</div>'
+  + '</div>';
+}
+
+function salvarModeloImagem() {
+  var msg = document.getElementById('img-msg');
+  var m = document.getElementById('img-modelo');
+  var q = document.getElementById('img-qualidade');
+  api('/api/admin/imagens/modelo', { method: 'PUT', body: JSON.stringify({ modelo: m.value, qualidade: q.value }) })
+    .then(function(r) {
+      if (r.error) { msg.style.color = 'rgba(248,113,113,.85)'; msg.textContent = r.error; return; }
+      msg.style.color = 'rgba(74,222,128,.85)';
+      msg.textContent = 'Modelo atualizado. Vale para as próximas imagens.';
+    });
+}
+
+function salvarChaveImagem() {
+  var campo = document.getElementById('img-chave');
+  var msg = document.getElementById('img-msg');
+  if (!campo.value.trim()) { msg.style.color = 'rgba(251,191,36,.85)'; msg.textContent = 'Cole a chave antes de salvar.'; return; }
+  api('/api/admin/imagens/chave', { method: 'PUT', body: JSON.stringify({ chave: campo.value.trim() }) }).then(function(r) {
+    if (r.error) { msg.style.color = 'rgba(248,113,113,.85)'; msg.textContent = r.error; return; }
+    campo.value = '';
+    msg.style.color = 'rgba(74,222,128,.85)';
+    msg.textContent = 'Chave salva. Teste a geração para confirmar que ela funciona.';
+    setTimeout(loadImagens, 1200);
+  });
+}
+
+function removerChaveImagem() {
+  if (!confirm('Remover a chave?\n\nAs imagens voltam a vir do banco de fotos, sem custo.')) return;
+  api('/api/admin/imagens/chave', { method: 'PUT', body: JSON.stringify({ chave: '' }) }).then(loadImagens);
+}
+
+// Salvar a chave não prova nada: chave inválida ou sem crédito só falha na
+// hora de gerar. Este botão gera uma imagem de verdade.
+function testarImagem() {
+  var msg = document.getElementById('img-msg');
+  msg.style.color = 'rgba(255,255,255,.5)';
+  msg.textContent = 'Gerando uma imagem de teste…';
+  api('/api/admin/imagens/testar', { method: 'POST' }).then(function(r) {
+    if (!r.ok) { msg.style.color = 'rgba(248,113,113,.85)'; msg.textContent = r.erro || 'falhou'; return; }
+    msg.style.color = r.provedor === 'openai' ? 'rgba(74,222,128,.85)' : 'rgba(251,191,36,.85)';
+    msg.textContent = r.provedor === 'openai'
+      ? 'Funcionou — imagem gerada pelo GPT Image (' + Math.round(r.bytes / 1024) + ' KB).'
+      : 'Veio do banco de fotos' + (r.aviso ? ' — ' + r.aviso : ' (sem chave configurada).');
+  });
+}
+
+function loadConfig() {
+  loadMotores();
+  loadImagens();
+  api('/api/admin/config').then(function(c) {
+    document.getElementById('cfg-model').value = c.defaultBuildModel || '';
+    document.getElementById('cfg-level').value = String(c.defaultBuildLevel || 3);
+    document.getElementById('cfg-trash').value = c.trashRetentionDays || 7;
+    document.getElementById('cfg-telemetry').checked = c.telemetryEnabled !== false;
+  });
+}
+function saveConfig() {
+  var body = {
+    defaultBuildModel: document.getElementById('cfg-model').value,
+    defaultBuildLevel: parseInt(document.getElementById('cfg-level').value, 10),
+    trashRetentionDays: parseInt(document.getElementById('cfg-trash').value, 10),
+    telemetryEnabled: document.getElementById('cfg-telemetry').checked,
+  };
+  api('/api/admin/config', { method: 'PUT', body: JSON.stringify(body) }).then(function(r) {
+    if (r.ok) {
+      var s = document.getElementById('cfg-status');
+      s.style.display = 'block';
+      setTimeout(function() { s.style.display = 'none'; }, 2500);
+    }
+  });
+}
+
+// Auto-refresh leve da seção visível (motor e visão geral mudam sozinhos)
+setInterval(function() {
+  var active = document.querySelector('.sidebar-link.active');
+  var sec = active && active.getAttribute('data-sec');
+  if (sec === 'engine') loadEngine();
+  if (sec === 'overview') loadOverview();
+}, 10000);
+
+loadOverview();
+</script>
+</body>
+</html>

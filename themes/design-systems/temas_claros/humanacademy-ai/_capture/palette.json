@@ -1,0 +1,201 @@
+{
+  "text": [
+    {
+      "value": "rgb(255, 255, 255)",
+      "count": 576
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.45)",
+      "count": 54
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.4)",
+      "count": 28
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.55)",
+      "count": 26
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.85)",
+      "count": 23
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.7)",
+      "count": 21
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.65)",
+      "count": 12
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.8)",
+      "count": 8
+    },
+    {
+      "value": "rgb(19, 23, 32)",
+      "count": 7
+    },
+    {
+      "value": "rgb(245, 153, 153)",
+      "count": 6
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.3)",
+      "count": 6
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.2)",
+      "count": 5
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.6)",
+      "count": 4
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.5)",
+      "count": 4
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.75)",
+      "count": 3
+    },
+    {
+      "value": "rgb(97, 181, 209)",
+      "count": 3
+    },
+    {
+      "value": "rgb(0, 0, 0)",
+      "count": 2
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.9)",
+      "count": 2
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.35)",
+      "count": 2
+    }
+  ],
+  "surface": [
+    {
+      "value": "rgba(255, 255, 255, 0.035)",
+      "count": 40
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.04)",
+      "count": 11
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.2)",
+      "count": 8
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.016)",
+      "count": 8
+    },
+    {
+      "value": "rgb(13, 26, 34)",
+      "count": 4
+    },
+    {
+      "value": "rgb(238, 88, 88)",
+      "count": 3
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.1)",
+      "count": 3
+    },
+    {
+      "value": "rgba(0, 0, 0, 0.4)",
+      "count": 3
+    },
+    {
+      "value": "rgb(92, 184, 214)",
+      "count": 2
+    },
+    {
+      "value": "rgb(243, 244, 246)",
+      "count": 1
+    },
+    {
+      "value": "rgba(0, 0, 0, 0.7)",
+      "count": 1
+    },
+    {
+      "value": "rgba(0, 0, 0, 0.3)",
+      "count": 1
+    },
+    {
+      "value": "rgb(11, 13, 16)",
+      "count": 1
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.06)",
+      "count": 1
+    },
+    {
+      "value": "rgb(10, 11, 13)",
+      "count": 1
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.08)",
+      "count": 1
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.8)",
+      "count": 1
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.03)",
+      "count": 1
+    },
+    {
+      "value": "rgb(13, 23, 29)",
+      "count": 1
+    },
+    {
+      "value": "rgba(0, 0, 0, 0.75)",
+      "count": 1
+    }
+  ],
+  "border": [
+    {
+      "value": "rgba(255, 255, 255, 0.08)",
+      "count": 91
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.15)",
+      "count": 22
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.05)",
+      "count": 10
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.2)",
+      "count": 8
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.1)",
+      "count": 4
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.3)",
+      "count": 2
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.06)",
+      "count": 1
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.14)",
+      "count": 1
+    },
+    {
+      "value": "rgb(219, 221, 225)",
+      "count": 1
+    }
+  ],
+  "elementsScanned": 792
+}

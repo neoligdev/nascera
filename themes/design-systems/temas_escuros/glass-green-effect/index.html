@@ -1,0 +1,744 @@
+<html lang="en"><head><meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Unmatched performance - Modern hosting</title>
+<script src="assets/resource_3fa48481346f.js"></script>
+<script src="https://unpkg.com/lucide@0.260.0/dist/lucide.min.js"></script>
+<style>
+html { scroll-behavior: smooth; }
+/* Enhanced glow effects */
+.glow-teal {
+box-shadow: 0 0 20px rgba(20, 184, 166, 0.3), 0 0 40px rgba(20, 184, 166, 0.1);
+}
+.glow-teal-intense {
+box-shadow: 0 0 30px rgba(20, 184, 166, 0.4), 0 0 60px rgba(20, 184, 166, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.glow-teal-intense:hover {
+box-shadow: 0 0 40px rgba(20, 184, 166, 0.6), 0 0 80px rgba(20, 184, 166, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+transform: translateY(-2px) scale(1.05);
+}
+.glow-card {
+box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);
+transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+transform-style: preserve-3d;
+}
+.glow-card:hover {
+transform: translateY(-8px) rotateX(2deg) rotateY(-2deg);
+box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1), 0 0 60px rgba(20, 184, 166, 0.2);
+}
+.glow-card:hover .card-content {
+transform: translateZ(20px);
+}
+.glow-border {
+position: relative;
+border: 1px solid rgba(20, 184, 166, 0.3);
+transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.glow-border::before {
+content: '';
+position: absolute;
+inset: 0;
+padding: 1px;
+background: linear-gradient(135deg, rgba(20, 184, 166, 0.6), rgba(6, 182, 212, 0.3), rgba(20, 184, 166, 0.6));
+border-radius: inherit;
+mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+mask-composite: xor;
+-webkit-mask-composite: xor;
+opacity: 0;
+transition: opacity 0.3s ease;
+}
+.glow-border:hover {
+border-color: rgba(20, 184, 166, 0.6);
+box-shadow: 0 0 20px rgba(20, 184, 166, 0.3);
+transform: translateY(-1px);
+}
+.glow-border:hover::before {
+opacity: 1;
+}
+.hover-lift {
+transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.hover-lift:hover {
+transform: translateY(-4px) scale(1.02);
+}
+.hover-glow {
+transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.hover-glow:hover {
+text-shadow: 0 0 25px rgba(20, 184, 166, 0.6), 0 0 50px rgba(20, 184, 166, 0.3);
+color: rgb(153, 246, 228);
+}
+.hover-bg-shift {
+transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+background-size: 200% 200%;
+background-position: 0% 50%;
+}
+.hover-bg-shift:hover {
+background-position: 100% 50%;
+}
+.hover-float {
+transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.hover-float:hover {
+transform: translateY(-6px);
+filter: drop-shadow(0 10px 30px rgba(20, 184, 166, 0.2));
+}
+.tag-hover {
+transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+cursor: pointer;
+}
+.tag-hover:hover {
+background: linear-gradient(135deg, rgba(20, 184, 166, 0.2), rgba(6, 182, 212, 0.1));
+border-color: rgba(20, 184, 166, 0.6);
+transform: translateY(-2px) scale(1.05);
+box-shadow: 0 8px 25px rgba(20, 184, 166, 0.2);
+}
+.logo-hover {
+transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.logo-hover:hover {
+transform: rotate(-5deg) scale(1.1);
+}
+.logo-hover:hover .logo-icon {
+animation: pulse 0.6s ease-in-out;
+}
+.card-image-hover {
+transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+overflow: hidden;
+}
+.card-image-hover img {
+transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.card-image-hover:hover img {
+transform: scale(1.1) rotate(1deg);
+filter: brightness(1.1) contrast(1.1);
+}
+.floating-stats-hover {
+transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.floating-stats-hover:hover {
+backdrop-filter: blur(30px) saturate(200%);
+-webkit-backdrop-filter: blur(30px) saturate(200%);
+background: rgba(255, 255, 255, 0.15);
+transform: translateY(-3px);
+}
+.button-hover {
+transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+position: relative;
+overflow: hidden;
+}
+.button-hover::before {
+content: '';
+position: absolute;
+top: 0;
+left: -100%;
+width: 100%;
+height: 100%;
+background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+transition: left 0.5s;
+}
+.button-hover:hover::before {
+left: 100%;
+}
+.button-hover:hover {
+transform: translateY(-2px) scale(1.05);
+}
+.interactive-text:hover {
+background: linear-gradient(135deg, #14b8a6, #06b6d4);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+transform: scale(1.02);
+}
+.animate-glow {
+animation: glow 2s ease-in-out infinite alternate;
+}
+@keyframes glow {
+from { box-shadow: 0 0 20px rgba(20, 184, 166, 0.3), 0 0 40px rgba(20, 184, 166, 0.1); }
+to { box-shadow: 0 0 30px rgba(20, 184, 166, 0.5), 0 0 60px rgba(20, 184, 166, 0.2); }
+}
+.animate-float {
+animation: float 6s ease-in-out infinite;
+}
+@keyframes float {
+0%, 100% { transform: translateY(0px); }
+50% { transform: translateY(-8px); }
+}
+.animate-fade-in { animation: fadeIn 1s cubic-bezier(0.4, 0, 0.2, 1) forwards; opacity: 0; }
+.animate-slide-up { animation: slideUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards; opacity: 0; }
+.animate-scale-in { animation: scaleIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards; opacity: 0; }
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(20px); }
+to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideUp {
+from { opacity: 0; transform: translateY(30px); }
+to { opacity: 1; transform: translateY(0); }
+}
+@keyframes scaleIn {
+from { opacity: 0; transform: scale(0.95); }
+to { opacity: 1; transform: scale(1); }
+}
+@keyframes pulse {
+0%, 100% { transform: scale(1); }
+50% { transform: scale(1.1); }
+}
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }
+.delay-600 { animation-delay: 0.6s; }
+.backdrop-glow {
+backdrop-filter: blur(20px) saturate(180%);
+-webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+.text-glow {
+text-shadow: 0 0 20px rgba(20, 184, 166, 0.5);
+}
+.bg-gradient-glow {
+background: linear-gradient(135deg, rgba(20, 184, 166, 0.1), rgba(6, 182, 212, 0.05));
+}
+/* Ambient lighting effect */
+.ambient-light {
+position: fixed;
+top: 20%;
+left: 10%;
+width: 300px;
+height: 300px;
+background: radial-gradient(circle, rgba(20, 184, 166, 0.1) 0%, transparent 70%);
+border-radius: 50%;
+filter: blur(40px);
+animation: ambientMove 8s ease-in-out infinite alternate;
+pointer-events: none;
+z-index: 0;
+}
+.ambient-light-2 {
+position: fixed;
+bottom: 20%;
+right: 10%;
+width: 400px;
+height: 400px;
+background: radial-gradient(circle, rgba(6, 182, 212, 0.08) 0%, transparent 70%);
+border-radius: 50%;
+filter: blur(60px);
+animation: ambientMove2 10s ease-in-out infinite alternate;
+pointer-events: none;
+z-index: 0;
+}
+@keyframes ambientMove {
+0%, 100% { transform: translate(0, 0) scale(1); }
+50% { transform: translate(100px, -50px) scale(1.1); }
+}
+@keyframes ambientMove2 {
+0%, 100% { transform: translate(0, 0) scale(1); }
+50% { transform: translate(-80px, 60px) scale(0.9); }
+}
+/* Cursor interaction effects */
+.cursor-glow {
+cursor: pointer;
+}
+.cursor-glow:hover {
+cursor: pointer;
+}
+</style><style data-scroll-fix="true">
+        /* Scroll fixes for offline viewing */
+        html, body {
+            overflow: auto !important;
+            overflow-x: hidden !important;
+            height: auto !important;
+            min-height: 100% !important;
+            scroll-behavior: auto !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+        
+        /* Force visibility - many sites use JS animations for initial display */
+        body, .wrapper, main, #__next, #app, .page, .content {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: none !important;
+        }
+        
+        /* Disable loader/preloader overlays */
+        .loader, .preloader, .loading, [class*="loader"], [class*="preloader"] {
+            display: none !important;
+            opacity: 0 !important;
+        }
+        
+        /* Show elements that might be hidden for animation */
+        .word-inner, .char, .line, [data-aos], [data-scroll],
+        .hero-text span, .hero-fade, [class*="hero"] span {
+            opacity: 1 !important;
+            transform: none !important;
+            visibility: visible !important;
+        }
+        
+        /* Reset Tailwind animation utility classes */
+        .translate-y-full, .translate-x-full, .-translate-y-full, .-translate-x-full,
+        .translate-y-1\/2, .-translate-y-1\/2, .translate-y-\[100\%\], .translate-y-\[110\%\] {
+            transform: none !important;
+        }
+        
+        /* Force visibility on common hidden-for-animation patterns */
+        .opacity-0, [class*="opacity-0"] {
+            opacity: 1 !important;
+        }
+        
+        /* Reset scale transforms used for animations */
+        .scale-0, .scale-50, .scale-75 {
+            transform: none !important;
+        }
+        
+        html.lenis, html.lenis-smooth, 
+        body.lenis, body.lenis-smooth,
+        .lenis-wrapper, .lenis-content,
+        [data-lenis-prevent], [data-scroll-container] {
+            overflow: visible !important;
+            height: auto !important;
+        }
+        
+        /* Fix flex containers that might cut off content */
+        body.flex.items-center,
+        body.flex.justify-center {
+            align-items: flex-start !important;
+            min-height: 100vh;
+            height: auto !important;
+        }
+        
+        /* Ensure main content scrolls */
+        main, #__next, #__nuxt, #app, .main-content {
+            overflow: visible !important;
+            height: auto !important;
+        }
+        </style></head>
+<body class="antialiased min-h-screen relative overflow-x-hidden text-slate-100 bg-gradient-to-br from-[#0b1620] to-[#0a1a2b] md:cursor-none">
+<!-- Ambient lighting effects -->
+<div class="ambient-light"></div>
+<div class="ambient-light-2"></div>
+<!-- Custom cursor elements (desktop only) -->
+<div class="pointer-events-none fixed top-0 left-0 z-50 hidden md:block" id="cursor-ring" style="width: 28px; height: 28px; border: 1.5px solid rgba(45, 212, 191, 0.85); border-radius: 9999px; transform: translate(-50%, -50%) scale(1); box-shadow: rgba(13, 148, 136, 0.15) 0px 0px 0px 2px, rgba(20, 184, 166, 0.25) 0px 0px 30px; transition: width 0.2s, height 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.06s, opacity 0.2s; backdrop-filter: blur(1px); opacity: 0.9; left: 1749px; top: 658px;"></div>
+<div class="pointer-events-none fixed top-0 left-0 z-50 hidden md:block" id="cursor-dot" style="width: 6px; height: 6px; background: rgba(94, 234, 212, 0.95); border-radius: 9999px; transform: translate(-50%, -50%); transition: transform 0.06s, opacity 0.2s; box-shadow: rgba(94, 234, 212, 0.6) 0px 0px 10px; opacity: 0.9; left: 1749px; top: 658px;"></div>
+<!-- Header -->
+<header class="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between relative z-10 animate-fade-in">
+<div class="flex items-center space-x-4">
+<!-- Enhanced logo badge with glow -->
+<div class="rounded-xl bg-gradient-to-br from-teal-500/90 to-cyan-400/90 p-1.5 glow-teal animate-glow logo-hover cursor-glow">
+<div class="rounded-xl bg-[#0b1a28] w-9 h-9 flex items-center justify-center logo-icon">
+<svg aria-hidden="true" fill="none" height="20" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="20">
+<path d="M4 7h16v10H4z"></path>
+<path d="M7 7l3-3 3 3"></path>
+<path d="M7 14h3"></path>
+<path d="M14 14h3"></path>
+</svg>
+</div>
+</div>
+<div class="animate-fade-in delay-100 hover-lift cursor-glow">
+<div class="text-sm text-slate-300 hover-glow transition-all duration-300">Global Hosting</div>
+<div class="text-lg font-semibold tracking-tight text-glow hover-glow interactive-text cursor-pointer transition-all duration-300">Ultra-fast cloud infrastructure</div>
+</div>
+</div>
+<div class="flex items-center space-x-3 animate-fade-in delay-200">
+<span class="px-3 py-1 rounded-full text-sm bg-teal-600/20 text-teal-300 border border-teal-500/40 glow-border backdrop-glow hover-float cursor-glow">Renewable energy: 100%</span>
+<button class="px-4 py-2 rounded-full bg-teal-600 hover:bg-teal-500 text-white text-sm shadow-lg hover:shadow-xl glow-teal-intense button-hover cursor-pointer" onclick="downloadPage()">
+        Download HTML
+      </button>
+</div>
+</header>
+<!-- Main grid -->
+<main class="max-w-7xl mx-auto px-6 pb-12 relative z-10">
+<section class="grid md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-6">
+<!-- Left: 3D hero card with enhanced glow -->
+<article class="relative rounded-3xl overflow-hidden bg-[#0e1a2a] glow-card animate-scale-in cursor-glow">
+<div class="card-content">
+<div class="card-image-hover">
+<img alt="3D data center rendering" class="w-full h-96 object-cover md:h-full" src="assets/photo-1658243762592-d3ff6f8a9a_5c9037f90edf.jpg"/>
+</div>
+<!-- Enhanced floating stats bar -->
+<div class="absolute bottom-0 left-0 w-full flex gap-4 backdrop-glow bg-neutral-50/10 pt-5 pr-5 pb-5 pl-5 items-center justify-between floating-stats-hover">
+<div class="flex items-center gap-5 animate-float">
+<div class="flex items-center space-x-2 bg-teal-600/30 border border-teal-400/50 px-3 py-2 rounded-xl backdrop-glow glow-border hover-lift cursor-glow">
+<svg aria-hidden="true" class="text-teal-300 hover-glow transition-all duration-300" fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20">
+<path d="M3 3h18v18H3z"></path>
+<path d="M7 15h3"></path>
+<path d="M8 12h2"></path>
+</svg>
+<span class="text-sm font-semibold hover-glow transition-all duration-300">Total MV</span>
+<span class="text-sm font-semibold ml-1 text-glow hover-glow interactive-text cursor-pointer transition-all duration-300">188.8</span>
+</div>
+<div class="text-white/80 text-sm tracking-tight hover-lift cursor-glow">
+<span class="block hover-glow transition-all duration-300">Total SQFT:</span>
+<span class="font-semibold text-glow hover-glow interactive-text cursor-pointer transition-all duration-300">244,000+</span>
+</div>
+<div class="text-white/80 text-sm tracking-tight hover-lift cursor-glow">
+<span class="block hover-glow transition-all duration-300">Rack capacity:</span>
+<span class="font-semibold text-glow hover-glow interactive-text cursor-pointer transition-all duration-300">300+</span>
+</div>
+</div>
+<button class="px-5 py-3 rounded-full bg-teal-500 hover:bg-teal-600 text-white font-semibold glow-teal-intense button-hover animate-float cursor-pointer" style="animation-delay: 0.5s;">
+              Our data center
+            </button>
+</div>
+</div>
+</article>
+<!-- Right: Enhanced text panel -->
+<aside class="rounded-3xl bg-[#142033] p-8 flex flex-col justify-center glow-card animate-scale-in delay-200 bg-gradient-glow hover-bg-shift cursor-glow" style="background: linear-gradient(135deg, rgba(20, 184, 166, 0.1), rgba(6, 182, 212, 0.05), rgba(20, 184, 166, 0.08));">
+<div class="card-content">
+<div class="inline-flex items-center mb-4 gap-3 animate-fade-in delay-300">
+<span class="px-3 py-1 rounded-full border border-slate-500/50 text-slate-200 text-xs glow-border backdrop-glow tag-hover">Performance</span>
+<span class="px-3 py-1 rounded-full border border-slate-500/50 text-slate-200 text-xs glow-border backdrop-glow tag-hover">Cloud</span>
+</div>
+<h1 class="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight mb-4 leading-tight text-glow animate-slide-up delay-400 hover-glow interactive-text cursor-glow transition-all duration-500">
+            Unmatched performance
+          </h1>
+<p class="text-slate-300 leading-relaxed text-sm md:text-base animate-slide-up delay-500 hover-glow cursor-glow transition-all duration-300">
+            To provide a fast web hosting experience, we use innovative technologies: HTTP/3, IPv6, and
+            lifespeed servers. Premium and business hosting plans also come with unmetered bandwidth, so your
+            website's traffic won't be limited.
+          </p>
+<div class="mt-6 flex flex-wrap gap-3 animate-slide-up delay-600">
+<span aria-label="Feature tag" class="px-3 py-2 rounded-full bg-slate-800/60 text-sm glow-border backdrop-glow tag-hover">Offshore</span>
+<span aria-label="Feature tag" class="px-3 py-2 rounded-full bg-slate-800/60 text-sm glow-border backdrop-glow tag-hover">Anti DDoS</span>
+<span aria-label="Feature tag" class="px-3 py-2 rounded-full bg-slate-800/60 text-sm glow-border backdrop-glow tag-hover">SSD VPS Hosting</span>
+</div>
+</div>
+</aside>
+</section>
+<!-- Enhanced sub-hero cards row -->
+<section class="grid md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-6 mt-8">
+<!-- Card 1 with enhanced effects -->
+<article class="rounded-2xl bg-[#0e1a2a] overflow-hidden glow-card animate-scale-in delay-300 cursor-glow">
+<div class="card-content">
+<div class="relative h-72 bg-center bg-cover card-image-hover" style="background-image:url('https://images.unsplash.com/photo-1564866657314-0aabc2f9a5a0?auto=format&amp;fit=crop&amp;w=1200&amp;q=80');">
+<img alt="Security visualization" class="w-full h-full object-cover" src="assets/photo-1669062897193-f8a4215c20_340863947964.jpg"/>
+<div class="absolute inset-0 bg-gradient-to-t from-[#0e1a2a]/60 to-transparent hover:from-[#0e1a2a]/40 transition-all duration-500"></div>
+</div>
+<div class="p-5 bg-gradient-glow">
+<div class="flex items-center justify-between animate-fade-in delay-400">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs bg-slate-800/60 border border-slate-700/50 glow-border backdrop-glow tag-hover">CloudLinux</span>
+<span class="text-xs text-slate-300 text-glow hover-glow interactive-text cursor-pointer transition-all duration-300">LVE</span>
+</div>
+<h3 class="mt-3 text-xl font-semibold tracking-tight text-glow animate-slide-up delay-500 hover-glow interactive-text cursor-glow transition-all duration-300">Total security</h3>
+<p class="text-slate-300 text-sm mt-2 animate-slide-up delay-600 hover-glow cursor-glow transition-all duration-300">
+              Our primary focus is secure web hosting. We provide a range of services to ensure this, including free SSL and DDoS protection.
+            </p>
+<!-- Added bottom icon -->
+<div class="mt-4 flex justify-end">
+<div class="w-10 h-10 rounded-xl bg-teal-600/20 border border-teal-500/40 flex items-center justify-center glow-border backdrop-glow">
+<i class="text-teal-300" data-lucide="shield-check" style="width:20px;height:20px;"></i>
+</div>
+</div>
+</div>
+</div>
+</article>
+<!-- Card 2 with enhanced effects -->
+<article class="rounded-2xl bg-[#0e1a2a] overflow-hidden glow-card animate-scale-in delay-400 cursor-glow">
+<div class="card-content">
+<div class="relative h-72 bg-center bg-cover card-image-hover" style="background-image:url('https://images.unsplash.com/photo-1518779578993-56dfd8f0b3fb?auto=format&amp;fit=crop&amp;w=1200&amp;q=80');">
+<img alt="WordPress optimization" class="w-full h-full object-cover" src="assets/photo-1644329770639-1a20809b82_d528bf5936f1.jpg"/>
+<div class="absolute inset-0 bg-gradient-to-t from-[#0e1a2a]/60 to-transparent hover:from-[#0e1a2a]/40 transition-all duration-500"></div>
+</div>
+<div class="pt-5 pr-5 pb-5 pl-5">
+<div class="flex items-center justify-between animate-fade-in delay-500">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs bg-slate-800/60 border border-slate-700/50 glow-border backdrop-glow tag-hover">WordPress</span>
+<span class="text-xs text-slate-300 text-glow hover-glow interactive-text cursor-pointer transition-all duration-300">One-click</span>
+</div>
+<h3 class="mt-3 text-xl font-semibold tracking-tight text-glow animate-slide-up delay-600 hover-glow interactive-text cursor-glow transition-all duration-300">Optimized for WordPress</h3>
+<p class="text-slate-300 text-sm mt-2 animate-slide-up delay-700 hover-glow cursor-glow transition-all duration-300">
+              Hosting services designed to make managing your WordPress site a breeze. Shared hosting that feels exclusive.
+            </p>
+<!-- Added bottom icon -->
+<div class="mt-4 flex justify-end">
+<div class="w-10 h-10 rounded-xl bg-teal-600/20 border border-teal-500/40 flex items-center justify-center glow-border backdrop-glow">
+<i class="text-teal-300" data-lucide="wand-2" style="width:20px;height:20px;"></i>
+</div>
+</div>
+</div>
+</div>
+</article>
+<!-- Card 3 with enhanced effects -->
+<article class="rounded-2xl bg-[#0e1a2a] overflow-hidden glow-card animate-scale-in delay-500 cursor-glow">
+<div class="card-content">
+<div class="relative h-72 bg-center bg-cover card-image-hover" style='background-image:url("photo-1496307042754-b4aa456c4a_25ffe7012263.avif");'>
+<img alt="Server control interface" class="w-full h-full object-cover" src="assets/photo-1737505599162-d9932323a8_6b96c0b064bc.jpg"/>
+<div class="absolute inset-0 hover:from-[#0e1a2a]/40 transition-all duration-500 bg-gradient-to-t from-[#0e1a2a]/60 to-transparent"></div>
+</div>
+<div class="pt-5 pr-5 pb-5 pl-5">
+<div class="flex items-center justify-between animate-fade-in delay-600">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs bg-slate-800/60 border border-slate-700/50 glow-border backdrop-glow tag-hover">SSH</span>
+<span class="text-xs text-slate-300 text-glow hover-glow interactive-text cursor-pointer transition-all duration-300">WP-CLI</span>
+</div>
+<h3 class="mt-3 text-xl font-semibold tracking-tight text-glow animate-slide-up delay-700 hover-glow interactive-text cursor-glow transition-all duration-300">Complete control</h3>
+<p class="text-slate-300 text-sm mt-2 animate-slide-up delay-800 hover-glow cursor-glow transition-all duration-300">
+              Secure management with SSH access, automated backups, and a powerful CLI for every task.
+            </p>
+<!-- Added bottom icon -->
+<div class="mt-4 flex justify-end">
+<div class="w-10 h-10 rounded-xl bg-teal-600/20 border border-teal-500/40 flex items-center justify-center glow-border backdrop-glow">
+<i class="text-teal-300" data-lucide="terminal" style="width:20px;height:20px;"></i>
+</div>
+</div>
+</div>
+</div>
+</article>
+</section>
+</main>
+<!-- Added bottom content -->
+<section class="relative z-10 mt-6">
+<div class="max-w-7xl mr-auto ml-auto pr-6 pl-6">
+<div class="h-px bg-white/10"></div>
+<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+<article class="rounded-2xl bg-[#0e1a2a] p-6 glow-card hover-lift cursor-glow">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-teal-600/20 border border-teal-500/40 flex items-center justify-center glow-border backdrop-glow">
+<i class="text-teal-300" data-lucide="rocket" style="width:20px;height:20px;"></i>
+</div>
+<h3 class="text-lg font-semibold tracking-tight text-glow">Blazing setup</h3>
+</div>
+<p class="mt-3 text-sm text-slate-300">
+            Deploy in minutes with automated provisioning, optimized defaults, and global edge routing.
+          </p>
+</article>
+<article class="rounded-2xl bg-[#0e1a2a] p-6 glow-card hover-lift cursor-glow">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-teal-600/20 border border-teal-500/40 flex items-center justify-center glow-border backdrop-glow">
+<i class="text-teal-300" data-lucide="shield-check" style="width:20px;height:20px;"></i>
+</div>
+<h3 class="text-lg font-semibold tracking-tight text-glow">Hardened security</h3>
+</div>
+<p class="mt-3 text-sm text-slate-300">
+            Built-in WAF, free SSL, and 24/7 monitoring keep your apps safe without extra plugins.
+          </p>
+</article>
+<article class="rounded-2xl bg-[#0e1a2a] p-6 glow-card hover-lift cursor-glow sm:col-span-2 lg:col-span-1">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-teal-600/20 border border-teal-500/40 flex items-center justify-center glow-border backdrop-glow">
+<i class="text-teal-300" data-lucide="globe-2" style="width:20px;height:20px;"></i>
+</div>
+<h3 class="text-lg font-semibold tracking-tight text-glow">Global footprint</h3>
+</div>
+<p class="mt-3 text-sm text-slate-300">
+            Anycast DNS and multi-region deployments provide low latency for users everywhere.
+          </p>
+</article>
+</div>
+<div class="mt-8 rounded-3xl border border-teal-500/40 bg-gradient-to-r from-teal-600/20 to-cyan-500/20 p-6 md:p-8 glow-border backdrop-glow hover-float cursor-glow">
+<div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+<div>
+<h4 class="text-2xl md:text-3xl font-semibold tracking-tight text-glow">Ready to launch faster?</h4>
+<p class="text-slate-300 text-sm md:text-base mt-1">Spin up your project with one click and scale as you grow.</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-5 py-3 rounded-full bg-teal-500 hover:bg-teal-600 text-white font-semibold glow-teal-intense button-hover cursor-pointer">
+              Get started
+            </button>
+<a class="px-5 py-3 rounded-full border border-slate-600/60 text-slate-200 hover:bg-slate-800/60 font-semibold glow-border button-hover cursor-pointer" href="#">
+              View pricing
+            </a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Enhanced floating footer note -->
+<footer class="mt-12 relative z-10">
+<div class="max-w-7xl mx-auto px-6 pb-8">
+<p class="text-sm text-slate-400 animate-fade-in delay-800 hover-glow cursor-glow transition-all duration-300">
+        Design system inspired by premium UI frameworks. Fonts are tuned for clarity and crisp tracking on headings above 20px.
+      </p>
+</div>
+</footer>
+<script>
+    function downloadPage() {
+      try {
+        const html = document.documentElement.outerHTML;
+        const blob = new Blob([html], { type: 'text/html' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'index.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(a.href);
+      } catch (e) {
+        window.open(window.location.href, '_blank');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      try {
+        if (typeof lucide !== 'undefined' && typeof lucide.createIcons === 'function') {
+          lucide.createIcons({ attrs: { 'stroke-width': 1.5 } });
+        } else if (typeof lucide !== 'undefined' && typeof lucide.replace === 'function') {
+          lucide.replace({ 'stroke-width': 1.5 });
+        }
+      } catch (err) {
+        // ignore
+      }
+
+      // Custom cursor logic with snake-style trail
+      const ring = document.getElementById('cursor-ring');
+      const dot = document.getElementById('cursor-dot');
+      if (!ring || !dot) return;
+
+      let rafId;
+      let targetX = window.innerWidth / 2, targetY = window.innerHeight / 2;
+      let currentX = targetX, currentY = targetY;
+
+      // Snake segments
+      const SEGMENTS = 18;
+      const segEls = [];
+      const segX = new Array(SEGMENTS);
+      const segY = new Array(SEGMENTS);
+      let sizeBoost = 0;
+
+      const createSegment = (i) => {
+        const el = document.createElement('div');
+        const z = 40; // under ring/dot (z-50)
+        const baseSize = Math.max(4, 12 - i * 0.5);
+        const opacity = Math.max(0.15, 0.9 - i * 0.04);
+        el.className = 'pointer-events-none fixed top-0 left-0 hidden md:block';
+        el.style.cssText = [
+          `z-index:${z};`,
+          `width:${baseSize}px;`,
+          `height:${baseSize}px;`,
+          'border-radius:9999px;',
+          'transform:translate(-50%,-50%);',
+          `background: rgba(94,234,212,${Math.min(0.95, 0.65 + (0.02 * (SEGMENTS - i))) });`,
+          `box-shadow: 0 0 0 2px rgba(13,148,136,0.08), 0 0 18px rgba(20,184,166,0.25), inset 0 0 6px rgba(255,255,255,0.06);`,
+          `opacity:${opacity};`,
+          'transition: opacity .2s;',
+          'will-change: left, top;'
+        ].join('');
+        document.body.appendChild(el);
+        return el;
+      };
+
+      for (let i = 0; i < SEGMENTS; i++) {
+        segEls[i] = createSegment(i);
+        segX[i] = targetX;
+        segY[i] = targetY;
+      }
+
+      const updateSegmentSizes = () => {
+        for (let i = 0; i < SEGMENTS; i++) {
+          const base = Math.max(4, 12 - i * 0.5);
+          const size = base + sizeBoost;
+          segEls[i].style.width = size + 'px';
+          segEls[i].style.height = size + 'px';
+        }
+      };
+
+      const setImmediate = (x, y) => {
+        ring.style.left = x + 'px';
+        ring.style.top = y + 'px';
+        dot.style.left = x + 'px';
+        dot.style.top = y + 'px';
+        for (let i = 0; i < SEGMENTS; i++) {
+          segX[i] = x; segY[i] = y;
+          segEls[i].style.left = x + 'px';
+          segEls[i].style.top  = y + 'px';
+        }
+      };
+
+      const animate = () => {
+        // Lead ring follows smoothly
+        currentX += (targetX - currentX) * 0.22;
+        currentY += (targetY - currentY) * 0.22;
+        ring.style.left = currentX + 'px';
+        ring.style.top = currentY + 'px';
+
+        // Dot snaps to target
+        dot.style.left = targetX + 'px';
+        dot.style.top = targetY + 'px';
+
+        // Snake: head follows target, rest follow the previous segment
+        segX[0] += (targetX - segX[0]) * 0.28;
+        segY[0] += (targetY - segY[0]) * 0.28;
+
+        for (let i = 1; i < SEGMENTS; i++) {
+          segX[i] += (segX[i - 1] - segX[i]) * 0.28;
+          segY[i] += (segY[i - 1] - segY[i]) * 0.28;
+        }
+
+        for (let i = 0; i < SEGMENTS; i++) {
+          segEls[i].style.left = segX[i] + 'px';
+          segEls[i].style.top  = segY[i] + 'px';
+        }
+
+        rafId = requestAnimationFrame(animate);
+      };
+
+      const onMove = (e) => {
+        targetX = e.clientX;
+        targetY = e.clientY;
+      };
+
+      const enlarge = () => {
+        ring.style.width = '44px';
+        ring.style.height = '44px';
+        ring.style.borderColor = 'rgba(94, 234, 212, 1)';
+        ring.style.boxShadow = '0 0 0 3px rgba(94,234,212,0.15), 0 0 60px rgba(20,184,166,0.35)';
+        sizeBoost = 2;
+        updateSegmentSizes();
+      };
+
+      const reset = () => {
+        ring.style.width = '28px';
+        ring.style.height = '28px';
+        ring.style.borderColor = 'rgba(45, 212, 191, 0.85)';
+        ring.style.boxShadow = '0 0 0 2px rgba(13,148,136,0.15), 0 0 30px rgba(20,184,166,0.25)';
+        sizeBoost = 0;
+        updateSegmentSizes();
+      };
+
+      const hide = () => {
+        ring.style.opacity = '0';
+        dot.style.opacity = '0';
+        for (const el of segEls) el.style.opacity = '0';
+      };
+
+      const show = () => {
+        ring.style.opacity = '.9';
+        dot.style.opacity = '.9';
+        for (let i = 0; i < SEGMENTS; i++) {
+          const opacity = Math.max(0.15, 0.9 - i * 0.04);
+          segEls[i].style.opacity = opacity;
+        }
+      };
+
+      // Start animation
+      setImmediate(window.innerWidth / 2, window.innerHeight / 2);
+      show();
+      updateSegmentSizes();
+      rafId = requestAnimationFrame(animate);
+      window.addEventListener('mousemove', onMove, { passive: true });
+      window.addEventListener('mouseenter', show);
+      window.addEventListener('mouseleave', hide);
+
+      // Hover targets enlarge effect
+      const hoverTargets = document.querySelectorAll('a, button, [role="button"], .cursor-glow, .button-hover, .tag-hover, .glow-border, .logo-hover, .hover-lift, .interactive-text');
+      hoverTargets.forEach((el) => {
+        el.addEventListener('mouseenter', enlarge);
+        el.addEventListener('mouseleave', reset);
+      });
+
+      // Click feedback
+      window.addEventListener('mousedown', () => {
+        ring.style.transform = 'translate(-50%, -50%) scale(0.88)';
+      });
+      window.addEventListener('mouseup', () => {
+        ring.style.transform = 'translate(-50%, -50%) scale(1)';
+      });
+
+      // Cleanup on page hide
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          cancelAnimationFrame(rafId);
+        } else {
+          rafId = requestAnimationFrame(animate);
+        }
+      });
+    });
+  </script>
+<div class="pointer-events-none fixed top-0 left-0 hidden md:block" style="z-index: 40; width: 12px; height: 12px; border-radius: 9999px; transform: translate(-50%, -50%); background: rgba(94, 234, 212, 0.95); box-shadow: rgba(13, 148, 136, 0.08) 0px 0px 0px 2px, rgba(20, 184, 166, 0.25) 0px 0px 18px, rgba(255, 255, 255, 0.06) 0px 0px 6px inset; opacity: 0.9; transition: opacity 0.2s; will-change: left, top; left: 1749px; top: 658px;"></div><div class="pointer-events-none fixed top-0 left-0 hidden md:block" style="z-index: 40; width: 11.5px; height: 11.5px; border-radius: 9999px; transform: translate(-50%, -50%); background: rgba(94, 234, 212, 0.95); box-shadow: rgba(13, 148, 136, 0.08) 0px 0px 0px 2px, rgba(20, 184, 166, 0.25) 0px 0px 18px, rgba(255, 255, 255, 0.06) 0px 0px 6px inset; opacity: 0.86; transition: opacity 0.2s; will-change: left, top; left: 1749px; top: 658px;"></div><div class="pointer-events-none fixed top-0 left-0 hidden md:block" style="z-index: 40; width: 11px; height: 11px; border-radius: 9999px; transform: translate(-50%, -50%); background: rgba(94, 234, 212, 0.95); box-shadow: rgba(13, 148, 136, 0.08) 0px 0px 0px 2px, rgba(20, 184, 166, 0.25) 0px 0px 18px, rgba(255, 255, 255, 0.06) 0px 0px 6px inset; opacity: 0.82; transition: opacity 0.2s; will-change: left, top; left: 1749px; top: 658px;"></div><div class="pointer-events-none fixed top-0 left-0 hidden md:block" style="z-index: 40; width: 10.5px; height: 10.5px; border-radius: 9999px; transform: translate(-50%, -50%); background: rgba(94, 234, 212, 0.95); box-shadow: rgba(13, 148, 136, 0.08) 0px 0px 0px 2px, rgba(20, 184, 166, 0.25) 0px 0px 18px, rgba(255, 255, 255, 0.06) 0px 0px 6px inset; opacity: 0.78; transition: opacity 0.2s; will-change: left, top; left: 1749px; top: 658px;"></div><div class="pointer-events-none fixed top-0 left-0 hidden md:block" style="z-index: 40; width: 10px; height: 10px; border-radius: 9999px; transform: translate(-50%, -50%); background: rgba(94, 234, 212, 0.93); box-shadow: rgba(13, 148, 136, 0.08) 0px 0px 0px 2px, rgba(20, 184, 166, 0.25) 0px 0px 18px, rgba(255, 255, 255, 0.06) 0px 0px 6px inset; opacity: 0.74; transition: opacity 0.2s; will-change: left, top; left: 1749px; top: 658px;"></div><div class="pointer-events-none fixed top-0 left-0 hidden md:block" style="z-index: 40; width: 9.5px; height: 9.5px; border-radius: 9999px; transform: translate(-50%, -50%); background: rgba(94, 234, 212, 0.91); box-shadow: rgba(13, 148, 136, 0.08) 0px 0px 0px 2px, rgba(20, 184, 166, 0.25) 0px 0px 18px, rgba(255, 255, 255, 0.06) 0px 0px 6px inset; opacity: 0.7; transition: opacity 0.2s; will-change: left, top; left: 1749px; top: 658px;"></div><div class="pointer-events-none fixed top-0 left-0 hidden md:block" style="z-index: 40; width: 9px; height: 9px; border-radius: 9999px; transform: translate(-50%, -50%); background: rgba(94, 234, 212, 0.89); box-shadow: rgba(13, 148, 136, 0.08) 0px 0px 0px 2px, rgba(20, 184, 166, 0.25) 0px 0px 18px, rgba(255, 255, 255, 0.06) 0px 0px 6px inset; opacity: 0.66; transition: opacity 0.2s; will-change: left, top; left: 1749px; top: 658px;"></div><div class="pointer-events-none fixed top-0 left-0 hidden md:block" style="z-index: 40; width: 8.5px; height: 8.5px; border-radius: 9999px; transform: translate(-50%, -50%); background: rgba(94, 234, 212, 0.87); box-shadow: rgba(13, 148, 136, 0.08) 0px 0px 0px 2px, rgba(20, 184, 166, 0.25) 0px 0px 18px, rgba(255, 255, 255, 0.06) 0px 0px 6px inset; opacity: 0.62; transition: opacity 0.2s; will-change: left, top; left: 1749px; top: 658px;"></div><div class="pointer-events-none fixed top-0 left-0 hidden md:block" style="z-index: 40; width: 8px; height: 8px; border-radius: 9999px; transform: translate(-50%, -50%); background: rgba(94, 234, 212, 0.85); box-shadow: rgba(13, 148, 136, 0.08) 0px 0px 0px 2px, rgba(20, 184, 166, 0.25) 0px 0px 18px, rgba(255, 255, 255, 0.06) 0px 0px 6px inset; opacity: 0.58; transition: opacity 0.2s; will-change: left, top; left: 1749px; top: 658px;"></div><div class="pointer-events-none fixed top-0 left-0 hidden md:block" style="z-index: 40; width: 7.5px; height: 7.5px; border-radius: 9999px; transform: translate(-50%, -50%); background: rgba(94, 234, 212, 0.83); box-shadow: rgba(13, 148, 136, 0.08) 0px 0px 0px 2px, rgba(20, 184, 166, 0.25) 0px 0px 18px, rgba(255, 255, 255, 0.06) 0px 0px 6px inset; opacity: 0.54; transition: opacity 0.2s; will-change: left, top; left: 1749px; top: 658px;"></div><div class="pointer-events-none fixed top-0 left-0 hidden md:block" style="z-index: 40; width: 7px; height: 7px; border-radius: 9999px; transform: translate(-50%, -50%); background: rgba(94, 234, 212, 0.81); box-shadow: rgba(13, 148, 136, 0.08) 0px 0px 0px 2px, rgba(20, 184, 166, 0.25) 0px 0px 18px, rgba(255, 255, 255, 0.06) 0px 0px 6px inset; opacity: 0.5; transition: opacity 0.2s; will-change: left, top; left: 1749px; top: 658px;"></div><div class="pointer-events-none fixed top-0 left-0 hidden md:block" style="z-index: 40; width: 6.5px; height: 6.5px; border-radius: 9999px; transform: translate(-50%, -50%); background: rgba(94, 234, 212, 0.79); box-shadow: rgba(13, 148, 136, 0.08) 0px 0px 0px 2px, rgba(20, 184, 166, 0.25) 0px 0px 18px, rgba(255, 255, 255, 0.06) 0px 0px 6px inset; opacity: 0.46; transition: opacity 0.2s; will-change: left, top; left: 1749px; top: 658px;"></div><div class="pointer-events-none fixed top-0 left-0 hidden md:block" style="z-index: 40; width: 6px; height: 6px; border-radius: 9999px; transform: translate(-50%, -50%); background: rgba(94, 234, 212, 0.77); box-shadow: rgba(13, 148, 136, 0.08) 0px 0px 0px 2px, rgba(20, 184, 166, 0.25) 0px 0px 18px, rgba(255, 255, 255, 0.06) 0px 0px 6px inset; opacity: 0.42; transition: opacity 0.2s; will-change: left, top; left: 1749px; top: 658px;"></div><div class="pointer-events-none fixed top-0 left-0 hidden md:block" style="z-index: 40; width: 5.5px; height: 5.5px; border-radius: 9999px; transform: translate(-50%, -50%); background: rgba(94, 234, 212, 0.75); box-shadow: rgba(13, 148, 136, 0.08) 0px 0px 0px 2px, rgba(20, 184, 166, 0.25) 0px 0px 18px, rgba(255, 255, 255, 0.06) 0px 0px 6px inset; opacity: 0.38; transition: opacity 0.2s; will-change: left, top; left: 1749px; top: 658px;"></div><div class="pointer-events-none fixed top-0 left-0 hidden md:block" style="z-index: 40; width: 5px; height: 5px; border-radius: 9999px; transform: translate(-50%, -50%); background: rgba(94, 234, 212, 0.73); box-shadow: rgba(13, 148, 136, 0.08) 0px 0px 0px 2px, rgba(20, 184, 166, 0.25) 0px 0px 18px, rgba(255, 255, 255, 0.06) 0px 0px 6px inset; opacity: 0.34; transition: opacity 0.2s; will-change: left, top; left: 1749px; top: 658px;"></div><div class="pointer-events-none fixed top-0 left-0 hidden md:block" style="z-index: 40; width: 4.5px; height: 4.5px; border-radius: 9999px; transform: translate(-50%, -50%); background: rgba(94, 234, 212, 0.71); box-shadow: rgba(13, 148, 136, 0.08) 0px 0px 0px 2px, rgba(20, 184, 166, 0.25) 0px 0px 18px, rgba(255, 255, 255, 0.06) 0px 0px 6px inset; opacity: 0.3; transition: opacity 0.2s; will-change: left, top; left: 1749px; top: 658px;"></div><div class="pointer-events-none fixed top-0 left-0 hidden md:block" style="z-index: 40; width: 4px; height: 4px; border-radius: 9999px; transform: translate(-50%, -50%); background: rgba(94, 234, 212, 0.69); box-shadow: rgba(13, 148, 136, 0.08) 0px 0px 0px 2px, rgba(20, 184, 166, 0.25) 0px 0px 18px, rgba(255, 255, 255, 0.06) 0px 0px 6px inset; opacity: 0.26; transition: opacity 0.2s; will-change: left, top; left: 1749px; top: 658px;"></div><div class="pointer-events-none fixed top-0 left-0 hidden md:block" style="z-index: 40; width: 4px; height: 4px; border-radius: 9999px; transform: translate(-50%, -50%); background: rgba(94, 234, 212, 0.67); box-shadow: rgba(13, 148, 136, 0.08) 0px 0px 0px 2px, rgba(20, 184, 166, 0.25) 0px 0px 18px, rgba(255, 255, 255, 0.06) 0px 0px 6px inset; opacity: 0.22; transition: opacity 0.2s; will-change: left, top; left: 1749px; top: 658px;"></div><script data-img-fallback-handler="">!function(){var f=["https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/917d6f93-fb36-439a-8c48-884b67b35381_1600w.jpg","https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/4734259a-bad7-422f-981e-ce01e79184f2_1600w.jpg","https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/c543a9e1-f226-4ced-80b0-feb8445a75b9_1600w.jpg","https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/5bab247f-35d9-400d-a82b-fd87cfe913d2_1600w.webp","https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/30104e3c-5eea-4b93-93e9-5313698a7156_1600w.webp"],h=new Set;function g(s){for(var x=0,i=0;i<s.length;i++)x=(x<<5)-x+s.charCodeAt(i)|0;return f[Math.abs(x)%f.length]}function r(t){var s=t.src;if(s&&!h.has(s)){h.add(s);t.src=g(s)}}window.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG")r(t)},!0);function c(){document.querySelectorAll("img").forEach(function(i){if(i.complete&&!i.naturalWidth&&i.src)r(i)})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",c);else c()}()</script></body></html>

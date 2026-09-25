@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+    <title>Design System - Fluxora</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="assets/css2_2832c0ff631d.css" rel="stylesheet"/>
+    <script src="assets/resource_3fa48481346f.js"></script>
+    <script src="assets/iconify_654a1ef798a3.js"></script>
+    <script src="assets/chart_ba9eca532d10.js"></script>
+    <style>
+        /* Animation Keyframe */
+        @keyframes fadeSlideIn {
+        0% {
+        opacity: 0;
+        transform: translateY(30px);
+        filter: blur(8px);
+        }
+        100% {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0px);
+        }
+        }
+        /* Border gradient shared style */
+        .border-gradient {
+        position: relative;
+        }
+        .border-gradient::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        padding: 1px;
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        background: linear-gradient(225deg, rgba(255, 255, 255, 0.0) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.0) 100%);
+        pointer-events: none;
+        }
+        /* Scroll fallback */
+        html, body {
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            height: auto !important;
+            min-height: 100vh !important;
+        }
+    </style>
+    <script>
+    /* Animation on Scroll */
+    (function () {
+    const style = document.createElement("style");
+    style.textContent = `
+    .animate-on-scroll { animation-play-state: paused !important; }
+    .animate-on-scroll.animate { animation-play-state: running !important; }
+    `;
+    document.head.appendChild(style);
+    const once = true;
+    if (!window.__inViewIO) {
+    window.__inViewIO = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+    entry.target.classList.add("animate");
+    if (once) window.__inViewIO.unobserve(entry.target);
+    }
+    });
+    }, { threshold: 0.2, rootMargin: "0px 0px -10% 0px" });
+    }
+    window.initInViewAnimations = function (selector = ".animate-on-scroll") {
+    document.querySelectorAll(selector).forEach((el) => {
+    window.__inViewIO.observe(el);
+    });
+    };
+    document.addEventListener("DOMContentLoaded", () => initInViewAnimations());
+    })();
+    </script>
+</head>
+<body class="min-h-screen bg-neutral-950 text-white antialiased" style="font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;">
+    
+    <!-- Background -->
+    <div class="fixed inset-0 -z-10 bg-neutral-950">
+        <div class="absolute inset-0 opacity-[0.03]">
+            <svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+            <pattern height="64" id="grid" patternunits="userSpaceOnUse" width="64">
+            <path d="M64 0H0v64" fill="none" stroke="white" stroke-width="0.5"></path>
+            </pattern>
+            </defs>
+            <rect fill="url(#grid)" height="100%" width="100%"></rect>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <header class="relative z-10">
+        <nav class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-5 flex items-center justify-between">
+            <a class="flex items-center gap-3" href="index.html">
+                <span class="inline-flex items-center justify-center bg-white/10 w-9 h-9 rounded-full backdrop-blur border-gradient" style="border-radius: 9999px;">
+                    <svg aria-hidden="true" data-height="16" data-icon="solar:star-fall-minimalistic-2-bold-duotone" data-width="16" height="16" role="img" style="color: rgb(255, 255, 255);" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M11.811 6.727C12.825 4.909 13.331 4 14.09 4c.757 0 1.264.909 2.277 2.727l.262.47c.288.517.432.775.657.945c.224.17.504.234 1.063.36l.51.116c1.967.445 2.95.667 3.185 1.42s-.437 1.537-1.778 3.106l-.347.406c-.381.445-.572.668-.658.944s-.057.573 0 1.168l.053.541c.203 2.094.305 3.14-.308 3.605s-1.534.041-3.377-.807l-.476-.22c-.524-.24-.786-.361-1.063-.361c-.278 0-.54.12-1.063.361l-.477.22c-1.842.848-2.763 1.272-3.376.807s-.511-1.511-.309-3.605l.053-.541c.057-.595.086-.892 0-1.168s-.276-.498-.657-.944l-.347-.406C6.57 11.575 5.9 10.79 6.135 10.038s1.218-.975 3.185-1.42l.51-.116c.559-.126.838-.19 1.063-.36s.368-.428.656-.945z" fill="currentColor"></path><path clip-rule="evenodd" d="M8.745 5.202c-1.981-.57-4.107-.269-6.158.932l-.208.122a.75.75 0 0 1-.758-1.294l.208-.122C4.19 3.457 6.737 3.063 9.161 3.76l.208.06a.75.75 0 0 1-.416 1.441zM4.836 9.936a.75.75 0 0 1-.683.811c-.154.014-.27.02-.37.027a3 3 0 0 0-.444.048c-.196.038-.452.117-.915.349a.75.75 0 1 1-.67-1.342c.537-.268.926-.408 1.302-.48c.247-.048.502-.064.731-.08l.238-.016a.75.75 0 0 1 .811.683m1.082 5.92a3.99 3.99 0 0 0-3.365.733a.75.75 0 1 1-.928-1.178a5.49 5.49 0 0 1 4.635-1.015a.75.75 0 0 1-.342 1.46" fill="currentColor" fill-rule="evenodd" opacity=".5"></path></svg>
+                </span>
+                <span class="text-lg font-semibold tracking-tight">Fluxora Design System</span>
+            </a>
+            <div class="flex items-center gap-6">
+                <a class="text-sm font-medium text-neutral-300 hover:text-white transition-colors" href="#typography">Typography</a>
+                <a class="text-sm font-medium text-neutral-300 hover:text-white transition-colors" href="#colors">Colors</a>
+                <a class="text-sm font-medium text-neutral-300 hover:text-white transition-colors" href="#components">Components</a>
+                <a class="text-sm font-medium text-neutral-300 hover:text-white transition-colors" href="#layout">Layout</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- 0) Hero Clone -->
+    <main class="relative z-10">
+        <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-8 pb-16">
+            <!-- Pill -->
+            <div class="mx-auto w-fit mb-6">
+                <div class="inline-flex items-center gap-2 rounded-full border-gradient bg-white/5 px-3 py-1.5 text-xs text-neutral-300" style="border-radius: 9999px;">
+                    <span class="inline-flex items-center justify-center rounded-full bg-blue-400/20 text-blue-300 px-2 py-0.5">
+                    v1.0
+                    </span>
+                    <span class="font-medium">System Ready</span>
+                </div>
+            </div>
+            <!-- Heading -->
+            <div class="text-center">
+                <h1 class="mx-auto max-w-4xl text-4xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tighter">
+                    Design System &<br/>Pattern Library
+                </h1>
+                <p class="mx-auto mt-5 max-w-2xl text-base sm:text-lg text-neutral-300">
+                    The atomic building blocks, components, and styles that power the Fluxora interface.
+                </p>
+            </div>
+        </section>
+
+        <!-- 1) Typography -->
+        <section id="typography" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 border-t border-white/10">
+            <h2 class="text-2xl font-semibold mb-12 flex items-center gap-3">
+                <span class="text-blue-400">01</span> Typography
+            </h2>
+
+            <div class="space-y-12">
+                <!-- H1 Display -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-baseline pb-12 border-b border-white/5">
+                    <div class="md:col-span-3 text-sm text-neutral-400 font-mono">Display H1</div>
+                    <div class="md:col-span-9">
+                        <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tighter">
+                            Powering the next wave
+                        </h1>
+                    </div>
+                </div>
+
+                <!-- H2 Heading -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-baseline pb-12 border-b border-white/5">
+                    <div class="md:col-span-3 text-sm text-neutral-400 font-mono">Heading H2</div>
+                    <div class="md:col-span-9">
+                        <h2 class="text-3xl sm:text-4xl md:text-5xl text-white tracking-tighter">
+                            Intelligent infrastructure
+                        </h2>
+                    </div>
+                </div>
+
+                <!-- H3 Heading -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-baseline pb-12 border-b border-white/5">
+                    <div class="md:col-span-3 text-sm text-neutral-400 font-mono">Heading H3</div>
+                    <div class="md:col-span-9">
+                        <h3 class="text-3xl sm:text-4xl text-white tracking-tighter">
+                            Create your config
+                        </h3>
+                    </div>
+                </div>
+
+                <!-- Body Large -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-baseline pb-12 border-b border-white/5">
+                    <div class="md:col-span-3 text-sm text-neutral-400 font-mono">Body Large</div>
+                    <div class="md:col-span-9">
+                        <p class="text-base sm:text-lg text-neutral-300">
+                            Fluxora helps ambitious teams prototype, launch, and scale with reliable infrastructure and human‑centered design.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Body Small/Base -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-baseline">
+                    <div class="md:col-span-3 text-sm text-neutral-400 font-mono">Body Base</div>
+                    <div class="md:col-span-9">
+                        <p class="text-sm text-neutral-400 max-w-xs">
+                            Powering the next wave of AI‑driven products with intelligent infrastructure.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2) Colors & Surfaces -->
+        <section id="colors" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 border-t border-white/10">
+            <h2 class="text-2xl font-semibold mb-12 flex items-center gap-3">
+                <span class="text-blue-400">02</span> Colors & Surfaces
+            </h2>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                <!-- Neutral 950 (Bg) -->
+                <div class="aspect-square rounded-2xl bg-neutral-950 border border-white/10 p-4 flex flex-col justify-between">
+                    <span class="text-white font-medium">Neutral 950</span>
+                    <span class="text-xs text-neutral-500 font-mono">#0a0a0a</span>
+                </div>
+                <!-- Neutral 900 (Card) -->
+                <div class="aspect-square rounded-2xl bg-neutral-900 border border-white/10 p-4 flex flex-col justify-between">
+                    <span class="text-white font-medium">Neutral 900</span>
+                    <span class="text-xs text-neutral-500 font-mono">bg-neutral-900</span>
+                </div>
+                 <!-- White -->
+                 <div class="aspect-square rounded-2xl bg-white border border-white/10 p-4 flex flex-col justify-between">
+                    <span class="text-black font-medium">White</span>
+                    <span class="text-xs text-neutral-500 font-mono">#ffffff</span>
+                </div>
+                <!-- Blue 400 -->
+                <div class="aspect-square rounded-2xl bg-blue-400 border border-white/10 p-4 flex flex-col justify-between">
+                    <span class="text-white font-medium">Blue 400</span>
+                    <span class="text-xs text-blue-100 font-mono">text-blue-400</span>
+                </div>
+                <!-- Glass Surface -->
+                <div class="aspect-square rounded-2xl bg-white/5 border-gradient backdrop-blur p-4 flex flex-col justify-between" style="border-radius: 16px;">
+                    <span class="text-white font-medium">Glass</span>
+                    <span class="text-xs text-neutral-400 font-mono">bg-white/5</span>
+                </div>
+            </div>
+
+            <!-- Gradients -->
+             <div class="mt-12">
+                <h3 class="text-sm font-medium text-neutral-400 mb-6 uppercase tracking-wider">Gradients & Borders</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Border Gradient Example -->
+                    <div class="h-24 rounded-2xl border-gradient bg-white/5 flex items-center justify-center" style="border-radius: 16px;">
+                        <span class="text-sm text-white/60">.border-gradient</span>
+                    </div>
+                     <!-- Linear Gradient Overlay -->
+                     <div class="h-24 rounded-2xl border border-white/10 relative overflow-hidden flex items-center justify-center">
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/0 via-black/20 to-black/50"></div>
+                        <span class="text-sm text-white/60 relative z-10">Image Overlay Gradient</span>
+                    </div>
+                </div>
+             </div>
+        </section>
+
+        <!-- 3) UI Components -->
+        <section id="components" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 border-t border-white/10">
+            <h2 class="text-2xl font-semibold mb-12 flex items-center gap-3">
+                <span class="text-blue-400">03</span> UI Components
+            </h2>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+                
+                <!-- Buttons & Actions -->
+                <div class="space-y-10">
+                    <h3 class="text-lg font-medium text-white">Buttons</h3>
+                    
+                    <!-- Primary (White) -->
+                    <div class="flex flex-col gap-3">
+                        <span class="text-xs text-neutral-500 font-mono">Primary (White)</span>
+                        <div class="flex">
+                            <button class="inline-flex items-center gap-2 rounded-full bg-white text-neutral-900 px-6 py-3 text-sm font-semibold shadow-[0_1px_0_0_rgba(255,255,255,0.4)_inset,0_1px_2px_rgba(0,0,0,0.2)] hover:-translate-y-0.5 transition-all" style="border-radius: 9999px;">
+                                Start Free
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Secondary (Glass) -->
+                    <div class="flex flex-col gap-3">
+                        <span class="text-xs text-neutral-500 font-mono">Secondary (Glass)</span>
+                        <div class="flex">
+                            <button class="inline-flex gap-2 border-gradient hover:text-white transition-all hover:-translate-y-0.5 text-sm font-medium text-white/80 bg-white/5 rounded-full pt-3 pr-5 pb-3 pl-5 backdrop-blur-xl gap-x-2 gap-y-2 items-center" style="border-radius: 9999px">
+                                <svg aria-hidden="true" data-height="16" data-icon="solar:play-circle-bold-duotone" data-width="16" height="16" role="img" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path clip-rule="evenodd" d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2S2 6.477 2 12s4.477 10 10 10" fill="currentColor" fill-rule="evenodd" opacity=".5"></path><path d="m15.414 13.059l-4.72 2.787C9.934 16.294 9 15.71 9 14.786V9.214c0-.924.934-1.507 1.694-1.059l4.72 2.787c.781.462.781 1.656 0 2.118" fill="currentColor"></path></svg>
+                                Watch demo
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Pills & Badges -->
+                    <div class="flex flex-col gap-3">
+                         <span class="text-xs text-neutral-500 font-mono">Pills / Tags</span>
+                         <div class="flex flex-wrap gap-4">
+                            <span class="inline-flex items-center rounded-full bg-blue-400/15 text-blue-300 px-2.5 py-1 text-xs font-medium border-gradient" style="border-radius: 9999px;">Japan</span>
+                            
+                            <span class="inline-flex items-center gap-1 text-[11px] border-gradient text-slate-300 bg-white/5 rounded-full px-2.5 py-1 backdrop-blur" style="border-radius: 9999px;">
+                                Product Team
+                            </span>
+
+                            <div class="hidden sm:flex items-center gap-2 rounded-full border-gradient bg-white/5 px-3 py-1.5" style="border-radius: 9999px;">
+                                <span class="h-2 w-2 rounded-full bg-blue-400"></span>
+                                <span class="text-xs text-neutral-300 font-medium">Online</span>
+                            </div>
+                         </div>
+                    </div>
+                </div>
+
+                <!-- Cards & Containers -->
+                <div class="space-y-10">
+                    <h3 class="text-lg font-medium text-white">Cards</h3>
+
+                    <!-- Basic Card -->
+                    <div class="flex flex-col gap-3">
+                         <span class="text-xs text-neutral-500 font-mono">Feature Card</span>
+                         <div class="rounded-2xl bg-white/5 ring-1 ring-white/10 p-5 border-gradient">
+                            <h3 class="text-base tracking-tight text-white font-semibold leading-none">Lightning Fast</h3>
+                            <p class="mt-3 text-sm text-neutral-400">Launch products in minutes, not months.</p>
+                        </div>
+                    </div>
+
+                    <!-- Stat Card -->
+                    <div class="flex flex-col gap-3">
+                        <span class="text-xs text-neutral-500 font-mono">Stat Card (Light)</span>
+                        <div class="rounded-3xl bg-white text-neutral-900 p-6 border-gradient" style="background:linear-gradient(225deg,rgba(255,255,255,0.95) 0%,rgba(255,255,255,1) 50%,rgba(255,255,255,0.95) 100%); border-radius: 24px;">
+                            <p class="text-4xl tracking-tighter">140+</p>
+                            <p class="mt-2 text-sm text-neutral-600 font-medium">Active customers</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4) Layout & Spacing -->
+        <section id="layout" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 border-t border-white/10">
+             <h2 class="text-2xl font-semibold mb-12 flex items-center gap-3">
+                <span class="text-blue-400">04</span> Layout & Grid
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-4">
+                <div class="col-span-12 md:col-span-12 lg:col-span-12 mb-4">
+                    <span class="text-sm text-neutral-400 font-mono">12 Column Grid (lg) / 6 Column (md)</span>
+                </div>
+                <!-- Grid Visualization -->
+                <div class="h-32 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center text-xs text-neutral-500">Col</div>
+                <div class="h-32 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center text-xs text-neutral-500">Col</div>
+                <div class="h-32 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center text-xs text-neutral-500">Col</div>
+                <div class="h-32 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center text-xs text-neutral-500">Col</div>
+                <div class="h-32 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center text-xs text-neutral-500">Col</div>
+                <div class="h-32 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center text-xs text-neutral-500">Col</div>
+                <div class="h-32 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center text-xs text-neutral-500 hidden lg:flex">Col</div>
+                <div class="h-32 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center text-xs text-neutral-500 hidden lg:flex">Col</div>
+                <div class="h-32 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center text-xs text-neutral-500 hidden lg:flex">Col</div>
+                <div class="h-32 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center text-xs text-neutral-500 hidden lg:flex">Col</div>
+                <div class="h-32 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center text-xs text-neutral-500 hidden lg:flex">Col</div>
+                <div class="h-32 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center text-xs text-neutral-500 hidden lg:flex">Col</div>
+            </div>
+        </section>
+
+        <!-- 5) Motion -->
+        <section id="motion" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 border-t border-white/10">
+            <h2 class="text-2xl font-semibold mb-12 flex items-center gap-3">
+                <span class="text-blue-400">05</span> Motion
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div>
+                     <span class="text-xs text-neutral-500 font-mono mb-4 block">.animate-on-scroll (Fade Slide In)</span>
+                     <div class="p-8 border border-white/10 rounded-2xl bg-white/5 animate-on-scroll animate">
+                        <p class="text-white text-lg">
+                            This element fades and slides up when in view.
+                        </p>
+                        <p class="text-neutral-400 text-sm mt-2">
+                            Uses keyframes: fadeSlideIn
+                        </p>
+                     </div>
+                </div>
+                
+                <div>
+                    <span class="text-xs text-neutral-500 font-mono mb-4 block">Hover Lift</span>
+                    <button class="inline-flex items-center gap-2 rounded-full border-gradient bg-white/5 px-6 py-3 text-sm font-medium text-white transition-all hover:-translate-y-0.5" style="border-radius: 9999px;">
+                        Hover Me
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6) Icons -->
+        <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 border-t border-white/10">
+            <h2 class="text-2xl font-semibold mb-12 flex items-center gap-3">
+                <span class="text-blue-400">06</span> Icons
+            </h2>
+            <div class="flex flex-wrap gap-8">
+                 <div class="flex flex-col items-center gap-2">
+                     <svg aria-hidden="true" data-height="24" data-icon="solar:star-fall-minimalistic-2-bold-duotone" data-width="24" height="24" role="img" style="color: rgb(255, 255, 255);" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M11.811 6.727C12.825 4.909 13.331 4 14.09 4c.757 0 1.264.909 2.277 2.727l.262.47c.288.517.432.775.657.945c.224.17.504.234 1.063.36l.51.116c1.967.445 2.95.667 3.185 1.42s-.437 1.537-1.778 3.106l-.347.406c-.381.445-.572.668-.658.944s-.057.573 0 1.168l.053.541c.203 2.094.305 3.14-.308 3.605s-1.534.041-3.377-.807l-.476-.22c-.524-.24-.786-.361-1.063-.361c-.278 0-.54.12-1.063.361l-.477.22c-1.842.848-2.763 1.272-3.376.807s-.511-1.511-.309-3.605l.053-.541c.057-.595.086-.892 0-1.168s-.276-.498-.657-.944l-.347-.406C6.57 11.575 5.9 10.79 6.135 10.038s1.218-.975 3.185-1.42l.51-.116c.559-.126.838-.19 1.063-.36s.368-.428.656-.945z" fill="currentColor"></path><path clip-rule="evenodd" d="M8.745 5.202c-1.981-.57-4.107-.269-6.158.932l-.208.122a.75.75 0 0 1-.758-1.294l.208-.122C4.19 3.457 6.737 3.063 9.161 3.76l.208.06a.75.75 0 0 1-.416 1.441zM4.836 9.936a.75.75 0 0 1-.683.811c-.154.014-.27.02-.37.027a3 3 0 0 0-.444.048c-.196.038-.452.117-.915.349a.75.75 0 1 1-.67-1.342c.537-.268.926-.408 1.302-.48c.247-.048.502-.064.731-.08l.238-.016a.75.75 0 0 1 .811.683m1.082 5.92a3.99 3.99 0 0 0-3.365.733a.75.75 0 1 1-.928-1.178a5.49 5.49 0 0 1 4.635-1.015a.75.75 0 0 1-.342 1.46" fill="currentColor" fill-rule="evenodd" opacity=".5"></path></svg>
+                     <span class="text-xs text-neutral-500">Logo</span>
+                 </div>
+                 <div class="flex flex-col items-center gap-2">
+                    <svg aria-hidden="true" data-height="24" data-icon="solar:play-circle-bold-duotone" data-width="24" height="24" role="img" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg" class="text-white"><path clip-rule="evenodd" d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2S2 6.477 2 12s4.477 10 10 10" fill="currentColor" fill-rule="evenodd" opacity=".5"></path><path d="m15.414 13.059l-4.72 2.787C9.934 16.294 9 15.71 9 14.786V9.214c0-.924.934-1.507 1.694-1.059l4.72 2.787c.781.462.781 1.656 0 2.118" fill="currentColor"></path></svg>
+                    <span class="text-xs text-neutral-500">Play</span>
+                </div>
+                 <div class="flex flex-col items-center gap-2">
+                    <svg aria-hidden="true" data-height="24" data-icon="solar:graph-up-bold-duotone" data-width="24" height="24" role="img" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg" class="text-blue-600"><path d="M2 12c0-4.714 0-7.071 1.464-8.536C4.93 2 7.286 2 12 2s7.071 0 8.535 1.464C22 4.93 22 7.286 22 12s0 7.071-1.465 8.535C19.072 22 16.714 22 12 22s-7.071 0-8.536-1.465C2 19.072 2 16.714 2 12" fill="currentColor" opacity=".5"></path><path d="M14.5 10.75a.75.75 0 0 1 0-1.5H17a.75.75 0 0 1 .75.75v2.5a.75.75 0 0 1-1.5 0v-.69l-2.013 2.013a1.75 1.75 0 0 1-2.474 0l-1.586-1.586a.25.25 0 0 0-.354 0L7.53 14.53a.75.75 0 0 1-1.06-1.06l2.293-2.293a1.75 1.75 0 0 1 2.474 0l1.586 1.586a.25.25 0 0 0 .354 0l2.012-2.013z" fill="currentColor"></path></svg>
+                    <span class="text-xs text-neutral-500">Graph</span>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <svg aria-hidden="true" data-height="24" data-icon="solar:widget-6-bold-duotone" data-width="24" height="24" role="img" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg" class="text-white"><path d="M2 17.5A4.5 4.5 0 0 1 6.5 13h2.7c.63 0 .945 0 1.186.123c.211.107.384.28.491.491c.123.24.123.556.123 1.186v2.7a4.5 4.5 0 1 1-9 0m11-11a4.5 4.5 0 1 1 4.5 4.5h-3.214c-.15 0-.224 0-.287-.007a1.125 1.125 0 0 1-.992-.992C13 9.938 13 9.864 13 9.714z" fill="currentColor"></path><path d="M2 6.5a4.5 4.5 0 0 1 9 0v3c0 .349 0 .523-.038.666a1.13 1.13 0 0 1-.796.796C10.023 11 9.85 11 9.5 11h-3A4.5 4.5 0 0 1 2 6.5m11 8c0-.349 0-.523.038-.666c.104-.388.408-.692.796-.796c.143-.038.317-.038.666-.038h3a4.5 4.5 0 1 1-4.5 4.5z" fill="currentColor" opacity=".5"></path></svg>
+                    <span class="text-xs text-neutral-500">Widget</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-16 mb-16">
+            <div class="rounded-3xl border-gradient p-8 sm:p-12 backdrop-blur text-center" style="background:linear-gradient(225deg,rgba(255,255,255,0.0) 0%,rgba(255,255,255,0.05) 50%,rgba(255,255,255,0.0) 100%); border-radius: 24px;">
+                 <p class="text-sm text-neutral-400">Fluxora Design System generated for internal use.</p>
+            </div>
+        </footer>
+    </main>
+
+</body>
+</html>

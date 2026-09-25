@@ -1,0 +1,5 @@
+;!function(){try { var e="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof global?global:"undefined"!=typeof window?window:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&((e._debugIds|| (e._debugIds={}))[n]="90e8368d-c232-66ca-3807-c19eb3519c92")}catch(e){}}();
+(globalThis["TURBOPACK_remote_chunk_loading_global_vercel-marketing"]||(globalThis["TURBOPACK_remote_chunk_loading_global_vercel-marketing"]=[])).push(["object"==typeof document?document.currentScript:void 0,{otherChunks:[{path:"static/immutable/chunks/1o6wrm1mc4udq.js",moduleChunks:["static/immutable/chunks/3h4lamq3lo095.js","static/immutable/chunks/2pnwpqc08zd6e.js"]},"static/immutable/chunks/3_s4nhoqwft0a.js","static/immutable/chunks/1qo00jyq6hevn.js"],runtimeModuleIds:[299715]}]);
+
+//# debugId=90e8368d-c232-66ca-3807-c19eb3519c92
+//# sourceMappingURL=1jjsq3mj0j8lt.js.map

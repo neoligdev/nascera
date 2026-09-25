@@ -1,0 +1,76 @@
+{
+  "text": [
+    {
+      "value": "rgb(23, 23, 23)",
+      "count": 378
+    },
+    {
+      "value": "rgb(77, 77, 77)",
+      "count": 209
+    },
+    {
+      "value": "rgb(143, 143, 143)",
+      "count": 16
+    },
+    {
+      "value": "lab(80.976 0 -0.0000119209)",
+      "count": 12
+    },
+    {
+      "value": "rgb(255, 255, 255)",
+      "count": 8
+    },
+    {
+      "value": "rgb(168, 168, 168)",
+      "count": 7
+    },
+    {
+      "value": "rgb(41, 122, 58)",
+      "count": 3
+    },
+    {
+      "value": "rgb(0, 114, 245)",
+      "count": 1
+    },
+    {
+      "value": "rgb(125, 125, 125)",
+      "count": 1
+    },
+    {
+      "value": "rgb(0, 112, 243)",
+      "count": 1
+    }
+  ],
+  "surface": [
+    {
+      "value": "rgb(255, 255, 255)",
+      "count": 11
+    },
+    {
+      "value": "rgb(23, 23, 23)",
+      "count": 6
+    },
+    {
+      "value": "rgb(250, 250, 250)",
+      "count": 5
+    },
+    {
+      "value": "rgb(235, 235, 235)",
+      "count": 2
+    },
+    {
+      "value": "lab(7.78201 -0.0000149012 0)",
+      "count": 2
+    },
+    {
+      "value": "oklab(0.984799 0.0000446141 0.0000197291 / 0.5)",
+      "count": 1
+    },
+    {
+      "value": "rgb(0, 112, 243)",
+      "count": 1
+    }
+  ],
+  "border": [],
+  "elementsScanned": 639
+}

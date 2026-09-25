@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Design System</title>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<link href="_ext/cdn.prod.website-files.com/691513338fc462d52975ef64/css/cinetica-studio.shared.a2ecca9c6.css" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" href="_ext/cdn.jsdelivr.net/npm/lenis_1.2.3/dist/lenis.css">
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link href="https://fonts.gstatic.com" rel="preconnect"/>
+<script src="_ext/ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js" type="text/javascript"></script>
+<script type="text/javascript">WebFont.load({  google: {    families: ["Montserrat:100,100italic,200,200italic,300,300italic,400,400italic,500,500italic,600,600italic,700,700italic,800,800italic,900,900italic","Gabarito:400,500,600,700,800,900","Instrument Serif:300,400,500,600,700","Martian Mono:300,400,500,600,700"]  }});</script>
+<script type="text/javascript">!function(o,c){var n=c.documentElement,t=" w-mod-";n.className+=t+"js",("ontouchstart"in o||o.DocumentTouch&&c instanceof DocumentTouch)&&(n.className+=t+"touch")}(window,document);</script>
+<style>
+/*----- Scaling System (from index.html global-css embed) -----*/
+:root {
+  --size-unit: 16;
+  --size-container-ideal: 1440;
+  --size-container-min: 992px;
+  --size-container-max: 2560px;
+  --size-container: clamp(var(--size-container-min), 100vw, var(--size-container-max));
+  --size-font: calc(var(--size-container) / (var(--size-container-ideal) / var(--size-unit)));
+}
+@media screen and (max-width: 991px) {
+  :root { --size-container-ideal: 834; --size-container-min: 768px; --size-container-max: 991px; }
+}
+@media screen and (max-width: 767px) {
+  :root { --size-container-ideal: 550; --size-container-min: 480px; --size-container-max: 767px; }
+}
+@media screen and (max-width: 479px) {
+  :root { --size-container-ideal: 402; --size-container-min: 320px; --size-container-max: 479px; }
+}
+*, *:after, *:before { -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;}
+html {scroll-behavior: initial;}
+html, body {-webkit-font-smoothing: antialiased;}
+svg {max-width: none; height: auto; box-sizing: border-box; vertical-align: middle;}
+::selection { background-color: var(--gray); color: var(--black); text-shadow: none; }
+::-moz-selection { background-color: var(--gray); color: var(--black); text-shadow: none; }
+a{ color: inherit; text-decoration: none; }
+[data-underline-link="target"],
+[data-underline-link=""] { text-decoration: none; position: relative; }
+[data-underline-link="target"]::before,
+[data-underline-link=""]::before {
+  content: "";
+  position: absolute;
+  bottom: -0.0625em;
+  left: 0;
+  width: 100%;
+  height: 0.0625em;
+  background-color: currentColor;
+  transition: transform 0.735s cubic-bezier(0.625, 0.05, 0, 1);
+  transform-origin: center;
+  transform: scaleX(0) rotate(0.001deg);
+}
+@media (hover: hover) and (pointer: fine) {
+  [data-underline-link=""]:hover::before { transform: scaleX(1) rotate(0.001deg); }
+  [data-underline-link="hover"]:hover [data-underline-link="target"]::before { transform: scaleX(1) rotate(0.001deg); }
+}
+button { all: unset; cursor: pointer; }
+[data-hover-scale] { transition: transform 0.3s ease; transform: scale(1); }
+@media (hover: hover) and (pointer: fine) {
+  [data-hover-scale]:hover { transform: scale(0.9); }
+}
+.rolling-char { display: inline-block; backface-visibility: hidden; will-change: transform; }
+.rolling-line { overflow: visible !important; display: block; }
+
+/* ---- Showcase-only scaffolding (not part of the captured design) ---- */
+.dsx-nav {
+  position: sticky; top: 0; z-index: 999;
+  display: flex; flex-wrap: wrap; gap: 0;
+  background: rgba(0,0,0,0.92);
+  border-bottom: 1px solid var(--gray);
+  backdrop-filter: blur(8px);
+  font-family: "Martian Mono", monospace;
+}
+.dsx-nav a {
+  color: var(--white);
+  font-size: 12px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 14px 18px;
+  border-right: 1px solid var(--gray);
+  white-space: nowrap;
+}
+.dsx-nav a:hover { background: var(--gray); }
+.dsx-section { padding: 80px 2em; border-bottom: 1px solid var(--gray); }
+.dsx-section__head { margin-bottom: 40px; }
+.dsx-section__head h2 {
+  font-family: Gabarito, sans-serif; font-weight: 900; font-size: 32px; color: #fff; margin: 0 0 8px;
+}
+.dsx-section__head p { font-family: "Martian Mono", monospace; font-size: 13px; color: rgba(255,255,255,0.5); margin: 0; }
+.dsx-row {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 24px;
+  padding: 28px 0; border-bottom: 1px solid var(--gray);
+}
+.dsx-row:last-child { border-bottom: none; }
+.dsx-row__preview { flex: 1; min-width: 0; }
+.dsx-row__meta {
+  font-family: "Martian Mono", monospace; font-size: 12px; color: rgba(255,255,255,0.5);
+  white-space: nowrap; text-align: right;
+}
+.dsx-row__meta span { display: block; color: #fff; font-size: 13px; margin-bottom: 4px; }
+.dsx-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 24px; }
+.dsx-swatch { border: 1px solid var(--gray); }
+.dsx-swatch__fill { height: 90px; }
+.dsx-swatch__label { font-family: "Martian Mono", monospace; font-size: 11px; padding: 10px 12px; color: #fff; }
+.dsx-swatch__label small { display: block; color: rgba(255,255,255,0.5); margin-top: 2px; }
+.dsx-states { display: flex; flex-wrap: wrap; gap: 32px; align-items: center; }
+.dsx-state { text-align: center; }
+.dsx-state__tag { display: block; font-family: "Martian Mono", monospace; font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 10px; text-transform: uppercase; letter-spacing: .1em; }
+.dsx-layout-frame { border: 1px dashed var(--gray); padding: 24px; }
+.dsx-motion-card { border: 1px solid var(--gray); padding: 24px; text-align: center; }
+.dsx-motion-card__tag { font-family: "Martian Mono", monospace; font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 16px; display: block; }
+.dsx-icons { display: flex; gap: 28px; flex-wrap: wrap; align-items: center; }
+body { background: #000; }
+</style>
+</head>
+<body data-menu-status="closed">
+
+<nav class="dsx-nav">
+  <a href="#hero">Hero</a>
+  <a href="#typography">Typography</a>
+  <a href="#colors">Colors &amp; Surfaces</a>
+  <a href="#components">UI Components</a>
+  <a href="#layout">Layout &amp; Spacing</a>
+  <a href="#motion">Motion &amp; Interaction</a>
+  <a href="#icons">Icons</a>
+</nav>
+
+<!-- ========================================================= -->
+<!-- 0. HERO — direct clone of <section id="hero" class="hero-section">, text adapted -->
+<!-- ========================================================= -->
+<main class="main-wrapper">
+<div data-w-id="e64bdb0f-ee86-d47e-a5d7-999c3619e23b" class="hero-scroll">
+<section id="hero" class="hero-section">
+  <div class="container u--rel">
+    <video style="opacity:0" autoplay="autoplay" muted="" playsinline="" loop="" webkit-playsinline="" class="lightspeed-bg__video">
+      <source src="_ext/cdn.jsdelivr.net/gh/kr3ado/cinetica-studio_main/lightspeed-video.mp4" type="video/mp4"/>
+    </video>
+  </div>
+  <div class="container u--rel">
+    <div style="opacity:0" class="hero_inner">
+      <div class="hero-content_top">
+        <span class="hero-span_title">Presenting</span>
+        <span class="hero-span_title">the</span>
+        <div class="hero-content_copy-w">
+          <h1 class="hero-content__p"><span data-scramble-loop="">Meticulously</span> documented design system capturing every token, component &amp; <span data-scramble-loop="">motion</span> pattern that defines this <span data-scramble-loop="">interactive</span> interface, distilled since <span data-scramble-loop="">now</span>.</h1>
+        </div>
+      </div>
+      <div class="hero-content_bottom">
+        <span class="hero-span_title">Consistent</span>
+      </div>
+      <div class="hero-deco">
+        <div class="hero-vertical">
+          <span class="hero-blink__span">loading design tokens<span class="dot-1">.</span><span class="dot-2">.</span><span class="dot-3">.</span></span>
+        </div>
+        <div class="hero-mouse__wrapper">
+          <div class="mouse-svg__wrapper">
+            <svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 24 24" fill="none"><path d="M19 11.725L3.88786 20.45L3.88786 3L19 11.725Z" fill="currentColor"></path></svg>
+          </div>
+          <div class="bars_wrapper">
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          </div>
+        </div>
+        <div class="hero-mouse__wrapper is--right">
+          <div class="hero-border"></div>
+        </div>
+        <div class="hero-deco__wrapper">
+          <span class="hero-deco__span">design system</span>
+          <span class="hero-deco__span">all rights reserved</span>
+        </div>
+        <div class="hero-deco__wrapper is-bottom">
+          <p data-current-date="" class="hero-deco__span"><span data-current-date-day="">00</span>/<span data-current-date-month="">00</span>/<span data-current-date-year="">00</span></p>
+          <p data-current-time="" class="hero-deco__span"><span data-current-time-hours="">12</span>:<span data-current-time-minutes="">00</span>:<span data-current-time-seconds="">00</span></p>
+        </div>
+        <div class="hero-deco__svg-w">
+          <svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 128 27" fill="none"><path d="M1 1H3V25.88H1V1Z" fill="currentColor"></path><path d="M6 1H10V25.88H6V1Z" fill="currentColor"></path><path d="M19 1H20V25.88H19V1Z" fill="currentColor"></path><path d="M23 1H24V25.88H23V1Z" fill="currentColor"></path><path d="M13 1H16V25.88H13V1Z" fill="currentColor"></path></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+</main>
+
+<!-- ========================================================= -->
+<!-- 1. TYPOGRAPHY -->
+<!-- ========================================================= -->
+<section id="typography" class="dsx-section">
+  <div class="dsx-section__head">
+    <h2>Typography</h2>
+    <p>Computed values from typography.json — real classes and tags from the captured DOM.</p>
+  </div>
+
+  <div class="dsx-row">
+    <div class="dsx-row__preview">
+      <h1 class="hero-content__p" style="max-width:900px;">Heading 1 — hero-content__p</h1>
+    </div>
+    <div class="dsx-row__meta"><span>Montserrat 400</span>17.6px / 24.64px</div>
+  </div>
+
+  <div class="dsx-row">
+    <div class="dsx-row__preview">
+      <h2 data-split="rolling" class="services-header__heading">Heading 2 — services-header__heading</h2>
+    </div>
+    <div class="dsx-row__meta"><span>Martian Mono 400</span>18px / 21.6px</div>
+  </div>
+
+  <div class="dsx-row">
+    <div class="dsx-row__preview">
+      <h3 data-split="rolling" class="services-tab__title">Heading 3 — services-tab__title</h3>
+    </div>
+    <div class="dsx-row__meta"><span>Gabarito 900</span>73px / 73px</div>
+  </div>
+
+  <div class="dsx-row">
+    <div class="dsx-row__preview">
+      <h4 class="services-tab__item-heading">Heading 4 — services-tab__item-heading</h4>
+    </div>
+    <div class="dsx-row__meta"><span>Gabarito 900</span>36.8px / 44.16px</div>
+  </div>
+
+  <div class="dsx-row">
+    <div class="dsx-row__preview">
+      <p class="p-large font-secondary" style="max-width:640px;">Paragraph — p-large.font-secondary body copy used for lead paragraphs across the page.</p>
+    </div>
+    <div class="dsx-row__meta"><span>Martian Mono 400</span>9.6px / 13.44px</div>
+  </div>
+
+  <div class="dsx-row">
+    <div class="dsx-row__preview">
+      <a data-underline-link="" href="#typography">Link — data-underline-link</a>
+    </div>
+    <div class="dsx-row__meta"><span>Montserrat 400</span>16px / 22.4px</div>
+  </div>
+
+  <div class="dsx-row">
+    <div class="dsx-row__preview">
+      <button class="submit w-button" style="display:inline-block;position:static;">Button</button>
+    </div>
+    <div class="dsx-row__meta"><span>Montserrat 400</span>16px / 22.4px</div>
+  </div>
+
+  <div class="dsx-row">
+    <div class="dsx-row__preview">
+      <p class="p-small">Body — p-small, base document copy.</p>
+    </div>
+    <div class="dsx-row__meta"><span>Montserrat 400</span>16px / 22.4px</div>
+  </div>
+</section>
+
+<!-- ========================================================= -->
+<!-- 2. COLORS & SURFACES -->
+<!-- ========================================================= -->
+<section id="colors" class="dsx-section">
+  <div class="dsx-section__head">
+    <h2>Colors &amp; Surfaces</h2>
+    <p>Painted values from palette.json (measured), ranked by frequency of actual use.</p>
+  </div>
+
+  <div class="dsx-grid">
+    <div class="dsx-swatch">
+      <div class="dsx-swatch__fill" style="background:#000;"></div>
+      <div class="dsx-swatch__label">rgb(0,0,0)<small>Page / section background · 16 surfaces</small></div>
+    </div>
+    <div class="dsx-swatch">
+      <div class="dsx-swatch__fill" style="background:#fff;"></div>
+      <div class="dsx-swatch__label">rgb(255,255,255)<small>Primary text &amp; inverted surfaces · 1113 text uses</small></div>
+    </div>
+    <div class="dsx-swatch">
+      <div class="dsx-swatch__fill" style="background:#312b2c;"></div>
+      <div class="dsx-swatch__label">#312b2c — var(--gray)<small>Borders / dividers · 22 uses</small></div>
+    </div>
+    <div class="dsx-swatch">
+      <div class="dsx-swatch__fill" style="background:rgba(19,19,19,0.55);"></div>
+      <div class="dsx-swatch__label">rgba(19,19,19,.55)<small>Glass / overlay surface</small></div>
+    </div>
+    <div class="dsx-swatch">
+      <div class="dsx-swatch__fill" style="background:rgba(0,0,0,0.8);"></div>
+      <div class="dsx-swatch__label">rgba(0,0,0,.8)<small>Modal / scrim overlay</small></div>
+    </div>
+    <div class="dsx-swatch">
+      <div class="dsx-swatch__fill" style="background:rgba(100,100,100,0.2);"></div>
+      <div class="dsx-swatch__label">rgba(100,100,100,.2)<small>Subtle hover surface</small></div>
+    </div>
+    <div class="dsx-swatch">
+      <div class="dsx-swatch__fill" style="background:rgba(255,255,255,0.2);"></div>
+      <div class="dsx-swatch__label">rgba(255,255,255,.2)<small>Muted / secondary text · 45 uses</small></div>
+    </div>
+    <div class="dsx-swatch">
+      <div class="dsx-swatch__fill" style="background:radial-gradient(circle farthest-corner at 0% 100%, #8b8d884d, transparent 40%), radial-gradient(circle farthest-corner at 100% 100%, #8b8d884d, transparent 40%), #000;"></div>
+      <div class="dsx-swatch__label">Radial gradient duo<small>Ambient corner glow on dark surfaces</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================================= -->
+<!-- 3. UI COMPONENTS -->
+<!-- ========================================================= -->
+<section id="components" class="dsx-section">
+  <div class="dsx-section__head">
+    <h2>UI Components</h2>
+    <p>Buttons, links, inputs and cards exactly as captured — states shown side by side.</p>
+  </div>
+
+  <div class="dsx-row">
+    <div class="dsx-row__preview">
+      <div class="dsx-states">
+        <div class="dsx-state">
+          <a data-hover-scale="" data-underline-link="hover" href="#components" class="link-block relative w-inline-block">
+            <span data-underline-link="target" class="chat-wrapper__span">contact</span>
+            <div class="link-selector"></div><div class="link-selector is--2"></div><div class="link-selector is--3"></div><div class="link-selector is--4"></div>
+          </a>
+          <span class="dsx-state__tag">default / hover / focus</span>
+        </div>
+        <div class="dsx-state">
+          <div class="radio-button__field w-radio" style="min-width:220px;">
+            <div class="w-form-formradioinput w-form-formradioinput--inputType-custom radio--button w-radio-input"></div>
+            <span class="rbl w-form-label">radio-button__field</span>
+          </div>
+          <span class="dsx-state__tag">default → hover (bg fill)</span>
+        </div>
+        <div class="dsx-state">
+          <button id="chat-send-btn" class="chat-send-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13M22 2L15 22L11 13M11 13L2 9L22 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </button>
+          <span class="dsx-state__tag">chat-send-btn · hover scale(1.1)</span>
+        </div>
+        <div class="dsx-state">
+          <button class="menu-button" style="position:static;">
+            <div class="menu-button-line"></div><div class="menu-button-line"></div><div class="menu-button-line"></div>
+          </button>
+          <span class="dsx-state__tag">menu-button (burger)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dsx-row">
+    <div class="dsx-row__preview">
+      <div class="field__wrapper" style="position:relative;height:44px;max-width:360px;">
+        <input class="field w-input" maxlength="256" name="text-input" data-name="text-input" placeholder="Type here" type="text" style="position:static;"/>
+      </div>
+    </div>
+    <div class="dsx-row__meta"><span>.field.w-input</span>text input, gray border</div>
+  </div>
+
+  <div class="dsx-row">
+    <div class="dsx-row__preview">
+      <div class="services-tab__item" style="max-width:420px;border:1px solid var(--gray);padding:24px;position:relative;">
+        <div class="services-item__inner">
+          <h4 class="services-tab__item-heading">Card Title</h4>
+          <p class="p-medium font-secondary">services-tab__item — card pattern reused for each service entry, includes icon and progress border.</p>
+        </div>
+        <div class="services-tab__item-border"></div>
+      </div>
+    </div>
+    <div class="dsx-row__meta"><span>.services-tab__item</span>card component</div>
+  </div>
+</section>
+
+<!-- ========================================================= -->
+<!-- 4. LAYOUT & SPACING -->
+<!-- ========================================================= -->
+<section id="layout" class="dsx-section">
+  <div class="dsx-section__head">
+    <h2>Layout &amp; Spacing</h2>
+    <p>Container, padding-global and grid patterns as used on the page.</p>
+  </div>
+
+  <div class="dsx-row">
+    <div class="dsx-row__preview">
+      <div class="dsx-layout-frame">
+        <div class="container">
+          <div style="border:1px dashed rgba(255,255,255,0.3);padding:16px;">.container — max-width: var(--size-container), centered</div>
+        </div>
+      </div>
+    </div>
+    <div class="dsx-row__meta"><span>.container</span>fluid, clamp-based</div>
+  </div>
+
+  <div class="dsx-row">
+    <div class="dsx-row__preview">
+      <div class="dsx-layout-frame padding-global" style="border-style:solid;">
+        <div style="border:1px dashed rgba(255,255,255,0.3);padding:8px;">padding-global — 2em left/right gutters</div>
+      </div>
+    </div>
+    <div class="dsx-row__meta"><span>.padding-global</span>section gutter</div>
+  </div>
+
+  <div class="dsx-row">
+    <div class="dsx-row__preview">
+      <div class="dsx-layout-frame" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+        <div style="border:1px dashed rgba(255,255,255,0.3);padding:16px;">chatbot-input__wrapper (left slot)</div>
+        <div style="border:1px dashed rgba(255,255,255,0.3);padding:16px;">contact-right (form column)</div>
+      </div>
+    </div>
+    <div class="dsx-row__meta"><span>.contact-grid</span>split two-column layout</div>
+  </div>
+</section>
+
+<!-- ========================================================= -->
+<!-- 5. MOTION & INTERACTION -->
+<!-- ========================================================= -->
+<section id="motion" class="dsx-section">
+  <div class="dsx-section__head">
+    <h2>Motion &amp; Interaction</h2>
+    <p>Interaction behaviors present in the captured CSS/JS: hover scale, underline reveal, corner selectors, character rolling.</p>
+  </div>
+
+  <div class="dsx-grid">
+    <div class="dsx-motion-card">
+      <a data-hover-scale="" href="#motion" style="display:inline-block;font-family:'Martian Mono',monospace;font-size:13px;">[data-hover-scale] hover me</a>
+      <span class="dsx-motion-card__tag">transform: scale(.9) on hover · .3s ease</span>
+    </div>
+    <div class="dsx-motion-card">
+      <a data-underline-link="" href="#motion" style="font-family:'Martian Mono',monospace;font-size:13px;">underline-link hover me</a>
+      <span class="dsx-motion-card__tag">scaleX(0→1) · .735s cubic-bezier(.625,.05,0,1)</span>
+    </div>
+    <div class="dsx-motion-card">
+      <div class="link-block relative" style="width:60px;height:60px;margin:0 auto;">
+        <div class="link-selector"></div><div class="link-selector is--2"></div><div class="link-selector is--3"></div><div class="link-selector is--4"></div>
+      </div>
+      <span class="dsx-motion-card__tag">.link-selector corner brackets (4x, rotated 0/90/180/270)</span>
+    </div>
+    <div class="dsx-motion-card">
+      <span class="hero-blink__span">loading<span class="dot-1">.</span><span class="dot-2">.</span><span class="dot-3">.</span></span>
+      <span class="dsx-motion-card__tag">hero-blink__span · staggered dot blink</span>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================================= -->
+<!-- 6. ICONS -->
+<!-- ========================================================= -->
+<section id="icons" class="dsx-section">
+  <div class="dsx-section__head">
+    <h2>Icons</h2>
+    <p>Inline SVG, stroke/fill inherit currentColor — same markup and size classes as the source.</p>
+  </div>
+
+  <div class="dsx-icons">
+    <a data-hover-scale="" href="#icons" class="icon-1x1-small w-inline-block" style="display:inline-block;width:32px;color:#fff;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 24 24" fill="none"><path d="M21.94 7.88C21.9206 7.0503 21.7652 6.2294 21.48 5.45C21.2283 4.78181 20.8322 4.17742 20.32 3.68C19.8226 3.16776 19.2182 2.77166 18.55 2.52C17.7706 2.23484 16.9497 2.07945 16.12 2.06C15.06 2 14.72 2 12 2C9.28 2 8.94 2 7.88 2.06C7.0503 2.07945 6.2294 2.23484 5.45 2.52C4.78181 2.77166 4.17742 3.16776 3.68 3.68C3.16743 4.17518 2.77418 4.78044 2.53 5.45C2.23616 6.22734 2.07721 7.04915 2.06 7.88C2 8.94 2 9.28 2 12C2 14.72 2 15.06 2.06 16.12C2.07721 16.9508 2.23616 17.7727 2.53 18.55C2.77418 19.2196 3.16743 19.8248 3.68 20.32C4.17742 20.8322 4.78181 21.2283 5.45 21.48C6.2294 21.7652 7.0503 21.9206 7.88 21.94C8.94 22 9.28 22 12 22C14.72 22 15.06 22 16.12 21.94" stroke="currentColor" stroke-width="1.6"></path></svg>
+    </a>
+    <span class="mouse-svg__wrapper" style="display:inline-block;width:24px;color:#fff;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 24 24" fill="none"><path d="M19 11.725L3.88786 20.45L3.88786 3L19 11.725Z" fill="currentColor"></path></svg>
+    </span>
+    <span class="services-tab__svg-wrapper" style="display:inline-block;width:40px;color:#fff;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 50 50" fill="none"><path d="M18.3793 50L23.2987 42.5353L26.3733 49.7644L28.5051 42.2556L34.422 49.0872L24.9522 26.8257L18.3793 50Z" fill="currentColor"></path><path d="M31.3884 0L26.3597 7.62662L23.326 0.485866L21.167 8.08304L15.3731 1.38398L24.7472 23.4246L31.3884 0Z" fill="currentColor"></path></svg>
+    </span>
+    <span style="font-family:'Martian Mono',monospace;font-size:11px;color:rgba(255,255,255,0.5);align-self:center;">currentColor inheritance · sizes: 24px / 32px / 40px</span>
+  </div>
+</section>
+
+</body>
+</html>

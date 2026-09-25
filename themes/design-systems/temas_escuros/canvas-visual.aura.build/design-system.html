@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Canvas - Design System</title>
+<script src="assets/resource_3fa48481346f.js"></script>
+<script src="assets/iconify_654a1ef798a3.js"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="assets/css2_5dc1420882f5.css" rel="stylesheet"/>
+<!-- Animation Keyframe -->
+<style class="">
+/*
+Sequence animation intro.
+*/
+@keyframes fadeSlideIn {
+0% {
+opacity: 0;
+transform: translateY(30px);
+filter: blur(8px);
+}
+100% {
+opacity: 1;
+transform: translateY(0);
+filter: blur(0px);
+}
+}
+</style>
+<!-- Animation on Scroll Script -->
+<script>
+/*
+Sequence animation on scroll when visible.
+*/
+(function () {
+// Inject CSS for paused/running states
+const style = document.createElement("style");
+style.textContent = "
+/* Default: paused */
+.animate-on-scroll { animation-play-state: paused !important; }
+/* Activated by JS */
+.animate-on-scroll.animate { animation-play-state: running !important; }
+";
+document.head.appendChild(style);
+const once = true;
+if (!window.__inViewIO) {
+window.__inViewIO = new IntersectionObserver((entries) => {
+entries.forEach((entry) => {
+if (entry.isIntersecting) {
+entry.target.classList.add("animate");
+if (once) window.__inViewIO.unobserve(entry.target);
+}
+});
+}, { threshold: 0.1, rootMargin: "0px 0px -5% 0px" });
+}
+window.initInViewAnimations = function (selector = ".animate-on-scroll") {
+document.querySelectorAll(selector).forEach((el) => {
+window.__inViewIO.observe(el); // observing twice is a no-op
+});
+};
+document.addEventListener("DOMContentLoaded", () => initInViewAnimations());
+})();
+</script>
+<style>
+body {
+font-family: 'Inter', sans-serif;
+background-color: #050505;
+}
+/* Custom Grid Pattern */
+.grid-bg {
+background-image:
+linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+background-size: 60px 60px;
+mask-image: radial-gradient(ellipse at center, black 40%, transparent 70%);
+-webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 70%);
+}
+/* Beam Animation CSS */
+.beam-border-v {
+position: absolute; top: 0; bottom: 0; left: 0; width: 1px;
+background: rgba(255,255,255,0.05); overflow: hidden; z-index: 10;
+}
+.beam-border-v::after {
+content: ''; position: absolute; top: 0; left: 0; bottom: 0; right: 0;
+background: linear-gradient(to bottom, transparent, #F97316, transparent);
+transform: translateY(-100%);
+animation: beam-drop 5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+opacity: 0.7;
+}
+.beam-border-h {
+position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+background: rgba(255,255,255,0.05); overflow: hidden; z-index: 10;
+}
+.beam-border-h::after {
+content: ''; position: absolute; top: 0; left: 0; bottom: 0; right: 0;
+background: linear-gradient(to right, transparent, #F97316, transparent);
+transform: translateX(-100%);
+animation: beam-slide 7s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+animation-delay: 2.5s;
+opacity: 0.7;
+}
+@keyframes beam-drop {
+0% { transform: translateY(-100%); opacity: 0; }
+10% { opacity: 1; }
+90% { opacity: 1; }
+100% { transform: translateY(100%); opacity: 0; }
+}
+@keyframes beam-slide {
+0% { transform: translateX(-100%); opacity: 0; }
+10% { opacity: 1; }
+90% { opacity: 1; }
+100% { transform: translateX(100%); opacity: 0; }
+}
+/* Card Hover Effects */
+.floating-card {
+transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), z-index 0s;
+will-change: transform;
+}
+.floating-card:hover {
+transform: scale(1.1) translateY(-10px) !important;
+z-index: 50;
+box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+border-color: rgba(249, 115, 22, 0.3);
+}
+/* Button Animation */
+.btn-wrapper:hover .btn {
+background-color: #F97316;
+color: #000;
+border-color: #F97316;
+}
+.btn {
+transition: all 0.3s ease;
+}
+</style>
+<link href="assets/css2_86e10c4bcbd4.css" id="all-fonts-link-font-geist" rel="stylesheet"/><style id="all-fonts-style-font-geist">.font-geist { font-family: 'Geist', sans-serif !important; }</style><link href="assets/css2_0fc20595ebff.css" id="all-fonts-link-font-roboto" rel="stylesheet"/><style id="all-fonts-style-font-roboto">.font-roboto { font-family: 'Roboto', sans-serif !important; }</style><link href="assets/css2_23afcbef9bdd.css" id="all-fonts-link-font-montserrat" rel="stylesheet"/><style id="all-fonts-style-font-montserrat">.font-montserrat { font-family: 'Montserrat', sans-serif !important; }</style><link href="assets/css2_82ced711bf49.css" id="all-fonts-link-font-poppins" rel="stylesheet"/><style id="all-fonts-style-font-poppins">.font-poppins { font-family: 'Poppins', sans-serif !important; }</style><link href="assets/css2_fa22aa91016e.css" id="all-fonts-link-font-playfair" rel="stylesheet"/><style id="all-fonts-style-font-playfair">.font-playfair { font-family: 'Playfair Display', serif !important; }</style><link href="assets/css2_2b2d87bc82d8.css" id="all-fonts-link-font-instrument-serif" rel="stylesheet"/><style id="all-fonts-style-font-instrument-serif">.font-instrument-serif { font-family: 'Instrument Serif', serif !important; }</style><link href="assets/css2_4fef849c83da.css" id="all-fonts-link-font-merriweather" rel="stylesheet"/><style id="all-fonts-style-font-merriweather">.font-merriweather { font-family: 'Merriweather', serif !important; }</style><link href="assets/css2_a7b22b336fe1.css" id="all-fonts-link-font-bricolage" rel="stylesheet"/><style id="all-fonts-style-font-bricolage">.font-bricolage { font-family: 'Bricolage Grotesque', sans-serif !important; }</style><link href="assets/css2_0b2072b66163.css" id="all-fonts-link-font-jakarta" rel="stylesheet"/><style id="all-fonts-style-font-jakarta">.font-jakarta { font-family: 'Plus Jakarta Sans', sans-serif !important; }</style>
+<script>
+// Configure Tailwind to include our custom 3D transform utilities
+tailwind.config = {
+theme: {
+extend: {
+// Add any custom theme extensions here if needed
+}
+},
+plugins: [
+function({
+addUtilities
+}) {
+const rotateXUtilities = {};
+const rotateYUtilities = {};
+const rotateZUtilities = {};
+const rotateValues = [0, 5, 10, 15, 20, 30, 45, 75];
+// Generate rotate-x utilities
+rotateValues.forEach((value) => {
+rotateXUtilities[`.rotate-x-${value}`] = {
+'--tw-rotate-x': `${value}deg`,
+transform: `
+translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+rotateX(var(--tw-rotate-x, 0))
+rotateY(var(--tw-rotate-y, 0))
+rotateZ(var(--tw-rotate-z, 0))
+skewX(var(--tw-skew-x, 0))
+skewY(var(--tw-skew-y, 0))
+scaleX(var(--tw-scale-x, 1))
+scaleY(var(--tw-scale-y, 1))
+`.replace(/\s+/g, ' ').trim(),
+};
+if (value !== 0) {
+rotateXUtilities[`.-rotate-x-${value}`] = {
+'--tw-rotate-x': `-${value}deg`,
+transform: `
+translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+rotateX(var(--tw-rotate-x, 0))
+rotateY(var(--tw-rotate-y, 0))
+rotateZ(var(--tw-rotate-z, 0))
+skewX(var(--tw-skew-x, 0))
+skewY(var(--tw-skew-y, 0))
+scaleX(var(--tw-scale-x, 1))
+scaleY(var(--tw-scale-y, 1))
+`.replace(/\s+/g, ' ').trim(),
+};
+}
+});
+// Generate rotate-y utilities
+rotateValues.forEach((value) => {
+rotateYUtilities[`.rotate-y-${value}`] = {
+'--tw-rotate-y': `${value}deg`,
+transform: `
+translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+rotateX(var(--tw-rotate-x, 0))
+rotateY(var(--tw-rotate-y, 0))
+rotateZ(var(--tw-rotate-z, 0))
+skewX(var(--tw-skew-x, 0))
+skewY(var(--tw-skew-y, 0))
+scaleX(var(--tw-scale-x, 1))
+scaleY(var(--tw-scale-y, 1))
+`.replace(/\s+/g, ' ').trim(),
+};
+if (value !== 0) {
+rotateYUtilities[`.-rotate-y-${value}`] = {
+'--tw-rotate-y': `-${value}deg`,
+transform: `
+translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+rotateX(var(--tw-rotate-x, 0))
+rotateY(var(--tw-rotate-y, 0))
+rotateZ(var(--tw-rotate-z, 0))
+skewX(var(--tw-skew-x, 0))
+skewY(var(--tw-skew-y, 0))
+scaleX(var(--tw-scale-x, 1))
+scaleY(var(--tw-scale-y, 1))
+`.replace(/\s+/g, ' ').trim(),
+};
+}
+});
+// Generate rotate-z utilities
+rotateValues.forEach((value) => {
+rotateZUtilities[`.rotate-z-${value}`] = {
+'--tw-rotate-z': `${value}deg`,
+transform: `
+translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+rotateX(var(--tw-rotate-x, 0))
+rotateY(var(--tw-rotate-y, 0))
+rotateZ(var(--tw-rotate-z, 0))
+skewX(var(--tw-skew-x, 0))
+skewY(var(--tw-skew-y, 0))
+scaleX(var(--tw-scale-x, 1))
+scaleY(var(--tw-scale-y, 1))
+`.replace(/\s+/g, ' ').trim(),
+};
+if (value !== 0) {
+rotateZUtilities[`.-rotate-z-${value}`] = {
+'--tw-rotate-z': `-${value}deg`,
+transform: `
+translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+rotateX(var(--tw-rotate-x, 0))
+rotateY(var(--tw-rotate-y, 0))
+rotateZ(var(--tw-rotate-z, 0))
+skewX(var(--tw-skew-x, 0))
+skewY(var(--tw-skew-y, 0))
+scaleX(var(--tw-scale-x, 1))
+scaleY(var(--tw-scale-y, 1))
+`.replace(/\s+/g, ' ').trim(),
+};
+}
+});
+// Perspective utilities
+const perspectiveUtilities = {
+".perspective-none": { perspective: "none" },
+".perspective-dramatic": { perspective: "100px" },
+".perspective-near": { perspective: "300px" },
+".perspective-normal": { perspective: "500px" },
+".perspective-midrange": { perspective: "800px" },
+".perspective-distant": { perspective: "1200px" },
+};
+// Transform style utilities
+const transformStyleUtilities = {
+".transform-style-preserve-3d": { "transform-style": "preserve-3d" },
+".transform-style-flat": { "transform-style": "flat" },
+};
+addUtilities({
+...rotateXUtilities,
+...rotateYUtilities,
+...rotateZUtilities,
+...perspectiveUtilities,
+...transformStyleUtilities,
+});
+}
+]
+};
+</script>
+</head>
+<body class="text-neutral-300 min-h-screen flex flex-col overflow-x-hidden selection:bg-[#F97316] selection:text-black">
+<!-- Background (component) added by Aura -->
+<div class="aura-background-component top-0 w-full h-screen -z-10 saturate-0 brightness-50 mix-blend-screen absolute" data-alpha-mask="80" style="; mask-image: linear-gradient(to bottom, transparent, black 0%, black 80%, transparent); -webkit-mask-image: linear-gradient(to bottom, transparent, black 0%, black 80%, transparent)"><div class="aura-background-component top-0 w-full -z-10 absolute h-full">
+<div class="absolute w-full h-full left-0 top-0 -z-10" data-us-project="fbC2LfIKPWAtosLcp0kG"></div>
+<script type="text/javascript">
+    !function(){if(!window.UnicornStudio){window.UnicornStudio={isInitialized:!1};var i=document.createElement("script");i.src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.4.29/dist/unicornStudio.umd.js",i.onload=function(){window.UnicornStudio.isInitialized||(UnicornStudio.init(),window.UnicornStudio.isInitialized=!0)},(document.head || document.body).appendChild(i)}}
+();
+  </script>
+</div></div>
+
+<!-- Documentation Navigation -->
+<nav class="fixed top-0 left-0 w-full z-[100] bg-black/80 backdrop-blur-md border-b border-white/10 px-6 py-4 flex justify-between items-center text-xs font-mono uppercase tracking-widest text-neutral-500">
+    <a href="#" class="text-white hover:text-[#F97316] transition-colors flex items-center gap-2">
+        <div class="w-3 h-3 bg-[#F97316]"></div>
+        Canvas Design System
+    </a>
+    <div class="hidden md:flex gap-8">
+        <a href="#hero" class="hover:text-[#F97316] transition-colors">Intro</a>
+        <a href="#typography" class="hover:text-[#F97316] transition-colors">Typography</a>
+        <a href="#colors" class="hover:text-[#F97316] transition-colors">Colors</a>
+        <a href="#components" class="hover:text-[#F97316] transition-colors">Components</a>
+        <a href="#layout" class="hover:text-[#F97316] transition-colors">Layout</a>
+        <a href="#motion" class="hover:text-[#F97316] transition-colors">Motion</a>
+    </div>
+</nav>
+
+<!-- Section 0: Hero (Clone) -->
+<section id="hero" class="pt-24">
+    <main class="grid grid-cols-1 lg:grid-cols-12 px-6 lg:px-12 my-12 lg:my-20 gap-12 relative min-h-[70vh]">
+    <!-- Background Grid -->
+    <div class="absolute inset-0 grid-bg pointer-events-none z-0"></div>
+    <!-- Left Column: Text -->
+    <div class="lg:col-span-6 flex flex-col justify-center z-20 relative pt-10 lg:pt-0">
+    <h1 class="lg:text-[7.5rem] leading-[0.9] uppercase animate-on-scroll [animation:fadeSlideIn_0.8s_ease-out_0.2s_both] text-6xl font-medium text-white tracking-tighter mb-8 animate">
+        Design<br class=""/>
+    <span class="text-neutral-600">Sys</span>tem
+    </h1>
+    <p class="text-lg text-neutral-400 max-w-md leading-relaxed mb-12 font-light animate-on-scroll [animation:fadeSlideIn_0.8s_ease-out_0.4s_both] animate">
+                    The living pattern library for the Canvas interface. Modular, parametric, and built for the post-digital era.
+                </p>
+    <div class="flex flex-col items-start gap-4 animate-on-scroll [animation:fadeSlideIn_0.8s_ease-out_0.6s_both] animate">
+    <!-- Custom Button Component -->
+    <a class="btn-wrapper group relative inline-flex justify-center items-center p-4 border border-neutral-800 hover:border-[#F97316] transition-colors duration-300" href="#typography">
+    <div class="absolute inset-0 opacity-0 group-hover:opacity-100 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMjQ5LCAxMTUsIDIyLCAwLjIpIi8+PC9zdmc+')] transition-opacity duration-300"></div>
+    <!-- Corner accents -->
+    <div class="absolute top-0 left-0 w-2 h-2 border-t border-l border-[#F97316] opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-1 -translate-y-1 group-hover:translate-x-0 group-hover:translate-y-0"></div>
+    <div class="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-[#F97316] opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-1 translate-y-1 group-hover:translate-x-0 group-hover:translate-y-0"></div>
+    <button class="btn flex items-center gap-3 bg-transparent text-white font-medium uppercase tracking-wider text-sm relative z-10">
+                            Explore Specs
+                            <svg aria-hidden="true" class="iconify text-lg iconify--solar" data-icon="solar:arrow-right-up-bold-duotone" height="1em" role="img" viewbox="0 0 24 24" width="1em" xmlns="http://www.w3.org/2000/svg"><path clip-rule="evenodd" d="M17.47 15.53a.75.75 0 0 0 1.28-.53V6a.75.75 0 0 0-.75-.75H9a.75.75 0 0 0-.53 1.28z" fill="currentColor" fill-rule="evenodd"></path><path d="M5.47 17.47a.75.75 0 1 0 1.06 1.06l6.97-6.97l-1.06-1.06z" fill="currentColor" opacity=".5"></path></svg>
+    </button>
+    </a>
+    </div>
+    </div>
+    <!-- Center Column: Floating Cards -->
+    <div class="lg:col-span-6 relative h-[500px] lg:h-auto flex items-center justify-center animate-on-scroll [animation:fadeSlideIn_0.8s_ease-out_0.8s_both] perspective-[1000px] animate">
+    <!-- Centerpiece Image -->
+    <div class="relative z-10 w-64 aspect-[4/5] bg-neutral-900 border border-white/10 shadow-2xl floating-card transform rotate-[-2deg]">
+    <img alt="Abstract Art" class="w-full h-full object-cover opacity-80 grayscale hover:grayscale-0 transition-all duration-500" src="assets/ba85e313-0a22-4811-b7e0-1e6a99_ecc219644ecc.webp"/>
+    <div class="absolute bottom-4 left-4 bg-black/50 backdrop-blur-sm px-3 py-1 border border-white/10">
+    <span class="text-[10px] font-mono uppercase text-white">Fig. 01</span>
+    </div>
+    </div>
+    <!-- Floating Element 1 -->
+    <div class="absolute top-[10%] left-[15%] w-40 aspect-square bg-neutral-900 border border-white/10 shadow-xl floating-card z-0 transform -rotate-6">
+    <img alt="Nature" class="hover:grayscale-0 transition-all duration-500 opacity-60 w-full h-full object-cover grayscale" src="assets/1d62b373-cc7d-4f73-b0bd-e8a8ec_2a4b770bf63a.webp"/>
+    </div>
+    <!-- Floating Element 2 -->
+    <div class="absolute bottom-[15%] right-[15%] w-48 aspect-square bg-neutral-900 border border-white/10 shadow-xl floating-card z-20 transform rotate-3">
+    <img alt="Graphic" class="w-full h-full object-cover opacity-70 grayscale hover:grayscale-0 transition-all duration-500" src="assets/63a6abea-fa7c-44e7-b134-9d7023_2e6b94d20600.webp"/>
+    </div>
+    </div>
+    </main>
+</section>
+
+<!-- Section 1: Typography -->
+<section id="typography" class="py-24 px-6 lg:px-12 max-w-[90rem] mx-auto border-t border-white/5 bg-[#050505] relative z-20">
+    <div class="flex items-end gap-4 mb-16">
+        <h2 class="text-4xl text-white font-medium">Typography</h2>
+        <span class="text-xs font-mono text-neutral-500 uppercase tracking-widest mb-1.5">Inter / Sans-Serif</span>
+    </div>
+    
+    <div class="space-y-16">
+        <!-- H1 -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 border-b border-white/5 pb-12">
+            <div class="md:col-span-1 text-xs font-mono text-neutral-500 uppercase tracking-widest">
+                Display H1<br/>
+                <span class="text-neutral-700">7.5rem / 0.9 Line Height</span>
+            </div>
+            <div class="md:col-span-3">
+                <h1 class="text-[4rem] lg:text-[7.5rem] leading-[0.9] uppercase text-white font-medium tracking-tighter">
+                    Visual Synthesis
+                </h1>
+            </div>
+        </div>
+
+        <!-- H2 -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 border-b border-white/5 pb-12">
+            <div class="md:col-span-1 text-xs font-mono text-neutral-500 uppercase tracking-widest">
+                Display H2<br/>
+                <span class="text-neutral-700">4.5rem / 0.95 Line Height</span>
+            </div>
+            <div class="md:col-span-3">
+                <h2 class="text-4xl lg:text-[4.5rem] leading-[1.1] lg:leading-[0.95] text-white font-normal tracking-tight">
+                    Creative intelligence engine.
+                </h2>
+            </div>
+        </div>
+
+        <!-- H3 / Section Title -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 border-b border-white/5 pb-12">
+            <div class="md:col-span-1 text-xs font-mono text-neutral-500 uppercase tracking-widest">
+                Section Heading<br/>
+                <span class="text-neutral-700">3rem / Tight</span>
+            </div>
+            <div class="md:col-span-3">
+                <h2 class="text-4xl lg:text-5xl font-normal text-white tracking-tight">
+                    System 2.0
+                </h2>
+            </div>
+        </div>
+
+        <!-- Card Title -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 border-b border-white/5 pb-12">
+            <div class="md:col-span-1 text-xs font-mono text-neutral-500 uppercase tracking-widest">
+                Card Title<br/>
+                <span class="text-neutral-700">1.125rem / Medium</span>
+            </div>
+            <div class="md:col-span-3">
+                <h3 class="text-white font-medium text-lg">Liquid Layouts</h3>
+            </div>
+        </div>
+
+        <!-- Body Text -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 border-b border-white/5 pb-12">
+            <div class="md:col-span-1 text-xs font-mono text-neutral-500 uppercase tracking-widest">
+                Body Large<br/>
+                <span class="text-neutral-700">1.125rem / Relaxed</span>
+            </div>
+            <div class="md:col-span-3">
+                <p class="text-lg text-neutral-400 leading-relaxed font-light max-w-2xl">
+                    A truly open-source canvas for the post-digital era. Construct interfaces with parametric efficiency and brutalist principles.
+                </p>
+            </div>
+        </div>
+
+        <!-- Label -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="md:col-span-1 text-xs font-mono text-neutral-500 uppercase tracking-widest">
+                Label / UI<br/>
+                <span class="text-neutral-700">0.75rem / Tracking Widest</span>
+            </div>
+            <div class="md:col-span-3">
+                <span class="text-xs font-semibold text-neutral-600 uppercase tracking-widest">Client Satisfaction</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Section 2: Colors & Surfaces -->
+<section id="colors" class="py-24 px-6 lg:px-12 max-w-[90rem] mx-auto border-t border-white/5 bg-[#050505] relative z-20">
+    <div class="flex items-end gap-4 mb-16">
+        <h2 class="text-4xl text-white font-medium">Colors & Surfaces</h2>
+        <span class="text-xs font-mono text-neutral-500 uppercase tracking-widest mb-1.5">Palette</span>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+        <!-- Primary Accent -->
+        <div class="space-y-3">
+            <div class="w-full aspect-square bg-[#F97316] border border-white/10 shadow-2xl"></div>
+            <div class="text-xs font-mono text-neutral-500 uppercase tracking-widest">
+                <span class="text-white block">Orange</span>
+                #F97316
+            </div>
+        </div>
+        <!-- Background -->
+        <div class="space-y-3">
+            <div class="w-full aspect-square bg-[#050505] border border-white/10 shadow-2xl"></div>
+            <div class="text-xs font-mono text-neutral-500 uppercase tracking-widest">
+                <span class="text-white block">Background</span>
+                #050505
+            </div>
+        </div>
+        <!-- Surface 1 -->
+        <div class="space-y-3">
+            <div class="w-full aspect-square bg-[#0A0A0A] border border-white/10 shadow-2xl"></div>
+            <div class="text-xs font-mono text-neutral-500 uppercase tracking-widest">
+                <span class="text-white block">Surface</span>
+                #0A0A0A
+            </div>
+        </div>
+        <!-- Neutral 900 -->
+        <div class="space-y-3">
+            <div class="w-full aspect-square bg-neutral-900 border border-white/10 shadow-2xl"></div>
+            <div class="text-xs font-mono text-neutral-500 uppercase tracking-widest">
+                <span class="text-white block">Neutral 900</span>
+                Tw/Neutral-900
+            </div>
+        </div>
+        <!-- Neutral 800 -->
+        <div class="space-y-3">
+            <div class="w-full aspect-square bg-neutral-800 border border-white/10 shadow-2xl"></div>
+            <div class="text-xs font-mono text-neutral-500 uppercase tracking-widest">
+                <span class="text-white block">Neutral 800</span>
+                Tw/Neutral-800
+            </div>
+        </div>
+        <!-- White/10 (Border) -->
+        <div class="space-y-3">
+            <div class="w-full aspect-square bg-white/10 border border-white/10 shadow-2xl backdrop-blur-md"></div>
+            <div class="text-xs font-mono text-neutral-500 uppercase tracking-widest">
+                <span class="text-white block">Glass / Border</span>
+                White / 10%
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Section 3: UI Components -->
+<section id="components" class="py-24 px-6 lg:px-12 max-w-[90rem] mx-auto border-t border-white/5 bg-[#050505] relative z-20">
+    <div class="flex items-end gap-4 mb-16">
+        <h2 class="text-4xl text-white font-medium">UI Components</h2>
+        <span class="text-xs font-mono text-neutral-500 uppercase tracking-widest mb-1.5">Atomic Elements</span>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <!-- Buttons -->
+        <div class="space-y-12">
+            <div class="p-8 border border-white/5 bg-[#0A0A0A] flex flex-col gap-8 items-start">
+                <span class="text-xs font-mono text-neutral-500 uppercase tracking-widest">Primary Action</span>
+                
+                <a class="btn-wrapper group relative inline-flex justify-center items-center p-4 border border-neutral-800 hover:border-[#F97316] transition-colors duration-300" href="#">
+                    <div class="absolute inset-0 opacity-0 group-hover:opacity-100 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMjQ5LCAxMTUsIDIyLCAwLjIpIi8+PC9zdmc+')] transition-opacity duration-300"></div>
+                    <!-- Corner accents -->
+                    <div class="absolute top-0 left-0 w-2 h-2 border-t border-l border-[#F97316] opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-1 -translate-y-1 group-hover:translate-x-0 group-hover:translate-y-0"></div>
+                    <div class="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-[#F97316] opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-1 translate-y-1 group-hover:translate-x-0 group-hover:translate-y-0"></div>
+                    <button class="btn flex items-center gap-3 bg-transparent text-white font-medium uppercase tracking-wider text-sm relative z-10">
+                        Start Creating
+                        <svg aria-hidden="true" class="iconify text-lg iconify--solar" data-icon="solar:arrow-right-up-bold-duotone" height="1em" role="img" viewbox="0 0 24 24" width="1em" xmlns="http://www.w3.org/2000/svg"><path clip-rule="evenodd" d="M17.47 15.53a.75.75 0 0 0 1.28-.53V6a.75.75 0 0 0-.75-.75H9a.75.75 0 0 0-.53 1.28z" fill="currentColor" fill-rule="evenodd"></path><path d="M5.47 17.47a.75.75 0 1 0 1.06 1.06l6.97-6.97l-1.06-1.06z" fill="currentColor" opacity=".5"></path></svg>
+                    </button>
+                </a>
+            </div>
+
+            <div class="p-8 border border-white/5 bg-[#0A0A0A] flex flex-col gap-8 items-start">
+                <span class="text-xs font-mono text-neutral-500 uppercase tracking-widest">Gradient Beam Button</span>
+                
+                <a class="group relative isolate inline-flex items-center justify-center gap-2 overflow-hidden rounded-none bg-transparent pt-2.5 pr-5 pb-2.5 pl-5 text-sm font-semibold text-white transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(249,115,22,0.3)]" href="#" style="--spread: 90deg; --shimmer-color: #F97316; --speed: 3s; --cut: 1px;">
+                    <!-- Rotating Border Gradient Beam -->
+                    <div class="absolute inset-0 -z-20 overflow-hidden">
+                    <div class="absolute inset-[-100%] w-[300%] h-[300%] animate-[spin_3s_linear_infinite]">
+                    <div class="absolute inset-0" style="background: conic-gradient(from calc(270deg - (var(--spread) * 0.5)), transparent 0, var(--shimmer-color) var(--spread), transparent var(--spread));"></div>
+                    </div>
+                    </div>
+                    <!-- Inner Background Cutout -->
+                    <div class="absolute inset-[1px] -z-10 bg-[#050505] transition-colors duration-300 group-hover:bg-[#0A0A0A]"></div>
+                    <!-- Content -->
+                    <svg aria-hidden="true" class="iconify iconify--solar text-lg w-[18px] h-[18px]" data-icon="solar:file-download-bold-duotone" data-icon-replaced="true" height="1em" role="img" stroke-width="2" style="width: 18px; height: 18px; color: rgb(249, 115, 22)" viewbox="0 0 24 24" width="1em" xmlns="http://www.w3.org/2000/svg"><path class="" clip-rule="evenodd" d="M10 22h4c3.771 0 5.657 0 6.828-1.172S22 17.771 22 14v-.437c0-.873 0-1.529-.043-2.063h-4.052c-1.097 0-2.067 0-2.848-.105c-.847-.114-1.694-.375-2.385-1.066c-.692-.692-.953-1.539-1.067-2.386c-.105-.781-.105-1.75-.105-2.848l.01-2.834q0-.124.02-.244C11.121 2 10.636 2 10.03 2C6.239 2 4.343 2 3.172 3.172C2 4.343 2 6.229 2 10v4c0 3.771 0 5.657 1.172 6.828S6.229 22 10 22" fill="currentColor" fill-rule="evenodd" opacity=".5"></path><path class="" d="M9.013 19.047a.75.75 0 0 1-1.026 0l-2-1.875a.75.75 0 0 1 1.026-1.094l.737.69V13.5a.75.75 0 0 1 1.5 0v3.269l.737-.691a.75.75 0 0 1 1.026 1.094zM11.51 2.26l-.01 2.835c0 1.097 0 2.066.105 2.848c.114.847.375 1.694 1.067 2.385c.69.691 1.538.953 2.385 1.067c.781.105 1.751.105 2.848.105h4.052q.02.232.028.5H22c0-.268 0-.402-.01-.56a5.3 5.3 0 0 0-.958-2.641c-.094-.128-.158-.204-.285-.357C19.954 7.494 18.91 6.312 18 5.5c-.81-.724-1.921-1.515-2.89-2.161c-.832-.556-1.248-.834-1.819-1.04a6 6 0 0 0-.506-.154c-.384-.095-.758-.128-1.285-.14z" fill="currentColor"></path></svg>
+                    Download
+                </a>
+            </div>
+            
+            <div class="p-8 border border-white/5 bg-[#0A0A0A] flex flex-col gap-8 items-start relative">
+                <span class="text-xs font-mono text-neutral-500 uppercase tracking-widest">Input Group</span>
+                <div class="bg-[#0A0A0A] border border-white/10 rounded-full py-3 pl-6 pr-2 flex items-center gap-4 shadow-2xl w-full group hover:border-[#F97316]/50 transition-colors">
+                    <input class="bg-transparent border-none outline-none text-white text-sm w-full placeholder:text-neutral-600 font-mono" placeholder="Input field..." type="text"/>
+                    <button class="w-8 h-8 bg-white text-black rounded-full flex items-center justify-center hover:bg-[#F97316] transition-colors shrink-0">
+                    <svg aria-hidden="true" class="iconify iconify--solar" data-icon="solar:arrow-right-bold-duotone" height="1em" role="img" viewbox="0 0 24 24" width="1em" xmlns="http://www.w3.org/2000/svg"><path clip-rule="evenodd" d="M3.25 12a.75.75 0 0 1 .75-.75h9.25v1.5H4a.75.75 0 0 1-.75-.75" fill="currentColor" fill-rule="evenodd" opacity=".5"></path><path d="M13.25 12.75V18a.75.75 0 0 0 1.28.53l6-6a.75.75 0 0 0 0-1.06l-6-6a.75.75 0 0 0-1.28.53z" fill="currentColor"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cards -->
+        <div class="space-y-12">
+            <div class="p-8 border border-white/5 bg-[#0A0A0A] flex flex-col gap-8">
+                <span class="text-xs font-mono text-neutral-500 uppercase tracking-widest">System Card</span>
+                
+                <div class="w-full group">
+                    <div class="aspect-[4/3] bg-[#050505] border border-white/10 relative overflow-hidden mb-4 transition-colors group-hover:border-[#F97316]/30">
+                        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMjU1LCAyNTUsIDI1NSwgMC4wNSkiLz48L3N2Zz4=')] opacity-50"></div>
+                        <div class="absolute center w-32 h-32 bg-[#F97316]/10 rounded-full blur-3xl top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 group-hover:bg-[#F97316]/20 transition-colors"></div>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <svg aria-hidden="true" class="iconify text-4xl text-white/80 iconify--solar" data-icon="solar:layers-minimalistic-bold-duotone" height="1em" role="img" viewbox="0 0 24 24" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M7.624 4.449C9.501 3.698 10.621 3.25 12 3.25s2.499.448 4.376 1.199l2.97 1.188c.954.382 1.727.69 2.258.969c.268.14.528.3.729.493c.206.198.417.498.417.901s-.21.703-.417.901c-.2.193-.46.352-.73.493c-.53.278-1.303.587-2.258.97l-2.97 1.187C14.5 12.302 13.38 12.75 12 12.75s-2.499-.448-4.376-1.199l-2.969-1.188c-.955-.382-1.728-.69-2.259-.969a3.2 3.2 0 0 1-.729-.493C1.461 8.703 1.25 8.403 1.25 8s.21-.703.417-.901c.2-.193.46-.352.73-.493c.53-.278 1.303-.587 2.258-.97z" fill="currentColor"></path><path d="M2.502 11.443L2.5 11.44a.75.75 0 0 0-1 1.119L2 12l-.5.559l.002.002l.005.004l.014.012l.045.039q.057.047.161.129c.14.108.343.256.61.429c.533.346 1.32.79 2.363 1.207l2.809 1.124l.115.046c1.877.751 2.997 1.199 4.376 1.199s2.499-.448 4.375-1.199l.116-.046L19.3 14.38a13.7 13.7 0 0 0 2.363-1.207a9 9 0 0 0 .771-.558l.045-.039l.014-.012l.005-.004l.001-.002h.002a.75.75 0 0 0-1-1.119l-.002.002l-.002.001l-.024.021l-.118.094a8 8 0 0 1-.508.357c-.46.299-1.161.697-2.105 1.074l-2.808 1.123c-2.025.81-2.874 1.138-3.934 1.138s-1.91-.328-3.934-1.138L5.257 12.99a12 12 0 0 1-2.104-1.074a8 8 0 0 1-.65-.472" fill="currentColor" opacity=".7"></path><path d="M2.499 15.5a.75.75 0 0 0-1 1.118H1.5l.002.002l.005.004l.014.012l.045.039l.161.13c.14.107.343.255.61.428c.533.346 1.32.79 2.363 1.207l2.809 1.124l.115.046c1.877.751 2.997 1.2 4.376 1.2s2.499-.449 4.375-1.2l.116-.046L19.3 18.44a13.7 13.7 0 0 0 2.363-1.208a9 9 0 0 0 .771-.558l.045-.039l.014-.012l.005-.004l.001-.001l.002-.002a.75.75 0 0 0-1-1.118l-.002.002l-.002.001l-.024.021l-.118.094a8 8 0 0 1-.508.357c-.46.299-1.161.697-2.105 1.074l-2.808 1.123c-2.025.81-2.874 1.138-3.934 1.138s-1.91-.328-3.934-1.138l-2.809-1.123a12 12 0 0 1-2.104-1.073a8 8 0 0 1-.626-.452l-.025-.02z" fill="currentColor" opacity=".4"></path></svg>
+                        </div>
+                    </div>
+                    <h3 class="text-white font-medium text-lg">Component Stacks</h3>
+                    <p class="text-neutral-500 text-sm mt-1">Pre-built atomic units for rapid assembly.</p>
+                </div>
+            </div>
+
+            <div class="p-8 border border-white/5 bg-[#0A0A0A] flex flex-col gap-8 items-start relative">
+                <span class="text-xs font-mono text-neutral-500 uppercase tracking-widest">Callout Card</span>
+                <!-- The "Why is it free?" Card -->
+                <div class="w-64 bg-[#111] border border-white/10 p-4 shadow-2xl transform hover:-translate-y-2 transition-transform duration-300 group cursor-pointer">
+                    <div class="flex items-start gap-3">
+                        <div class="w-10 h-10 bg-[#F97316] flex items-center justify-center text-black font-bold shrink-0">
+                            ?
+                        </div>
+                        <div class="">
+                            <p class="text-white font-medium text-sm leading-tight group-hover:text-[#F97316] transition-colors">Why is it free?</p>
+                            <p class="text-neutral-500 text-xs mt-1">A 2 min intro to our open-source philosophy.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Section 4: Layout & Spacing -->
+<section id="layout" class="py-24 px-6 lg:px-12 max-w-[90rem] mx-auto border-t border-white/5 bg-[#050505] relative z-20">
+    <div class="flex items-end gap-4 mb-16">
+        <h2 class="text-4xl text-white font-medium">Layout</h2>
+        <span class="text-xs font-mono text-neutral-500 uppercase tracking-widest mb-1.5">Grid System</span>
+    </div>
+
+    <!-- 12 Col Grid Visualization -->
+    <div class="grid grid-cols-12 gap-4 mb-12">
+        <div class="col-span-1 h-12 bg-white/5 border border-white/10 rounded-sm flex items-center justify-center text-[10px] font-mono text-neutral-500">1</div>
+        <div class="col-span-1 h-12 bg-white/5 border border-white/10 rounded-sm flex items-center justify-center text-[10px] font-mono text-neutral-500">2</div>
+        <div class="col-span-1 h-12 bg-white/5 border border-white/10 rounded-sm flex items-center justify-center text-[10px] font-mono text-neutral-500">3</div>
+        <div class="col-span-1 h-12 bg-white/5 border border-white/10 rounded-sm flex items-center justify-center text-[10px] font-mono text-neutral-500">4</div>
+        <div class="col-span-1 h-12 bg-white/5 border border-white/10 rounded-sm flex items-center justify-center text-[10px] font-mono text-neutral-500">5</div>
+        <div class="col-span-1 h-12 bg-white/5 border border-white/10 rounded-sm flex items-center justify-center text-[10px] font-mono text-neutral-500">6</div>
+        <div class="col-span-1 h-12 bg-white/5 border border-white/10 rounded-sm flex items-center justify-center text-[10px] font-mono text-neutral-500">7</div>
+        <div class="col-span-1 h-12 bg-white/5 border border-white/10 rounded-sm flex items-center justify-center text-[10px] font-mono text-neutral-500">8</div>
+        <div class="col-span-1 h-12 bg-white/5 border border-white/10 rounded-sm flex items-center justify-center text-[10px] font-mono text-neutral-500">9</div>
+        <div class="col-span-1 h-12 bg-white/5 border border-white/10 rounded-sm flex items-center justify-center text-[10px] font-mono text-neutral-500">10</div>
+        <div class="col-span-1 h-12 bg-white/5 border border-white/10 rounded-sm flex items-center justify-center text-[10px] font-mono text-neutral-500">11</div>
+        <div class="col-span-1 h-12 bg-white/5 border border-white/10 rounded-sm flex items-center justify-center text-[10px] font-mono text-neutral-500">12</div>
+    </div>
+
+    <!-- Layout Pattern: Metric Grid -->
+    <div class="p-8 border border-white/5 bg-[#0A0A0A]">
+        <span class="text-xs font-mono text-neutral-500 uppercase tracking-widest block mb-8">Pattern: 4 Column Metric Grid</span>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-8">
+             <!-- Metric 01 -->
+            <div class="flex flex-col group cursor-default">
+                <div class="flex items-baseline gap-2 mb-3">
+                <span class="text-4xl font-light text-white tracking-tighter group-hover:text-[#F97316] transition-colors duration-300">$500M</span>
+                </div>
+                <span class="text-xs font-semibold text-neutral-600 uppercase tracking-widest group-hover:text-white transition-colors">Metric A</span>
+            </div>
+             <!-- Metric 02 -->
+            <div class="flex flex-col group cursor-default">
+                <div class="flex items-baseline gap-2 mb-3">
+                <span class="text-4xl font-light text-white tracking-tighter group-hover:text-[#F97316] transition-colors duration-300">99%</span>
+                </div>
+                <span class="text-xs font-semibold text-neutral-600 uppercase tracking-widest group-hover:text-white transition-colors">Metric B</span>
+            </div>
+             <!-- Metric 03 -->
+            <div class="flex flex-col group cursor-default">
+                <div class="flex items-baseline gap-2 mb-3">
+                <span class="text-4xl font-light text-white tracking-tighter group-hover:text-[#F97316] transition-colors duration-300">2M+</span>
+                </div>
+                <span class="text-xs font-semibold text-neutral-600 uppercase tracking-widest group-hover:text-white transition-colors">Metric C</span>
+            </div>
+             <!-- Metric 04 -->
+             <div class="flex flex-col group cursor-default">
+                <div class="flex items-baseline gap-2 mb-3">
+                <span class="text-4xl font-light text-white tracking-tighter group-hover:text-[#F97316] transition-colors duration-300">4.9</span>
+                </div>
+                <span class="text-xs font-semibold text-neutral-600 uppercase tracking-widest group-hover:text-white transition-colors">Metric D</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Section 5: Motion -->
+<section id="motion" class="py-24 px-6 lg:px-12 max-w-[90rem] mx-auto border-t border-white/5 bg-[#050505] relative z-20">
+    <div class="flex items-end gap-4 mb-16">
+        <h2 class="text-4xl text-white font-medium">Motion & Interaction</h2>
+        <span class="text-xs font-mono text-neutral-500 uppercase tracking-widest mb-1.5">Choreography</span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Floating Card -->
+        <div class="p-8 border border-white/5 bg-[#0A0A0A] flex flex-col gap-8 items-center justify-center h-64 overflow-hidden relative">
+            <span class="absolute top-4 left-4 text-xs font-mono text-neutral-500 uppercase tracking-widest">Hover: Float & Lift</span>
+            <div class="w-24 h-32 bg-neutral-900 border border-white/10 shadow-xl floating-card cursor-pointer flex items-center justify-center text-xs text-neutral-500">
+                Hover Me
+            </div>
+        </div>
+
+        <!-- Beam Border -->
+        <div class="p-8 border border-white/5 bg-[#0A0A0A] flex flex-col gap-8 items-center justify-center h-64 relative overflow-hidden">
+            <span class="absolute top-4 left-4 text-xs font-mono text-neutral-500 uppercase tracking-widest">Ambient: Beam Border</span>
+            <div class="relative w-full h-full flex items-center justify-center">
+                <div class="beam-border-h" style="bottom: 50%;"></div>
+                <div class="beam-border-v" style="left: 50%;"></div>
+                <span class="text-xs text-neutral-700">Waiting for beam...</span>
+            </div>
+        </div>
+
+        <!-- Fade Slide In -->
+        <div class="p-8 border border-white/5 bg-[#0A0A0A] flex flex-col gap-8 items-center justify-center h-64 relative overflow-hidden">
+            <span class="absolute top-4 left-4 text-xs font-mono text-neutral-500 uppercase tracking-widest">Entrance: Fade Slide In</span>
+            <div class="w-12 h-12 bg-[#F97316] animate-on-scroll [animation:fadeSlideIn_0.8s_ease-out_0s_both] animate rounded-sm"></div>
+            <button onclick="document.querySelector('.animate-on-scroll.animate').classList.remove('animate'); setTimeout(()=>document.querySelector('.animate-on-scroll').classList.add('animate'), 100);" class="absolute bottom-4 right-4 text-[10px] text-white underline">Replay</button>
+        </div>
+    </div>
+</section>
+
+<!-- Section 6: Icons -->
+<section id="icons" class="py-24 px-6 lg:px-12 max-w-[90rem] mx-auto border-t border-white/5 bg-[#050505] relative z-20 mb-24">
+    <div class="flex items-end gap-4 mb-16">
+        <h2 class="text-4xl text-white font-medium">Iconography</h2>
+        <span class="text-xs font-mono text-neutral-500 uppercase tracking-widest mb-1.5">Solar Icons</span>
+    </div>
+    
+    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+        <div class="p-4 border border-white/5 bg-[#0A0A0A] flex items-center justify-center text-white/70 hover:text-[#F97316] transition-colors">
+            <svg aria-hidden="true" class="iconify text-2xl iconify--solar" data-icon="solar:zip-file-bold-duotone" height="24" role="img" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M4.172 3.172C3 4.343 3 6.229 3 10v4c0 3.771 0 5.657 1.172 6.828S7.229 22 11 22h2c3.771 0 5.657 0 6.828-1.172S21 17.771 21 14v-4c0-3.771 0-5.657-1.172-6.828S16.771 2 13 2h-1l-2.5.003c-2.794.02-4.324.164-5.328 1.169" fill="currentColor" opacity=".5"></path><path d="M13.5 8H12v1c0 .471 0 .707.146.854c.147.146.383.146.854.146h.5c.471 0 .707 0 .854-.146c.146-.147.146-.383.146-.854s0-.707-.146-.854C14.207 8 13.97 8 13.5 8M9.646 6.146C9.5 6.293 9.5 6.53 9.5 7s0 .707.146.854C9.793 8 10.03 8 10.5 8H12V6h-1.5c-.471 0-.707 0-.854.146M13.5 4H12v2h1.5c.471 0 .707 0 .854-.146c.146-.147.146-.383.146-.854s0-.707-.146-.854C14.207 4 13.97 4 13.5 4M12 4V2l-2.5.003V3c0 .471 0 .707.146.854C9.793 4 10.03 4 10.5 4zm-2.5 9v-.125c0-.483.392-.875.875-.875h3.25c.483 0 .875.392.875.875V13a2.5 2.5 0 0 1-5 0" fill="currentColor"></path></svg>
+        </div>
+        <div class="p-4 border border-white/5 bg-[#0A0A0A] flex items-center justify-center text-white/70 hover:text-[#F97316] transition-colors">
+            <svg aria-hidden="true" class="iconify text-2xl iconify--solar" data-icon="solar:file-download-bold-duotone" height="1em" role="img" stroke-width="2" viewBox="0 0 24 24" width="1em" xmlns="http://www.w3.org/2000/svg"><path class="" clip-rule="evenodd" d="M10 22h4c3.771 0 5.657 0 6.828-1.172S22 17.771 22 14v-.437c0-.873 0-1.529-.043-2.063h-4.052c-1.097 0-2.067 0-2.848-.105c-.847-.114-1.694-.375-2.385-1.066c-.692-.692-.953-1.539-1.067-2.386c-.105-.781-.105-1.75-.105-2.848l.01-2.834q0-.124.02-.244C11.121 2 10.636 2 10.03 2C6.239 2 4.343 2 3.172 3.172C2 4.343 2 6.229 2 10v4c0 3.771 0 5.657 1.172 6.828S6.229 22 10 22" fill="currentColor" fill-rule="evenodd" opacity=".5"></path><path class="" d="M9.013 19.047a.75.75 0 0 1-1.026 0l-2-1.875a.75.75 0 0 1 1.026-1.094l.737.69V13.5a.75.75 0 0 1 1.5 0v3.269l.737-.691a.75.75 0 0 1 1.026 1.094zM11.51 2.26l-.01 2.835c0 1.097 0 2.066.105 2.848c.114.847.375 1.694 1.067 2.385c.69.691 1.538.953 2.385 1.067c.781.105 1.751.105 2.848.105h4.052q.02.232.028.5H22c0-.268 0-.402-.01-.56a5.3 5.3 0 0 0-.958-2.641c-.094-.128-.158-.204-.285-.357C19.954 7.494 18.91 6.312 18 5.5c-.81-.724-1.921-1.515-2.89-2.161c-.832-.556-1.248-.834-1.819-1.04a6 6 0 0 0-.506-.154c-.384-.095-.758-.128-1.285-.14z" fill="currentColor"></path></svg>
+        </div>
+        <div class="p-4 border border-white/5 bg-[#0A0A0A] flex items-center justify-center text-white/70 hover:text-[#F97316] transition-colors">
+            <svg aria-hidden="true" class="iconify text-2xl iconify--solar" data-icon="solar:arrow-right-up-bold-duotone" height="1em" role="img" viewbox="0 0 24 24" width="1em" xmlns="http://www.w3.org/2000/svg"><path clip-rule="evenodd" d="M17.47 15.53a.75.75 0 0 0 1.28-.53V6a.75.75 0 0 0-.75-.75H9a.75.75 0 0 0-.53 1.28z" fill="currentColor" fill-rule="evenodd"></path><path d="M5.47 17.47a.75.75 0 1 0 1.06 1.06l6.97-6.97l-1.06-1.06z" fill="currentColor" opacity=".5"></path></svg>
+        </div>
+        <div class="p-4 border border-white/5 bg-[#0A0A0A] flex items-center justify-center text-white/70 hover:text-[#F97316] transition-colors">
+            <svg aria-hidden="true" class="iconify text-2xl iconify--solar" data-icon="solar:layers-minimalistic-bold-duotone" height="1em" role="img" viewbox="0 0 24 24" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M7.624 4.449C9.501 3.698 10.621 3.25 12 3.25s2.499.448 4.376 1.199l2.97 1.188c.954.382 1.727.69 2.258.969c.268.14.528.3.729.493c.206.198.417.498.417.901s-.21.703-.417.901c-.2.193-.46.352-.73.493c-.53.278-1.303.587-2.258.97l-2.97 1.187C14.5 12.302 13.38 12.75 12 12.75s-2.499-.448-4.376-1.199l-2.969-1.188c-.955-.382-1.728-.69-2.259-.969a3.2 3.2 0 0 1-.729-.493C1.461 8.703 1.25 8.403 1.25 8s.21-.703.417-.901c.2-.193.46-.352.73-.493c.53-.278 1.303-.587 2.258-.97z" fill="currentColor"></path><path d="M2.502 11.443L2.5 11.44a.75.75 0 0 0-1 1.119L2 12l-.5.559l.002.002l.005.004l.014.012l.045.039q.057.047.161.129c.14.108.343.256.61.429c.533.346 1.32.79 2.363 1.207l2.809 1.124l.115.046c1.877.751 2.997 1.199 4.376 1.199s2.499-.448 4.375-1.199l.116-.046L19.3 14.38a13.7 13.7 0 0 0 2.363-1.207a9 9 0 0 0 .771-.558l.045-.039l.014-.012l.005-.004l.001-.002h.002a.75.75 0 0 0-1-1.119l-.002.002l-.002.001l-.024.021l-.118.094a8 8 0 0 1-.508.357c-.46.299-1.161.697-2.105 1.074l-2.808 1.123c-2.025.81-2.874 1.138-3.934 1.138s-1.91-.328-3.934-1.138L5.257 12.99a12 12 0 0 1-2.104-1.074a8 8 0 0 1-.65-.472" fill="currentColor" opacity=".7"></path><path d="M2.499 15.5a.75.75 0 0 0-1 1.118H1.5l.002.002l.005.004l.014.012l.045.039l.161.13c.14.107.343.255.61.428c.533.346 1.32.79 2.363 1.207l2.809 1.124l.115.046c1.877.751 2.997 1.2 4.376 1.2s2.499-.449 4.375-1.2l.116-.046L19.3 18.44a13.7 13.7 0 0 0 2.363-1.208a9 9 0 0 0 .771-.558l.045-.039l.014-.012l.005-.004l.001-.001l.002-.002a.75.75 0 0 0-1-1.118l-.002.002l-.002.001l-.024.021l-.118.094a8 8 0 0 1-.508.357c-.46.299-1.161.697-2.105 1.074l-2.808 1.123c-2.025.81-2.874 1.138-3.934 1.138s-1.91-.328-3.934-1.138l-2.809-1.123a12 12 0 0 1-2.104-1.073a8 8 0 0 1-.626-.452l-.025-.02z" fill="currentColor" opacity=".4"></path></svg>
+        </div>
+        <div class="p-4 border border-white/5 bg-[#0A0A0A] flex items-center justify-center text-white/70 hover:text-[#F97316] transition-colors">
+            <svg aria-hidden="true" class="iconify text-2xl iconify--solar" data-icon="solar:graph-up-bold-duotone" height="1em" role="img" viewbox="0 0 24 24" width="1em" xmlns="http://www.w3.org/2000/svg"><path class="iconify__duotone-primary" clip-rule="evenodd" d="M5 19a1 1 0 0 1-1-1V6a1 1 0 0 1 2 0v12a1 1 0 0 1-1 1m7 0a1 1 0 0 1-1-1V9a1 1 0 0 1 2 0v9a1 1 0 0 1-1 1m7 0a1 1 0 0 1-1-1v-6a1 1 0 0 1 2 0v6a1 1 0 0 1-1 1" fill="currentColor" fill-rule="evenodd"></path><path class="iconify__duotone-secondary" d="M8.16 8.345L5.707 5.892a1 1 0 0 0-1.414 1.415l2.453 2.452c.865.865 1.298 1.298 1.71 1.315c.413.017.864-.392 1.766-1.212l1.556-1.414c.902-.82 1.353-1.23 1.766-1.213c.412.017.845.45 1.71 1.315l2.453 2.452a1 1 0 0 0 1.414-1.415l-2.453-2.452c-.865-.865-1.297-1.298-1.71-1.315c-.412-.017-.863.392-1.765 1.212l-1.557 1.414c-.901.82-1.352 1.23-1.765 1.213c-.413-.017-.845-.45-1.71-1.315z" fill="currentColor" opacity=".5"></path></svg>
+        </div>
+        <div class="p-4 border border-white/5 bg-[#0A0A0A] flex items-center justify-center text-white/70 hover:text-[#F97316] transition-colors">
+            <svg aria-hidden="true" class="iconify text-2xl iconify--solar" data-icon="solar:stars-bold-duotone" height="1em" role="img" viewbox="0 0 24 24" width="1em" xmlns="http://www.w3.org/2000/svg"><path class="iconify__duotone-primary" clip-rule="evenodd" d="M12.825 10.02c.464-1.667.696-2.5.121-3.075s-1.408-.343-3.075.12a2.2 2.2 0 0 1-1.174 0c-1.667-.463-2.5-.695-3.075-.12s-.343 1.408.12 3.075a2.2 2.2 0 0 1 0 1.174c-.463 1.667-.695 2.5-.12 3.075s1.408.343 3.075-.12a2.2 2.2 0 0 1 1.174 0c1.667.463 2.5.695 3.075.12s.343-1.408-.12-3.075a2.2 2.2 0 0 1 0-1.174" fill="currentColor" fill-rule="evenodd"></path><path class="iconify__duotone-secondary" d="M18.913 4.992c.231-.833.347-1.25.06-1.537s-.704-.172-1.538.06a1.1 1.1 0 0 1-.587 0c-.833-.232-1.25-.348-1.537-.06s-.172.704.06 1.537a1.1 1.1 0 0 1 0 .588c-.232.833-.348 1.25-.06 1.537s.704.172 1.537-.06a1.1 1.1 0 0 1 .588 0c.833.232 1.25.348 1.537.06s.172-.704-.06-1.537a1.1 1.1 0 0 1 0-.588m0 14c.231-.833.347-1.25.06-1.537s-.704-.172-1.538.06a1.1 1.1 0 0 1-.587 0c-.833-.232-1.25-.348-1.537-.06s-.172.704.06 1.537a1.1 1.1 0 0 1 0 .588c-.232.833-.348 1.25-.06 1.537s.704.172 1.537-.06a1.1 1.1 0 0 1 .588 0c.833.232 1.25.348 1.537.06s.172-.704-.06-1.537a1.1 1.1 0 0 1 0-.588" fill="currentColor" opacity=".5"></path></svg>
+        </div>
+        <div class="p-4 border border-white/5 bg-[#0A0A0A] flex items-center justify-center text-white/70 hover:text-[#F97316] transition-colors">
+            <svg aria-hidden="true" class="iconify text-2xl iconify--solar" data-icon="solar:play-bold-duotone" height="1em" role="img" viewbox="0 0 24 24" width="1em" xmlns="http://www.w3.org/2000/svg"><path clip-rule="evenodd" d="M23 12c0-1.035-.53-2.07-1.591-2.647L8.597 2.385C6.534 1.264 4 2.724 4 5.033V12z" fill="currentColor" fill-rule="evenodd"></path><path d="m8.597 21.615l12.812-6.968A2.99 2.99 0 0 0 23 12H4v6.967c0 2.31 2.534 3.769 4.597 2.648" fill="currentColor" opacity=".5"></path></svg>
+        </div>
+        <div class="p-4 border border-white/5 bg-[#0A0A0A] flex items-center justify-center text-white/70 hover:text-[#F97316] transition-colors">
+            <svg aria-hidden="true" class="iconify text-2xl iconify--solar" data-icon="solar:arrow-right-bold-duotone" height="1em" role="img" viewbox="0 0 24 24" width="1em" xmlns="http://www.w3.org/2000/svg"><path clip-rule="evenodd" d="M3.25 12a.75.75 0 0 1 .75-.75h9.25v1.5H4a.75.75 0 0 1-.75-.75" fill="currentColor" fill-rule="evenodd" opacity=".5"></path><path d="M13.25 12.75V18a.75.75 0 0 0 1.28.53l6-6a.75.75 0 0 0 0-1.06l-6-6a.75.75 0 0 0-1.28.53z" fill="currentColor"></path></svg>
+        </div>
+    </div>
+</section>
+
+<!-- Footer: Scripts -->
+<script data-img-fallback-handler="">!function(){var f=["https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/917d6f93-fb36-439a-8c48-884b67b35381_1600w.jpg","https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/4734259a-bad7-422f-981e-ce01e79184f2_1600w.jpg","https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/c543a9e1-f226-4ced-80b0-feb8445a75b9_1600w.jpg","https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/5bab247f-35d9-400d-a82b-fd87cfe913d2_1600w.webp","https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/30104e3c-5eea-4b93-93e9-5313698a7156_1600w.webp"],h=new Set;function g(s){for(var x=0,i=0;i<s.length;i++)x=(x<<5)-x+s.charCodeAt(i)|0;return f[Math.abs(x)%f.length]}function r(t){var s=t.src;if(s&&!h.has(s)){h.add(s);t.src=g(s)}}window.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG")r(t)},!0);function c(){document.querySelectorAll("img").forEach(function(i){if(i.complete&&!i.naturalWidth&&i.src)r(i)})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",c);else c()}()
+</script>
+</body>
+</html>

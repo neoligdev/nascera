@@ -1,0 +1,249 @@
+<html lang="en"><head><meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LuxeLane Dashboard</title>
+<script src="assets/resource_3fa48481346f.js"></script>
+<script src="assets/lucide_latest_2eebd0ebe8c2.js"></script>
+<link href="assets/css2_19fd9cc6b396.css" rel="stylesheet"/>
+<style>
+body { font-family: 'Inter', sans-serif; }
+::-webkit-scrollbar { width: 0px; background: transparent; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+/* Custom Tree Line Styles */
+.tree-line {
+position: absolute;
+left: 0;
+top: 0;
+bottom: 50%;
+width: 1rem;
+border-left: 1.5px solid #e7e5e4; /* stone-200 */
+border-bottom: 1.5px solid #e7e5e4;
+border-bottom-left-radius: 0.75rem;
+}
+.tree-line-last {
+height: 24px; /* Adjust based on line height */
+}
+.tree-vertical {
+position: absolute;
+left: 0;
+top: 0;
+bottom: 0;
+border-left: 1.5px solid #e7e5e4;
+}
+</style><link href="assets/css2_86e10c4bcbd4.css" id="all-fonts-link-font-geist" rel="stylesheet"/><style id="all-fonts-style-font-geist">.font-geist { font-family: 'Geist', sans-serif !important; }</style><link href="assets/css2_0fc20595ebff.css" id="all-fonts-link-font-roboto" rel="stylesheet"/><style id="all-fonts-style-font-roboto">.font-roboto { font-family: 'Roboto', sans-serif !important; }</style><link href="assets/css2_23afcbef9bdd.css" id="all-fonts-link-font-montserrat" rel="stylesheet"/><style id="all-fonts-style-font-montserrat">.font-montserrat { font-family: 'Montserrat', sans-serif !important; }</style><link href="assets/css2_82ced711bf49.css" id="all-fonts-link-font-poppins" rel="stylesheet"/><style id="all-fonts-style-font-poppins">.font-poppins { font-family: 'Poppins', sans-serif !important; }</style><link href="assets/css2_fa22aa91016e.css" id="all-fonts-link-font-playfair" rel="stylesheet"/><style id="all-fonts-style-font-playfair">.font-playfair { font-family: 'Playfair Display', serif !important; }</style><link href="assets/css2_2b2d87bc82d8.css" id="all-fonts-link-font-instrument-serif" rel="stylesheet"/><style id="all-fonts-style-font-instrument-serif">.font-instrument-serif { font-family: 'Instrument Serif', serif !important; }</style><link href="assets/css2_4fef849c83da.css" id="all-fonts-link-font-merriweather" rel="stylesheet"/><style id="all-fonts-style-font-merriweather">.font-merriweather { font-family: 'Merriweather', serif !important; }</style><link href="assets/css2_a7b22b336fe1.css" id="all-fonts-link-font-bricolage" rel="stylesheet"/><style id="all-fonts-style-font-bricolage">.font-bricolage { font-family: 'Bricolage Grotesque', sans-serif !important; }</style><link href="assets/css2_0b2072b66163.css" id="all-fonts-link-font-jakarta" rel="stylesheet"/><style id="all-fonts-style-font-jakarta">.font-jakarta { font-family: 'Plus Jakarta Sans', sans-serif !important; }</style><link href="assets/css2_9b8bf743d4a8.css" id="all-fonts-link-font-manrope" rel="stylesheet"/><style id="all-fonts-style-font-manrope">.font-manrope { font-family: 'Manrope', sans-serif !important; }</style><link href="assets/css2_8e191ef32247.css" id="all-fonts-link-font-space-grotesk" rel="stylesheet"/><style id="all-fonts-style-font-space-grotesk">.font-space-grotesk { font-family: 'Space Grotesk', sans-serif !important; }</style><link href="assets/css2_70fd47a02eed.css" id="all-fonts-link-font-work-sans" rel="stylesheet"/><style id="all-fonts-style-font-work-sans">.font-work-sans { font-family: 'Work Sans', sans-serif !important; }</style><link href="assets/css2_b52fc18295f8.css" id="all-fonts-link-font-pt-serif" rel="stylesheet"/><style id="all-fonts-style-font-pt-serif">.font-pt-serif { font-family: 'PT Serif', serif !important; }</style><link href="assets/css2_62759cd015bd.css" id="all-fonts-link-font-geist-mono" rel="stylesheet"/><style id="all-fonts-style-font-geist-mono">.font-geist-mono { font-family: 'Geist Mono', monospace !important; }</style><link href="assets/css2_f495c2faa2a6.css" id="all-fonts-link-font-space-mono" rel="stylesheet"/><style id="all-fonts-style-font-space-mono">.font-space-mono { font-family: 'Space Mono', monospace !important; }</style><link href="assets/css2_6f16cdd6fd9f.css" id="all-fonts-link-font-quicksand" rel="stylesheet"/><style id="all-fonts-style-font-quicksand">.font-quicksand { font-family: 'Quicksand', sans-serif !important; }</style><link href="assets/css2_94cb6f0c406a.css" id="all-fonts-link-font-nunito" rel="stylesheet"/><style id="all-fonts-style-font-nunito">.font-nunito { font-family: 'Nunito', sans-serif !important; }</style></head>
+<body class="bg-[#f2f0e9] min-h-screen flex items-center justify-center p-4 lg:p-8 text-stone-600">
+<!-- Main Dashboard Container -->
+<div class="bg-[#fdfcf8] w-full max-w-[1500px] h-[95vh] lg:h-auto lg:min-h-[850px] rounded-[40px] shadow-2xl shadow-stone-200/50 overflow-hidden flex flex-col lg:flex-row relative border border-stone-100">
+<!-- Sidebar -->
+<aside class="hidden lg:flex flex-col w-72 p-8 border-r border-stone-100 h-full overflow-y-auto no-scrollbar bg-[#fdfcf8]">
+<!-- Logo -->
+<div class="flex items-center gap-2 mb-10 pl-2">
+<svg class="lucide lucide-circle-slash-2" data-icon-replaced="true" data-icon-set="lucide" data-lucide="circle-slash-2" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" style="color: rgb(28, 25, 23);" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M22 2 2 22"></path><circle cx="12" cy="12" r="10"></circle></svg>
+<h1 class="text-xl font-semibold tracking-tight text-stone-900">LuxeLane</h1>
+</div>
+<!-- Navigation -->
+<nav class="space-y-1 flex-1">
+<a class="flex items-center gap-3 px-3 py-2 text-stone-500 hover:text-stone-900 hover:bg-stone-50 transition-colors rounded-lg group" href="#">
+<svg class="lucide lucide-zap w-4 h-4 group-hover:text-amber-600 transition-colors" data-lucide="zap" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"></path></svg>
+<span class="text-sm font-medium">Trending</span>
+</a>
+<!-- Active Item -->
+<a class="flex items-center gap-3 px-3 py-2 bg-stone-100 text-stone-900 rounded-lg" href="#">
+<svg class="lucide lucide-compass w-4 h-4 text-amber-600" data-lucide="compass" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"></path><circle cx="12" cy="12" r="10"></circle></svg>
+<span class="text-sm font-medium">Marketplace</span>
+</a>
+<!-- Submenu with rounded lines -->
+<div class="relative ml-5 pl-4 pt-1 space-y-1">
+<!-- Vertical connector for the group -->
+<div class="absolute left-[3px] top-0 bottom-4 w-px bg-stone-200"></div>
+<!-- Item 1 -->
+<a class="relative flex items-center gap-3 px-3 py-2 text-stone-500 hover:text-stone-900 transition-colors rounded-lg group" href="#">
+<!-- Curved Line -->
+<div class="-left-4 w-4 h-[50%] border-stone-200 rounded-bl-xl border-b border-l absolute top-0 left-[-13px]"></div>
+<span class="text-xs font-medium">New Arrivals</span>
+</a>
+<!-- Item 2 -->
+<a class="relative flex items-center gap-3 px-3 py-2 text-stone-500 hover:text-stone-900 transition-colors rounded-lg group" href="#">
+<div class="-left-4 w-4 h-[100%] border-stone-200 rounded-bl-xl border-b border-l absolute top-[-50%] left-[-13px]"></div>
+<span class="text-xs font-medium">Best Sellers</span>
+</a>
+</div>
+<!-- Apparel Section with nested tree -->
+<div class="pt-2">
+<a class="flex items-center gap-3 px-3 py-2 text-stone-500 hover:text-stone-900 hover:bg-stone-50 transition-colors rounded-lg" href="#">
+<svg class="lucide lucide-shirt w-[16px] h-[16px]" data-icon-replaced="true" data-lucide="shirt" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" style="color: rgb(28, 25, 23); width: 16px; height: 16px;" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"></path></svg>
+<span class="text-sm font-medium">Apparel</span>
+</a>
+<div class="relative ml-5 pl-4 pt-1 space-y-1">
+<div class="absolute left-[3px] top-0 bottom-6 w-px bg-stone-200"></div>
+<a class="relative flex items-center gap-3 px-3 py-2 text-stone-500 hover:text-stone-900 transition-colors rounded-lg" href="#">
+<div class="-left-4 w-4 h-[50%] border-stone-200 rounded-bl-xl border-b border-l absolute top-0 left-[-13px]"></div>
+<span class="text-xs font-medium">Outerwear</span>
+</a>
+<a class="relative flex items-center gap-3 px-3 py-2 text-stone-500 hover:text-stone-900 transition-colors rounded-lg" href="#">
+<div class="-left-4 w-4 h-[100%] border-stone-200 rounded-bl-xl border-b border-l absolute top-[-50%] left-[-13px]"></div>
+<span class="text-xs font-medium">Footwear</span>
+</a>
+<a class="relative flex items-center gap-3 px-3 py-2 text-stone-500 hover:text-stone-900 transition-colors rounded-lg" href="#">
+<!-- Elongated connector for last item -->
+<div class="-left-4 w-4 h-[200%] border-stone-200 rounded-bl-xl border-b border-l absolute top-[-150%] left-[-13px]"></div>
+<span class="text-xs font-medium">Accessories</span>
+</a>
+</div>
+</div>
+<a class="flex items-center gap-3 px-3 py-2 text-stone-500 hover:text-stone-900 hover:bg-stone-50 transition-colors rounded-lg" href="#">
+<svg class="lucide lucide-lightbulb w-4 h-4" data-lucide="lightbulb" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></svg>
+<span class="text-sm font-medium">Concepts</span>
+</a>
+</nav>
+<div class="mt-auto pt-8 border-t border-stone-100">
+<button class="flex items-center gap-3 px-3 py-2 text-stone-500 hover:text-red-500 transition-colors w-full">
+<svg class="lucide lucide-log-out w-4 h-4" data-lucide="log-out" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="m16 17 5-5-5-5"></path><path d="M21 12H9"></path><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path></svg>
+<span class="text-sm font-medium">Sign out</span>
+</button>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col h-full overflow-hidden bg-[#fdfcf8]">
+<!-- Header -->
+<header class="flex flex-col md:flex-row md:items-center gap-4 pt-8 pr-8 pb-6 pl-8 gap-x-4 gap-y-4 justify-between">
+<div class="flex items-center gap-4">
+<span class="text-4xl font-medium text-stone-900 tracking-tight">Welcome</span>
+<div class="h-8 w-[1px] bg-stone-200 mx-2"></div>
+<div class="flex flex-col">
+<span class="text-sm font-medium text-stone-900">4 total items</span>
+<span class="text-xs text-stone-400">in your shopping cart</span>
+</div>
+</div>
+<!-- Toggle -->
+<div class="bg-stone-100 p-1 rounded-full flex items-center self-start md:self-center">
+<button class="px-5 py-1.5 bg-white rounded-full shadow-sm text-xs font-medium text-stone-900 transition-all border border-stone-200/50">Dashboard</button>
+<button class="px-5 py-1.5 text-xs font-medium text-stone-500 hover:text-stone-900 transition-all">Storefront</button>
+</div>
+<!-- Right Actions -->
+<div class="flex items-center gap-6 self-end md:self-center">
+<button class="relative p-2 text-stone-400 hover:text-amber-600 transition-colors">
+<svg class="lucide lucide-shopping-bag w-5 h-5" data-lucide="shopping-bag" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M16 10a4 4 0 0 1-8 0"></path><path d="M3.103 6.034h17.794"></path><path d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z"></path></svg>
+<span class="absolute top-1 right-1 w-2 h-2 bg-amber-500 rounded-full border border-white"></span>
+</button>
+<div class="flex items-center gap-3 pl-4 border-l border-stone-200">
+<img alt="Profile" class="w-9 h-9 object-cover rounded-full ring-stone-100 ring-2" src="assets/869c479b-501e-4e6f-9066-71746e_54cbe87c9a86.webp"/>
+</div>
+</div>
+</header>
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-y-auto p-8 pt-0 no-scrollbar">
+<!-- Filter Section -->
+<div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 mt-2">
+<div class="flex items-center gap-8">
+<h2 class="text-2xl font-medium text-stone-900 tracking-tight">Marketplace</h2>
+<div class="hidden md:flex gap-6">
+<button class="text-sm font-medium text-stone-900 border-b-2 border-amber-500 pb-1">All Items</button>
+<button class="text-sm font-medium text-stone-400 hover:text-stone-900 transition-colors pb-1">Menswear</button>
+<button class="text-sm font-medium text-stone-400 hover:text-stone-900 transition-colors pb-1">Womenswear</button>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 px-4 py-2 border border-stone-200 rounded-full text-xs font-medium text-stone-600 hover:bg-stone-50 hover:border-stone-300 transition-all">
+<svg class="lucide lucide-sliders-horizontal w-3 h-3" data-lucide="sliders-horizontal" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M10 5H3"></path><path d="M12 19H3"></path><path d="M14 3v4"></path><path d="M16 17v4"></path><path d="M21 12h-9"></path><path d="M21 19h-5"></path><path d="M21 5h-7"></path><path d="M8 10v4"></path><path d="M8 12H3"></path></svg>
+                            Filters
+                        </button>
+<button class="w-9 h-9 border border-stone-200 rounded-full flex items-center justify-center text-stone-600 hover:bg-stone-50 transition-colors">
+<svg class="lucide lucide-search w-4 h-4" data-lucide="search" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>
+</button>
+</div>
+</div>
+<!-- Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pb-8">
+<!-- 1. Large Feature (Top Left, 2 cols) -->
+<div class="col-span-1 md:col-span-2 relative h-[340px] rounded-2xl overflow-hidden group cursor-pointer shadow-sm">
+<div class="absolute inset-0 bg-stone-900/10 group-hover:bg-stone-900/0 transition-colors z-10"></div>
+<img alt="Collection" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="assets/f8d4abbc-f639-43fc-bf4b-6896d9_bb0e689ae844.webp"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10"></div>
+<div class="relative z-20 p-8 flex flex-col justify-end h-full">
+<span class="text-xs font-semibold tracking-wider uppercase text-amber-200 mb-2">New Season</span>
+<h3 class="text-3xl font-medium tracking-tight text-white mb-4">Spring Beige Collection</h3>
+<div class="flex items-center gap-4">
+<button class="px-5 py-2.5 bg-white text-stone-900 rounded-full text-xs font-medium transition-all hover:bg-amber-50">View Lookbook</button>
+</div>
+</div>
+</div>
+<!-- 2. Footwear (Top Right 1, 1 col) -->
+<div class="col-span-1 h-[340px] relative rounded-2xl overflow-hidden group cursor-pointer shadow-sm">
+<img alt="Shoes" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="assets/photo-1603808033192-082d6919d3_575feea340ff.avif"/>
+<div class="absolute inset-0 bg-gradient-to-t from-stone-900/60 via-transparent to-transparent z-10"></div>
+<div class="absolute top-4 right-4 z-20">
+<button class="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-white hover:text-red-500 transition-all">
+<svg class="lucide lucide-heart w-4 h-4" data-lucide="heart" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"></path></svg>
+</button>
+</div>
+<div class="relative z-20 p-6 flex flex-col justify-end h-full">
+<h4 class="text-lg font-medium text-white">Suede Loafers</h4>
+<div class="flex items-center justify-between mt-2">
+<span class="text-xs text-stone-300">Italian Leather</span>
+<span class="text-sm font-semibold text-white">$120</span>
+</div>
+</div>
+</div>
+<!-- 3. Accessories (Top Right 2, 1 col) -->
+<div class="col-span-1 h-[340px] relative rounded-2xl overflow-hidden group cursor-pointer shadow-sm">
+<img alt="Bag" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="assets/78630153-168b-4fa7-bc57-d18c0c_38f277d6dd26.jpg"/>
+<div class="absolute inset-0 bg-gradient-to-t from-stone-900/60 via-transparent to-transparent z-10"></div>
+<div class="absolute top-4 right-4 z-20">
+<button class="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-white hover:text-red-500 transition-all">
+<svg class="lucide lucide-heart w-4 h-4" data-lucide="heart" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"></path></svg>
+</button>
+</div>
+<div class="relative z-20 p-6 flex flex-col justify-end h-full">
+<h4 class="text-lg font-medium text-white">Canvas Tote</h4>
+<div class="flex items-center justify-between mt-2">
+<span class="text-xs text-stone-300">Daily Essentials</span>
+<span class="text-sm font-semibold text-white">$85</span>
+</div>
+</div>
+</div>
+<!-- 4. Mid Banner (2 cols) -->
+<div class="col-span-1 md:col-span-2 relative h-[280px] rounded-2xl overflow-hidden group">
+<img alt="Coat" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="assets/263af9d0-601f-4f5f-835b-a58416_fcc2ff67eb87.jpg"/>
+<div class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors"></div>
+<div class="absolute inset-0 bg-gradient-to-r from-stone-900/70 to-transparent"></div>
+<div class="relative z-10 p-8 flex flex-col justify-center h-full max-w-[60%]">
+<span class="inline-block px-2 py-1 rounded bg-amber-500/20 text-amber-100 text-[10px] font-semibold tracking-wider uppercase mb-3 w-fit border border-amber-500/30">Limited Edition</span>
+<h3 class="text-2xl font-medium text-white mb-2">The Trench Coat</h3>
+<p class="text-sm text-stone-300 mb-6 font-light">Timeless elegance for the modern explorer.</p>
+<button class="self-start flex items-center gap-2 text-white text-xs font-medium hover:underline underline-offset-4">
+                                Shop Now <svg class="lucide lucide-arrow-right w-3 h-3" data-lucide="arrow-right" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+</button>
+</div>
+</div>
+<!-- 5. Portrait Tall (1 col) -->
+<div class="h-[280px] relative rounded-2xl overflow-hidden group cursor-pointer shadow-sm">
+<img alt="Jewelry" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="assets/c5586d68-15b8-4f2c-a72f-f565f7_09f0eb338e24.webp" style=""/>
+<div class="absolute inset-0 bg-gradient-to-t from-stone-900/50 via-transparent to-transparent z-10"></div>
+<div class="relative z-20 p-5 flex flex-col justify-end h-full">
+<h4 class="text-base font-medium text-white">Gold Accents</h4>
+<span class="text-xs text-stone-200 mt-1">Starting at $45</span>
+</div>
+</div>
+<!-- 6. Square (1 col) -->
+<div class="h-[280px] relative rounded-2xl overflow-hidden group cursor-pointer shadow-sm">
+<img alt="Watch" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="assets/c297f1be-dcc1-43b1-ab86-202e96_c1ea3ce2767f.webp"/>
+<div class="absolute inset-0 bg-gradient-to-t from-stone-900/50 via-transparent to-transparent z-10"></div>
+<div class="relative z-20 p-5 flex flex-col justify-end h-full">
+<h4 class="text-base font-medium text-white">Minimalist Time</h4>
+<span class="text-xs text-stone-200 mt-1">Pre-order</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<script>
+        lucide.createIcons({
+            attrs: {
+                'stroke-width': 1.5,
+                'class': "lucide"
+            }
+        });
+    </script>
+<script data-img-fallback-handler="">!function(){var f=["https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/917d6f93-fb36-439a-8c48-884b67b35381_1600w.jpg","https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/4734259a-bad7-422f-981e-ce01e79184f2_1600w.jpg","https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/c543a9e1-f226-4ced-80b0-feb8445a75b9_1600w.jpg","https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/5bab247f-35d9-400d-a82b-fd87cfe913d2_1600w.webp","https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/30104e3c-5eea-4b93-93e9-5313698a7156_1600w.webp"],h=new Set;function g(s){for(var x=0,i=0;i<s.length;i++)x=(x<<5)-x+s.charCodeAt(i)|0;return f[Math.abs(x)%f.length]}function r(t){var s=t.src;if(s&&!h.has(s)){h.add(s);t.src=g(s)}}window.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG")r(t)},!0);function c(){document.querySelectorAll("img").forEach(function(i){if(i.complete&&!i.naturalWidth&&i.src)r(i)})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",c);else c()}()</script></body></html>

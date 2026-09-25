@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Design System Showcase</title>
+    <script src="assets/resource_3fa48481346f.es"></script>
+    <script src="assets/lucide_latest_2eebd0ebe8c2.es"></script>
+    <script src="assets/iconify_654a1ef798a3.js"></script>
+    <link href="assets/css2_19fd9cc6b396.css" rel="stylesheet"/>
+    <style>
+    body { font-family: 'Inter', sans-serif; }
+    .font-geist { font-family: 'Geist', sans-serif !important; }
+    /*
+    Animation Keyframe: Content Fade In
+    */
+    @keyframes fadeSlideIn {
+    0% {
+    opacity: 0;
+    transform: translateY(30px);
+    filter: blur(8px);
+    }
+    100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0px);
+    }
+    }
+    /*
+    Animation Keyframe: Column Clip Reveal
+    */
+    @keyframes columnReveal {
+    0% {
+    clip-path: inset(0 0 100% 0);
+    opacity: 0;
+    }
+    100% {
+    clip-path: inset(0 0 0% 0);
+    opacity: 1;
+    }
+    }
+    .col-anim {
+    animation: columnReveal 1.4s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+    will-change: clip-path;
+    }
+    /* Staggered Delays for Grid Columns */
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+    .delay-4 { animation-delay: 0.4s; }
+    .delay-5 { animation-delay: 0.5s; }
+    .delay-6 { animation-delay: 0.6s; }
+    .delay-7 { animation-delay: 0.7s; }
+    /*
+    Animation on Scroll State Management
+    */
+    .animate-on-scroll { animation-play-state: paused !important; }
+    .animate-on-scroll.animate { animation-play-state: running !important; }
+    /* Animated Shiny CTA Button Styles */
+    @property --gradient-angle { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
+    @property --gradient-angle-offset { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
+    @property --gradient-percent { syntax: "<percentage>"; initial-value: 20%; inherits: false; }
+    @property --gradient-shine { syntax: "<color>"; initial-value: #dc2626; inherits: false; }
+    .shiny-cta {
+    --gradient-angle: 0deg;
+    --gradient-angle-offset: 0deg;
+    --gradient-percent: 20%;
+    --gradient-shine: #dc2626;
+    position: relative;
+    overflow: hidden;
+    border-radius: 9999px;
+    padding: 1.25rem 3rem;
+    font-size: 1.125rem;
+    line-height: 1.2;
+    font-weight: 500;
+    color: #ffffff;
+    background: linear-gradient(#000000, #000000) padding-box,
+    conic-gradient(from calc(var(--gradient-angle) - var(--gradient-angle-offset)),
+    transparent 0%, #dc2626 5%, var(--gradient-shine) 15%, #dc2626 30%, transparent 40%, transparent 100%) border-box;
+    border: 2px solid transparent;
+    box-shadow: inset 0 0 0 1px #1a1818;
+    outline: none;
+    transition: --gradient-angle-offset 800ms cubic-bezier(0.25, 1, 0.5, 1), --gradient-percent 800ms cubic-bezier(0.25, 1, 0.5, 1), --gradient-shine 800ms cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s;
+    cursor: pointer;
+    isolation: isolate;
+    outline-offset: 4px;
+    z-index: 0;
+    animation: border-spin 2.5s linear infinite;
+    }
+    @keyframes border-spin { to { --gradient-angle: 360deg; } }
+    .shiny-cta:active { transform: translateY(1px); }
+    .shiny-cta::before {
+    content: '';
+    pointer-events: none;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 0;
+    --size: calc(100% - 6px);
+    --position: 2px;
+    --space: 4px;
+    width: var(--size);
+    height: var(--size);
+    background: radial-gradient(circle at var(--position) var(--position), white 0.5px, transparent 0) padding-box;
+    background-size: var(--space) var(--space);
+    background-repeat: space;
+    mask-image: conic-gradient(from calc(var(--gradient-angle) + 45deg), black, transparent 10% 90%, black);
+    border-radius: inherit;
+    opacity: 0.4;
+    }
+    .shiny-cta::after {
+    content: '';
+    pointer-events: none;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    width: 100%;
+    aspect-ratio: 1;
+    background: linear-gradient(-50deg, transparent, #dc2626, transparent);
+    mask-image: radial-gradient(circle at bottom, transparent 40%, black);
+    opacity: 0.6;
+    animation: shimmer 4s linear infinite;
+    }
+    .shiny-cta span { position: relative; z-index: 2; display: inline-block; }
+    .shiny-cta span::before {
+    content: '';
+    pointer-events: none;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+    --size: calc(100% + 1rem);
+    width: var(--size);
+    height: var(--size);
+    box-shadow: inset 0 -1ex 2rem 4px #dc2626;
+    opacity: 0;
+    border-radius: inherit;
+    transition: opacity 800ms cubic-bezier(0.25, 1, 0.5, 1);
+    animation: breathe 4.5s linear infinite;
+    }
+    @keyframes shimmer { to { transform: translate(-50%, -50%) rotate(360deg); } }
+    @keyframes breathe {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.20); }
+    }
+    /* Progressive Blur CSS */
+    .gradient-blur {
+    position: fixed;
+    z-index: 5;
+    inset: 0 0 auto 0;
+    height: 12%;
+    pointer-events: none;
+    }
+    .gradient-blur>div, .gradient-blur::before, .gradient-blur::after { position: absolute; inset: 0; }
+    .gradient-blur::before { content: ""; z-index: 1; backdrop-filter: blur(0.5px); mask: linear-gradient(to top, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 12.5%, rgba(0, 0, 0, 1) 25%, rgba(0, 0, 0, 0) 37.5%); }
+    .gradient-blur>div:nth-of-type(1) { z-index: 2; backdrop-filter: blur(1px); mask: linear-gradient(to top, rgba(0, 0, 0, 0) 12.5%, rgba(0, 0, 0, 1) 25%, rgba(0, 0, 0, 1) 37.5%, rgba(0, 0, 0, 0) 50%); }
+    .gradient-blur>div:nth-of-type(2) { z-index: 3; backdrop-filter: blur(2px); mask: linear-gradient(to top, rgba(0, 0, 0, 0) 25%, rgba(0, 0, 0, 1) 37.5%, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0) 62.5%); }
+    .gradient-blur>div:nth-of-type(3) { z-index: 4; backdrop-filter: blur(4px); mask: linear-gradient(to top, rgba(0, 0, 0, 0) 37.5%, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 1) 62.5%, rgba(0, 0, 0, 0) 75%); }
+    .gradient-blur>div:nth-of-type(4) { z-index: 5; backdrop-filter: blur(8px); mask: linear-gradient(to top, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 1) 62.5%, rgba(0, 0, 0, 1) 75%, rgba(0, 0, 0, 0) 87.5%); }
+    .gradient-blur>div:nth-of-type(5) { z-index: 6; backdrop-filter: blur(16px); mask: linear-gradient(to top, rgba(0, 0, 0, 0) 62.5%, rgba(0, 0, 0, 1) 75%, rgba(0, 0, 0, 1) 87.5%, rgba(0, 0, 0, 0) 100%); }
+    .gradient-blur>div:nth-of-type(6) { z-index: 7; backdrop-filter: blur(32px); mask: linear-gradient(to top, rgba(0, 0, 0, 0) 75%, rgba(0, 0, 0, 1) 87.5%, rgba(0, 0, 0, 1) 100%); }
+    .gradient-blur::after { content: ""; z-index: 8; backdrop-filter: blur(64px); mask: linear-gradient(to top, rgba(0, 0, 0, 0) 87.5%, rgba(0, 0, 0, 1) 100%); }
+    </style>
+    <script>
+    (function () {
+    const once = true;
+    if (!window.__inViewIO) {
+    window.__inViewIO = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+    entry.target.classList.add("animate");
+    if (once) window.__inViewIO.unobserve(entry.target);
+    }
+    });
+    }, { threshold: 0.1, rootMargin: "0px 0px -5% 0px" });
+    }
+    window.initInViewAnimations = function (selector = ".animate-on-scroll") {
+    document.querySelectorAll(selector).forEach((el) => {
+    window.__inViewIO.observe(el);
+    });
+    };
+    document.addEventListener("DOMContentLoaded", () => initInViewAnimations());
+    })();
+    </script>
+    <meta content="font-roboto,font-montserrat,font-poppins,font-playfair,font-instrument-serif,font-merriweather,font-bricolage,font-jakarta,font-space-grotesk,font-work-sans,font-pt-serif,font-geist-mono,font-space-mono,font-quicksand,font-nunito" name="disabled-font-classes"/>
+    <style id="aura-editor-visibility-style">
+    .invisible { visibility: hidden !important; }
+    </style>
+    <script>
+    // Configure Tailwind to include our custom 3D transform utilities
+    tailwind.config = {
+    theme: {
+    extend: {
+    // Add any custom theme extensions here if needed
+    }
+    },
+    plugins: [
+    function({ addUtilities }) {
+    const rotateXUtilities = {};
+    const rotateYUtilities = {};
+    const rotateZUtilities = {};
+    const rotateValues = [0, 5, 10, 15, 20, 30, 45, 75];
+    // Generate rotate-x utilities
+    rotateValues.forEach((value) => {
+    rotateXUtilities[`.rotate-x-${value}`] = {
+    '--tw-rotate-x': `${value}deg`,
+    transform: `
+    translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+    rotateX(var(--tw-rotate-x, 0))
+    rotateY(var(--tw-rotate-y, 0))
+    rotateZ(var(--tw-rotate-z, 0))
+    skewX(var(--tw-skew-x, 0))
+    skewY(var(--tw-skew-y, 0))
+    scaleX(var(--tw-scale-x, 1))
+    scaleY(var(--tw-scale-y, 1))
+    `.replace(/\\s+/g, ' ').trim(),
+    };
+    if (value !== 0) {
+    rotateXUtilities[`.-rotate-x-${value}`] = {
+    '--tw-rotate-x': `-${value}deg`,
+    transform: `
+    translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+    rotateX(var(--tw-rotate-x, 0))
+    rotateY(var(--tw-rotate-y, 0))
+    rotateZ(var(--tw-rotate-z, 0))
+    skewX(var(--tw-skew-x, 0))
+    skewY(var(--tw-skew-y, 0))
+    scaleX(var(--tw-scale-x, 1))
+    scaleY(var(--tw-scale-y, 1))
+    `.replace(/\\s+/g, ' ').trim(),
+    };
+    }
+    });
+    // Generate rotate-y utilities
+    rotateValues.forEach((value) => {
+    rotateYUtilities[`.rotate-y-${value}`] = {
+    '--tw-rotate-y': `${value}deg`,
+    transform: `
+    translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+    rotateX(var(--tw-rotate-x, 0))
+    rotateY(var(--tw-rotate-y, 0))
+    rotateZ(var(--tw-rotate-z, 0))
+    skewX(var(--tw-skew-x, 0))
+    skewY(var(--tw-skew-y, 0))
+    scaleX(var(--tw-scale-x, 1))
+    scaleY(var(--tw-scale-y, 1))
+    `.replace(/\\s+/g, ' ').trim(),
+    };
+    if (value !== 0) {
+    rotateYUtilities[`.-rotate-y-${value}`] = {
+    '--tw-rotate-y': `-${value}deg`,
+    transform: `
+    translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+    rotateX(var(--tw-rotate-x, 0))
+    rotateY(var(--tw-rotate-y, 0))
+    rotateZ(var(--tw-rotate-z, 0))
+    skewX(var(--tw-skew-x, 0))
+    skewY(var(--tw-skew-y, 0))
+    scaleX(var(--tw-scale-x, 1))
+    scaleY(var(--tw-scale-y, 1))
+    `.replace(/\\s+/g, ' ').trim(),
+    };
+    }
+    });
+    // Generate rotate-z utilities
+    rotateValues.forEach((value) => {
+    rotateZUtilities[`.rotate-z-${value}`] = {
+    '--tw-rotate-z': `${value}deg`,
+    transform: `
+    translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+    rotateX(var(--tw-rotate-x, 0))
+    rotateY(var(--tw-rotate-y, 0))
+    rotateZ(var(--tw-rotate-z, 0))
+    skewX(var(--tw-skew-x, 0))
+    skewY(var(--tw-skew-y, 0))
+    scaleX(var(--tw-scale-x, 1))
+    scaleY(var(--tw-scale-y, 1))
+    `.replace(/\\s+/g, ' ').trim(),
+    };
+    if (value !== 0) {
+    rotateZUtilities[`.-rotate-z-${value}`] = {
+    '--tw-rotate-z': `-${value}deg`,
+    transform: `
+    translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+    rotateX(var(--tw-rotate-x, 0))
+    rotateY(var(--tw-rotate-y, 0))
+    rotateZ(var(--tw-rotate-z, 0))
+    skewX(var(--tw-skew-x, 0))
+    skewY(var(--tw-skew-y, 0))
+    scaleX(var(--tw-scale-x, 1))
+    scaleY(var(--tw-scale-y, 1))
+    `.replace(/\\s+/g, ' ').trim(),
+    };
+    }
+    });
+    // Perspective utilities
+    const perspectiveUtilities = {
+    ".perspective-none": { perspective: "none" },
+    ".perspective-dramatic": { perspective: "100px" },
+    ".perspective-near": { perspective: "300px" },
+    ".perspective-normal": { perspective: "500px" },
+    ".perspective-midrange": { perspective: "800px" },
+    ".perspective-distant": { perspective: "1200px" },
+    };
+    // Transform style utilities
+    const transformStyleUtilities = {
+    ".transform-style-preserve-3d": { "transform-style": "preserve-3d" },
+    ".transform-style-flat": { "transform-style": "flat" },
+    };
+    addUtilities({
+    ...rotateXUtilities,
+    ...rotateYUtilities,
+    ...rotateZUtilities,
+    ...perspectiveUtilities,
+    ...transformStyleUtilities,
+    });
+    }
+    ]
+    };
+    </script>
+    <link href="assets/css2_86e10c4bcbd4.css" id="all-fonts-link-font-geist" rel="stylesheet"/><style id="all-fonts-style-font-geist">
+    .font-geist { font-family: 'Geist', sans-serif !important; }
+    </style><link href="assets/css2_0fc20595ebff.css" id="all-fonts-link-font-roboto" rel="stylesheet"/><style id="all-fonts-style-font-roboto">
+    .font-roboto { font-family: 'Roboto', sans-serif !important; }
+    </style><link href="assets/css2_23afcbef9bdd.css" id="all-fonts-link-font-montserrat" rel="stylesheet"/><style id="all-fonts-style-font-montserrat">
+    .font-montserrat { font-family: 'Montserrat', sans-serif !important; }
+    </style><link href="assets/css2_82ced711bf49.css" id="all-fonts-link-font-poppins" rel="stylesheet"/><style id="all-fonts-style-font-poppins">
+    .font-poppins { font-family: 'Poppins', sans-serif !important; }
+    </style><link href="assets/css2_fa22aa91016e.css" id="all-fonts-link-font-playfair" rel="stylesheet"/><style id="all-fonts-style-font-playfair">
+    .font-playfair { font-family: 'Playfair Display', serif !important; }
+    </style><link href="assets/css2_2b2d87bc82d8.css" id="all-fonts-link-font-instrument-serif" rel="stylesheet"/><style id="all-fonts-style-font-instrument-serif">
+    .font-instrument-serif { font-family: 'Instrument Serif', serif !important; }
+    </style><link href="assets/css2_4fef849c83da.css" id="all-fonts-link-font-merriweather" rel="stylesheet"/><style id="all-fonts-style-font-merriweather">
+    .font-merriweather { font-family: 'Merriweather', serif !important; }
+    </style><link href="assets/css2_a7b22b336fe1.css" id="all-fonts-link-font-bricolage" rel="stylesheet"/><style id="all-fonts-style-font-bricolage">
+    .font-bricolage { font-family: 'Bricolage Grotesque', sans-serif !important; }
+    </style><link href="assets/css2_0b2072b66163.css" id="all-fonts-link-font-jakarta" rel="stylesheet"/><style id="all-fonts-style-font-jakarta">
+    .font-jakarta { font-family: 'Plus Jakarta Sans', sans-serif !important; }
+    </style><link href="assets/css2_9b8bf743d4a8.css" id="all-fonts-link-font-manrope" rel="stylesheet"/><style id="all-fonts-style-font-manrope">
+    .font-manrope { font-family: 'Manrope', sans-serif !important; }
+    </style><link href="assets/css2_8e191ef32247.css" id="all-fonts-link-font-space-grotesk" rel="stylesheet"/><style id="all-fonts-style-font-space-grotesk">
+    .font-space-grotesk { font-family: 'Space Grotesk', sans-serif !important; }
+    </style><link href="assets/css2_70fd47a02eed.css" id="all-fonts-link-font-work-sans" rel="stylesheet"/><style id="all-fonts-style-font-work-sans">
+    .font-work-sans { font-family: 'Work Sans', sans-serif !important; }
+    </style><link href="assets/css2_b52fc18295f8.css" id="all-fonts-link-font-pt-serif" rel="stylesheet"/><style id="all-fonts-style-font-pt-serif">
+    .font-pt-serif { font-family: 'PT Serif', serif !important; }
+    </style><link href="assets/css2_62759cd015bd.css" id="all-fonts-link-font-geist-mono" rel="stylesheet"/><style id="all-fonts-style-font-geist-mono">
+    .font-geist-mono { font-family: 'Geist Mono', monospace !important; }
+    </style><link href="assets/css2_f495c2faa2a6.css" id="all-fonts-link-font-space-mono" rel="stylesheet"/><style id="all-fonts-style-font-space-mono">
+    .font-space-mono { font-family: 'Space Mono', monospace !important; }
+    </style><link href="assets/css2_6f16cdd6fd9f.css" id="all-fonts-link-font-quicksand" rel="stylesheet"/><style id="all-fonts-style-font-quicksand">
+    .font-quicksand { font-family: 'Quicksand', sans-serif !important; }
+    </style><link href="assets/css2_94cb6f0c406a.css" id="all-fonts-link-font-nunito" rel="stylesheet"/><style id="all-fonts-style-font-nunito">
+    .font-nunito { font-family: 'Nunito', sans-serif !important; }
+    </style>
+    <style id="border-gradient-shared-style">
+    [style*="--border-gradient"]::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding: 1px;
+    border-radius: var(--border-radius-before, inherit);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    background: var(--border-gradient);
+    pointer-events: none;
+    }</style>
+    <style data-scroll-fix="true">
+    html, body {
+    overflow: auto !important;
+    overflow-x: hidden !important;
+    height: auto !important;
+    min-height: 100% !important;
+    scroll-behavior: smooth !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    }
+    .anchor-offset {
+        scroll-margin-top: 100px;
+    }
+    </style>
+</head>
+<body class="antialiased overflow-x-hidden selection:bg-red-600/30 selection:text-red-200 text-white bg-black">
+
+    <!-- Background -->
+    <div class="aura-background-component -z-10 w-full top-0 absolute h-[800px]" data-alpha-mask="80" style="mask-image: linear-gradient(transparent, black 0%, black 80%, transparent);">
+        <div class="aura-background-component top-0 w-full -z-10 absolute h-full">
+            <div class="absolute w-full h-full left-0 top-0 -z-10" data-us-project="sajpUiTp7MIKdX6daDCu"></div>
+            <script type="text/javascript">
+            !function(){if(!window.UnicornStudio){window.UnicornStudio={isInitialized:!1};var i=document.createElement("script");i.src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.4.29/dist/unicornStudio.umd.js",i.onload=function(){window.UnicornStudio.isInitialized||(UnicornStudio.init(),window.UnicornStudio.isInitialized=!0)},(document.head || document.body).appendChild(i)}}();
+            </script>
+        </div>
+    </div>
+    
+    <!-- Progressive Blur Top -->
+    <div class="gradient-blur" style="height: 120px;">
+        <div class=""></div>
+        <div class="" style=""></div>
+        <div class="" style=""></div>
+        <div class="" style=""></div>
+        <div class="" style=""></div>
+        <div class="" style=""></div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="fixed flex [animation:fadeSlideIn_1s_ease-out_1s_both] w-full z-50 pt-6 pr-4 pl-4 top-0 left-0 justify-center">
+        <nav class="shadow-black/50 flex md:gap-12 md:w-auto bg-black/60 w-full max-w-5xl rounded-none pt-2 pr-2 pb-2 pl-3 shadow-2xl backdrop-blur-lg gap-x-8 gap-y-8 items-center justify-between" style="position: relative; --border-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.2)); --border-radius-before: 0">
+            <div class="flex gap-2 shrink-0 gap-x-2 gap-y-2 items-center">
+                <div class="flex gap-x-3 gap-y-3 items-center" onclick="window.scrollTo(0,0)" role="button">
+                    <div class="grid grid-cols-2 opacity-90 w-6 h-6 gap-x-1 gap-y-1">
+                        <div class="bg-[#ef233c] w-full h-full rounded-sm"></div>
+                        <div class="w-full h-full bg-zinc-700 rounded-sm [animation:fadeSlideIn_1s_ease-out_0.3s_both] animate-on-scroll animate"></div>
+                        <div class="w-full h-full bg-zinc-800 rounded-sm"></div>
+                        <div class="w-full h-full bg-white rounded-sm shadow-[0_0_10px_rgba(255,255,255,0.4)]"></div>
+                    </div>
+                    <span class="text-xl font-bold text-white tracking-tight font-manrope">
+                        System
+                    </span>
+                </div>
+            </div>
+            <div class="hidden md:flex items-center gap-6">
+                <a class="group hover:text-white transition-colors text-sm font-medium text-gray-400 font-sans pt-1 pb-1 relative" href="#typography">
+                    Typography
+                    <span class="absolute -bottom-3 left-1/2 w-0 h-[1px] bg-gradient-to-r from-transparent via-[#ef233c] to-transparent group-hover:w-full group-hover:opacity-100 transition-all duration-300 ease-out -translate-x-1/2 shadow-[0_0_10px_rgba(239,35,60,0.8)]"></span>
+                </a>
+                <a class="group hover:text-white transition-colors text-sm font-medium text-gray-400 font-sans py-1 relative" href="#colors">
+                    Colors
+                    <span class="absolute -bottom-3 left-1/2 w-0 h-[1px] bg-gradient-to-r from-transparent via-[#ef233c] to-transparent group-hover:w-full group-hover:opacity-100 transition-all duration-300 ease-out -translate-x-1/2 shadow-[0_0_10px_rgba(239,35,60,0.8)]"></span>
+                </a>
+                <a class="group hover:text-white transition-colors text-sm font-medium text-gray-400 font-sans py-1 relative" href="#components">
+                    Components
+                    <span class="absolute -bottom-3 left-1/2 w-0 h-[1px] bg-gradient-to-r from-transparent via-[#ef233c] to-transparent group-hover:w-full group-hover:opacity-100 transition-all duration-300 ease-out -translate-x-1/2 shadow-[0_0_10px_rgba(239,35,60,0.8)]"></span>
+                </a>
+                <a class="group hover:text-white transition-colors text-sm font-medium text-gray-400 font-sans pt-1 pb-1 relative" href="#layout">Layout</a>
+                <a class="group hover:text-white transition-colors text-sm font-medium text-gray-400 font-sans pt-1 pb-1 relative" href="#motion">Motion</a>
+            </div>
+            <div class="flex gap-4 shrink-0 gap-x-4 gap-y-4 items-center">
+                <!-- Keep just a small indicator or button here -->
+            </div>
+        </nav>
+    </div>
+
+    <!-- 0) HERO SECTION (CLONE) -->
+    <section id="hero" class="h-auto min-h-[800px] flex flex-col md:pt-20 overflow-hidden w-full pt-32 relative items-center justify-start" style="mask-image: linear-gradient(180deg, transparent, black 0%, black 95%, transparent); -webkit-mask-image: linear-gradient(180deg, transparent, black 0%, black 95%, transparent);">
+        <div class="z-10 text-center max-w-5xl mt-24 mr-auto mb-12 ml-auto pr-6 pl-6 relative">
+            <!-- Badge -->
+            <div class="[animation:fadeSlideIn_1s_ease-out_0.8s_both] inline-flex transition-transform hover:scale-105 cursor-pointer group animate bg-gradient-to-br from-white/10 to-white/0 bg-gradient-to-b from-white/20 via-white/0 to-white/10 rounded-full mb-10 pt-1.5 pr-3 pb-1.5 pl-3 backdrop-blur-sm gap-x-2 gap-y-2 items-center" style="position: relative; --border-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.1)); --border-radius-before: 9999px">
+                <span class="flex h-1.5 w-1.5 rounded-full group-hover:animate-pulse bg-red-600 shadow-[0_0_10px_rgba(220,38,38,0.5)]"></span>
+                <span class="text-xs font-medium tracking-wide group-hover:text-white transition-colors font-sans text-red-100/80">
+                    Live Design System
+                </span>
+            </div>
+            <!-- Heading -->
+            <h1 class="[animation:fadeSlideIn_1s_ease-out_1s_both] animate flex flex-wrap justify-center gap-x-[0.25em] gap-y-2 leading-[1.1] md:text-8xl cursor-default text-6xl font-medium tracking-tighter font-manrope mb-8">
+                <span class="inline-blox leading-[1.3] bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/50 opacity-60">
+                    Design
+                </span>
+                <span class="inline-blox leading-[1.3] bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/50 opacity-100">
+                    System
+                </span>
+                <span class="inline-blox leading-[1.3] bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/50 opacity-60">
+                    Showcase
+                </span>
+            </h1>
+            <!-- Subtext -->
+            <p class="[animation:fadeSlideIn_1s_ease-out_1.2s_both] leading-relaxed md:text-2xl animate text-xl font-medium text-gray-400 tracking-normal font-manrope max-w-3xl mr-auto mb-12 ml-auto">
+                A living pattern library preserving the exact look & behavior of the original design.
+            </p>
+            <!-- Animated Shiny CTA Button -->
+            <div class="[animation:fadeSlideIn_1s_ease-out_1.4s_both] flex flex-col md:flex-row animate mb-12 gap-6 items-center justify-center">
+                <!-- Button 1 -->
+                <button class="group relative flex min-w-[180px] h-[50px] w-auto items-center justify-center rounded-none px-6 outline-none cursor-pointer transition-transform active:scale-95" style="background-color: rgba(255, 255, 255, 0.05); border: none;" type="button" onclick="document.getElementById('components').scrollIntoView({behavior: 'smooth'})">
+                    <div class="pointer-events-none absolute inset-0 opacity-100 transition-opacity duration-[1200ms] ease-in-out group-hover:opacity-0" style="background: radial-gradient(15% 50% at 50% 100%, rgb(255, 255, 255) 0%, rgba(255, 255, 255, 0) 100%); filter: blur(15px);"></div>
+                    <div class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-[1200ms] ease-in-out group-hover:opacity-100" style="background: radial-gradient(60.6% 50% at 50% 100%, rgb(255, 255, 255) 0%, rgba(255, 255, 255, 0) 100%); filter: blur(18px);"></div>
+                    <div class="pointer-events-none will-change-auto absolute inset-0 opacity-100 transition-opacity duration-[1200ms] ease-in-out group-hover:opacity-0" style="background: radial-gradient(10.7% 50% at 50% 100%, rgb(255, 255, 255) 0%, rgba(255, 255, 255, 0) 100%);"></div>
+                    <div class="pointer-events-none will-change-auto absolute inset-0 opacity-0 transition-opacity duration-[1200ms] ease-in-out group-hover:opacity-100" style="background: radial-gradient(60.1% 50% at 50% 100%, rgb(255, 255, 255) 0%, rgba(255, 255, 255, 0) 100%);"></div>
+                    <div class="pointer-events-none absolute inset-0 overflow-hidden rounded-none">
+                        <div class="absolute -inset-[300%] animate-[spin_4s_linear_infinite]" style="background: conic-gradient(from 90deg at 50% 50%, transparent 0%, transparent 90%, #ffffff 100%);"></div>
+                    </div>
+                    <div class="absolute inset-[1px] rounded-none" style="background-color: rgb(0, 0, 0);"></div>
+                    <span class="relative z-20 flex items-center justify-center gap-2 text-xs font-medium text-white tracking-wide uppercase">
+                        <span style="-webkit-font-smoothing: antialiased; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">View Components</span>
+                        <svg class="transition-transform duration-300 group-hover:translate-x-0.5" fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 1) TYPOGRAPHY -->
+    <section id="typography" class="anchor-offset max-w-7xl mx-auto px-6 py-20 border-t border-zinc-900">
+        <h2 class="text-xs font-mono text-[#ef233c] tracking-widest uppercase font-bold mb-12">[ 01. Typography ]</h2>
+        
+        <div class="space-y-12">
+            <!-- H1 -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 items-baseline border-b border-zinc-900 pb-8">
+                <div class="text-zinc-500 font-mono text-xs uppercase">Heading 1</div>
+                <div class="md:col-span-3">
+                    <h1 class="text-6xl md:text-8xl font-medium tracking-tighter font-manrope leading-[1.1] text-white">
+                        Design System
+                    </h1>
+                </div>
+            </div>
+
+            <!-- H2 -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 items-baseline border-b border-zinc-900 pb-8">
+                <div class="text-zinc-500 font-mono text-xs uppercase">Heading 2</div>
+                <div class="md:col-span-3">
+                    <h2 class="md:text-6xl text-5xl font-medium text-white tracking-tighter font-manrope">
+                        Real Products
+                    </h2>
+                </div>
+            </div>
+
+            <!-- H3 -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 items-baseline border-b border-zinc-900 pb-8">
+                <div class="text-zinc-500 font-mono text-xs uppercase">Heading 3</div>
+                <div class="md:col-span-3">
+                    <h3 class="text-white font-manrope text-2xl font-semibold tracking-tight uppercase">
+                        Neon Nexus
+                    </h3>
+                </div>
+            </div>
+
+            <!-- H4 -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 items-baseline border-b border-zinc-900 pb-8">
+                <div class="text-zinc-500 font-mono text-xs uppercase">Heading 4</div>
+                <div class="md:col-span-3">
+                    <h4 class="text-lg text-white font-manrope font-normal tracking-tight">
+                        Digital Strategy
+                    </h4>
+                </div>
+            </div>
+
+            <!-- Paragraph Large -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 items-baseline border-b border-zinc-900 pb-8">
+                <div class="text-zinc-500 font-mono text-xs uppercase">Paragraph (L)</div>
+                <div class="md:col-span-3">
+                    <p class="leading-relaxed md:text-2xl text-xl font-medium text-gray-400 tracking-normal font-manrope">
+                        Crafting digital experiences that merge art and technology. From branding to web development, I build it all.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Paragraph Regular -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 items-baseline pb-8">
+                <div class="text-zinc-500 font-mono text-xs uppercase">Paragraph (Reg)</div>
+                <div class="md:col-span-3">
+                    <p class="text-zinc-300 text-sm leading-relaxed font-sans">
+                        Redefining digital finance with a brutalist interface and real-time data visualization engine.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2) COLORS & SURFACES -->
+    <section id="colors" class="anchor-offset max-w-7xl mx-auto px-6 py-20 border-t border-zinc-900">
+        <h2 class="text-xs font-mono text-[#ef233c] tracking-widest uppercase font-bold mb-12">[ 02. Colors & Surfaces ]</h2>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <!-- Brand Red -->
+            <div class="space-y-3">
+                <div class="h-24 w-full bg-[#ef233c] rounded-none border border-zinc-800"></div>
+                <div class="flex justify-between text-xs font-mono">
+                    <span class="text-white">Brand Red</span>
+                    <span class="text-zinc-500">#ef233c</span>
+                </div>
+            </div>
+
+            <!-- Background -->
+            <div class="space-y-3">
+                <div class="h-24 w-full bg-black rounded-none border border-zinc-800"></div>
+                <div class="flex justify-between text-xs font-mono">
+                    <span class="text-white">Black</span>
+                    <span class="text-zinc-500">#000000</span>
+                </div>
+            </div>
+
+            <!-- Surface -->
+            <div class="space-y-3">
+                <div class="h-24 w-full bg-zinc-900/30 rounded-none border border-zinc-800"></div>
+                <div class="flex justify-between text-xs font-mono">
+                    <span class="text-white">Surface / Hover</span>
+                    <span class="text-zinc-500">zinc-900/30</span>
+                </div>
+            </div>
+             <!-- Border -->
+             <div class="space-y-3">
+                <div class="h-24 w-full bg-black rounded-none border border-zinc-800"></div>
+                <div class="flex justify-between text-xs font-mono">
+                    <span class="text-white">Border</span>
+                    <span class="text-zinc-500">zinc-800</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gradients -->
+        <div class="mt-12">
+            <h3 class="text-xs font-mono text-zinc-500 mb-6 uppercase">Gradients</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="h-32 w-full rounded-none border border-zinc-800 bg-gradient-to-b from-white via-white to-white/50 flex items-center justify-center">
+                    <span class="text-black font-medium">Text Gradient (White Fade)</span>
+                </div>
+                <div class="h-32 w-full rounded-none border border-zinc-800 flex items-center justify-center relative overflow-hidden bg-black">
+                     <span class="absolute inset-0 bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,transparent_75%,#ef233c_100%)] animate-[spin_3s_linear_infinite]"></span>
+                     <div class="absolute inset-[1px] bg-black z-10"></div>
+                     <span class="relative z-20 text-white font-medium">Beam Gradient</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3) UI COMPONENTS -->
+    <section id="components" class="anchor-offset max-w-7xl mx-auto px-6 py-20 border-t border-zinc-900">
+        <h2 class="text-xs font-mono text-[#ef233c] tracking-widest uppercase font-bold mb-12">[ 03. UI Components ]</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+            
+            <!-- Buttons -->
+            <div class="space-y-8">
+                <h3 class="text-white font-manrope text-xl">Buttons</h3>
+                
+                <!-- Glow Button -->
+                <div class="p-8 border border-zinc-800 border-dashed bg-black/50 flex flex-col gap-6 items-start">
+                     <button class="group relative flex min-w-[180px] h-[50px] w-auto items-center justify-center rounded-none px-6 outline-none cursor-pointer transition-transform active:scale-95" style="background-color: rgba(255, 255, 255, 0.05); border: none;" type="button">
+                        <div class="pointer-events-none absolute inset-0 opacity-100 transition-opacity duration-[1200ms] ease-in-out group-hover:opacity-0" style="background: radial-gradient(15% 50% at 50% 100%, rgb(255, 255, 255) 0%, rgba(255, 255, 255, 0) 100%); filter: blur(15px);"></div>
+                        <div class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-[1200ms] ease-in-out group-hover:opacity-100" style="background: radial-gradient(60.6% 50% at 50% 100%, rgb(255, 255, 255) 0%, rgba(255, 255, 255, 0) 100%); filter: blur(18px);"></div>
+                        <div class="pointer-events-none will-change-auto absolute inset-0 opacity-100 transition-opacity duration-[1200ms] ease-in-out group-hover:opacity-0" style="background: radial-gradient(10.7% 50% at 50% 100%, rgb(255, 255, 255) 0%, rgba(255, 255, 255, 0) 100%);"></div>
+                        <div class="pointer-events-none will-change-auto absolute inset-0 opacity-0 transition-opacity duration-[1200ms] ease-in-out group-hover:opacity-100" style="background: radial-gradient(60.1% 50% at 50% 100%, rgb(255, 255, 255) 0%, rgba(255, 255, 255, 0) 100%);"></div>
+                        <div class="pointer-events-none absolute inset-0 overflow-hidden rounded-none">
+                            <div class="absolute -inset-[300%] animate-[spin_4s_linear_infinite]" style="background: conic-gradient(from 90deg at 50% 50%, transparent 0%, transparent 90%, #ffffff 100%);"></div>
+                        </div>
+                        <div class="absolute inset-[1px] rounded-none" style="background-color: rgb(0, 0, 0);"></div>
+                        <span class="relative z-20 flex items-center justify-center gap-2 text-xs font-medium text-white tracking-wide uppercase">
+                            <span style="-webkit-font-smoothing: antialiased; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Primary CTA</span>
+                        </span>
+                    </button>
+                    <p class="text-xs text-zinc-500 font-mono">Primary Glow Button with Rotating Border</p>
+                </div>
+
+                <!-- Ghost/Beam Button -->
+                 <div class="p-8 border border-zinc-800 border-dashed bg-black/50 flex flex-col gap-6 items-start">
+                    <button class="group relative inline-flex min-w-[180px] h-[50px] items-center justify-center overflow-hidden rounded-none outline-none cursor-pointer transition-transform active:scale-95" style="background-color: rgba(255, 255, 255, 0.05);" type="button">
+                        <span class="absolute inset-[-100%] animate-[spin_3s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,transparent_75%,#ef233c_100%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"></span>
+                        <span class="absolute inset-0 rounded-none bg-zinc-800 transition-opacity duration-300 group-hover:opacity-0"></span>
+                        <span class="absolute inset-[1px] rounded-none bg-black z-10"></span>
+                        <span class="absolute inset-0 pointer-events-none opacity-0 transition-opacity duration-500 group-hover:opacity-100 z-10" style="background: radial-gradient(50% 50% at 50% 100%, rgba(239, 35, 60, 0.2) 0%, transparent 100%);"></span>
+                        <span class="relative z-20 flex items-center justify-center gap-2 text-xs font-medium text-white tracking-wide uppercase">
+                            <span>Secondary CTA</span>
+                        </span>
+                    </button>
+                    <p class="text-xs text-zinc-500 font-mono">Secondary Button with Red Beam on Hover</p>
+                 </div>
+            </div>
+
+            <!-- Cards -->
+            <div class="space-y-8">
+                <h3 class="text-white font-manrope text-xl">Cards</h3>
+                 <!-- Feature Card -->
+                 <div class="p-6 border border-zinc-800 bg-black flex items-center justify-between group hover:bg-zinc-900/30 transition-colors relative overflow-hidden">
+                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-[#ef233c] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-200"></div>
+                    <div class="">
+                        <span class="block text-[10px] text-zinc-600 font-mono mb-1 group-hover:text-[#ef233c] transition-colors">
+                        01
+                        </span>
+                        <h4 class="text-lg text-white font-manrope font-normal tracking-tight group-hover:translate-x-2 transition-transform duration-300">
+                        List Item Card
+                        </h4>
+                    </div>
+                    <svg class="w-4 h-4 text-zinc-700 group-hover:text-[#ef233c] transition-colors transform group-hover:rotate-[-45deg] duration-300" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+                        <path d="M5 12h14M12 5l7 7-7 7" stroke-linecap="square" stroke-linejoin="miter" stroke-width="1.5"></path>
+                    </svg>
+                </div>
+
+                <!-- Status Card -->
+                 <div class="bg-black border border-zinc-800 border-dashed relative p-8 flex flex-col justify-between group hover:border-[#ef233c]/50 transition-all duration-500 rounded-none">
+                    <!-- Corner Accents -->
+                    <div class="absolute top-0 left-0 w-2 h-2 border-t border-l border-[#ef233c]"></div>
+                    <div class="absolute top-0 right-0 w-2 h-2 border-t border-r border-[#ef233c]"></div>
+                    <div class="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-[#ef233c]"></div>
+                    <div class="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-[#ef233c]"></div>
+                    <div class="flex items-center justify-between border-b border-zinc-800 pb-4 border-dashed mb-4">
+                        <span class="font-mono text-[10px] text-[#ef233c] tracking-widest uppercase font-bold">
+                            [ System Status ]
+                        </span>
+                        <div class="flex gap-1.5">
+                            <div class="w-1.5 h-1.5 bg-[#ef233c] animate-pulse rounded-none"></div>
+                            <div class="w-1.5 h-1.5 bg-zinc-800 rounded-none"></div>
+                        </div>
+                    </div>
+                    <p class="text-zinc-400 text-sm">Tech Card with Corner Accents</p>
+                 </div>
+            </div>
+        </div>
+
+        <!-- Badges -->
+        <div class="mt-12 space-y-6">
+            <h3 class="text-white font-manrope text-xl">Badges</h3>
+            <div class="flex gap-4">
+                 <div class="inline-flex transition-transform hover:scale-105 cursor-pointer group animate bg-gradient-to-br from-white/10 to-white/0 bg-gradient-to-b from-white/20 via-white/0 to-white/10 rounded-full pt-1.5 pr-3 pb-1.5 pl-3 backdrop-blur-sm gap-x-2 gap-y-2 items-center" style="position: relative; --border-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.1)); --border-radius-before: 9999px">
+                    <span class="flex h-1.5 w-1.5 rounded-full group-hover:animate-pulse bg-red-600 shadow-[0_0_10px_rgba(220,38,38,0.5)]"></span>
+                    <span class="text-xs font-medium tracking-wide group-hover:text-white transition-colors font-sans text-red-100/80">
+                        Status Badge
+                    </span>
+                </div>
+                
+                 <div class="flex gap-0 border border-zinc-800 w-fit bg-black">
+                    <span class="px-4 py-2 text-[10px] text-zinc-300 uppercase font-mono hover:text-[#ef233c] hover:bg-white/5 transition-colors cursor-default">
+                        Tag Badge
+                    </span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4) LAYOUT -->
+    <section id="layout" class="anchor-offset max-w-7xl mx-auto px-6 py-20 border-t border-zinc-900">
+         <h2 class="text-xs font-mono text-[#ef233c] tracking-widest uppercase font-bold mb-12">[ 04. Layout Patterns ]</h2>
+         
+         <div class="space-y-12">
+            <!-- Grid Pattern -->
+             <div>
+                <h3 class="text-zinc-500 font-mono text-xs uppercase mb-4">Responsive Grid (1 col -> 2 col)</h3>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 border border-zinc-800 p-8 border-dashed">
+                    <div class="bg-zinc-900/50 h-32 flex items-center justify-center border border-zinc-700">Column 1</div>
+                    <div class="bg-zinc-900/50 h-32 flex items-center justify-center border border-zinc-700">Column 2</div>
+                </div>
+             </div>
+
+             <!-- Split Pattern -->
+             <div>
+                <h3 class="text-zinc-500 font-mono text-xs uppercase mb-4">Hero Content Structure</h3>
+                <div class="flex flex-col items-center justify-center text-center border border-zinc-800 p-8 border-dashed bg-black">
+                    <div class="w-1/2 h-8 bg-zinc-800 mb-4 rounded"></div>
+                    <div class="w-1/3 h-4 bg-zinc-900 mb-8 rounded"></div>
+                    <div class="flex gap-4">
+                        <div class="w-32 h-10 bg-zinc-800 rounded"></div>
+                        <div class="w-32 h-10 bg-zinc-900 rounded"></div>
+                    </div>
+                </div>
+             </div>
+         </div>
+    </section>
+
+     <!-- 5) MOTION -->
+    <section id="motion" class="anchor-offset max-w-7xl mx-auto px-6 py-20 border-t border-zinc-900 mb-20">
+        <h2 class="text-xs font-mono text-[#ef233c] tracking-widest uppercase font-bold mb-12">[ 05. Motion & Interaction ]</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Fade Slide In -->
+             <div class="p-6 border border-zinc-800 border-dashed">
+                <h3 class="text-zinc-500 font-mono text-xs uppercase mb-4">fadeSlideIn</h3>
+                <div class="w-20 h-20 bg-[#ef233c] animate-[fadeSlideIn_1s_ease-out_both] infinite"></div>
+                <p class="text-xs text-zinc-600 mt-4">Class: <code>[animation:fadeSlideIn_1s_ease-out_both]</code></p>
+             </div>
+
+             <!-- Pulse -->
+             <div class="p-6 border border-zinc-800 border-dashed">
+                <h3 class="text-zinc-500 font-mono text-xs uppercase mb-4">pulse</h3>
+                <div class="w-20 h-20 bg-zinc-700 rounded-full animate-pulse"></div>
+                <p class="text-xs text-zinc-600 mt-4">Class: <code>animate-pulse</code></p>
+             </div>
+
+             <!-- Spin -->
+             <div class="p-6 border border-zinc-800 border-dashed">
+                <h3 class="text-zinc-500 font-mono text-xs uppercase mb-4">spin</h3>
+                <div class="w-20 h-20 border-2 border-[#ef233c] border-t-transparent rounded-full animate-spin"></div>
+                <p class="text-xs text-zinc-600 mt-4">Class: <code>animate-spin</code></p>
+             </div>
+        </div>
+    </section>
+
+    <!-- 6) ICONS -->
+    <section id="icons" class="anchor-offset max-w-7xl mx-auto px-6 py-20 border-t border-zinc-900 mb-20">
+        <h2 class="text-xs font-mono text-[#ef233c] tracking-widest uppercase font-bold mb-12">[ 06. Icons ]</h2>
+        <div class="grid grid-cols-2 md:grid-cols-6 gap-8 text-white">
+            <div class="flex flex-col items-center gap-4 p-6 border border-zinc-800 border-dashed">
+                <svg class="lucide lucide-arrow-right w-6 h-6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                <span class="text-xs text-zinc-500 font-mono">arrow-right</span>
+            </div>
+             <div class="flex flex-col items-center gap-4 p-6 border border-zinc-800 border-dashed">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="square" stroke-linejoin="miter" stroke-width="2"></path></svg>
+                <span class="text-xs text-zinc-500 font-mono">arrow-up-right</span>
+            </div>
+             <div class="flex flex-col items-center gap-4 p-6 border border-zinc-800 border-dashed">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="square" stroke-linejoin="miter" stroke-width="2"></path></svg>
+                <span class="text-xs text-zinc-500 font-mono">chevron-right</span>
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>

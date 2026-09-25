@@ -1,0 +1,1 @@
+import{C as s}from"./query-BYnN4WbX.js";import{a,o as r}from"./index-BkkK_w59.js";import m from"./AcademyPass-Bg0PCd_6.js";import e from"./FAQSection-CSQCQ8_o.js";var i=s(),o=()=>(0,i.jsxs)("div",{className:"min-h-screen",children:[(0,i.jsx)(r,{}),(0,i.jsxs)("main",{className:"pt-24",children:[(0,i.jsx)(m,{}),(0,i.jsx)(e,{})]}),(0,i.jsx)(a,{})]});export{o as default};

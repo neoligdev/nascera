@@ -1,0 +1,1280 @@
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Finex — Design System</title>
+<script src="assets/resource_3fa48481346f.es"></script>
+<script src="assets/lucide_latest_2eebd0ebe8c2.es"></script>
+<style>
+.invisible { visibility: hidden !important; }
+</style>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="assets/css2_19fd9cc6b396.css" rel="stylesheet"/>
+<style>
+::-webkit-scrollbar { display: none; }
+body { -ms-overflow-style: none; scrollbar-width: none; }
+html { scroll-behavior: smooth; }
+</style>
+<meta content="font-roboto,font-montserrat,font-poppins,font-playfair,font-instrument-serif,font-merriweather,font-bricolage,font-jakarta,font-manrope,font-space-grotesk,font-work-sans,font-pt-serif,font-geist-mono,font-space-mono,font-nunito,font-geist,font-quicksand,font-dm-sans,font-google-sans-flex" name="disabled-font-classes"/>
+<style>
+@keyframes fadeInUp { 0% { opacity: 0; transform: translateY(30px); } 100% { opacity: 1; transform: translateY(0); } }
+@keyframes blurIn { 0% { opacity: 0; filter: blur(15px); transform: scale(0.95); } 100% { opacity: 1; filter: blur(0); transform: scale(1); } }
+.scroll-item { animation-duration: 0.8s; animation-fill-mode: both; animation-play-state: paused; animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+.scroll-fade-up { animation-name: fadeInUp; }
+.scroll-blur-in { animation-name: blurIn; }
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-500 { animation-delay: 500ms; }
+</style>
+<link href="assets/css2_6c160a0c4e6f.css" id="all-fonts-link-font-newsreader" rel="stylesheet"/>
+<style id="all-fonts-style-font-newsreader">.font-newsreader { font-family: 'Newsreader', serif !important; }</style>
+<link href="assets/css2_176e25227b5e.css" id="all-fonts-link-font-oswald" rel="stylesheet"/>
+<style id="all-fonts-style-font-oswald">.font-oswald { font-family: 'Oswald', sans-serif !important; }</style>
+<link href="assets/css2_bd311904ea29.css" id="all-fonts-link-font-cormorant" rel="stylesheet"/>
+<style id="all-fonts-style-font-cormorant">.font-cormorant { font-family: 'Cormorant Garamond', serif !important; }</style>
+<style data-scroll-fix="true">
+html, body { overflow: auto !important; overflow-x: hidden !important; height: auto !important; min-height: 100% !important; opacity: 1 !important; visibility: visible !important; }
+body, .wrapper, main, #__next, #app, .page, .content { opacity: 1 !important; visibility: visible !important; }
+.loader, .preloader, .loading, [class*="loader"], [class*="preloader"] { display: none !important; opacity: 0 !important; }
+.scroll-item { opacity: 1 !important; visibility: visible !important; }
+.opacity-0, [class*="opacity-0"] { opacity: 1 !important; }
+</style>
+<style>
+@keyframes beam-spin { to { transform: rotate(360deg); } }
+@keyframes lines-slide { 0% { background-position: 0 0; } 100% { background-position: 24px 0; } }
+@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+@keyframes draw-path-loop { 0% { stroke-dashoffset: 1000; opacity: 0; } 5% { opacity: 1; } 40% { stroke-dashoffset: 0; } 90% { stroke-dashoffset: 0; opacity: 1; } 100% { stroke-dashoffset: 0; opacity: 0; } }
+@keyframes width-grow-loop { 0% { width: 0; opacity: 1; } 40% { width: var(--target-width); } 90% { width: var(--target-width); opacity: 1; } 100% { width: var(--target-width); opacity: 0; } }
+@keyframes fade-in-up-loop { 0% { opacity: 0; transform: translateY(10px); } 20% { opacity: 1; transform: translateY(0); } 90% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(0); } }
+@keyframes scale-in-loop { 0% { transform: scale(0.8); opacity: 0; } 20% { transform: scale(1); opacity: 1; } 90% { transform: scale(1); opacity: 1; } 100% { transform: scale(1); opacity: 0; } }
+@keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes spin-slow-reverse { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+.animate-draw { stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: draw-path-loop 6s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
+.animate-width { width: 0; animation: width-grow-loop 6s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
+.animate-fade-up { opacity: 0; animation: fade-in-up-loop 6s ease-out infinite; }
+.animate-scale { opacity: 0; animation: scale-in-loop 6s cubic-bezier(0.175, 0.885, 0.32, 1.275) infinite; }
+.animate-marquee { animation: marquee 25s linear infinite; }
+
+.ds-type-row { display: flex; align-items: baseline; justify-content: space-between; padding: 1.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); gap: 2rem; }
+.ds-type-label { min-width: 120px; flex-shrink: 0; }
+.ds-type-preview { flex: 1; min-width: 0; }
+.ds-type-spec { flex-shrink: 0; text-align: right; min-width: 100px; }
+.ds-swatch { width: 100%; aspect-ratio: 1; border-radius: 1rem; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: flex-end; padding: 0.75rem; }
+.ds-surface-card { border-radius: 1.5rem; padding: 2rem; border: 1px solid rgba(255,255,255,0.1); min-height: 140px; display: flex; flex-direction: column; justify-content: flex-end; }
+.ds-motion-cell { border-radius: 1.5rem; padding: 2rem; border: 1px solid rgba(255,255,255,0.1); background: #0A0A0C; min-height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; overflow: hidden; position: relative; }
+</style>
+<style id="border-gradient-shared-style">
+[style*="--border-gradient"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: var(--border-radius-before, inherit);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  background: var(--border-gradient);
+  pointer-events: none;
+}
+</style>
+</head>
+<body class="antialiased overflow-x-hidden selection:bg-primary selection:text-black text-white bg-[#000000]">
+
+<!-- Background (same as original) -->
+<div class="aura-background-component -z-10 w-full top-0 absolute h-[800px] saturate-150 brightness-125" data-alpha-mask="50" style="mask-image: linear-gradient(transparent, black 0%, black 50%, transparent);">
+<div class="aura-background-component top-0 w-full -z-10 absolute h-full">
+<div class="absolute w-full h-full left-0 top-0 -z-10" data-us-project="HzcaAbRLaALMhHJp8gLY"></div>
+<script type="text/javascript">
+          !function(){if(!window.UnicornStudio){window.UnicornStudio={isInitialized:!1};var i=document.createElement("script");i.src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.4.29/dist/unicornStudio.umd.js",i.onload=function(){window.UnicornStudio.isInitialized||(UnicornStudio.init(),window.UnicornStudio.isInitialized=!0)},(document.head || document.body).appendChild(i)}}();
+        </script>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECTION 0 — HERO (Exact Clone, Text Adapted)
+     ═══════════════════════════════════════════════════════════════ -->
+
+<!-- Navigation -->
+<nav class="flex z-50 fixed w-full pt-6 pr-4 pl-4 top-0 right-0 left-0 items-center justify-center">
+<div class="flex scroll-item scroll-fade-up bg-black/90 w-full max-w-5xl border-white/10 border rounded-full pt-1 pr-2 pb-1 pl-1 relative shadow-2xl backdrop-blur-md items-center justify-between" style="animation-play-state: running">
+<a class="inline-flex items-center justify-center bg-center w-[130px] h-[50px] bg-[url(https://cdn.midjourney.com/405c2b1c-c585-45e3-be19-65cdcd2d9e46/0_0.png?w=800&q=80)] bg-cover rounded-full" href="#hero"></a>
+<div class="hidden md:flex gap-8 -translate-x-1/2 absolute left-1/2 gap-x-4 gap-y-4 items-center">
+<a class="text-[14px] hover:text-gray-300 transition-colors font-medium text-white tracking-wide font-sans" href="#typography">Typography</a>
+<a class="text-[14px] hover:text-gray-300 transition-colors font-medium text-white tracking-wide font-sans" href="#colors">Colors</a>
+<a class="text-[14px] hover:text-gray-300 transition-colors font-medium text-white tracking-wide font-sans" href="#components">Components</a>
+<a class="text-[14px] hover:text-gray-300 transition-colors font-medium text-white tracking-wide font-sans" href="#motion">Motion</a>
+</div>
+<div class="flex gap-x-4 gap-y-4 items-center">
+<button class="md:hidden p-2 text-white">
+<svg class="lucide lucide-menu" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg>
+</button>
+<a class="hidden md:flex group transition-all duration-300 hover:bg-blue-500/10 hover:border-blue-400 hover:shadow-[0_0_35px_rgba(59,130,246,0.6),inset_0_0_20px_rgba(59,130,246,0.4)] hover:scale-[1.02] items-center justify-center bg-black/60 border-blue-500 border rounded-full pt-2.5 pr-6 pb-2.5 pl-6 shadow-[0_0_20px_rgba(59,130,246,0.5),inset_0_0_10px_rgba(59,130,246,0.2)]" href="#icons">
+<span class="uppercase text-[13px] transition-colors group-hover:text-white font-semibold text-white/90 tracking-tight font-sans z-10 relative">VIEW ICONS</span>
+</a>
+</div>
+</div>
+</nav>
+
+<!-- Hero Content -->
+<main class="flex flex-col z-10 pt-40 pr-6 pl-6 relative items-center justify-center" id="hero">
+<!-- Version Badge -->
+<div class="inline-flex hover:bg-white/10 transition-colors cursor-pointer group scroll-item scroll-fade-up bg-white/5 border-white/10 border rounded-full mb-8 pt-1.5 pr-3 pb-1.5 pl-3 backdrop-blur-sm items-center" style="animation-play-state: running">
+<span class="bg-blue-500/20 text-blue-400 rounded px-1.5 py-0.5 text-[10px] font-medium tracking-wide font-sans">DS</span>
+<span class="text-xs text-gray-300 font-medium group-hover:text-white transition-colors pr-1 font-sans">Finex Design System v2.0</span>
+<svg aria-hidden="true" class="lucide lucide-arrow-right w-3 h-3 text-gray-500 group-hover:text-white transition-colors" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+</div>
+<!-- Headline -->
+<h1 class="text-center text-5xl md:text-7xl leading-[1.1] max-w-4xl mx-auto font-oswald font-light tracking-tight scroll-item scroll-blur-in delay-100" style="animation-play-state: running;">
+Design System.
+<span class="font-light text-blue-500 tracking-tight font-oswald">Finex.</span>
+</h1>
+<!-- Subheadline -->
+<p class="text-center text-xl text-gray-400 mt-8 max-w-2xl mx-auto leading-relaxed font-light font-sans scroll-item scroll-fade-up delay-200" style="animation-play-state: running;">
+The complete visual language, component library, and interaction
+patterns that define the Finex finance experience.
+</p>
+<!-- CTA Buttons -->
+<div class="flex flex-col sm:flex-row gap-4 scroll-item scroll-fade-up delay-300 mt-10 gap-x-4 gap-y-4 items-center" style="animation-play-state: running">
+<button class="group inline-flex overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_40px_-10px_rgba(59,130,246,0.5)] focus:outline-none sm:w-auto text-sm font-medium text-white w-full h-[54px] rounded-full pt-4 pr-8 pb-4 pl-8 relative items-center justify-center" style="position: relative; --border-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.2)); --border-radius-before: 9999px">
+<div class="absolute inset-0 -z-20 rounded-full overflow-hidden p-[1px]">
+<div class="absolute inset-[-100%] bg-[conic-gradient(from_0deg,transparent_0_300deg,#3b82f6_360deg)]" style="animation: beam-spin 3s linear infinite;"></div>
+<div class="absolute inset-[1px] rounded-full bg-[#050505]"></div>
+</div>
+<div class="overflow-hidden bg-[#0A0A0A] rounded-full absolute top-[2px] right-[2px] bottom-[2px] left-[2px]">
+<div class="bg-gradient-to-b from-blue-900/20 to-transparent absolute top-0 right-0 bottom-0 left-0"></div>
+<div class="opacity-[0.07] mix-blend-plus-lighter absolute top-0 right-0 bottom-0 left-0" style="background-image: repeating-linear-gradient(90deg, #fff, #fff 1px, transparent 1px, transparent 8px); background-size: 24px 100%; animation: lines-slide 1.5s linear infinite;"></div>
+<div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-2/3 h-1/2 bg-blue-500/20 blur-2xl rounded-full pointer-events-none transition-colors duration-500 group-hover:bg-blue-500/40"></div>
+</div>
+<span class="transition-colors group-hover:text-white uppercase font-semibold text-white/90 tracking-tight z-10 relative font-sans">Start free</span>
+<svg class="lucide lucide-arrow-right relative z-10 ml-2 transition-transform duration-300 group-hover:translate-x-1" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+</button>
+<button class="sm:w-auto hover:bg-blue-500/10 hover:border-blue-400 hover:shadow-[0_0_35px_rgba(59,130,246,0.6),inset_0_0_20px_rgba(59,130,246,0.4)] hover:scale-[1.02] transition-all duration-300 flex group text-base font-medium text-white bg-black/60 w-full border-blue-500 border rounded-full pt-3.5 pr-8 pb-3.5 pl-8 shadow-[0_0_20px_rgba(59,130,246,0.5),inset_0_0_10px_rgba(59,130,246,0.2)] gap-x-2 gap-y-2 items-center justify-center">
+<svg aria-hidden="true" class="lucide lucide-play-circle w-4 h-4 text-blue-400 group-hover:text-blue-300 transition-colors" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M9 9.003a1 1 0 0 1 1.517-.859l4.997 2.997a1 1 0 0 1 0 1.718l-4.997 2.997A1 1 0 0 1 9 14.996z"></path><circle cx="12" cy="12" r="10"></circle></svg>
+Watch Demo
+</button>
+</div>
+
+<!-- Visual / Desktop Window Mockup -->
+<div class="flex scroll-item scroll-blur-in delay-500 w-full h-[800px] max-w-[1440px] mt-20 mr-auto ml-auto relative items-center justify-center" style="animation-play-state: running;">
+<div class="flex overflow-hidden z-30 bg-[#0A0A0C] w-full h-[700px] max-w-6xl border-white/10 border ring-white/5 ring-1 rounded-2xl mr-6 ml-6 relative shadow-2xl font-sans text-gray-400 select-none">
+<!-- Sidebar -->
+<aside class="w-64 border-r border-white/5 bg-[#0A0A0C] flex flex-col hidden md:flex">
+<div class="h-16 flex items-center px-6 gap-3 mb-2">
+<span class="text-lg font-bold text-white tracking-tight font-oswald">Finex</span>
+</div>
+<nav class="flex-1 px-3 space-y-1 overflow-y-auto">
+<div class="px-3 py-2 text-[10px] font-medium text-gray-600 uppercase tracking-widest">Platform</div>
+<a class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-white bg-white/5 rounded-md transition-all group border border-white/5" href="#">
+<svg class="lucide lucide-layout-grid" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><rect height="7" rx="1" width="7" x="3" y="3"></rect><rect height="7" rx="1" width="7" x="14" y="3"></rect><rect height="7" rx="1" width="7" x="14" y="14"></rect><rect height="7" rx="1" width="7" x="3" y="14"></rect></svg>
+Dashboard
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-md transition-all group" href="#">
+<svg class="lucide lucide-wallet" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"></path><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"></path></svg>
+Transactions
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-md transition-all group" href="#">
+<svg class="lucide lucide-credit-card" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><rect height="14" rx="2" width="20" x="2" y="5"></rect><line x1="2" x2="22" y1="10" y2="10"></line></svg>
+Cards
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-md transition-all group" href="#">
+<svg class="lucide lucide-arrow-left-right" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M8 3 4 7l4 4"></path><path d="M4 7h16"></path><path d="m16 21 4-4-4-4"></path><path d="M20 17H4"></path></svg>
+Transfers
+</a>
+<div class="px-3 py-2 mt-4 text-[10px] font-medium text-gray-600 uppercase tracking-widest">Growth</div>
+<a class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-md transition-all group" href="#">
+<svg class="lucide lucide-bar-chart-2" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><line x1="18" x2="18" y1="20" y2="10"></line><line x1="12" x2="12" y1="20" y2="4"></line><line x1="6" x2="6" y1="20" y2="14"></line></svg>
+Analytics
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-md transition-all group" href="#">
+<svg class="lucide lucide-pie-chart" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+Reports
+</a>
+</nav>
+<div class="p-4 border-t border-white/5">
+<div class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 cursor-pointer transition-colors group">
+<img alt="User" class="w-8 h-8 rounded-full border border-white/10" src="assets/photo-1534528741775-53994a69da_70f6ed613e62.jpg"/>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-medium text-white truncate group-hover:text-indigo-400 transition-colors">Alex Morgan</p>
+<p class="text-xs text-gray-500 truncate">Pro Plan</p>
+</div>
+<svg class="lucide lucide-settings text-gray-500 group-hover:text-white transition-colors" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.47a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col bg-[#050505] relative overflow-hidden">
+<header class="h-16 border-b border-white/5 flex items-center justify-between px-8 bg-[#0A0A0C]/80 backdrop-blur-xl z-20 sticky top-0">
+<div>
+<h1 class="text-sm font-medium text-gray-400">Overview</h1>
+<div class="flex items-center gap-2"><span class="text-white font-semibold tracking-tight">Dashboard</span></div>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex items-center px-3 py-1.5 bg-white/5 border border-white/10 rounded-full gap-2 hover:bg-white/10 transition-colors cursor-pointer">
+<div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)] animate-pulse"></div>
+<span class="text-xs font-medium text-gray-300">Live Updates</span>
+</div>
+<div class="h-6 w-px bg-white/10"></div>
+<button class="relative p-2 text-gray-400 hover:text-white transition-colors rounded-full hover:bg-white/5">
+<div class="absolute top-2 right-2 w-1.5 h-1.5 bg-indigo-500 rounded-full border border-[#0A0A0C]"></div>
+<svg class="lucide lucide-bell" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+</button>
+<button class="flex items-center gap-2 px-3 py-1.5 bg-white text-black text-xs font-semibold rounded-md hover:bg-gray-200 transition-colors shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+<svg class="lucide lucide-plus" fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewbox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+New Transfer
+</button>
+</div>
+</header>
+<div class="flex-1 overflow-y-auto scrollbar-hide md:pt-0 pt-6 pr-6 pb-6 pl-6 space-y-6">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-4">
+<!-- Total Balance -->
+<div class="p-5 rounded-xl bg-[#0A0A0C] border border-white/10 shadow-lg relative group overflow-hidden hover:border-white/20 transition-all">
+<div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+<svg class="lucide lucide-wallet text-white" fill="none" height="64" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" width="64" xmlns="http://www.w3.org/2000/svg"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"></path><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"></path></svg>
+</div>
+<p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Total Balance</p>
+<h3 class="text-2xl font-semibold text-white tracking-tight mb-2 font-oswald">$124,500.20</h3>
+<div class="flex items-center gap-2">
+<span class="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[11px] font-medium border border-emerald-500/20 flex items-center gap-1">
+<svg class="lucide lucide-trending-up" fill="none" height="12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="12" xmlns="http://www.w3.org/2000/svg"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg> 12.5%
+</span>
+<span class="text-[11px] text-gray-600">vs last month</span>
+</div>
+</div>
+<!-- Monthly Spend -->
+<div class="p-5 rounded-xl bg-[#0A0A0C] border border-white/10 shadow-lg relative group overflow-hidden hover:border-white/20 transition-all">
+<div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+<svg class="lucide lucide-credit-card text-indigo-500" fill="none" height="64" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" width="64" xmlns="http://www.w3.org/2000/svg"><rect height="14" rx="2" width="20" x="2" y="5"></rect><line x1="2" x2="22" y1="10" y2="10"></line></svg>
+</div>
+<p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Monthly Spend</p>
+<h3 class="text-2xl font-semibold text-white tracking-tight mb-2 font-oswald">$8,240.50</h3>
+<div class="flex items-center gap-2">
+<span class="px-1.5 py-0.5 rounded bg-white/5 text-gray-300 text-[11px] font-medium border border-white/10 flex items-center gap-1">+2.1%</span>
+<span class="text-[11px] text-gray-600">vs last month</span>
+</div>
+</div>
+<!-- Active Card -->
+<div class="overflow-hidden group cursor-pointer text-white bg-gradient-to-br from-indigo-600 to-indigo-700 border-blue-500/30 border rounded-xl pt-5 pr-5 pb-5 pl-5 relative shadow-lg">
+<div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:bg-white/20 transition-colors"></div>
+<div class="relative z-10 flex flex-col h-full justify-between">
+<div class="flex justify-between items-start">
+<div><p class="text-[10px] font-medium text-indigo-200 uppercase tracking-wider mb-1">Active Card</p><h3 class="text-xl font-medium tracking-tight">Visa Infinite</h3></div>
+<svg class="lucide lucide-wifi text-indigo-200 opacity-80" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M12 20h.01"></path><path d="M2 8.82a15 15 0 0 1 20 0"></path><path d="M5 12.859a10 10 0 0 1 14 0"></path><path d="M8.5 16.429a5 5 0 0 1 7 0"></path></svg>
+</div>
+<div class="flex items-end justify-between mt-2">
+<span class="font-mono text-sm tracking-widest opacity-80">•••• 4242</span>
+<span class="text-[10px] font-bold bg-white/20 px-2 py-0.5 rounded border border-white/10 backdrop-blur-md">Active</span>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-[#0A0A0C] border-white/10 border rounded-xl pt-3 pr-3 pb-3 pl-3 shadow-lg">
+<div class="flex flex-col md:flex-row items-center justify-between gap-6">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500 flex items-center justify-center text-white shadow-lg">
+<svg class="lucide lucide-send ml-0.5" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>
+</div>
+<div><h4 class="text-sm font-medium text-white">Quick Transfer</h4><p class="text-xs text-gray-500">Send money instantly to recent contacts</p></div>
+</div>
+<div class="flex items-center gap-3 w-full md:w-auto overflow-x-auto md:overflow-visible pb-2 md:pb-0">
+<div class="flex -space-x-3 shrink-0">
+<img alt="Contact" class="w-9 h-9 rounded-full border-2 border-[#0A0A0C] cursor-pointer hover:z-10 hover:scale-110 transition-transform" src="assets/photo-1494790108377-be9c29b293_a50aed98b756.jpg"/>
+<img alt="Contact" class="w-9 h-9 rounded-full border-2 border-[#0A0A0C] cursor-pointer hover:z-10 hover:scale-110 transition-transform" src="assets/photo-1599566150163-29194dcaad_cec63f5d3ec6.jpg"/>
+<img alt="Contact" class="w-9 h-9 rounded-full border-2 border-[#0A0A0C] cursor-pointer hover:z-10 hover:scale-110 transition-transform" src="assets/photo-1535713875002-d1d0cf377f_190b69f0adfa.jpg"/>
+<div class="w-9 h-9 rounded-full border-2 border-[#0A0A0C] bg-white/10 flex items-center justify-center text-[10px] text-white font-medium cursor-pointer hover:bg-white/20 transition-colors z-0">+4</div>
+</div>
+<div class="h-8 w-px bg-white/10 mx-2 shrink-0"></div>
+<div class="relative shrink-0">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">$</span>
+<input class="w-24 md:w-32 bg-[#111] border border-white/10 rounded-lg py-1.5 pl-6 pr-3 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors" type="text" value="0.00"/>
+</div>
+<button class="px-4 py-1.5 bg-white text-black text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors shrink-0">Send</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+</main>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     DESIGN SYSTEM SECTIONS
+     ═══════════════════════════════════════════════════════════════ -->
+
+<section class="z-10 w-full max-w-7xl mt-32 mr-auto mb-24 ml-auto px-6 relative space-y-0">
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECTION 1 — TYPOGRAPHY
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="typography" class="flex flex-col bg-[#0A0A0C] border-[#ffffff]/10 border rounded-3xl mt-24 mb-24 pt-8 pr-8 pb-16 pl-8 gap-y-10">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-8 w-full">
+<div class="flex flex-col gap-6 max-w-3xl">
+<div class="flex gap-3 gap-x-3 gap-y-3 items-center scroll-item scroll-fade-up" style="animation-play-state: running">
+<span class="flex items-center justify-center w-7 h-7 rounded-lg bg-blue-500/10 text-[11px] font-mono font-medium text-blue-400 border border-blue-500/20 shadow-[0_0_10px_rgba(59,130,246,0.2)] font-sans">01</span>
+<span class="text-sm font-medium tracking-widest uppercase text-gray-500 font-sans">Typography</span>
+</div>
+<h2 class="text-4xl md:text-5xl lg:text-6xl text-white leading-[1.1] font-oswald font-light tracking-tight scroll-item scroll-fade-up delay-100" style="animation-play-state: running;">
+Type Scale
+<span class="text-gray-600 font-oswald font-light tracking-tight">& Hierarchy</span>
+</h2>
+<p class="leading-relaxed text-lg font-light text-gray-400 max-w-xl scroll-item scroll-fade-up delay-200" style="animation-play-state: running;">
+Every typographic style used across Finex, from display headings to micro labels, rendered with exact original classes.
+</p>
+</div>
+</div>
+
+<!-- Type Rows -->
+<div class="flex flex-col w-full">
+
+<!-- Heading 1 -->
+<div class="ds-type-row">
+<div class="ds-type-label"><p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider font-sans">Heading 1</p><p class="text-[10px] text-gray-600 font-mono mt-1">font-oswald · light</p></div>
+<div class="ds-type-preview"><h1 class="text-5xl md:text-7xl leading-[1.1] font-oswald font-light tracking-tight">Master Finance. <span class="font-light text-blue-500 tracking-tight font-oswald">Simply.</span></h1></div>
+<div class="ds-type-spec"><span class="text-[11px] text-gray-500 font-mono font-sans">72px / 79px</span></div>
+</div>
+
+<!-- Heading 2 -->
+<div class="ds-type-row">
+<div class="ds-type-label"><p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider font-sans">Heading 2</p><p class="text-[10px] text-gray-600 font-mono mt-1">font-oswald · light</p></div>
+<div class="ds-type-preview"><h2 class="text-4xl md:text-5xl lg:text-6xl text-white leading-[1.1] font-oswald font-light tracking-tight">Predictive Analytics <span class="text-gray-600 font-oswald font-light tracking-tight">for Modern Growth</span></h2></div>
+<div class="ds-type-spec"><span class="text-[11px] text-gray-500 font-mono font-sans">60px / 66px</span></div>
+</div>
+
+<!-- Heading 3 -->
+<div class="ds-type-row">
+<div class="ds-type-label"><p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider font-sans">Heading 3</p><p class="text-[10px] text-gray-600 font-mono mt-1">font-oswald · light</p></div>
+<div class="ds-type-preview"><h3 class="text-4xl font-light text-white tracking-tight font-oswald">ROI Prediction</h3></div>
+<div class="ds-type-spec"><span class="text-[11px] text-gray-500 font-mono font-sans">36px / 40px</span></div>
+</div>
+
+<!-- Heading 4 -->
+<div class="ds-type-row">
+<div class="ds-type-label"><p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider font-sans">Heading 4</p><p class="text-[10px] text-gray-600 font-mono mt-1">font-sans · medium</p></div>
+<div class="ds-type-preview"><h3 class="text-2xl font-medium text-white tracking-tight">Instant Sync</h3></div>
+<div class="ds-type-spec"><span class="text-[11px] text-gray-500 font-mono font-sans">24px / 32px</span></div>
+</div>
+
+<!-- Bold L -->
+<div class="ds-type-row">
+<div class="ds-type-label"><p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider font-sans">Bold L</p><p class="text-[10px] text-gray-600 font-mono mt-1">font-sans · semibold</p></div>
+<div class="ds-type-preview"><h2 class="text-xl font-semibold text-white tracking-tight font-sans">User Growth</h2></div>
+<div class="ds-type-spec"><span class="text-[11px] text-gray-500 font-mono font-sans">20px / 28px</span></div>
+</div>
+
+<!-- Bold M -->
+<div class="ds-type-row">
+<div class="ds-type-label"><p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider font-sans">Bold M</p><p class="text-[10px] text-gray-600 font-mono mt-1">font-sans · medium</p></div>
+<div class="ds-type-preview"><span class="text-sm font-medium text-white font-sans">Direct Traffic</span></div>
+<div class="ds-type-spec"><span class="text-[11px] text-gray-500 font-mono font-sans">14px / 20px</span></div>
+</div>
+
+<!-- Bold S -->
+<div class="ds-type-row">
+<div class="ds-type-label"><p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider font-sans">Bold S</p><p class="text-[10px] text-gray-600 font-mono mt-1">font-sans · medium</p></div>
+<div class="ds-type-preview"><span class="text-xs font-medium text-gray-300 font-sans">Live Updates</span></div>
+<div class="ds-type-spec"><span class="text-[11px] text-gray-500 font-mono font-sans">12px / 16px</span></div>
+</div>
+
+<!-- Paragraph -->
+<div class="ds-type-row">
+<div class="ds-type-label"><p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider font-sans">Paragraph</p><p class="text-[10px] text-gray-600 font-mono mt-1">font-sans · light</p></div>
+<div class="ds-type-preview"><p class="text-xl text-gray-400 leading-relaxed font-light font-sans">Your all-in-one ecosystem for tracking investments, managing expenses, and optimizing cash flow effortlessly.</p></div>
+<div class="ds-type-spec"><span class="text-[11px] text-gray-500 font-mono font-sans">20px / 32px</span></div>
+</div>
+
+<!-- Regular L -->
+<div class="ds-type-row">
+<div class="ds-type-label"><p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider font-sans">Regular L</p><p class="text-[10px] text-gray-600 font-mono mt-1">font-sans · light</p></div>
+<div class="ds-type-preview"><p class="text-lg font-light leading-relaxed text-gray-400">Predict recurring bills and upcoming expenses accurately.</p></div>
+<div class="ds-type-spec"><span class="text-[11px] text-gray-500 font-mono font-sans">18px / 28px</span></div>
+</div>
+
+<!-- Regular M -->
+<div class="ds-type-row">
+<div class="ds-type-label"><p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider font-sans">Regular M</p><p class="text-[10px] text-gray-600 font-mono mt-1">font-sans · regular</p></div>
+<div class="ds-type-preview"><span class="text-sm text-gray-400 font-sans">Send money instantly to recent contacts</span></div>
+<div class="ds-type-spec"><span class="text-[11px] text-gray-500 font-mono font-sans">14px / 20px</span></div>
+</div>
+
+<!-- Regular S -->
+<div class="ds-type-row">
+<div class="ds-type-label"><p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider font-sans">Regular S</p><p class="text-[10px] text-gray-600 font-mono mt-1">font-sans · regular</p></div>
+<div class="ds-type-preview"><span class="text-xs text-gray-500 font-sans">© 2024 Finex Inc. All rights reserved.</span></div>
+<div class="ds-type-spec"><span class="text-[11px] text-gray-500 font-mono font-sans">12px / 16px</span></div>
+</div>
+
+<!-- Display Price -->
+<div class="ds-type-row">
+<div class="ds-type-label"><p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider font-sans">Display Price</p><p class="text-[10px] text-gray-600 font-mono mt-1">font-oswald · light</p></div>
+<div class="ds-type-preview"><span class="text-9xl font-light text-white tracking-tight font-oswald">$19</span><span class="text-3xl font-light text-white tracking-tight font-oswald opacity-90 ml-3">/ mo</span></div>
+<div class="ds-type-spec"><span class="text-[11px] text-gray-500 font-mono font-sans">128px / 1</span></div>
+</div>
+
+<!-- Mono Badge -->
+<div class="ds-type-row" style="border-bottom: none;">
+<div class="ds-type-label"><p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider font-sans">Mono Badge</p><p class="text-[10px] text-gray-600 font-mono mt-1">font-mono · medium</p></div>
+<div class="ds-type-preview">
+<span class="flex items-center justify-center w-7 h-7 rounded-lg bg-blue-500/10 text-[11px] font-mono font-medium text-blue-400 border border-blue-500/20 shadow-[0_0_10px_rgba(59,130,246,0.2)] font-sans">01</span>
+</div>
+<div class="ds-type-spec"><span class="text-[11px] text-gray-500 font-mono font-sans">11px / 16px</span></div>
+</div>
+
+</div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECTION 2 — COLORS & SURFACES
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="colors" class="flex flex-col bg-[#0A0A0C] border-[#ffffff]/10 border rounded-3xl mt-24 mb-24 pt-8 pr-8 pb-16 pl-8 gap-y-10">
+<div class="flex flex-col gap-6 max-w-3xl">
+<div class="flex gap-3 gap-x-3 gap-y-3 items-center scroll-item scroll-fade-up" style="animation-play-state: running">
+<span class="flex items-center justify-center w-7 h-7 rounded-lg bg-blue-500/10 text-[11px] font-mono font-medium text-blue-400 border border-blue-500/20 shadow-[0_0_10px_rgba(59,130,246,0.2)] font-sans">02</span>
+<span class="text-sm font-medium tracking-widest uppercase text-gray-500 font-sans">Colors &amp; Surfaces</span>
+</div>
+<h2 class="text-4xl md:text-5xl lg:text-6xl text-white leading-[1.1] font-oswald font-light tracking-tight scroll-item scroll-fade-up delay-100" style="animation-play-state: running;">
+Dark Palette
+<span class="text-gray-600 font-oswald font-light tracking-tight">& Surfaces</span>
+</h2>
+<p class="leading-relaxed text-lg font-light text-gray-400 max-w-xl scroll-item scroll-fade-up delay-200" style="animation-play-state: running;">
+Background tones, accent colors, border treatments, and surface patterns used throughout the Finex interface.
+</p>
+</div>
+
+<!-- Backgrounds -->
+<div>
+<p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-4 font-sans">Backgrounds</p>
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
+<div><div class="ds-swatch bg-[#000000]"><span class="text-[10px] font-mono text-gray-500">#000000</span></div><p class="text-[10px] text-gray-500 mt-2 font-sans">Page Body</p></div>
+<div><div class="ds-swatch bg-[#050505]"><span class="text-[10px] font-mono text-gray-500">#050505</span></div><p class="text-[10px] text-gray-500 mt-2 font-sans">Main Content</p></div>
+<div><div class="ds-swatch bg-[#0A0A0C]"><span class="text-[10px] font-mono text-gray-500">#0A0A0C</span></div><p class="text-[10px] text-gray-500 mt-2 font-sans">Cards / Sidebar</p></div>
+<div><div class="ds-swatch bg-[#101018]"><span class="text-[10px] font-mono text-gray-500">#101018</span></div><p class="text-[10px] text-gray-500 mt-2 font-sans">Chart Panel</p></div>
+<div><div class="ds-swatch bg-[#111111]"><span class="text-[10px] font-mono text-gray-500">#111111</span></div><p class="text-[10px] text-gray-500 mt-2 font-sans">Input BG</p></div>
+<div><div class="ds-swatch bg-[#121215]"><span class="text-[10px] font-mono text-gray-500">#121215</span></div><p class="text-[10px] text-gray-500 mt-2 font-sans">Phone Cards</p></div>
+<div><div class="ds-swatch bg-[#1A1A1A]"><span class="text-[10px] font-mono text-gray-500">#1A1A1A</span></div><p class="text-[10px] text-gray-500 mt-2 font-sans">Icon Container</p></div>
+<div><div class="ds-swatch bg-[#1a1a2e]"><span class="text-[10px] font-mono text-gray-500">#1a1a2e</span></div><p class="text-[10px] text-gray-500 mt-2 font-sans">Radial Start</p></div>
+</div>
+</div>
+
+<!-- Accent Colors -->
+<div>
+<p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-4 font-sans">Accent Colors</p>
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
+<div><div class="ds-swatch bg-blue-500"><span class="text-[10px] font-mono text-white/80">blue-500</span></div><p class="text-[10px] text-gray-500 mt-2 font-sans">Primary</p></div>
+<div><div class="ds-swatch bg-blue-400"><span class="text-[10px] font-mono text-white/80">blue-400</span></div><p class="text-[10px] text-gray-500 mt-2 font-sans">Primary Light</p></div>
+<div><div class="ds-swatch bg-indigo-500"><span class="text-[10px] font-mono text-white/80">indigo-500</span></div><p class="text-[10px] text-gray-500 mt-2 font-sans">Accent</p></div>
+<div><div class="ds-swatch bg-indigo-600"><span class="text-[10px] font-mono text-white/80">indigo-600</span></div><p class="text-[10px] text-gray-500 mt-2 font-sans">Accent Deep</p></div>
+<div><div class="ds-swatch bg-emerald-500"><span class="text-[10px] font-mono text-white/80">emerald-500</span></div><p class="text-[10px] text-gray-500 mt-2 font-sans">Success</p></div>
+<div><div class="ds-swatch bg-purple-500"><span class="text-[10px] font-mono text-white/80">purple-500</span></div><p class="text-[10px] text-gray-500 mt-2 font-sans">Purple</p></div>
+<div><div class="ds-swatch bg-orange-500"><span class="text-[10px] font-mono text-white/80">orange-500</span></div><p class="text-[10px] text-gray-500 mt-2 font-sans">Orange</p></div>
+<div><div class="ds-swatch bg-red-400"><span class="text-[10px] font-mono text-white/80">red-400</span></div><p class="text-[10px] text-gray-500 mt-2 font-sans">Danger</p></div>
+</div>
+</div>
+
+<!-- Text Colors -->
+<div>
+<p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-4 font-sans">Text Colors</p>
+<div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+<div class="flex items-center gap-3 p-4 rounded-xl border border-white/10 bg-[#050505]"><div class="w-6 h-6 rounded-full bg-white border border-white/20 shrink-0"></div><div><span class="text-white text-sm font-medium font-sans">White</span><p class="text-[10px] text-gray-600 font-sans">Headings, labels</p></div></div>
+<div class="flex items-center gap-3 p-4 rounded-xl border border-white/10 bg-[#050505]"><div class="w-6 h-6 rounded-full bg-gray-300 border border-white/10 shrink-0"></div><div><span class="text-gray-300 text-sm font-medium font-sans">Gray 300</span><p class="text-[10px] text-gray-600 font-sans">Secondary text</p></div></div>
+<div class="flex items-center gap-3 p-4 rounded-xl border border-white/10 bg-[#050505]"><div class="w-6 h-6 rounded-full bg-gray-400 border border-white/10 shrink-0"></div><div><span class="text-gray-400 text-sm font-medium font-sans">Gray 400</span><p class="text-[10px] text-gray-600 font-sans">Body text</p></div></div>
+<div class="flex items-center gap-3 p-4 rounded-xl border border-white/10 bg-[#050505]"><div class="w-6 h-6 rounded-full bg-gray-500 border border-white/10 shrink-0"></div><div><span class="text-gray-500 text-sm font-medium font-sans">Gray 500</span><p class="text-[10px] text-gray-600 font-sans">Labels, meta</p></div></div>
+<div class="flex items-center gap-3 p-4 rounded-xl border border-white/10 bg-[#050505]"><div class="w-6 h-6 rounded-full bg-gray-600 border border-white/10 shrink-0"></div><div><span class="text-gray-600 text-sm font-medium font-sans">Gray 600</span><p class="text-[10px] text-gray-600 font-sans">Muted, dividers</p></div></div>
+</div>
+</div>
+
+<!-- Borders & Dividers -->
+<div>
+<p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-4 font-sans">Borders &amp; Dividers</p>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="p-6 rounded-xl bg-[#050505] border border-white/5"><p class="text-[10px] font-mono text-gray-500 mb-2">border-white/5</p><p class="text-xs text-gray-400 font-sans">Subtle dividers, sidebar borders</p></div>
+<div class="p-6 rounded-xl bg-[#050505] border border-white/10"><p class="text-[10px] font-mono text-gray-500 mb-2">border-white/10</p><p class="text-xs text-gray-400 font-sans">Card borders, default state</p></div>
+<div class="p-6 rounded-xl bg-[#050505] border border-white/20"><p class="text-[10px] font-mono text-gray-500 mb-2">border-white/20</p><p class="text-xs text-gray-400 font-sans">Hover state borders</p></div>
+</div>
+</div>
+
+<!-- Surface Examples -->
+<div>
+<p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-4 font-sans">Surfaces</p>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="ds-surface-card bg-black/90 backdrop-blur-md shadow-2xl rounded-full px-6 py-4">
+<p class="text-xs text-gray-300 font-sans font-medium">Glass Nav Surface</p>
+<p class="text-[10px] text-gray-600 font-sans mt-1">bg-black/90 · backdrop-blur-md</p>
+</div>
+<div class="ds-surface-card bg-[#0A0A0C]">
+<p class="text-xs text-gray-300 font-sans font-medium">Card Surface</p>
+<p class="text-[10px] text-gray-600 font-sans mt-1">bg-[#0A0A0C] · border-white/10 · rounded-xl</p>
+</div>
+<div class="ds-surface-card relative overflow-hidden">
+<div class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#1a1a2e] via-[#0A0A0C] to-[#0A0A0C]"></div>
+<div class="pointer-events-none absolute inset-0 opacity-20" style="background-image: radial-gradient(white 1px, transparent 1px); background-size: 40px 40px;"></div>
+<div class="relative z-10">
+<p class="text-xs text-gray-300 font-sans font-medium">Radial + Dot Pattern</p>
+<p class="text-[10px] text-gray-600 font-sans mt-1">Feature card background</p>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Gradients -->
+<div>
+<p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-4 font-sans">Gradients</p>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<div class="h-24 rounded-xl bg-gradient-to-br from-indigo-600 to-indigo-700 border border-blue-500/30 flex items-end p-3"><span class="text-[10px] font-mono text-white/80">indigo-600 → indigo-700</span></div>
+<div class="h-24 rounded-xl bg-gradient-to-tr from-purple-500 to-indigo-500 flex items-end p-3"><span class="text-[10px] font-mono text-white/80">purple-500 → indigo-500</span></div>
+<div class="h-24 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-end p-3"><span class="text-[10px] font-mono text-white/80">blue-500 → cyan-400</span></div>
+<div class="h-24 rounded-xl bg-gradient-to-br from-orange-500 to-red-600 flex items-end p-3"><span class="text-[10px] font-mono text-white/80">orange-500 → red-600</span></div>
+</div>
+</div>
+
+<!-- Blue Glow Border -->
+<div>
+<p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-4 font-sans">Glow Effects</p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="p-6 rounded-full bg-black/60 border-blue-500 border shadow-[0_0_20px_rgba(59,130,246,0.5),inset_0_0_10px_rgba(59,130,246,0.2)] text-center">
+<p class="text-xs text-white font-medium font-sans">Blue Glow Border</p>
+<p class="text-[10px] text-gray-500 font-sans mt-1">shadow-[0_0_20px_rgba(59,130,246,0.5)]</p>
+</div>
+<div class="p-6 rounded-xl bg-[#0A0A0C] border border-white/10 shadow-2xl text-center">
+<p class="text-xs text-white font-medium font-sans">Elevated Shadow</p>
+<p class="text-[10px] text-gray-500 font-sans mt-1">shadow-2xl · border-white/10</p>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECTION 3 — UI COMPONENTS
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="components" class="flex flex-col bg-[#0A0A0C] border-[#ffffff]/10 border rounded-3xl mt-24 mb-24 pt-8 pr-8 pb-16 pl-8 gap-y-10">
+<div class="flex flex-col gap-6 max-w-3xl">
+<div class="flex gap-3 gap-x-3 gap-y-3 items-center scroll-item scroll-fade-up" style="animation-play-state: running">
+<span class="flex items-center justify-center w-7 h-7 rounded-lg bg-blue-500/10 text-[11px] font-mono font-medium text-blue-400 border border-blue-500/20 shadow-[0_0_10px_rgba(59,130,246,0.2)] font-sans">03</span>
+<span class="text-sm font-medium tracking-widest uppercase text-gray-500 font-sans">UI Components</span>
+</div>
+<h2 class="text-4xl md:text-5xl lg:text-6xl text-white leading-[1.1] font-oswald font-light tracking-tight scroll-item scroll-fade-up delay-100" style="animation-play-state: running;">
+Building Blocks
+<span class="text-gray-600 font-oswald font-light tracking-tight">of the Interface</span>
+</h2>
+<p class="leading-relaxed text-lg font-light text-gray-400 max-w-xl scroll-item scroll-fade-up delay-200" style="animation-play-state: running;">
+Buttons, badges, cards, inputs, and interactive elements — each shown with hover and focus states.
+</p>
+</div>
+
+<!-- BUTTONS -->
+<div>
+<p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-6 font-sans">Buttons</p>
+<div class="flex flex-wrap gap-4 items-center">
+
+<!-- Primary Beam Button -->
+<button class="group inline-flex overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_40px_-10px_rgba(59,130,246,0.5)] focus:outline-none text-sm font-medium text-white h-[54px] rounded-full pt-4 pr-8 pb-4 pl-8 relative items-center justify-center" style="position: relative; --border-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.2)); --border-radius-before: 9999px">
+<div class="absolute inset-0 -z-20 rounded-full overflow-hidden p-[1px]">
+<div class="absolute inset-[-100%] bg-[conic-gradient(from_0deg,transparent_0_300deg,#3b82f6_360deg)]" style="animation: beam-spin 3s linear infinite;"></div>
+<div class="absolute inset-[1px] rounded-full bg-[#050505]"></div>
+</div>
+<div class="overflow-hidden bg-[#0A0A0A] rounded-full absolute top-[2px] right-[2px] bottom-[2px] left-[2px]">
+<div class="bg-gradient-to-b from-blue-900/20 to-transparent absolute top-0 right-0 bottom-0 left-0"></div>
+<div class="opacity-[0.07] mix-blend-plus-lighter absolute top-0 right-0 bottom-0 left-0" style="background-image: repeating-linear-gradient(90deg, #fff, #fff 1px, transparent 1px, transparent 8px); background-size: 24px 100%; animation: lines-slide 1.5s linear infinite;"></div>
+<div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-2/3 h-1/2 bg-blue-500/20 blur-2xl rounded-full pointer-events-none transition-colors duration-500 group-hover:bg-blue-500/40"></div>
+</div>
+<span class="transition-colors group-hover:text-white uppercase font-semibold text-white/90 tracking-tight z-10 relative font-sans">Start free</span>
+<svg class="lucide lucide-arrow-right relative z-10 ml-2 transition-transform duration-300 group-hover:translate-x-1" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+</button>
+
+<!-- Secondary Glow Button -->
+<button class="hover:bg-blue-500/10 hover:border-blue-400 hover:shadow-[0_0_35px_rgba(59,130,246,0.6),inset_0_0_20px_rgba(59,130,246,0.4)] hover:scale-[1.02] transition-all duration-300 flex group text-base font-medium text-white bg-black/60 border-blue-500 border rounded-full pt-3.5 pr-8 pb-3.5 pl-8 shadow-[0_0_20px_rgba(59,130,246,0.5),inset_0_0_10px_rgba(59,130,246,0.2)] gap-x-2 gap-y-2 items-center justify-center">
+<svg aria-hidden="true" class="lucide lucide-play-circle w-4 h-4 text-blue-400 group-hover:text-blue-300 transition-colors" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M9 9.003a1 1 0 0 1 1.517-.859l4.997 2.997a1 1 0 0 1 0 1.718l-4.997 2.997A1 1 0 0 1 9 14.996z"></path><circle cx="12" cy="12" r="10"></circle></svg>
+Watch Demo
+</button>
+
+<!-- White Solid Button -->
+<button class="group flex items-center gap-2 pl-6 pr-5 py-3 bg-white text-black rounded-full text-sm font-medium hover:bg-gray-200 transition-all duration-200 font-sans whitespace-nowrap">
+<span class="font-sans">Explore Features</span>
+<svg class="lucide lucide-arrow-right w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+</button>
+
+<!-- White Small Button -->
+<button class="flex items-center gap-2 px-3 py-1.5 bg-white text-black text-xs font-semibold rounded-md hover:bg-gray-200 transition-colors shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+<svg class="lucide lucide-plus" fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewbox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+New Transfer
+</button>
+
+<!-- Ghost / Send Button -->
+<button class="px-4 py-1.5 bg-white text-black text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors shrink-0">Send</button>
+
+</div>
+</div>
+
+<!-- NAV CTA -->
+<div>
+<p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-6 font-sans">Nav CTA Button</p>
+<a class="inline-flex group transition-all duration-300 hover:bg-blue-500/10 hover:border-blue-400 hover:shadow-[0_0_35px_rgba(59,130,246,0.6),inset_0_0_20px_rgba(59,130,246,0.4)] hover:scale-[1.02] items-center justify-center bg-black/60 border-blue-500 border rounded-full pt-2.5 pr-6 pb-2.5 pl-6 shadow-[0_0_20px_rgba(59,130,246,0.5),inset_0_0_10px_rgba(59,130,246,0.2)]" href="#">
+<span class="uppercase text-[13px] transition-colors group-hover:text-white font-semibold text-white/90 tracking-tight font-sans z-10 relative">GET STARTED</span>
+</a>
+</div>
+
+<!-- BADGES -->
+<div>
+<p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-6 font-sans">Badges &amp; Status</p>
+<div class="flex flex-wrap gap-4 items-center">
+
+<!-- Version Badge -->
+<div class="inline-flex hover:bg-white/10 transition-colors cursor-pointer group bg-white/5 border-white/10 border rounded-full pt-1.5 pr-3 pb-1.5 pl-3 backdrop-blur-sm items-center">
+<span class="bg-blue-500/20 text-blue-400 rounded px-1.5 py-0.5 text-[10px] font-medium tracking-wide font-sans">NEW</span>
+<span class="text-xs text-gray-300 font-medium group-hover:text-white transition-colors pr-1 font-sans">Version 3.0 is live</span>
+<svg aria-hidden="true" class="lucide lucide-arrow-right w-3 h-3 text-gray-500 group-hover:text-white transition-colors" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+</div>
+
+<!-- Live Status -->
+<div class="inline-flex items-center px-3 py-1.5 bg-white/5 border border-white/10 rounded-full gap-2 hover:bg-white/10 transition-colors cursor-pointer">
+<div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)] animate-pulse"></div>
+<span class="text-xs font-medium text-gray-300">Live Updates</span>
+</div>
+
+<!-- Positive Change -->
+<span class="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[11px] font-medium border border-emerald-500/20 flex items-center gap-1">
+<svg class="lucide lucide-trending-up" fill="none" height="12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="12" xmlns="http://www.w3.org/2000/svg"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg> 12.5%
+</span>
+
+<!-- Neutral Change -->
+<span class="px-1.5 py-0.5 rounded bg-white/5 text-gray-300 text-[11px] font-medium border border-white/10 flex items-center gap-1">+2.1%</span>
+
+<!-- Active Badge -->
+<span class="text-[10px] font-bold bg-white/20 px-2 py-0.5 rounded border border-white/10 backdrop-blur-md">Active</span>
+
+<!-- Section Badge -->
+<span class="flex items-center justify-center w-7 h-7 rounded-lg bg-blue-500/10 text-[11px] font-mono font-medium text-blue-400 border border-blue-500/20 shadow-[0_0_10px_rgba(59,130,246,0.2)] font-sans">04</span>
+
+</div>
+</div>
+
+<!-- INPUTS -->
+<div>
+<p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-6 font-sans">Inputs</p>
+<div class="flex flex-wrap gap-6 items-center">
+<div>
+<p class="text-[10px] text-gray-600 mb-2 font-sans">Default</p>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">$</span>
+<input class="w-32 bg-[#111] border border-white/10 rounded-lg py-1.5 pl-6 pr-3 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors" type="text" value="0.00"/>
+</div>
+</div>
+<div>
+<p class="text-[10px] text-gray-600 mb-2 font-sans">Focused (click to see)</p>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">$</span>
+<input class="w-32 bg-[#111] border border-indigo-500 rounded-lg py-1.5 pl-6 pr-3 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors" type="text" value="250.00"/>
+</div>
+</div>
+</div>
+</div>
+
+<!-- CARDS -->
+<div>
+<p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-6 font-sans">Cards</p>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+<!-- Stat Card -->
+<div class="p-5 rounded-xl bg-[#0A0A0C] border border-white/10 shadow-lg relative group overflow-hidden hover:border-white/20 transition-all">
+<p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Total Balance</p>
+<h3 class="text-2xl font-semibold text-white tracking-tight mb-2 font-oswald">$124,500.20</h3>
+<div class="flex items-center gap-2">
+<span class="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[11px] font-medium border border-emerald-500/20 flex items-center gap-1">
+<svg class="lucide lucide-trending-up" fill="none" height="12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="12" xmlns="http://www.w3.org/2000/svg"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg> 12.5%
+</span>
+<span class="text-[11px] text-gray-600">vs last month</span>
+</div>
+</div>
+
+<!-- Feature Card -->
+<div class="md:p-8 transition-colors group overflow-hidden z-0 bg-[#0A0A0C] border-[#ffffff]/10 border rounded-3xl pt-8 pr-8 pb-8 pl-8 relative">
+<div class="pointer-events-none z-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#1a1a2e] via-[#0A0A0C] to-[#0A0A0C] absolute top-0 right-0 bottom-0 left-0"></div>
+<div class="z-0 opacity-20 rounded-3xl absolute top-0 right-0 bottom-0 left-0" style="background-image: radial-gradient(white 1px, transparent 1px); background-size: 40px 40px"></div>
+<div class="absolute inset-0 bg-white/[0.02] opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none"></div>
+<div class="flex gap-6 items-start relative z-20">
+<div class="w-12 h-12 rounded-xl bg-[#1A1A1A] border border-white/10 flex items-center justify-center shrink-0 group-hover:border-white/20 transition-colors">
+<svg class="text-gray-300 group-hover:text-white" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+</div>
+<div><h3 class="text-2xl font-medium text-white tracking-tight mb-2">Instant Sync</h3><p class="text-[15px] leading-relaxed font-light text-gray-400">Link your accounts in seconds for a unified view.</p></div>
+</div>
+</div>
+
+<!-- Gradient Card -->
+<div class="overflow-hidden group cursor-pointer text-white bg-gradient-to-br from-indigo-600 to-indigo-700 border-blue-500/30 border rounded-xl pt-5 pr-5 pb-5 pl-5 relative shadow-lg">
+<div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:bg-white/20 transition-colors"></div>
+<div class="relative z-10 flex flex-col h-full justify-between">
+<div class="flex justify-between items-start">
+<div><p class="text-[10px] font-medium text-indigo-200 uppercase tracking-wider mb-1">Active Card</p><h3 class="text-xl font-medium tracking-tight">Visa Infinite</h3></div>
+<svg class="lucide lucide-wifi text-indigo-200 opacity-80" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M12 20h.01"></path><path d="M2 8.82a15 15 0 0 1 20 0"></path><path d="M5 12.859a10 10 0 0 1 14 0"></path><path d="M8.5 16.429a5 5 0 0 1 7 0"></path></svg>
+</div>
+<div class="flex items-end justify-between mt-4"><span class="font-mono text-sm tracking-widest opacity-80">•••• 4242</span><span class="text-[10px] font-bold bg-white/20 px-2 py-0.5 rounded border border-white/10 backdrop-blur-md">Active</span></div>
+</div>
+</div>
+
+</div>
+</div>
+
+<!-- TOGGLE -->
+<div>
+<p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-6 font-sans">Toggle</p>
+<div class="flex bg-[#111111] border-white/10 border rounded-full p-1.5 backdrop-blur-sm items-center w-fit">
+<button class="transition-transform hover:scale-[1.02] text-sm font-semibold text-black bg-[#ffffff] rounded-full px-8 py-2.5 shadow-[0_0_15px_rgba(14,165,233,0.3)]">Monthly</button>
+<button class="px-8 py-2.5 rounded-full text-gray-400 hover:text-white font-medium text-sm transition-colors font-sans">Yearly</button>
+</div>
+</div>
+
+<!-- SIDEBAR NAV ITEMS -->
+<div>
+<p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-6 font-sans">Sidebar Navigation Items</p>
+<div class="w-64 bg-[#0A0A0C] border border-white/10 rounded-xl p-3 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-white bg-white/5 rounded-md transition-all group border border-white/5" href="#">
+<svg class="lucide lucide-layout-grid" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><rect height="7" rx="1" width="7" x="3" y="3"></rect><rect height="7" rx="1" width="7" x="14" y="3"></rect><rect height="7" rx="1" width="7" x="14" y="14"></rect><rect height="7" rx="1" width="7" x="3" y="14"></rect></svg>
+Dashboard (Active)
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-md transition-all group" href="#">
+<svg class="lucide lucide-wallet" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"></path><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"></path></svg>
+Transactions (Default)
+</a>
+</div>
+</div>
+
+<!-- PROGRESS BARS -->
+<div>
+<p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-6 font-sans">Progress Bars</p>
+<div class="flex flex-col gap-4 max-w-lg">
+<div class="flex items-center gap-4">
+<span class="w-[80px] shrink-0 text-sm text-gray-300 font-medium font-sans">Orange</span>
+<div class="h-3 flex-1 rounded-full bg-white/5 overflow-hidden"><div class="h-full rounded-full bg-orange-500" style="width: 70%"></div></div>
+</div>
+<div class="flex items-center gap-4">
+<span class="w-[80px] shrink-0 text-sm text-gray-300 font-medium font-sans">Blue</span>
+<div class="h-3 flex-1 rounded-full bg-white/5 overflow-hidden"><div class="h-full rounded-full bg-blue-500" style="width: 55%"></div></div>
+</div>
+<div class="flex items-center gap-4">
+<span class="w-[80px] shrink-0 text-sm text-gray-300 font-medium font-sans">Purple</span>
+<div class="h-3 flex-1 rounded-full bg-white/5 overflow-hidden"><div class="h-full rounded-full bg-purple-500" style="width: 30%"></div></div>
+</div>
+<div class="flex items-center gap-4">
+<span class="w-[80px] shrink-0 text-sm text-gray-300 font-medium font-sans">Indigo</span>
+<div class="h-3 flex-1 rounded-full bg-white/5 overflow-hidden"><div class="h-full rounded-full bg-indigo-500" style="width: 60%"></div></div>
+</div>
+<div class="flex items-center gap-4">
+<span class="w-[80px] shrink-0 text-sm text-gray-300 font-medium font-sans">Cyan</span>
+<div class="h-3 flex-1 rounded-full bg-white/5 overflow-hidden"><div class="h-full rounded-full bg-[#22d3ee]" style="width: 90%"></div></div>
+</div>
+<div class="flex items-center gap-4">
+<span class="w-[80px] shrink-0 text-sm text-gray-300 font-medium font-sans">Red</span>
+<div class="h-3 flex-1 rounded-full bg-white/5 overflow-hidden"><div class="h-full rounded-full bg-[#f87171]" style="width: 85%"></div></div>
+</div>
+</div>
+</div>
+
+<!-- AVATAR STACK -->
+<div>
+<p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-6 font-sans">Avatar Stack</p>
+<div class="flex -space-x-3">
+<img alt="Contact" class="w-9 h-9 rounded-full border-2 border-[#0A0A0C] cursor-pointer hover:z-10 hover:scale-110 transition-transform" src="assets/photo-1494790108377-be9c29b293_a50aed98b756.jpg"/>
+<img alt="Contact" class="w-9 h-9 rounded-full border-2 border-[#0A0A0C] cursor-pointer hover:z-10 hover:scale-110 transition-transform" src="assets/photo-1599566150163-29194dcaad_cec63f5d3ec6.jpg"/>
+<img alt="Contact" class="w-9 h-9 rounded-full border-2 border-[#0A0A0C] cursor-pointer hover:z-10 hover:scale-110 transition-transform" src="assets/photo-1535713875002-d1d0cf377f_190b69f0adfa.jpg"/>
+<div class="w-9 h-9 rounded-full border-2 border-[#0A0A0C] bg-white/10 flex items-center justify-center text-[10px] text-white font-medium cursor-pointer hover:bg-white/20 transition-colors z-0">+4</div>
+</div>
+</div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECTION 4 — LAYOUT & SPACING
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="layout" class="flex flex-col bg-[#0A0A0C] border-[#ffffff]/10 border rounded-3xl mt-24 mb-24 pt-8 pr-8 pb-16 pl-8 gap-y-10">
+<div class="flex flex-col gap-6 max-w-3xl">
+<div class="flex gap-3 gap-x-3 gap-y-3 items-center scroll-item scroll-fade-up" style="animation-play-state: running">
+<span class="flex items-center justify-center w-7 h-7 rounded-lg bg-blue-500/10 text-[11px] font-mono font-medium text-blue-400 border border-blue-500/20 shadow-[0_0_10px_rgba(59,130,246,0.2)] font-sans">04</span>
+<span class="text-sm font-medium tracking-widest uppercase text-gray-500 font-sans">Layout &amp; Spacing</span>
+</div>
+<h2 class="text-4xl md:text-5xl lg:text-6xl text-white leading-[1.1] font-oswald font-light tracking-tight scroll-item scroll-fade-up delay-100" style="animation-play-state: running;">
+Containers &amp; Grids
+<span class="text-gray-600 font-oswald font-light tracking-tight">in Action</span>
+</h2>
+<p class="leading-relaxed text-lg font-light text-gray-400 max-w-xl scroll-item scroll-fade-up delay-200" style="animation-play-state: running;">
+Section containers, grid layouts, and responsive breakpoints extracted from the live Finex design.
+</p>
+</div>
+
+<!-- Pattern 1: Section Container -->
+<div>
+<p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-4 font-sans">Section Container Pattern</p>
+<p class="text-xs text-gray-600 font-mono mb-4">max-w-7xl · bg-[#0A0A0C] · border-[#ffffff]/10 · rounded-3xl · pt-8 pr-8 pb-16 pl-8</p>
+<div class="bg-[#050505] border border-white/5 rounded-2xl p-6">
+<div class="bg-[#0A0A0C] border-[#ffffff]/10 border rounded-3xl pt-8 pr-8 pb-8 pl-8">
+<div class="flex gap-3 items-center mb-4">
+<span class="flex items-center justify-center w-7 h-7 rounded-lg bg-blue-500/10 text-[11px] font-mono font-medium text-blue-400 border border-blue-500/20 shadow-[0_0_10px_rgba(59,130,246,0.2)] font-sans">##</span>
+<span class="text-sm font-medium tracking-widest uppercase text-gray-500 font-sans">Section Label</span>
+</div>
+<h2 class="text-4xl text-white font-oswald font-light tracking-tight mb-3">Section Title <span class="text-gray-600 font-oswald font-light tracking-tight">Subtitle</span></h2>
+<p class="text-lg font-light text-gray-400 max-w-xl leading-relaxed">Section description paragraph using the standard body style.</p>
+</div>
+</div>
+</div>
+
+<!-- Pattern 2: 3-Column Stats Grid -->
+<div>
+<p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-4 font-sans">3-Column Stats Grid</p>
+<p class="text-xs text-gray-600 font-mono mb-4">grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-4</p>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-4">
+<div class="p-5 rounded-xl bg-[#0A0A0C] border border-white/10 shadow-lg"><p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Column 1</p><div class="text-2xl font-semibold text-white tracking-tight font-oswald">$124,500</div></div>
+<div class="p-5 rounded-xl bg-[#0A0A0C] border border-white/10 shadow-lg"><p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Column 2</p><div class="text-2xl font-semibold text-white tracking-tight font-oswald">$8,240</div></div>
+<div class="p-5 rounded-xl bg-gradient-to-br from-indigo-600 to-indigo-700 border-blue-500/30 border shadow-lg"><p class="text-[10px] font-medium text-indigo-200 uppercase tracking-wider mb-1">Column 3 (Accent)</p><div class="text-xl font-medium text-white tracking-tight">Highlighted</div></div>
+</div>
+</div>
+
+<!-- Pattern 3: 2-Column Split -->
+<div>
+<p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-4 font-sans">2-Column Split (Content + Visual)</p>
+<p class="text-xs text-gray-600 font-mono mb-4">flex flex-col lg:flex-row lg:gap-24 items-center justify-between</p>
+<div class="flex flex-col overflow-hidden lg:flex-row lg:gap-24 bg-[#050505] border border-white/5 rounded-2xl p-8 relative gap-x-16 gap-y-8 items-center justify-between">
+<div class="flex flex-col gap-4 max-w-md">
+<div class="flex gap-3 items-center">
+<span class="flex items-center justify-center w-7 h-7 rounded-lg bg-blue-500/10 text-[11px] font-mono font-medium text-blue-400 border border-blue-500/20 shadow-[0_0_10px_rgba(59,130,246,0.2)] font-sans">02</span>
+<span class="uppercase text-sm font-medium text-gray-500 tracking-widest font-sans">Content Side</span>
+</div>
+<h2 class="text-4xl text-white font-oswald font-light tracking-tight leading-[1.1]">Built for speed. <span class="text-gray-600 font-oswald font-light tracking-tight">Designed for trust.</span></h2>
+<p class="text-lg font-light text-gray-400 leading-relaxed">This layout splits content and visual elements across two columns on large screens.</p>
+</div>
+<div class="w-full max-w-[240px] h-[320px] bg-[#0A0A0C] border border-white/10 rounded-[2rem] flex items-center justify-center">
+<span class="text-gray-600 text-sm font-sans">Visual Area</span>
+</div>
+</div>
+</div>
+
+<!-- Pattern 4: Feature Grid (Bento) -->
+<div>
+<p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-4 font-sans">Bento Feature Grid</p>
+<p class="text-xs text-gray-600 font-mono mb-4">grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 · lg:auto-rows-[400px]</p>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:auto-rows-[120px] gap-4">
+<div class="rounded-[2rem] bg-[#0A0A0C] border border-white/10 p-6 flex items-end"><span class="text-xs text-gray-500 font-sans">1fr · Standard</span></div>
+<div class="rounded-[2rem] bg-[#0A0A0C] border border-white/10 p-6 lg:row-span-2 flex items-end"><span class="text-xs text-gray-500 font-sans">1fr · Tall (row-span-2)</span></div>
+<div class="rounded-[2rem] bg-[#0A0A0C] border border-white/10 p-6 flex items-end"><span class="text-xs text-gray-500 font-sans">1fr · Standard</span></div>
+<div class="rounded-[2rem] bg-[#0A0A0C] border border-white/10 p-6 flex items-end"><span class="text-xs text-gray-500 font-sans">1fr · Standard</span></div>
+<div class="rounded-[2rem] bg-[#0A0A0C] border border-white/10 p-6 flex items-end"><span class="text-xs text-gray-500 font-sans">1fr · Standard</span></div>
+</div>
+</div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECTION 5 — MOTION & INTERACTION
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="motion" class="flex flex-col bg-[#0A0A0C] border-[#ffffff]/10 border rounded-3xl mt-24 mb-24 pt-8 pr-8 pb-16 pl-8 gap-y-10">
+<div class="flex flex-col gap-6 max-w-3xl">
+<div class="flex gap-3 gap-x-3 gap-y-3 items-center scroll-item scroll-fade-up" style="animation-play-state: running">
+<span class="flex items-center justify-center w-7 h-7 rounded-lg bg-blue-500/10 text-[11px] font-mono font-medium text-blue-400 border border-blue-500/20 shadow-[0_0_10px_rgba(59,130,246,0.2)] font-sans">05</span>
+<span class="text-sm font-medium tracking-widest uppercase text-gray-500 font-sans">Motion &amp; Interaction</span>
+</div>
+<h2 class="text-4xl md:text-5xl lg:text-6xl text-white leading-[1.1] font-oswald font-light tracking-tight scroll-item scroll-fade-up delay-100" style="animation-play-state: running;">
+Animation Library
+<span class="text-gray-600 font-oswald font-light tracking-tight">& Transitions</span>
+</h2>
+<p class="leading-relaxed text-lg font-light text-gray-400 max-w-xl scroll-item scroll-fade-up delay-200" style="animation-play-state: running;">
+Every entrance animation, hover effect, and looping motion present in the Finex design — demonstrated live.
+</p>
+</div>
+
+<!-- Motion Gallery -->
+<p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider font-sans">Motion Gallery</p>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="motion-gallery">
+
+<!-- fadeInUp -->
+<div class="ds-motion-cell group cursor-pointer" onclick="this.querySelector('.motion-demo').style.animationPlayState='paused'; void this.offsetWidth; this.querySelector('.motion-demo').style.animationPlayState='running';">
+<div class="motion-demo scroll-item scroll-fade-up" style="animation-play-state: running; animation-iteration-count: infinite; animation-duration: 2s;">
+<div class="w-20 h-20 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
+<svg class="lucide lucide-arrow-up text-blue-400" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="m18 15-6-6-6 6"></path></svg>
+</div>
+</div>
+<p class="text-xs font-medium text-white font-sans">fadeInUp</p>
+<p class="text-[10px] text-gray-500 font-mono">scroll-fade-up · 0.8s ease</p>
+</div>
+
+<!-- blurIn -->
+<div class="ds-motion-cell group cursor-pointer" onclick="this.querySelector('.motion-demo').style.animationPlayState='paused'; void this.offsetWidth; this.querySelector('.motion-demo').style.animationPlayState='running';">
+<div class="motion-demo scroll-item scroll-blur-in" style="animation-play-state: running; animation-iteration-count: infinite; animation-duration: 2s;">
+<div class="w-20 h-20 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
+<span class="text-2xl font-light text-white font-oswald">Blur</span>
+</div>
+</div>
+<p class="text-xs font-medium text-white font-sans">blurIn</p>
+<p class="text-[10px] text-gray-500 font-mono">scroll-blur-in · blur(15px) → 0</p>
+</div>
+
+<!-- Beam Spin -->
+<div class="ds-motion-cell">
+<div class="w-20 h-20 rounded-full overflow-hidden relative">
+<div class="absolute inset-[-100%] bg-[conic-gradient(from_0deg,transparent_0_300deg,#3b82f6_360deg)]" style="animation: beam-spin 3s linear infinite;"></div>
+<div class="absolute inset-[2px] rounded-full bg-[#0A0A0C]"></div>
+</div>
+<p class="text-xs font-medium text-white font-sans">beam-spin</p>
+<p class="text-[10px] text-gray-500 font-mono">3s linear infinite</p>
+</div>
+
+<!-- Lines Slide -->
+<div class="ds-motion-cell">
+<div class="w-32 h-20 rounded-xl bg-[#0A0A0A] overflow-hidden relative border border-white/10">
+<div class="opacity-[0.15] mix-blend-plus-lighter absolute inset-0" style="background-image: repeating-linear-gradient(90deg, #fff, #fff 1px, transparent 1px, transparent 8px); background-size: 24px 100%; animation: lines-slide 1.5s linear infinite;"></div>
+</div>
+<p class="text-xs font-medium text-white font-sans">lines-slide</p>
+<p class="text-[10px] text-gray-500 font-mono">1.5s linear infinite</p>
+</div>
+
+<!-- Marquee -->
+<div class="ds-motion-cell overflow-hidden">
+<div class="relative flex overflow-x-hidden w-full">
+<div class="animate-marquee whitespace-nowrap flex gap-8 items-center opacity-50">
+<span class="text-sm font-semibold tracking-tight">ACME</span>
+<span class="text-sm font-bold tracking-tighter italic">Veridian</span>
+<span class="text-sm font-black tracking-tight">KYBER</span>
+<span class="text-sm font-medium tracking-wide">Lumina</span>
+<span class="text-sm font-semibold tracking-tight">ACME</span>
+<span class="text-sm font-bold tracking-tighter italic">Veridian</span>
+<span class="text-sm font-black tracking-tight">KYBER</span>
+<span class="text-sm font-medium tracking-wide">Lumina</span>
+</div>
+</div>
+<p class="text-xs font-medium text-white font-sans mt-2">marquee</p>
+<p class="text-[10px] text-gray-500 font-mono">25s linear infinite</p>
+</div>
+
+<!-- Spin Slow -->
+<div class="ds-motion-cell">
+<div class="relative w-20 h-20 flex items-center justify-center">
+<div class="absolute w-20 h-20 rounded-3xl bg-white/[0.03] border border-white/[0.05]" style="animation: spin-slow 20s linear infinite;"></div>
+<div class="absolute w-14 h-14 rounded-2xl bg-white/[0.05] border border-white/[0.05]" style="animation: spin-slow-reverse 15s linear infinite;"></div>
+<div class="w-8 h-8 rounded-lg bg-blue-500/30 border border-blue-500/20 z-10"></div>
+</div>
+<p class="text-xs font-medium text-white font-sans">spin-slow / reverse</p>
+<p class="text-[10px] text-gray-500 font-mono">20s / 15s linear infinite</p>
+</div>
+
+<!-- Pulse -->
+<div class="ds-motion-cell">
+<div class="flex items-center gap-3">
+<div class="w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)] animate-pulse"></div>
+<div class="w-3 h-3 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)] animate-pulse"></div>
+<div class="w-3 h-3 rounded-full bg-indigo-500 animate-pulse"></div>
+</div>
+<p class="text-xs font-medium text-white font-sans">animate-pulse</p>
+<p class="text-[10px] text-gray-500 font-mono">Status indicators</p>
+</div>
+
+<!-- Hover Transitions -->
+<div class="ds-motion-cell">
+<div class="flex gap-3">
+<div class="p-4 rounded-xl bg-[#0A0A0C] border border-white/10 hover:border-white/20 transition-all cursor-pointer group">
+<svg class="text-gray-400 group-hover:text-white transition-colors" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+</div>
+<div class="p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+<span class="text-xs text-gray-300 font-sans">Hover me</span>
+</div>
+</div>
+<p class="text-xs font-medium text-white font-sans">Hover Transitions</p>
+<p class="text-[10px] text-gray-500 font-mono">border · bg · color · 300ms</p>
+</div>
+
+<!-- Scale on Hover -->
+<div class="ds-motion-cell">
+<button class="hover:scale-[1.02] hover:shadow-[0_0_35px_rgba(59,130,246,0.6),inset_0_0_20px_rgba(59,130,246,0.4)] transition-all duration-300 px-6 py-2 bg-black/60 border-blue-500 border rounded-full text-sm text-white font-medium shadow-[0_0_20px_rgba(59,130,246,0.5),inset_0_0_10px_rgba(59,130,246,0.2)]">
+Hover to Glow
+</button>
+<p class="text-xs font-medium text-white font-sans">scale + glow</p>
+<p class="text-[10px] text-gray-500 font-mono">hover:scale-[1.02] · box-shadow</p>
+</div>
+
+</div>
+
+<!-- Delay Classes -->
+<div>
+<p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-4 font-sans">Staggered Delay Classes</p>
+<div class="flex gap-4 flex-wrap">
+<div class="scroll-item scroll-fade-up" style="animation-play-state: running;">
+<div class="px-4 py-2 rounded-lg bg-white/5 border border-white/10"><span class="text-xs font-mono text-gray-400">no delay</span></div>
+</div>
+<div class="scroll-item scroll-fade-up delay-100" style="animation-play-state: running;">
+<div class="px-4 py-2 rounded-lg bg-white/5 border border-white/10"><span class="text-xs font-mono text-gray-400">delay-100</span></div>
+</div>
+<div class="scroll-item scroll-fade-up delay-200" style="animation-play-state: running;">
+<div class="px-4 py-2 rounded-lg bg-white/5 border border-white/10"><span class="text-xs font-mono text-gray-400">delay-200</span></div>
+</div>
+<div class="scroll-item scroll-fade-up delay-300" style="animation-play-state: running;">
+<div class="px-4 py-2 rounded-lg bg-white/5 border border-white/10"><span class="text-xs font-mono text-gray-400">delay-300</span></div>
+</div>
+<div class="scroll-item scroll-fade-up delay-500" style="animation-play-state: running;">
+<div class="px-4 py-2 rounded-lg bg-white/5 border border-white/10"><span class="text-xs font-mono text-gray-400">delay-500</span></div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECTION 6 — ICONS
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="icons" class="flex flex-col bg-[#0A0A0C] border-[#ffffff]/10 border rounded-3xl mt-24 mb-24 pt-8 pr-8 pb-16 pl-8 gap-y-10">
+<div class="flex flex-col gap-6 max-w-3xl">
+<div class="flex gap-3 gap-x-3 gap-y-3 items-center scroll-item scroll-fade-up" style="animation-play-state: running">
+<span class="flex items-center justify-center w-7 h-7 rounded-lg bg-blue-500/10 text-[11px] font-mono font-medium text-blue-400 border border-blue-500/20 shadow-[0_0_10px_rgba(59,130,246,0.2)] font-sans">06</span>
+<span class="text-sm font-medium tracking-widest uppercase text-gray-500 font-sans">Icons</span>
+</div>
+<h2 class="text-4xl md:text-5xl lg:text-6xl text-white leading-[1.1] font-oswald font-light tracking-tight scroll-item scroll-fade-up delay-100" style="animation-play-state: running;">
+Lucide Icons
+<span class="text-gray-600 font-oswald font-light tracking-tight">System</span>
+</h2>
+<p class="leading-relaxed text-lg font-light text-gray-400 max-w-xl scroll-item scroll-fade-up delay-200" style="animation-play-state: running;">
+All icons used in Finex come from Lucide. Rendered as inline SVGs with stroke-based styling for consistent weight and color inheritance.
+</p>
+</div>
+
+<!-- Icon Grid -->
+<div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+
+<div class="flex flex-col items-center gap-3 p-4 rounded-xl border border-white/5 hover:border-white/10 transition-colors group cursor-pointer">
+<svg class="text-gray-400 group-hover:text-white transition-colors" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+<span class="text-[10px] text-gray-500 font-sans">arrow-right</span>
+</div>
+
+<div class="flex flex-col items-center gap-3 p-4 rounded-xl border border-white/5 hover:border-white/10 transition-colors group cursor-pointer">
+<svg class="text-gray-400 group-hover:text-white transition-colors" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><rect height="7" rx="1" width="7" x="3" y="3"></rect><rect height="7" rx="1" width="7" x="14" y="3"></rect><rect height="7" rx="1" width="7" x="14" y="14"></rect><rect height="7" rx="1" width="7" x="3" y="14"></rect></svg>
+<span class="text-[10px] text-gray-500 font-sans">layout-grid</span>
+</div>
+
+<div class="flex flex-col items-center gap-3 p-4 rounded-xl border border-white/5 hover:border-white/10 transition-colors group cursor-pointer">
+<svg class="text-gray-400 group-hover:text-white transition-colors" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"></path><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"></path></svg>
+<span class="text-[10px] text-gray-500 font-sans">wallet</span>
+</div>
+
+<div class="flex flex-col items-center gap-3 p-4 rounded-xl border border-white/5 hover:border-white/10 transition-colors group cursor-pointer">
+<svg class="text-gray-400 group-hover:text-white transition-colors" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><rect height="14" rx="2" width="20" x="2" y="5"></rect><line x1="2" x2="22" y1="10" y2="10"></line></svg>
+<span class="text-[10px] text-gray-500 font-sans">credit-card</span>
+</div>
+
+<div class="flex flex-col items-center gap-3 p-4 rounded-xl border border-white/5 hover:border-white/10 transition-colors group cursor-pointer">
+<svg class="text-gray-400 group-hover:text-white transition-colors" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M8 3 4 7l4 4"></path><path d="M4 7h16"></path><path d="m16 21 4-4-4-4"></path><path d="M20 17H4"></path></svg>
+<span class="text-[10px] text-gray-500 font-sans">arrow-left-right</span>
+</div>
+
+<div class="flex flex-col items-center gap-3 p-4 rounded-xl border border-white/5 hover:border-white/10 transition-colors group cursor-pointer">
+<svg class="text-gray-400 group-hover:text-white transition-colors" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><line x1="18" x2="18" y1="20" y2="10"></line><line x1="12" x2="12" y1="20" y2="4"></line><line x1="6" x2="6" y1="20" y2="14"></line></svg>
+<span class="text-[10px] text-gray-500 font-sans">bar-chart-2</span>
+</div>
+
+<div class="flex flex-col items-center gap-3 p-4 rounded-xl border border-white/5 hover:border-white/10 transition-colors group cursor-pointer">
+<svg class="text-gray-400 group-hover:text-white transition-colors" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+<span class="text-[10px] text-gray-500 font-sans">pie-chart</span>
+</div>
+
+<div class="flex flex-col items-center gap-3 p-4 rounded-xl border border-white/5 hover:border-white/10 transition-colors group cursor-pointer">
+<svg class="text-gray-400 group-hover:text-white transition-colors" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.47a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+<span class="text-[10px] text-gray-500 font-sans">settings</span>
+</div>
+
+<div class="flex flex-col items-center gap-3 p-4 rounded-xl border border-white/5 hover:border-white/10 transition-colors group cursor-pointer">
+<svg class="text-gray-400 group-hover:text-white transition-colors" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+<span class="text-[10px] text-gray-500 font-sans">bell</span>
+</div>
+
+<div class="flex flex-col items-center gap-3 p-4 rounded-xl border border-white/5 hover:border-white/10 transition-colors group cursor-pointer">
+<svg class="text-gray-400 group-hover:text-white transition-colors" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+<span class="text-[10px] text-gray-500 font-sans">plus</span>
+</div>
+
+<div class="flex flex-col items-center gap-3 p-4 rounded-xl border border-white/5 hover:border-white/10 transition-colors group cursor-pointer">
+<svg class="text-gray-400 group-hover:text-white transition-colors" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
+<span class="text-[10px] text-gray-500 font-sans">trending-up</span>
+</div>
+
+<div class="flex flex-col items-center gap-3 p-4 rounded-xl border border-white/5 hover:border-white/10 transition-colors group cursor-pointer">
+<svg class="text-gray-400 group-hover:text-white transition-colors" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M12 20h.01"></path><path d="M2 8.82a15 15 0 0 1 20 0"></path><path d="M5 12.859a10 10 0 0 1 14 0"></path><path d="M8.5 16.429a5 5 0 0 1 7 0"></path></svg>
+<span class="text-[10px] text-gray-500 font-sans">wifi</span>
+</div>
+
+<div class="flex flex-col items-center gap-3 p-4 rounded-xl border border-white/5 hover:border-white/10 transition-colors group cursor-pointer">
+<svg class="text-gray-400 group-hover:text-white transition-colors" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>
+<span class="text-[10px] text-gray-500 font-sans">send</span>
+</div>
+
+<div class="flex flex-col items-center gap-3 p-4 rounded-xl border border-white/5 hover:border-white/10 transition-colors group cursor-pointer">
+<svg class="text-gray-400 group-hover:text-white transition-colors" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg>
+<span class="text-[10px] text-gray-500 font-sans">menu</span>
+</div>
+
+<div class="flex flex-col items-center gap-3 p-4 rounded-xl border border-white/5 hover:border-white/10 transition-colors group cursor-pointer">
+<svg class="text-gray-400 group-hover:text-white transition-colors" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+<span class="text-[10px] text-gray-500 font-sans">search</span>
+</div>
+
+<div class="flex flex-col items-center gap-3 p-4 rounded-xl border border-white/5 hover:border-white/10 transition-colors group cursor-pointer">
+<svg class="text-gray-400 group-hover:text-white transition-colors" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10"></circle><line x1="2" x2="22" y1="12" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+<span class="text-[10px] text-gray-500 font-sans">globe</span>
+</div>
+
+<div class="flex flex-col items-center gap-3 p-4 rounded-xl border border-white/5 hover:border-white/10 transition-colors group cursor-pointer">
+<svg class="text-gray-400 group-hover:text-white transition-colors" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"></path><path d="m9 12 2 2 4-4"></path></svg>
+<span class="text-[10px] text-gray-500 font-sans">shield-check</span>
+</div>
+
+<div class="flex flex-col items-center gap-3 p-4 rounded-xl border border-white/5 hover:border-white/10 transition-colors group cursor-pointer">
+<svg class="text-gray-400 group-hover:text-white transition-colors" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
+<span class="text-[10px] text-gray-500 font-sans">navigation</span>
+</div>
+
+<div class="flex flex-col items-center gap-3 p-4 rounded-xl border border-white/5 hover:border-white/10 transition-colors group cursor-pointer">
+<svg class="text-gray-400 group-hover:text-white transition-colors" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg>
+<span class="text-[10px] text-gray-500 font-sans">twitter</span>
+</div>
+
+<div class="flex flex-col items-center gap-3 p-4 rounded-xl border border-white/5 hover:border-white/10 transition-colors group cursor-pointer">
+<svg class="text-gray-400 group-hover:text-white transition-colors" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"></path><path d="M9 18c-4.51 2-5-2-7-2"></path></svg>
+<span class="text-[10px] text-gray-500 font-sans">github</span>
+</div>
+
+<div class="flex flex-col items-center gap-3 p-4 rounded-xl border border-white/5 hover:border-white/10 transition-colors group cursor-pointer">
+<svg class="text-gray-400 group-hover:text-white transition-colors" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect height="12" width="4" x="2" y="9"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+<span class="text-[10px] text-gray-500 font-sans">linkedin</span>
+</div>
+
+<div class="flex flex-col items-center gap-3 p-4 rounded-xl border border-white/5 hover:border-white/10 transition-colors group cursor-pointer">
+<svg class="text-gray-400 group-hover:text-white transition-colors" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><rect height="16" rx="2" width="20" x="2" y="4"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
+<span class="text-[10px] text-gray-500 font-sans">mail</span>
+</div>
+
+<div class="flex flex-col items-center gap-3 p-4 rounded-xl border border-white/5 hover:border-white/10 transition-colors group cursor-pointer">
+<svg class="text-gray-400 group-hover:text-white transition-colors" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+<span class="text-[10px] text-gray-500 font-sans">more-horizontal</span>
+</div>
+
+<div class="flex flex-col items-center gap-3 p-4 rounded-xl border border-white/5 hover:border-white/10 transition-colors group cursor-pointer">
+<svg class="text-gray-400 group-hover:text-white transition-colors" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"></path><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"></path><path d="M9 12H4s.55-3.03 2-4c1.62-1.1 4-1 4-1s.25 2.25 0 4z"></path><path d="M15 13v5s3.03-.55 4-2c1.1-1.62 1-4 1-4s-2.25-.25-4 0z"></path></svg>
+<span class="text-[10px] text-gray-500 font-sans">rocket</span>
+</div>
+
+</div>
+
+<!-- Icon Sizes -->
+<div>
+<p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-4 font-sans">Size Variants</p>
+<div class="flex items-end gap-6">
+<div class="flex flex-col items-center gap-2">
+<svg class="text-gray-400" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+<span class="text-[10px] text-gray-600 font-mono">16px</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<svg class="text-gray-400" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+<span class="text-[10px] text-gray-600 font-mono">20px</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<svg class="text-gray-400" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+<span class="text-[10px] text-gray-600 font-mono">24px</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<svg class="text-gray-400" fill="none" height="64" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" width="64" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+<span class="text-[10px] text-gray-600 font-mono">64px (watermark)</span>
+</div>
+</div>
+</div>
+
+<!-- Color Inheritance -->
+<div>
+<p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-4 font-sans">Color Inheritance</p>
+<div class="flex items-center gap-6">
+<svg class="text-white" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+<svg class="text-gray-400" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+<svg class="text-blue-400" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+<svg class="text-emerald-400" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+<svg class="text-indigo-400" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+<svg class="text-purple-400" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+<svg class="text-orange-400" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+</div>
+</div>
+</div>
+
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════════════════════════════ -->
+<footer class="border-t border-white/10 bg-[#050505] relative z-10 pt-20 pb-10">
+<div class="w-full max-w-7xl mx-auto px-6">
+<div class="flex flex-col md:flex-row justify-between gap-12 mb-20">
+<div class="max-w-sm scroll-item scroll-fade-up" style="animation-play-state: running;">
+<a class="inline-flex items-center justify-center bg-center w-[130px] h-[50px] bg-[url(https://cdn.midjourney.com/405c2b1c-c585-45e3-be19-65cdcd2d9e46/0_0.png?w=800&q=80)] bg-cover rounded-full" href="#"></a>
+<p class="text-gray-400 text-sm leading-relaxed mb-6 font-sans">
+Finex Design System — the complete visual specification and component library for the Finex finance platform.
+</p>
+<div class="flex gap-4">
+<a class="text-gray-400 hover:text-white transition-colors" href="#">
+<svg class="lucide lucide-twitter" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg>
+</a>
+<a class="text-gray-400 hover:text-white transition-colors" href="#">
+<svg class="lucide lucide-github" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"></path><path d="M9 18c-4.51 2-5-2-7-2"></path></svg>
+</a>
+<a class="text-gray-400 hover:text-white transition-colors" href="#">
+<svg class="lucide lucide-linkedin" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect height="12" width="4" x="2" y="9"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+</a>
+</div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-12 w-full font-sans">
+<div class="scroll-item scroll-fade-up delay-100" style="animation-play-state: running;">
+<h4 class="text-white font-medium mb-4 font-sans">Sections</h4>
+<ul class="space-y-3 text-sm text-gray-400">
+<li><a class="hover:text-blue-400 transition-colors font-sans" href="#typography">Typography</a></li>
+<li><a class="hover:text-blue-400 transition-colors font-sans" href="#colors">Colors</a></li>
+<li><a class="hover:text-blue-400 transition-colors font-sans" href="#components">Components</a></li>
+<li><a class="hover:text-blue-400 transition-colors font-sans" href="#layout">Layout</a></li>
+</ul>
+</div>
+<div class="scroll-item scroll-fade-up delay-200" style="animation-play-state: running;">
+<h4 class="text-white font-medium mb-4 font-sans">More</h4>
+<ul class="space-y-3 text-sm text-gray-400">
+<li><a class="hover:text-blue-400 transition-colors font-sans" href="#motion">Motion</a></li>
+<li><a class="hover:text-blue-400 transition-colors font-sans" href="#icons">Icons</a></li>
+<li><a class="hover:text-blue-400 transition-colors font-sans" href="#hero">Back to Top</a></li>
+</ul>
+</div>
+<div class="scroll-item scroll-fade-up delay-300" style="animation-play-state: running;">
+<h4 class="text-white font-medium mb-4 font-sans">Reference</h4>
+<ul class="space-y-3 text-sm text-gray-400">
+<li><a class="hover:text-blue-400 transition-colors font-sans" href="index.html">Original Site</a></li>
+<li><a class="hover:text-blue-400 transition-colors font-sans" href="#">Figma Source</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+<p class="text-xs text-gray-500 font-sans">© 2024 Finex Inc. Design System v2.0</p>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+<span class="text-xs text-gray-400 font-sans">All systems normal</span>
+</div>
+</div>
+</div>
+</footer>
+
+<script>
+lucide.createIcons();
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.animationPlayState = 'running';
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+  document.querySelectorAll('.scroll-item').forEach(el => observer.observe(el));
+});
+</script>
+</body></html>

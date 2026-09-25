@@ -1,0 +1,20 @@
+{{CONSTITUTIONAL}}
+
+---
+
+{{AGENT_MANIFEST}}
+
+---
+
+# Agente Ativo: {{ACTIVE_AGENT}}
+
+{{ACTIVE_AGENT_DEFINITION}}
+
+---
+
+# Contexto do Projeto
+- **Projeto:** {{PROJECT_NAME}}
+- **Slug:** {{PROJECT_SLUG}}
+- **Criado em:** {{CREATED_AT}}
+
+{{THEME_DATA}}

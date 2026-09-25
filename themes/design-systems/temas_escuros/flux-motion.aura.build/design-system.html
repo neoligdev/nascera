@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html class="scroll-smooth" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Design System - FLUX</title>
+    <script src="assets/resource_3fa48481346f.js"></script>
+    <script src="assets/iconify-icon_e19829e7f0e8.js"></script>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="assets/css2_19fd9cc6b396.css" rel="stylesheet"/>
+    <style>
+        body {
+            background-color: #0B0C15;
+            color: #E2E8F0;
+        }
+        .text-glow {
+            text-shadow: 0 0 30px rgba(255,255,255,0.1);
+        }
+        [style*="--border-gradient"]::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            padding: 1px;
+            border-radius: var(--border-radius-before, inherit);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box,
+            linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            background: var(--border-gradient);
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-indigo-500/30 font-sans">
+
+    <!-- Background (component) -->
+    <div class="aura-background-component top-0 w-full -z-10 absolute h-[800px] hue-rotate-90 brightness-125 opacity-40" data-alpha-mask="80" style="mask-image: linear-gradient(to bottom, transparent, black 0%, black 80%, transparent); -webkit-mask-image: linear-gradient(to bottom, transparent, black 0%, black 80%, transparent)">
+        <div class="aura-background-component top-0 w-full -z-10 absolute h-full">
+            <div class="absolute w-full h-full left-0 top-0 -z-10" data-us-project="HzcaAbRLaALMhHJp8gLY"></div>
+            <script type="text/javascript">
+                !function(){if(!window.UnicornStudio){window.UnicornStudio={isInitialized:!1};var i=document.createElement("script");i.src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.4.29/dist/unicornStudio.umd.js",i.onload=function(){window.UnicornStudio.isInitialized||(UnicornStudio.init(),window.UnicornStudio.isInitialized=!0)},(document.head || document.body).appendChild(i)}}();
+            </script>
+        </div>
+    </div>
+    <!-- Background Grid -->
+    <div class="fixed inset-0 z-0 bg-grid-pattern bg-[length:4rem_4rem] pointer-events-none"></div>
+
+    <!-- Navigation -->
+    <nav class="z-50 sticky bg-[#0b0c15]/60 w-full border-white/5 border-b top-0 backdrop-blur-lg">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-12">
+                <!-- Logo -->
+                <a class="inline-flex items-center justify-center bg-center w-[140px] h-[36px] bg-[url(https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/3b763a66-5dbf-4079-af7e-a616cc333698_320w.png)] bg-cover rounded-full" href="index.html"></a>
+                <div class="hidden md:flex items-center gap-8 text-xs font-medium tracking-widest text-slate-400 uppercase">
+                    <a class="hover:text-white transition-colors" href="#typography">Typography</a>
+                    <a class="hover:text-white transition-colors" href="#colors">Colors</a>
+                    <a class="hover:text-white transition-colors" href="#components">Components</a>
+                    <a class="hover:text-white transition-colors" href="#motion">Motion</a>
+                </div>
+            </div>
+            <div class="flex items-center gap-6">
+                <span class="text-xs font-medium tracking-widest text-orange-400 uppercase border border-orange-400/20 bg-orange-400/10 px-3 py-1 rounded">
+                    Design System v1.0
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 0) Hero Clone -->
+    <header class="z-10 overflow-hidden border-white/5 border-b pt-20 pb-32 relative">
+        <div class="max-w-7xl mx-auto px-6 relative">
+            <div class="max-w-3xl">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="inline-flex items-center justify-center w-2 h-2 rounded-full animate-pulse bg-orange-500"></span>
+                    <span class="text-xs font-medium tracking-widest uppercase text-orange-300">
+                        Pattern Library
+                    </span>
+                </div>
+                <h1 class="text-6xl md:text-8xl font-medium tracking-tighter leading-[0.9] text-white mb-8 text-glow">
+                    Flux
+                    <br/>
+                    Design
+                    <br/>
+                    System
+                </h1>
+                <p class="text-lg text-slate-400 max-w-md leading-relaxed mb-10">
+                    The underlying visual language of the Flux platform. Atomic components, kinetic principles, and dark-mode aesthetics.
+                </p>
+            </div>
+            <!-- Hero 3D Element Placeholder -->
+            <div class="absolute top-1/2 -right-20 -translate-y-1/2 w-[600px] h-[600px] hidden lg:block">
+                <img alt="Sphere" class="opacity-90 w-full h-full object-contain rounded-full drop-shadow-2xl" src="assets/a6add742-6a55-445d-b07d-92ef48_5109995cf622.jpg"/>
+            </div>
+        </div>
+    </header>
+
+    <!-- 1) Typography -->
+    <section id="typography" class="border-b border-white/5 relative z-20 bg-[#0B0C15]">
+        <div class="max-w-7xl mx-auto px-6 py-20">
+            <div class="flex items-center gap-4 text-xs font-medium tracking-widest uppercase mb-12 text-orange-400">
+                <span class="w-8 h-[1px] bg-orange-500"></span>
+                01 Typography
+            </div>
+
+            <div class="grid grid-cols-1 gap-12">
+                <!-- Display H1 -->
+                <div class="border-b border-white/5 pb-12">
+                    <span class="text-xs font-medium text-slate-500 uppercase tracking-widest mb-4 block">Heading 1 (Display)</span>
+                    <h1 class="text-6xl md:text-8xl font-medium tracking-tighter leading-[0.9] text-white text-glow">
+                        Kinetic Type
+                    </h1>
+                    <span class="text-xs font-mono text-slate-600 mt-4 block">6rem / 0.9 / Medium / Text Glow</span>
+                </div>
+
+                <!-- Heading 2 -->
+                <div class="border-b border-white/5 pb-12">
+                    <span class="text-xs font-medium text-slate-500 uppercase tracking-widest mb-4 block">Heading 2</span>
+                    <h2 class="text-4xl md:text-5xl font-medium text-white tracking-tight leading-none">
+                        The Creative Platform
+                    </h2>
+                    <span class="text-xs font-mono text-slate-600 mt-4 block">3rem / 1.0 / Medium</span>
+                </div>
+
+                <!-- Heading 3 -->
+                <div class="border-b border-white/5 pb-12">
+                    <span class="text-xs font-medium text-slate-500 uppercase tracking-widest mb-4 block">Heading 3</span>
+                    <h3 class="text-3xl font-medium text-white tracking-tight">
+                        Production Assets
+                    </h3>
+                    <span class="text-xs font-mono text-slate-600 mt-4 block">1.875rem / Tight / Medium</span>
+                </div>
+
+                <!-- Body Text -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 border-b border-white/5 pb-12">
+                    <div>
+                        <span class="text-xs font-medium text-slate-500 uppercase tracking-widest mb-4 block">Body Large</span>
+                        <p class="text-lg text-slate-400 leading-relaxed font-light">
+                            More than just video tutorials. Access a complete ecosystem designed to accelerate your mastery of 3D motion design.
+                        </p>
+                         <span class="text-xs font-mono text-slate-600 mt-4 block">1.125rem / Relaxed / Light</span>
+                    </div>
+                    <div>
+                        <span class="text-xs font-medium text-slate-500 uppercase tracking-widest mb-4 block">Body Small</span>
+                        <p class="text-sm text-slate-400 leading-relaxed">
+                             Download over 500GB of project files, 4K textures, HDRI maps, and procedural nodes. Yours to keep.
+                        </p>
+                        <span class="text-xs font-mono text-slate-600 mt-4 block">0.875rem / Relaxed</span>
+                    </div>
+                </div>
+
+                <!-- Labels -->
+                <div>
+                     <span class="text-xs font-medium text-slate-500 uppercase tracking-widest mb-4 block">Labels</span>
+                     <div class="flex flex-col gap-4">
+                        <span class="text-xs font-medium tracking-widest uppercase text-orange-300">Next Cohort: Oct 12</span>
+                        <span class="text-xs font-medium tracking-widest uppercase text-slate-400">Curriculum</span>
+                     </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2) Colors -->
+    <section id="colors" class="border-b border-white/5 relative z-20 bg-[#0B0C15]">
+        <div class="max-w-7xl mx-auto px-6 py-20">
+            <div class="flex items-center gap-4 text-xs font-medium tracking-widest uppercase mb-12 text-orange-400">
+                <span class="w-8 h-[1px] bg-orange-500"></span>
+                02 Color Palette
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                <!-- Background -->
+                <div class="bg-[#0B0C15] border border-white/10 p-6 rounded aspect-square flex flex-col justify-between">
+                    <span class="text-white font-medium">Background</span>
+                    <span class="text-slate-500 text-xs font-mono">#0B0C15</span>
+                </div>
+                <!-- Text Primary -->
+                <div class="bg-white border border-white/10 p-6 rounded aspect-square flex flex-col justify-between">
+                    <span class="text-black font-medium">Text</span>
+                    <span class="text-slate-400 text-xs font-mono">#FFFFFF</span>
+                </div>
+                <!-- Text Secondary -->
+                <div class="bg-slate-400 border border-white/10 p-6 rounded aspect-square flex flex-col justify-between">
+                    <span class="text-white font-medium">Muted</span>
+                    <span class="text-slate-200 text-xs font-mono">slate-400</span>
+                </div>
+                <!-- Accent Orange 500 -->
+                <div class="bg-orange-500 border border-white/10 p-6 rounded aspect-square flex flex-col justify-between">
+                    <span class="text-white font-medium">Primary</span>
+                    <span class="text-orange-200 text-xs font-mono">orange-500</span>
+                </div>
+                <!-- Accent Orange 400 -->
+                <div class="bg-orange-400 border border-white/10 p-6 rounded aspect-square flex flex-col justify-between">
+                    <span class="text-white font-medium">Secondary</span>
+                    <span class="text-orange-900 text-xs font-mono">orange-400</span>
+                </div>
+                 <!-- Panel -->
+                 <div class="bg-white/5 border border-white/10 p-6 rounded aspect-square flex flex-col justify-between">
+                    <span class="text-white font-medium">Panel</span>
+                    <span class="text-slate-400 text-xs font-mono">white/5</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3) Components -->
+    <section id="components" class="border-b border-white/5 relative z-20 bg-[#0B0C15]">
+        <div class="max-w-7xl mx-auto px-6 py-20">
+            <div class="flex items-center gap-4 text-xs font-medium tracking-widest uppercase mb-12 text-orange-400">
+                <span class="w-8 h-[1px] bg-orange-500"></span>
+                03 Components
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-24">
+                
+                <!-- Buttons & Inputs -->
+                <div class="space-y-12">
+                    <h3 class="text-xl font-medium text-white mb-6">Interactive</h3>
+                    
+                    <!-- Primary Button -->
+                    <div>
+                        <span class="text-xs font-medium text-slate-500 uppercase tracking-widest mb-4 block">Primary Action</span>
+                        <div class="max-w-xs">
+                             <button class="uppercase hover:bg-slate-800 hover:text-dark transition-all duration-300 group-hover:border-white text-xs font-semibold text-white tracking-widest w-full border-white/10 border pt-4 pb-4">
+                                Start Learning
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- CTA Button -->
+                    <div>
+                        <span class="text-xs font-medium text-slate-500 uppercase tracking-widest mb-4 block">CTA (Solid)</span>
+                        <div class="max-w-xs">
+                            <button class="w-full py-4 text-white text-xs font-semibold uppercase tracking-widest transition-all duration-300 shadow-lg bg-orange-600 hover:bg-orange-500 shadow-orange-600/20 hover:shadow-orange-600/40">
+                                Secure Your Spot
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Text Link -->
+                    <div>
+                        <span class="text-xs font-medium text-slate-500 uppercase tracking-widest mb-4 block">Text Link</span>
+                        <a class="text-xs font-semibold tracking-widest uppercase text-white border-b border-white/30 pb-1 hover:border-white transition-colors" href="#">
+                            Download Assets
+                        </a>
+                    </div>
+
+                    <!-- Input -->
+                    <div>
+                        <span class="text-xs font-medium text-slate-500 uppercase tracking-widest mb-4 block">Input Field</span>
+                        <input class="bg-white/5 border border-white/10 px-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none transition-colors w-full focus:border-orange-500 max-w-xs" placeholder="Enter your email" type="email"/>
+                    </div>
+                </div>
+
+                <!-- Cards -->
+                <div class="space-y-12">
+                    <h3 class="text-xl font-medium text-white mb-6">Cards</h3>
+
+                    <!-- Module Card (List Item) -->
+                    <div>
+                         <span class="text-xs font-medium text-slate-500 uppercase tracking-widest mb-4 block">Module Item</span>
+                         <div class="p-8 bg-white/[0.02] border border-white/5 max-w-md">
+                            <span class="text-xs font-medium text-slate-500 uppercase tracking-widest mb-2 block">
+                                Module 01
+                            </span>
+                            <h3 class="text-xl font-medium text-white tracking-tight mb-1 transition-colors hover:text-orange-400">
+                                Foundations
+                            </h3>
+                            <p class="text-sm text-slate-400">Topology & Forms</p>
+                        </div>
+                    </div>
+
+                    <!-- Feature Card -->
+                    <div>
+                        <span class="text-xs font-medium text-slate-500 uppercase tracking-widest mb-4 block">Bento Card</span>
+                        <div class="group relative overflow-hidden bg-[#0B0C15] border border-white/10 max-w-md">
+                            <div class="p-10 flex flex-col justify-between h-full">
+                                <div class="flex group-hover:border-orange-500/50 group-hover:text-orange-400 transition-colors text-white bg-white/5 w-12 h-12 border-white/10 border rounded-full mb-6 items-center justify-center">
+                                    <iconify-icon icon="solar:box-minimalistic-bold-duotone" width="24"></iconify-icon>
+                                </div>
+                                <div class="">
+                                    <h3 class="text-2xl font-medium text-white tracking-tight mb-2">Assets</h3>
+                                    <p class="text-sm text-slate-400 leading-relaxed">
+                                        Procedural nodes and textures.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4) Layout -->
+    <section id="layout" class="border-b border-white/5 relative z-20 bg-[#0B0C15]">
+        <div class="max-w-7xl mx-auto px-6 py-20">
+            <div class="flex items-center gap-4 text-xs font-medium tracking-widest uppercase mb-12 text-orange-400">
+                <span class="w-8 h-[1px] bg-orange-500"></span>
+                04 Layout System
+            </div>
+            
+            <div class="grid grid-cols-4 gap-4 h-40 mb-8 border border-white/5 p-4">
+                <div class="col-span-1 bg-white/5 flex items-center justify-center text-xs text-slate-500">Col 1</div>
+                <div class="col-span-1 bg-white/5 flex items-center justify-center text-xs text-slate-500">Col 2</div>
+                <div class="col-span-1 bg-white/5 flex items-center justify-center text-xs text-slate-500">Col 3</div>
+                <div class="col-span-1 bg-white/5 flex items-center justify-center text-xs text-slate-500">Col 4</div>
+            </div>
+            
+             <span class="text-xs font-mono text-slate-500 block">
+                 Max Width: 7xl (80rem) • Padding X: 6 (1.5rem) • Grid Gap: Standard Tailwind Spacing
+            </span>
+        </div>
+    </section>
+
+    <!-- 5) Motion -->
+    <section id="motion" class="border-b border-white/5 relative z-20 bg-[#0B0C15] overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 py-20">
+            <div class="flex items-center gap-4 text-xs font-medium tracking-widest uppercase mb-12 text-orange-400">
+                <span class="w-8 h-[1px] bg-orange-500"></span>
+                05 Motion & Effects
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                
+                <!-- Glow -->
+                <div class="p-8 border border-white/5 bg-white/[0.02]">
+                    <span class="text-xs font-medium text-slate-500 uppercase tracking-widest mb-6 block">Text Glow</span>
+                    <h2 class="text-4xl font-medium text-white tracking-tight text-glow">
+                        Luminous
+                    </h2>
+                    <span class="text-xs font-mono text-slate-600 mt-4 block">.text-glow { text-shadow: 0 0 30px rgba(255,255,255,0.1); }</span>
+                </div>
+
+                <!-- Hover State -->
+                <div class="p-8 border border-white/5 bg-white/[0.02] group cursor-pointer hover:bg-white/5 transition-colors duration-500">
+                    <span class="text-xs font-medium text-slate-500 uppercase tracking-widest mb-6 block">Panel Hover</span>
+                    <div class="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center mb-4 bg-white/5 group-hover:text-orange-400 group-hover:border-orange-500/50 transition-colors">
+                        <iconify-icon icon="solar:star-bold-duotone" width="24"></iconify-icon>
+                    </div>
+                    <p class="text-sm text-slate-400 group-hover:text-white transition-colors">Hover this card to see the icon and text transition.</p>
+                </div>
+
+                 <!-- Image Hover -->
+                 <div class="p-8 border border-white/5 bg-white/[0.02] group cursor-pointer">
+                    <span class="text-xs font-medium text-slate-500 uppercase tracking-widest mb-6 block">Image Desaturation</span>
+                    <div class="aspect-video bg-slate-800 relative overflow-hidden">
+                         <img alt="Demo" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 opacity-60 group-hover:opacity-100 group-hover:scale-105" src="assets/96e3ccfa-3799-4c9c-9f2a-263c0f_aa6856a3cfca.webp"/>
+                    </div>
+                    <span class="text-xs font-mono text-slate-600 mt-4 block">grayscale -> grayscale-0, scale-105</span>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- 6) Icons -->
+    <section class="border-b border-white/5 relative z-20 bg-[#0B0C15]">
+        <div class="max-w-7xl mx-auto px-6 py-20">
+            <div class="flex items-center gap-4 text-xs font-medium tracking-widest uppercase mb-12 text-orange-400">
+                <span class="w-8 h-[1px] bg-orange-500"></span>
+                06 Iconography
+            </div>
+            
+            <p class="text-sm text-slate-400 mb-8">Using Iconify with Solar Duotone set.</p>
+
+            <div class="flex flex-wrap gap-8 text-white">
+                <div class="flex flex-col items-center gap-2 p-4 border border-white/5 bg-white/[0.02] w-24">
+                     <iconify-icon icon="solar:layers-minimalistic-bold-duotone" width="24"></iconify-icon>
+                     <span class="text-[10px] text-slate-500">layers</span>
+                </div>
+                <div class="flex flex-col items-center gap-2 p-4 border border-white/5 bg-white/[0.02] w-24">
+                    <iconify-icon icon="solar:hamburger-menu-bold-duotone" width="24"></iconify-icon>
+                    <span class="text-[10px] text-slate-500">menu</span>
+               </div>
+               <div class="flex flex-col items-center gap-2 p-4 border border-white/5 bg-white/[0.02] w-24">
+                    <iconify-icon icon="solar:box-minimalistic-bold-duotone" width="24"></iconify-icon>
+                    <span class="text-[10px] text-slate-500">box</span>
+                </div>
+                <div class="flex flex-col items-center gap-2 p-4 border border-white/5 bg-white/[0.02] w-24">
+                    <iconify-icon icon="solar:infinity-bold-duotone" width="24"></iconify-icon>
+                    <span class="text-[10px] text-slate-500">infinity</span>
+                </div>
+                <div class="flex flex-col items-center gap-2 p-4 border border-white/5 bg-white/[0.02] w-24">
+                    <iconify-icon icon="solar:users-group-rounded-bold-duotone" width="24"></iconify-icon>
+                    <span class="text-[10px] text-slate-500">users</span>
+                </div>
+                <div class="flex flex-col items-center gap-2 p-4 border border-white/5 bg-white/[0.02] w-24">
+                    <iconify-icon icon="solar:check-circle-bold" width="24" class="text-orange-400"></iconify-icon>
+                    <span class="text-[10px] text-slate-500">check</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="overflow-hidden border-white/5 border-t pt-20 pb-10 relative bg-[#0B0C15]">
+         <div class="max-w-7xl mx-auto px-6 text-center">
+            <p class="text-xs text-slate-600">
+                Generated Design System for Flux • 2024
+            </p>
+         </div>
+    </footer>
+
+</body>
+</html>

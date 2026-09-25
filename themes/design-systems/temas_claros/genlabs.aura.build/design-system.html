@@ -1,0 +1,816 @@
+<html lang="en"><head><meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Design System - GenLabs</title>
+<script src="assets/resource_3fa48481346f.js"></script>
+<script src="assets/iconify_654a1ef798a3.js"></script>
+<link href="assets/css2_d532a689d235.css" rel="stylesheet"/>
+<style>
+body { font-family: 'Inter', sans-serif; }
+/* Curve separators */
+.curve-separator {
+background-image: url("data:image/svg+xml,%3Csvg width='20' height='60' viewBox='0 0 20 60' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M18 1C18 1 1 15 1 30C1 45 18 59 18 59' stroke='%23CBD5E1' stroke-width='0.5' stroke-linecap='round'/%3E%3C/svg%3E");
+background-repeat: no-repeat;
+background-position: center;
+width: 20px;
+height: 40px;
+}
+.curve-separator-right { transform: scaleX(-1); }
+/* Glass effects */
+.glass-panel {
+background: rgba(255, 255, 255, 0.90);
+backdrop-filter: blur(12px);
+-webkit-backdrop-filter: blur(12px);
+}
+.glass-card {
+background: rgba(255, 255, 255, 0.1);
+backdrop-filter: blur(8px);
+border: 1px solid rgba(255, 255, 255, 0.2);
+box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+/* Carousel Animation */
+.carousel-track {
+animation: vertical-scroll 12s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+@keyframes vertical-scroll {
+0%, 25% { transform: translateY(0); }
+33.33%, 58.33% { transform: translateY(-33.33%); }
+66.66%, 91.66% { transform: translateY(-66.66%); }
+100% { transform: translateY(0); }
+}
+</style>
+<meta content="font-geist,font-roboto,font-montserrat,font-poppins,font-playfair,font-instrument-serif,font-merriweather,font-bricolage,font-jakarta,font-manrope,font-space-grotesk,font-work-sans,font-pt-serif,font-geist-mono,font-space-mono,font-quicksand,font-nunito" name="disabled-font-classes"/>
+<script>
+// Configure Tailwind to include our custom 3D transform utilities
+tailwind.config = {
+theme: {
+extend: {
+// Add any custom theme extensions here if needed
+}
+},
+plugins: [
+function({ addUtilities }) {
+const rotateXUtilities = {};
+const rotateYUtilities = {};
+const rotateZUtilities = {};
+const rotateValues = [0, 5, 10, 15, 20, 30, 45, 75];
+// Generate rotate-x utilities
+rotateValues.forEach((value) => {
+rotateXUtilities[`.rotate-x-${value}`] = {
+'--tw-rotate-x': `${value}deg`,
+transform: `
+translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+rotateX(var(--tw-rotate-x, 0))
+rotateY(var(--tw-rotate-y, 0))
+rotateZ(var(--tw-rotate-z, 0))
+skewX(var(--tw-skew-x, 0))
+skewY(var(--tw-skew-y, 0))
+scaleX(var(--tw-scale-x, 1))
+scaleY(var(--tw-scale-y, 1))
+`.replace(/\\s+/g, ' ').trim(),
+};
+if (value !== 0) {
+rotateXUtilities[`.-rotate-x-${value}`] = {
+'--tw-rotate-x': `-${value}deg`,
+transform: `
+translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+rotateX(var(--tw-rotate-x, 0))
+rotateY(var(--tw-rotate-y, 0))
+rotateZ(var(--tw-rotate-z, 0))
+skewX(var(--tw-skew-x, 0))
+skewY(var(--tw-skew-y, 0))
+scaleX(var(--tw-scale-x, 1))
+scaleY(var(--tw-scale-y, 1))
+`.replace(/\\s+/g, ' ').trim(),
+};
+}
+});
+// Generate rotate-y utilities
+rotateValues.forEach((value) => {
+rotateYUtilities[`.rotate-y-${value}`] = {
+'--tw-rotate-y': `${value}deg`,
+transform: `
+translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+rotateX(var(--tw-rotate-x, 0))
+rotateY(var(--tw-rotate-y, 0))
+rotateZ(var(--tw-rotate-z, 0))
+skewX(var(--tw-skew-x, 0))
+skewY(var(--tw-skew-y, 0))
+scaleX(var(--tw-scale-x, 1))
+scaleY(var(--tw-scale-y, 1))
+`.replace(/\\s+/g, ' ').trim(),
+};
+if (value !== 0) {
+rotateYUtilities[`.-rotate-y-${value}`] = {
+'--tw-rotate-y': `-${value}deg`,
+transform: `
+translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+rotateX(var(--tw-rotate-x, 0))
+rotateY(var(--tw-rotate-y, 0))
+rotateZ(var(--tw-rotate-z, 0))
+skewX(var(--tw-skew-x, 0))
+skewY(var(--tw-skew-y, 0))
+scaleX(var(--tw-scale-x, 1))
+scaleY(var(--tw-scale-y, 1))
+`.replace(/\\s+/g, ' ').trim(),
+};
+}
+});
+// Generate rotate-z utilities
+rotateValues.forEach((value) => {
+rotateZUtilities[`.rotate-z-${value}`] = {
+'--tw-rotate-z': `${value}deg`,
+transform: `
+translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+rotateX(var(--tw-rotate-x, 0))
+rotateY(var(--tw-rotate-y, 0))
+rotateZ(var(--tw-rotate-z, 0))
+skewX(var(--tw-skew-x, 0))
+skewY(var(--tw-skew-y, 0))
+scaleX(var(--tw-scale-x, 1))
+scaleY(var(--tw-scale-y, 1))
+`.replace(/\\s+/g, ' ').trim(),
+};
+if (value !== 0) {
+rotateZUtilities[`.-rotate-z-${value}`] = {
+'--tw-rotate-z': `-${value}deg`,
+transform: `
+translate3d(var(--tw-translate-x, 0), var(--tw-translate-y, 0), var(--tw-translate-z, 0))
+rotateX(var(--tw-rotate-x, 0))
+rotateY(var(--tw-rotate-y, 0))
+rotateZ(var(--tw-rotate-z, 0))
+skewX(var(--tw-skew-x, 0))
+skewY(var(--tw-skew-y, 0))
+scaleX(var(--tw-scale-x, 1))
+scaleY(var(--tw-scale-y, 1))
+`.replace(/\\s+/g, ' ').trim(),
+};
+}
+});
+// Perspective utilities
+const perspectiveUtilities = {
+".perspective-none": { perspective: "none" },
+".perspective-dramatic": { perspective: "100px" },
+".perspective-near": { perspective: "300px" },
+".perspective-normal": { perspective: "500px" },
+".perspective-midrange": { perspective: "800px" },
+".perspective-distant": { perspective: "1200px" },
+};
+// Transform style utilities
+const transformStyleUtilities = {
+".transform-style-preserve-3d": { "transform-style": "preserve-3d" },
+".transform-style-flat": { "transform-style": "flat" },
+};
+addUtilities({
+...rotateXUtilities,
+...rotateYUtilities,
+...rotateZUtilities,
+...perspectiveUtilities,
+...transformStyleUtilities,
+});
+}
+]
+};
+</script>
+<style id="aura-editor-visibility-style">
+.invisible { visibility: hidden !important; }
+</style>
+<style id="border-gradient-shared-style">
+[style*="--border-gradient"]::before {
+content: "";
+position: absolute;
+inset: 0;
+padding: 1px;
+border-radius: var(--border-radius-before, inherit);
+-webkit-mask: linear-gradient(#fff 0 0) content-box,
+linear-gradient(#fff 0 0);
+-webkit-mask-composite: xor;
+mask-composite: exclude;
+background: var(--border-gradient);
+pointer-events: none;
+}</style> <style>
+/* 3D Transform utilities */
+.perspective-none { perspective: none !important; }
+.perspective-dramatic { perspective: 100px !important; }
+.perspective-near { perspective: 300px !important; }
+.perspective-normal { perspective: 500px !important; }
+.perspective-midrange { perspective: 800px !important; }
+.perspective-distant { perspective: 1200px !important; }
+.transform-style-preserve-3d { transform-style: preserve-3d !important; }
+.transform-style-flat { transform-style: flat !important; }
+</style><style id="dynamic-tailwind-0">*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.pointer-events-none{pointer-events:none}.absolute{position:absolute}.relative{position:relative}.inset-0{inset:0px}.inset-0\.5{inset:0.125rem}.-bottom-40{bottom:-10rem}.-left-2{left:-0.5rem}.bottom-0{bottom:0px}.bottom-2{bottom:0.5rem}.bottom-8{bottom:2rem}.bottom-\[15\%\]{bottom:15%}.left-0{left:0px}.left-1\/2{left:50%}.left-4{left:1rem}.right-0{right:0px}.right-12{right:3rem}.right-32{right:8rem}.right-4{right:1rem}.top-0{top:0px}.top-1\/2{top:50%}.top-2{top:0.5rem}.top-\[20\%\]{top:20%}.z-0{z-index:0}.z-10{z-index:10}.z-20{z-index:20}.mb-1{margin-bottom:0.25rem}.mb-10{margin-bottom:2.5rem}.mb-16{margin-bottom:4rem}.mb-2{margin-bottom:0.5rem}.mb-3{margin-bottom:0.75rem}.mb-4{margin-bottom:1rem}.mb-6{margin-bottom:1.5rem}.mb-8{margin-bottom:2rem}.ml-4{margin-left:1rem}.ml-auto{margin-left:auto}.mr-3{margin-right:0.75rem}.mt-12{margin-top:3rem}.mt-16{margin-top:4rem}.mt-2{margin-top:0.5rem}.mt-60{margin-top:15rem}.mt-8{margin-top:2rem}.mt-auto{margin-top:auto}.line-clamp-2{overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}.flex{display:flex}.inline-flex{display:inline-flex}.grid{display:grid}.hidden{display:none}.h-1\.5{height:0.375rem}.h-10{height:2.5rem}.h-12{height:3rem}.h-14{height:3.5rem}.h-16{height:4rem}.h-2{height:0.5rem}.h-24{height:6rem}.h-3{height:0.75rem}.h-32{height:8rem}.h-4{height:1rem}.h-6{height:1.5rem}.h-8{height:2rem}.h-\[100px\]{height:100px}.h-\[14px\]{height:14px}.h-\[16px\]{height:16px}.h-\[20px\]{height:20px}.h-\[300px\]{height:300px}.h-\[40\%\]{height:40%}.h-\[50\%\]{height:50%}.h-\[70\%\]{height:70%}.h-\[85\%\]{height:85%}.h-\[95\%\]{height:95%}.h-full{height:100%}.h-px{height:1px}.min-h-\[340px\]{min-height:340px}.min-h-\[400px\]{min-height:400px}.min-h-\[500px\]{min-height:500px}.min-h-screen{min-height:100vh}.w-1\.5{width:0.375rem}.w-1\/2{width:50%}.w-1\/5{width:20%}.w-10{width:2.5rem}.w-14{width:3.5rem}.w-16{width:4rem}.w-2{width:0.5rem}.w-20{width:5rem}.w-24{width:6rem}.w-3{width:0.75rem}.w-3\/4{width:75%}.w-32{width:8rem}.w-4{width:1rem}.w-48{width:12rem}.w-6{width:1.5rem}.w-8{width:2rem}.w-\[100px\]{width:100px}.w-\[14px\]{width:14px}.w-\[16px\]{width:16px}.w-\[1px\]{width:1px}.w-\[20px\]{width:20px}.w-\[280px\]{width:280px}.w-\[60px\]{width:60px}.w-\[80px\]{width:80px}.w-\[90px\]{width:90px}.w-fit{width:-moz-fit-content;width:fit-content}.w-full{width:100%}.w-max{width:max-content}.w-px{width:1px}.max-w-2xl{max-width:42rem}.max-w-\[240px\]{max-width:240px}.max-w-md{max-width:28rem}.flex-1{flex:1 1 0%}.flex-grow{flex-grow:1}.-translate-x-1\/2{--tw-translate-x:-50%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.-translate-y-1\/2{--tw-translate-y:-50%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.-translate-y-\[20\%\]{--tw-translate-y:-20%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.-translate-y-\[60\%\]{--tw-translate-y:-60%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.translate-y-4{--tw-translate-y:1rem;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.translate-y-8{--tw-translate-y:2rem;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.-rotate-12{--tw-rotate:-12deg;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.rotate-6{--tw-rotate:6deg;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.scale-50{--tw-scale-x:.5;--tw-scale-y:.5;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.transform{transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}@keyframes ping{75%, 100%{transform:scale(2);opacity:0}}.animate-ping{animation:ping 1s cubic-bezier(0, 0, 0.2, 1) infinite}@keyframes pulse{50%{opacity:.5}}.animate-pulse{animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite}.cursor-default{cursor:default}.cursor-pointer{cursor:pointer}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-start{align-items:flex-start}.items-end{align-items:flex-end}.items-center{align-items:center}.items-baseline{align-items:baseline}.justify-start{justify-content:flex-start}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-1{gap:0.25rem}.gap-1\.5{gap:0.375rem}.gap-10{gap:2.5rem}.gap-12{gap:3rem}.gap-16{gap:4rem}.gap-2{gap:0.5rem}.gap-3{gap:0.75rem}.gap-4{gap:1rem}.gap-6{gap:1.5rem}.gap-8{gap:2rem}.gap-x-0{column-gap:0px}.gap-x-10{column-gap:2.5rem}.gap-x-16{column-gap:4rem}.gap-x-2{column-gap:0.5rem}.gap-x-3{column-gap:0.75rem}.gap-x-4{column-gap:1rem}.gap-x-6{column-gap:1.5rem}.gap-x-8{column-gap:2rem}.gap-x-px{column-gap:1px}.gap-y-0{row-gap:0px}.gap-y-10{row-gap:2.5rem}.gap-y-16{row-gap:4rem}.gap-y-2{row-gap:0.5rem}.gap-y-3{row-gap:0.75rem}.gap-y-4{row-gap:1rem}.gap-y-6{row-gap:1.5rem}.gap-y-8{row-gap:2rem}.gap-y-px{row-gap:1px}.-space-x-2 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(-0.5rem * var(--tw-space-x-reverse));margin-left:calc(-0.5rem * calc(1 - var(--tw-space-x-reverse)))}.space-y-2 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.space-y-5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.25rem * var(--tw-space-y-reverse))}.self-end{align-self:flex-end}.overflow-hidden{overflow:hidden}.rounded-2xl{border-radius:1rem}.rounded-\[2\.5rem\]{border-radius:2.5rem}.rounded-\[2rem\]{border-radius:2rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.rounded-none{border-radius:0px}.rounded-sm{border-radius:0.125rem}.rounded-xl{border-radius:0.75rem}.rounded-b-2xl{border-bottom-right-radius:1rem;border-bottom-left-radius:1rem}.rounded-t-sm{border-top-left-radius:0.125rem;border-top-right-radius:0.125rem}.border{border-width:1px}.border-2{border-width:2px}.border-b{border-bottom-width:1px}.border-l{border-left-width:1px}.border-l-2{border-left-width:2px}.border-r{border-right-width:1px}.border-t{border-top-width:1px}.border-none{border-style:none}.border-white{--tw-border-opacity:1;border-color:rgb(255 255 255 / var(--tw-border-opacity, 1))}.border-white\/10{border-color:rgb(255 255 255 / 0.1)}.border-white\/20{border-color:rgb(255 255 255 / 0.2)}.border-white\/60{border-color:rgb(255 255 255 / 0.6)}.border-zinc-100{--tw-border-opacity:1;border-color:rgb(244 244 245 / var(--tw-border-opacity, 1))}.border-zinc-200{--tw-border-opacity:1;border-color:rgb(228 228 231 / var(--tw-border-opacity, 1))}.border-zinc-300{--tw-border-opacity:1;border-color:rgb(212 212 216 / var(--tw-border-opacity, 1))}.border-zinc-400{--tw-border-opacity:1;border-color:rgb(161 161 170 / var(--tw-border-opacity, 1))}.bg-black\/10{background-color:rgb(0 0 0 / 0.1)}.bg-emerald-400{--tw-bg-opacity:1;background-color:rgb(52 211 153 / var(--tw-bg-opacity, 1))}.bg-emerald-500{--tw-bg-opacity:1;background-color:rgb(16 185 129 / var(--tw-bg-opacity, 1))}.bg-indigo-500{--tw-bg-opacity:1;background-color:rgb(99 102 241 / var(--tw-bg-opacity, 1))}.bg-orange-500{--tw-bg-opacity:1;background-color:rgb(249 115 22 / var(--tw-bg-opacity, 1))}.bg-transparent{background-color:transparent}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-white\/20{background-color:rgb(255 255 255 / 0.2)}.bg-white\/30{background-color:rgb(255 255 255 / 0.3)}.bg-white\/50{background-color:rgb(255 255 255 / 0.5)}.bg-white\/60{background-color:rgb(255 255 255 / 0.6)}.bg-zinc-100{--tw-bg-opacity:1;background-color:rgb(244 244 245 / var(--tw-bg-opacity, 1))}.bg-zinc-200{--tw-bg-opacity:1;background-color:rgb(228 228 231 / var(--tw-bg-opacity, 1))}.bg-zinc-300{--tw-bg-opacity:1;background-color:rgb(212 212 216 / var(--tw-bg-opacity, 1))}.bg-zinc-400{--tw-bg-opacity:1;background-color:rgb(161 161 170 / var(--tw-bg-opacity, 1))}.bg-zinc-50{--tw-bg-opacity:1;background-color:rgb(250 250 250 / var(--tw-bg-opacity, 1))}.bg-zinc-500{--tw-bg-opacity:1;background-color:rgb(113 113 122 / var(--tw-bg-opacity, 1))}.bg-zinc-700{--tw-bg-opacity:1;background-color:rgb(63 63 70 / var(--tw-bg-opacity, 1))}.bg-zinc-800{--tw-bg-opacity:1;background-color:rgb(39 39 42 / var(--tw-bg-opacity, 1))}.bg-zinc-900{--tw-bg-opacity:1;background-color:rgb(24 24 27 / var(--tw-bg-opacity, 1))}.bg-zinc-950\/5{background-color:rgb(9 9 11 / 0.05)}.bg-\[url\(https\:\/\/hoirqrkdgbmvpwutwuwj\.supabase\.co\/storage\/v1\/object\/public\/assets\/assets\/a5387a0b-52c6-40c2-b3be-ef86329b19cc_1600w\.webp\)\]{background-image:url("a5387a0b-52c6-40c2-b3be-ef8632_5ea829d0de5b.webp")}.bg-gradient-to-b{background-image:linear-gradient(to bottom, var(--tw-gradient-stops))}.bg-gradient-to-l{background-image:linear-gradient(to left, var(--tw-gradient-stops))}.bg-gradient-to-r{background-image:linear-gradient(to right, var(--tw-gradient-stops))}.bg-gradient-to-t{background-image:linear-gradient(to top, var(--tw-gradient-stops))}.from-black\/10{--tw-gradient-from:rgb(0 0 0 / 0.1) var(--tw-gradient-from-position);--tw-gradient-to:rgb(0 0 0 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-black\/60{--tw-gradient-from:rgb(0 0 0 / 0.6) var(--tw-gradient-from-position);--tw-gradient-to:rgb(0 0 0 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-indigo-500{--tw-gradient-from:#6366f1 var(--tw-gradient-from-position);--tw-gradient-to:rgb(99 102 241 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-neutral-400{--tw-gradient-from:#a3a3a3 var(--tw-gradient-from-position);--tw-gradient-to:rgb(163 163 163 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-transparent{--tw-gradient-from:transparent var(--tw-gradient-from-position);--tw-gradient-to:rgb(0 0 0 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-white{--tw-gradient-from:#fff var(--tw-gradient-from-position);--tw-gradient-to:rgb(255 255 255 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-white\/10{--tw-gradient-from:rgb(255 255 255 / 0.1) var(--tw-gradient-from-position);--tw-gradient-to:rgb(255 255 255 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-zinc-400{--tw-gradient-from:#a1a1aa var(--tw-gradient-from-position);--tw-gradient-to:rgb(161 161 170 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-zinc-50{--tw-gradient-from:#fafafa var(--tw-gradient-from-position);--tw-gradient-to:rgb(250 250 250 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-zinc-900\/0{--tw-gradient-from:rgb(24 24 27 / 0) var(--tw-gradient-from-position);--tw-gradient-to:rgb(24 24 27 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-zinc-900\/50{--tw-gradient-from:rgb(24 24 27 / 0.5) var(--tw-gradient-from-position);--tw-gradient-to:rgb(24 24 27 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-zinc-900\/90{--tw-gradient-from:rgb(24 24 27 / 0.9) var(--tw-gradient-from-position);--tw-gradient-to:rgb(24 24 27 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.via-black\/20{--tw-gradient-to:rgb(0 0 0 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), rgb(0 0 0 / 0.2) var(--tw-gradient-via-position), var(--tw-gradient-to)}.via-white\/80{--tw-gradient-to:rgb(255 255 255 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), rgb(255 255 255 / 0.8) var(--tw-gradient-via-position), var(--tw-gradient-to)}.via-zinc-200{--tw-gradient-to:rgb(228 228 231 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), #e4e4e7 var(--tw-gradient-via-position), var(--tw-gradient-to)}.via-zinc-900\/20{--tw-gradient-to:rgb(24 24 27 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), rgb(24 24 27 / 0.2) var(--tw-gradient-via-position), var(--tw-gradient-to)}.to-black\/10{--tw-gradient-to:rgb(0 0 0 / 0.1) var(--tw-gradient-to-position)}.to-black\/20{--tw-gradient-to:rgb(0 0 0 / 0.2) var(--tw-gradient-to-position)}.to-neutral-600{--tw-gradient-to:#525252 var(--tw-gradient-to-position)}.to-transparent{--tw-gradient-to:transparent var(--tw-gradient-to-position)}.to-violet-500{--tw-gradient-to:#8b5cf6 var(--tw-gradient-to-position)}.to-white\/0{--tw-gradient-to:rgb(255 255 255 / 0) var(--tw-gradient-to-position)}.to-zinc-100{--tw-gradient-to:#f4f4f5 var(--tw-gradient-to-position)}.to-zinc-200{--tw-gradient-to:#e4e4e7 var(--tw-gradient-to-position)}.to-zinc-900\/10{--tw-gradient-to:rgb(24 24 27 / 0.1) var(--tw-gradient-to-position)}.bg-cover{background-size:cover}.bg-clip-text{-webkit-background-clip:text;background-clip:text}.bg-center{background-position:center}.object-cover{object-fit:cover}.p-3{padding:0.75rem}.p-4{padding:1rem}.p-5{padding:1.25rem}.p-8{padding:2rem}.px-0{padding-left:0px;padding-right:0px}.px-1{padding-left:0.25rem;padding-right:0.25rem}.px-2{padding-left:0.5rem;padding-right:0.5rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-4{padding-left:1rem;padding-right:1rem}.px-5{padding-left:1.25rem;padding-right:1.25rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-0{padding-top:0px;padding-bottom:0px}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-3{padding-top:0.75rem;padding-bottom:0.75rem}.py-4{padding-top:1rem;padding-bottom:1rem}.pb-1{padding-bottom:0.25rem}.pb-1\.5{padding-bottom:0.375rem}.pb-2{padding-bottom:0.5rem}.pb-2\.5{padding-bottom:0.625rem}.pb-3{padding-bottom:0.75rem}.pb-4{padding-bottom:1rem}.pb-6{padding-bottom:1.5rem}.pb-8{padding-bottom:2rem}.pl-1\.5{padding-left:0.375rem}.pl-3{padding-left:0.75rem}.pl-4{padding-left:1rem}.pl-5{padding-left:1.25rem}.pl-6{padding-left:1.5rem}.pl-8{padding-left:2rem}.pr-12{padding-right:3rem}.pr-3{padding-right:0.75rem}.pr-4{padding-right:1rem}.pr-5{padding-right:1.25rem}.pr-6{padding-right:1.5rem}.pr-8{padding-right:2rem}.pt-1\.5{padding-top:0.375rem}.pt-2{padding-top:0.5rem}.pt-2\.5{padding-top:0.625rem}.pt-3{padding-top:0.75rem}.pt-4{padding-top:1rem}.pt-6{padding-top:1.5rem}.pt-8{padding-top:2rem}.text-center{text-align:center}.font-mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-5xl{font-size:3rem;line-height:1}.text-6xl{font-size:3.75rem;line-height:1}.text-\[10px\]{font-size:10px}.text-\[11px\]{font-size:11px}.text-\[9px\]{font-size:9px}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-bold{font-weight:700}.font-light{font-weight:300}.font-medium{font-weight:500}.font-normal{font-weight:400}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.italic{font-style:italic}.leading-\[0\.95\]{line-height:0.95}.leading-none{line-height:1}.leading-relaxed{line-height:1.625}.leading-snug{line-height:1.375}.leading-tight{line-height:1.25}.tracking-tight{letter-spacing:-0.025em}.tracking-tighter{letter-spacing:-0.05em}.tracking-wide{letter-spacing:0.025em}.tracking-wider{letter-spacing:0.05em}.tracking-widest{letter-spacing:0.1em}.text-black\/60{color:rgb(0 0 0 / 0.6)}.text-emerald-400{--tw-text-opacity:1;color:rgb(52 211 153 / var(--tw-text-opacity, 1))}.text-emerald-600{--tw-text-opacity:1;color:rgb(5 150 105 / var(--tw-text-opacity, 1))}.text-indigo-400{--tw-text-opacity:1;color:rgb(129 140 248 / var(--tw-text-opacity, 1))}.text-neutral-800{--tw-text-opacity:1;color:rgb(38 38 38 / var(--tw-text-opacity, 1))}.text-orange-500{--tw-text-opacity:1;color:rgb(249 115 22 / var(--tw-text-opacity, 1))}.text-slate-800{--tw-text-opacity:1;color:rgb(30 41 59 / var(--tw-text-opacity, 1))}.text-transparent{color:transparent}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.text-white\/50{color:rgb(255 255 255 / 0.5)}.text-white\/60{color:rgb(255 255 255 / 0.6)}.text-white\/80{color:rgb(255 255 255 / 0.8)}.text-zinc-300{--tw-text-opacity:1;color:rgb(212 212 216 / var(--tw-text-opacity, 1))}.text-zinc-400{--tw-text-opacity:1;color:rgb(161 161 170 / var(--tw-text-opacity, 1))}.text-zinc-500{--tw-text-opacity:1;color:rgb(113 113 122 / var(--tw-text-opacity, 1))}.text-zinc-600{--tw-text-opacity:1;color:rgb(82 82 91 / var(--tw-text-opacity, 1))}.text-zinc-900{--tw-text-opacity:1;color:rgb(24 24 27 / var(--tw-text-opacity, 1))}.underline{-webkit-text-decoration-line:underline;text-decoration-line:underline}.underline-offset-4{text-underline-offset:4px}.opacity-0{opacity:0}.opacity-10{opacity:0.1}.opacity-50{opacity:0.5}.opacity-60{opacity:0.6}.opacity-75{opacity:0.75}.opacity-80{opacity:0.8}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_0_10px_rgba\(16\2c 185\2c 129\2c 0\.5\)\]{--tw-shadow:0 0 10px rgba(16,185,129,0.5);--tw-shadow-colored:0 0 10px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0px_0px_0px_1px_rgba\(0\2c 0\2c 0\2c 0\.06\)\2c 0px_1px_1px_-0\.5px_rgba\(0\2c 0\2c 0\2c 0\.06\)\2c 0px_3px_3px_-1\.5px_rgba\(0\2c 0\2c 0\2c 0\.06\)\2c _0px_6px_6px_-3px_rgba\(0\2c 0\2c 0\2c 0\.06\)\2c 0px_12px_12px_-6px_rgba\(0\2c 0\2c 0\2c 0\.06\)\2c 0px_24px_24px_-12px_rgba\(0\2c 0\2c 0\2c 0\.06\)\]{--tw-shadow:0px 0px 0px 1px rgba(0,0,0,0.06),0px 1px 1px -0.5px rgba(0,0,0,0.06),0px 3px 3px -1.5px rgba(0,0,0,0.06), 0px 6px 6px -3px rgba(0,0,0,0.06),0px 12px 12px -6px rgba(0,0,0,0.06),0px 24px 24px -12px rgba(0,0,0,0.06);--tw-shadow-colored:0px 0px 0px 1px var(--tw-shadow-color), 0px 1px 1px -0.5px var(--tw-shadow-color), 0px 3px 3px -1.5px var(--tw-shadow-color), 0px 6px 6px -3px var(--tw-shadow-color), 0px 12px 12px -6px var(--tw-shadow-color), 0px 24px 24px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0px_2px_3px_-1px_rgba\(0\2c 0\2c 0\2c 0\.1\)\2c 0px_1px_0px_0px_rgba\(25\2c 28\2c 33\2c 0\.02\)\2c 0px_0px_0px_1px_rgba\(25\2c 28\2c 33\2c 0\.08\)\]{--tw-shadow:0px 2px 3px -1px rgba(0,0,0,0.1),0px 1px 0px 0px rgba(25,28,33,0.02),0px 0px 0px 1px rgba(25,28,33,0.08);--tw-shadow-colored:0px 2px 3px -1px var(--tw-shadow-color), 0px 1px 0px 0px var(--tw-shadow-color), 0px 0px 0px 1px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-none{--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-xl{--tw-shadow:0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-zinc-900\/10{--tw-shadow-color:rgb(24 24 27 / 0.1);--tw-shadow:var(--tw-shadow-colored)}.shadow-zinc-900\/20{--tw-shadow-color:rgb(24 24 27 / 0.2);--tw-shadow:var(--tw-shadow-colored)}.shadow-zinc-900\/30{--tw-shadow-color:rgb(24 24 27 / 0.3);--tw-shadow:var(--tw-shadow-colored)}.shadow-zinc-900\/5{--tw-shadow-color:rgb(24 24 27 / 0.05);--tw-shadow:var(--tw-shadow-colored)}.outline-none{outline:2px solid transparent;outline-offset:2px}.ring-4{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(4px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)}.ring-zinc-200{--tw-ring-opacity:1;--tw-ring-color:rgb(228 228 231 / var(--tw-ring-opacity, 1))}.grayscale{--tw-grayscale:grayscale(100%);filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.saturate-50{--tw-saturate:saturate(.5);filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.saturate-\[0\.8\]{--tw-saturate:saturate(0.8);filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.filter{filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.backdrop-blur{--tw-backdrop-blur:blur(8px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.backdrop-blur-sm{--tw-backdrop-blur:blur(4px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-colors{transition-property:color, background-color, border-color, fill, stroke, -webkit-text-decoration-color;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-opacity{transition-property:opacity;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-shadow{transition-property:box-shadow;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-transform{transition-property:transform;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.delay-100{transition-delay:100ms}.duration-300{transition-duration:300ms}.duration-500{transition-duration:500ms}.duration-700{transition-duration:700ms}.duration-\[2s\]{transition-duration:2s}.ease-in-out{transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1)}.ease-out{transition-timing-function:cubic-bezier(0, 0, 0.2, 1)}.selection\:bg-slate-900 *::selection{--tw-bg-opacity:1;background-color:rgb(15 23 42 / var(--tw-bg-opacity, 1))}.selection\:text-white *::selection{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.selection\:bg-slate-900::selection{--tw-bg-opacity:1;background-color:rgb(15 23 42 / var(--tw-bg-opacity, 1))}.selection\:text-white::selection{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.hover\:-translate-y-0\.5:hover{--tw-translate-y:-0.125rem;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.hover\:bg-black:hover{--tw-bg-opacity:1;background-color:rgb(0 0 0 / var(--tw-bg-opacity, 1))}.hover\:bg-white\/20:hover{background-color:rgb(255 255 255 / 0.2)}.hover\:bg-zinc-100:hover{--tw-bg-opacity:1;background-color:rgb(244 244 245 / var(--tw-bg-opacity, 1))}.hover\:bg-zinc-50:hover{--tw-bg-opacity:1;background-color:rgb(250 250 250 / var(--tw-bg-opacity, 1))}.hover\:text-indigo-600:hover{--tw-text-opacity:1;color:rgb(79 70 229 / var(--tw-text-opacity, 1))}.hover\:text-orange-500:hover{--tw-text-opacity:1;color:rgb(249 115 22 / var(--tw-text-opacity, 1))}.hover\:text-orange-600:hover{--tw-text-opacity:1;color:rgb(234 88 12 / var(--tw-text-opacity, 1))}.hover\:text-zinc-900:hover{--tw-text-opacity:1;color:rgb(24 24 27 / var(--tw-text-opacity, 1))}.hover\:shadow-2xl:hover{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.hover\:shadow-xl:hover{--tw-shadow:0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.hover\:shadow-zinc-900\/20:hover{--tw-shadow-color:rgb(24 24 27 / 0.2);--tw-shadow:var(--tw-shadow-colored)}.group:hover .group-hover\:translate-x-1{--tw-translate-x:0.25rem;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.group:hover .group-hover\:translate-y-0{--tw-translate-y:0px;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.group:hover .group-hover\:translate-y-2{--tw-translate-y:0.5rem;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.group:hover .group-hover\:-rotate-6{--tw-rotate:-6deg;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.group:hover .group-hover\:rotate-12{--tw-rotate:12deg;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.group:hover .group-hover\:rotate-3{--tw-rotate:3deg;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.group:hover .group-hover\:scale-105{--tw-scale-x:1.05;--tw-scale-y:1.05;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.group:hover .group-hover\:scale-110{--tw-scale-x:1.1;--tw-scale-y:1.1;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.group:hover .group-hover\:text-orange-500{--tw-text-opacity:1;color:rgb(249 115 22 / var(--tw-text-opacity, 1))}.group:hover .group-hover\:text-zinc-600{--tw-text-opacity:1;color:rgb(82 82 91 / var(--tw-text-opacity, 1))}.group:hover .group-hover\:opacity-100{opacity:1}.group:hover .group-hover\:shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.group:hover .group-hover\:shadow-md{--tw-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.group:hover .group-hover\:grayscale-0{--tw-grayscale:grayscale(0);filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}@media (min-width: 640px){.sm\:block{display:block}.sm\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.sm\:flex-row{flex-direction:row}}@media (min-width: 768px){.md\:col-span-2{grid-column:span 2 / span 2}.md\:mb-16{margin-bottom:4rem}.md\:ml-8{margin-left:2rem}.md\:block{display:block}.md\:flex{display:flex}.md\:w-2\/3{width:66.666667%}.md\:w-\[320px\]{width:320px}.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.md\:flex-row{flex-direction:row}.md\:items-end{align-items:flex-end}.md\:gap-0{gap:0px}.md\:gap-6{gap:1.5rem}.md\:p-12{padding:3rem}.md\:px-10{padding-left:2.5rem;padding-right:2.5rem}.md\:pb-10{padding-bottom:2.5rem}.md\:pl-10{padding-left:2.5rem}.md\:pr-10{padding-right:2.5rem}.md\:pt-10{padding-top:2.5rem}.md\:text-2xl{font-size:1.5rem;line-height:2rem}.md\:text-4xl{font-size:2.25rem;line-height:2.5rem}.md\:text-5xl{font-size:3rem;line-height:1}.md\:text-7xl{font-size:4.5rem;line-height:1}}@media (min-width: 1024px){.lg\:col-span-5{grid-column:span 5 / span 5}.lg\:col-span-7{grid-column:span 7 / span 7}.lg\:mb-20{margin-bottom:5rem}.lg\:mb-24{margin-bottom:6rem}.lg\:mt-24{margin-top:6rem}.lg\:block{display:block}.lg\:min-h-0{min-height:0px}.lg\:min-h-\[600px\]{min-height:600px}.lg\:translate-y-16{--tw-translate-y:4rem;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.lg\:scale-100{--tw-scale-x:1;--tw-scale-y:1;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.lg\:grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.lg\:grid-cols-12{grid-template-columns:repeat(12, minmax(0, 1fr))}.lg\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.lg\:grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}.lg\:grid-cols-4{grid-template-columns:repeat(4, minmax(0, 1fr))}.lg\:items-end{align-items:flex-end}.lg\:justify-end{justify-content:flex-end}.lg\:gap-12{gap:3rem}.lg\:gap-20{gap:5rem}.lg\:gap-6{gap:1.5rem}.lg\:p-0{padding:0px}.lg\:p-16{padding:4rem}.lg\:pb-0{padding-bottom:0px}.lg\:pr-12{padding-right:3rem}.lg\:text-right{text-align:right}.lg\:text-5xl{font-size:3rem;line-height:1}.lg\:text-9xl{font-size:8rem;line-height:1}.lg\:text-\[5rem\]{font-size:5rem}}@media (min-width: 1280px){.xl\:block{display:block}.xl\:min-h-\[700px\]{min-height:700px}.xl\:max-w-\[1300px\]{max-width:1300px}.xl\:rounded-\[2\.5rem\]{border-radius:2.5rem}.xl\:border{border-width:1px}.xl\:border-white\/50{border-color:rgb(255 255 255 / 0.5)}.xl\:p-8{padding:2rem}.xl\:px-12{padding-left:3rem;padding-right:3rem}.xl\:pb-12{padding-bottom:3rem}.xl\:pl-12{padding-left:3rem}.xl\:pr-12{padding-right:3rem}.xl\:pt-12{padding-top:3rem}.xl\:shadow-2xl{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}}</style></head>
+<body class="flex min-h-screen bg-center selection:bg-slate-900 selection:text-white xl:p-8 text-slate-800 bg-zinc-500 bg-cover px-0 py-0 relative items-start">
+<!-- Design System Navigation -->
+<!-- Fixed top navigation bar with anchor links to all design system sections -->
+<nav class="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-sm border-b border-zinc-200 px-6 py-4">
+<div class="max-w-[1300px] mx-auto flex items-center justify-between gap-4 overflow-x-auto">
+<div class="flex items-center gap-2 text-zinc-900 flex-shrink-0">
+<div class="flex text-white bg-gradient-to-b from-black/60 to-black/20 w-8 h-8 rounded-full items-center justify-center" style="position: relative; --border-gradient: linear-gradient(180deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1)); --border-radius-before: 9999px">
+<svg aria-hidden="true" class="lucide lucide-layers w-[16px] h-[16px]" data-icon-replaced="true" data-icon-set="solar" data-solar="link-circle-bold-duotone" fill="none" height="16" role="img" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.5" style="width: 16px; height: 16px; color: rgb(255, 255, 255)" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg">
+<path class="" d="M3.464 20.536C4.93 22 7.286 22 12 22s7.071 0 8.535-1.465C22 19.072 22 16.714 22 12s0-7.071-1.465-8.536C19.072 2 16.714 2 12 2S4.929 2 3.464 3.464C2 4.93 2 7.286 2 12s0 7.071 1.464 8.535" fill="#ffffff" opacity=".5"></path>
+<path d="M9.5 8.75A3.25 3.25 0 1 0 12.75 12a.75.75 0 0 1 1.5 0A4.75 4.75 0 1 1 9.5 7.25a.75.75 0 0 1 0 1.5" fill="#ffffff"></path>
+<path class="" d="M17.75 12a3.25 3.25 0 0 1-3.25 3.25a.75.75 0 0 0 0 1.5A4.75 4.75 0 1 0 9.75 12a.75.75 0 0 0 1.5 0a3.25 3.25 0 0 1 6.5 0" fill="#ffffff"></path>
+</svg>
+</div>
+<span class="text-lg font-medium tracking-tight">Design <span class="text-zinc-400">System</span></span>
+</div>
+<div class="flex gap-4 text-xs font-medium text-zinc-600">
+<a href="#hero" class="hover:text-zinc-900 transition-colors">Hero</a>
+<a href="#typography" class="hover:text-zinc-900 transition-colors">Typography</a>
+<a href="#colors" class="hover:text-zinc-900 transition-colors">Colors</a>
+<a href="#components" class="hover:text-zinc-900 transition-colors">Components</a>
+<a href="#layout" class="hover:text-zinc-900 transition-colors">Layout</a>
+<a href="#motion" class="hover:text-zinc-900 transition-colors">Motion</a>
+<a href="#icons" class="hover:text-zinc-900 transition-colors">Icons</a>
+</div>
+</div>
+</nav>
+<!-- Main Frame Container -->
+<main class="glass-panel overflow-hidden flex flex-col xl:max-w-[1300px] z-10 xl:border-white/50 border-none xl:border xl:rounded-[2.5rem] md:pt-10 md:pr-10 md:pb-10 md:pl-10 xl:pt-12 xl:pr-12 xl:pb-12 xl:pl-12 xl:shadow-2xl min-h-screen xl:min-h-[700px] w-full rounded-none pt-6 pr-6 pb-6 pl-6 relative shadow-none mt-16">
+<!-- Vertical Grid Lines -->
+<div class="absolute inset-0 flex justify-between pointer-events-none z-0 px-6 md:px-10 xl:px-12 w-full h-full">
+<div class="h-full w-[1px] bg-zinc-950/5"></div>
+<div class="h-full w-[1px] bg-zinc-950/5 hidden md:block"></div>
+<div class="h-full w-[1px] bg-zinc-950/5 hidden lg:block"></div>
+<div class="h-full w-[1px] bg-zinc-950/5 hidden xl:block"></div>
+<div class="h-full w-[1px] bg-zinc-950/5"></div>
+</div>
+<!-- Section 0: Hero (Exact Clone, Text Adapted) -->
+<!-- Hero pattern: Use this full-width hero layout for landing pages and major section introductions. Features split content with left text column and right visual card. -->
+<section id="hero" class="mb-24">
+<!-- Header -->
+<!-- Original header component: Use for main navigation with logo, menu items, and CTA button -->
+<header class="flex md:mb-16 md:gap-0 z-10 mb-16 relative gap-x-6 gap-y-6 items-center justify-between">
+<!-- Logo -->
+<div class="flex items-center gap-2 text-zinc-900">
+<div class="flex text-white bg-gradient-to-b from-black/60 to-black/20 w-8 h-8 rounded-full items-center justify-center" style="position: relative; --border-gradient: linear-gradient(180deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1)); --border-radius-before: 9999px">
+<svg aria-hidden="true" class="lucide lucide-layers w-[16px] h-[16px]" data-icon-replaced="true" data-icon-set="solar" data-solar="link-circle-bold-duotone" fill="none" height="16" role="img" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.5" style="width: 16px; height: 16px; color: rgb(255, 255, 255)" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg">
+<path class="" d="M3.464 20.536C4.93 22 7.286 22 12 22s7.071 0 8.535-1.465C22 19.072 22 16.714 22 12s0-7.071-1.465-8.536C19.072 2 16.714 2 12 2S4.929 2 3.464 3.464C2 4.93 2 7.286 2 12s0 7.071 1.464 8.535" fill="#ffffff" opacity=".5"></path>
+<path d="M9.5 8.75A3.25 3.25 0 1 0 12.75 12a.75.75 0 0 1 1.5 0A4.75 4.75 0 1 1 9.5 7.25a.75.75 0 0 1 0 1.5" fill="#ffffff">
+</path>
+<path class="" d="M17.75 12a3.25 3.25 0 0 1-3.25 3.25a.75.75 0 0 0 0 1.5A4.75 4.75 0 1 0 9.75 12a.75.75 0 0 0 1.5 0a3.25 3.25 0 0 1 6.5 0" fill="#ffffff"></path>
+</svg>
+</div>
+<span class="text-lg font-medium tracking-tight">GEN<span class="text-zinc-400">LABS</span></span>
+</div>
+<!-- Navigation -->
+<nav class="hidden md:flex uppercase text-xs font-medium text-zinc-500 tracking-widest bg-white/50 border-white/60 border rounded-full pt-2 pr-6 pb-2 pl-6 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] backdrop-blur-sm gap-x-8 gap-y-8 items-center">
+<a class="hover:text-zinc-900 transition-colors duration-300" href="#typography">Typography</a>
+<a class="hover:text-zinc-900 transition-colors duration-300" href="#colors">Colors</a>
+<a class="hover:text-zinc-900 transition-colors duration-300" href="#components">Components</a>
+<a class="hover:text-zinc-900 transition-colors duration-300 hidden lg:block" href="#layout">Layout</a>
+</nav>
+<!-- CTA -->
+<a class="-all flex items-center gap-2 group hover:bg-zinc-50 text-xs font-medium text-zinc-600 tracking-wide bg-gradient-to-b from-black/10 via-black/20 to-black/10 rounded-lg pt-2.5 pr-5 pb-2.5 pl-5 shadow-[0px_0px_0px_1px_rgba(0,0,0,0.06),0px_1px_1px_-0.5px_rgba(0,0,0,0.06),0px_3px_3px_-1.5px_rgba(0,0,0,0.06),_0px_6px_6px_-3px_rgba(0,0,0,0.06),0px_12px_12px_-6px_rgba(0,0,0,0.06),0px_24px_24px_-12px_rgba(0,0,0,0.06)]" href="#components" style="box-shadow: 0 18px 35px rgba(31, 41, 55, 0.25), 0 0 0 1px rgba(209, 213, 219, 0.3);  color: #e5e7eb; position: relative; --border-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.8), rgba(0, 0, 0, 0.4), rgba(255, 255, 255, 0.8)); --border-radius-before: 8px">
+<span class="text-[11px] uppercase font-medium text-black/60 tracking-tight">
+                    Explore
+                </span>
+<svg class="w-[14px] h-[14px] group-hover:translate-x-1 transition-transform" data-lucide="arrow-right" fill="none" height="14" stroke="#666" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg">
+<path d="M5 12h14"></path>
+<path d="m12 5 7 7-7 7"></path>
+</svg>
+</a>
+</header>
+<!-- Content Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 h-full flex-grow relative z-10 pb-8 lg:pb-0">
+<!-- Left Column: Text Content -->
+<div class="lg:col-span-7 flex flex-col pt-4 relative justify-center">
+<!-- Social Proof Pill -->
+<div class="inline-flex bg-white/60 w-max rounded-full mb-8 pt-1.5 pr-5 pb-1.5 pl-1.5 shadow-sm backdrop-blur-sm items-center" style="position: relative; --border-gradient: linear-gradient(180deg, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0)); --border-radius-before: 9999px">
+<div class="flex -space-x-2 mr-3">
+<img alt="User" class="w-6 h-6 rounded-full border-2 border-white object-cover" src="assets/578a5bc5-2c9f-4285-8ae6-0d7daf_33d785f5e92f.webp"/>
+<img alt="User" class="w-6 h-6 rounded-full border-2 border-white object-cover" src="assets/1a99aa12-9c50-44fe-bb7d-5dfef2_d7bfbddcb034.webp"/>
+<img alt="User" class="w-6 h-6 rounded-full border-2 border-white object-cover" src="assets/2e91b8c7-be64-41b5-8bd8-75efab_c57d7cf9ede8.webp"/>
+<div class="w-6 h-6 rounded-full border-2 border-white bg-zinc-900 text-white flex items-center justify-center text-[9px] font-bold tracking-tighter">
+                        2k+
+                    </div>
+</div>
+<span class="text-xs font-medium text-zinc-600 tracking-wide">
+<span class="text-zinc-900">Design System</span> showcase
+                </span>
+</div>
+<!-- Headline -->
+<h1 class="leading-[0.95] lg:text-[5rem] text-5xl font-medium text-zinc-900 tracking-tighter mb-8">
+                Design System
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-zinc-400 to-zinc-200 font-light">Pattern Library</span>
+</h1>
+<!-- Subheadline -->
+<p class="text-sm text-zinc-500 font-medium max-w-md mb-10 leading-relaxed tracking-wide border-l-2 border-zinc-200 pl-6">
+                A comprehensive reference guide documenting all design patterns, components, and styles used throughout the GenLabs platform. Use this as your single source of truth for consistent implementation.
+            </p>
+<!-- Action Buttons -->
+<div class="flex flex-col sm:flex-row gap-3 lg:mb-24 mb-16 gap-x-3 gap-y-3">
+<button class="hover:bg-black transition-all flex group shadow-zinc-900/10 hover:shadow-2xl hover:shadow-zinc-900/20 hover:-translate-y-0.5 text-sm font-medium text-zinc-900 rounded-full pt-3 pr-6 pb-3 pl-6 shadow-xl gap-x-3 gap-y-3 items-center justify-between" style="background: radial-gradient(circle at 10% 0%, #fed7aa 0%, #fb923c 100%); box-shadow: 0 15px 25px -10px rgba(248, 113, 22, 0.7), inset 0 4px 8px rgba(253, 230, 138, 0.9), inset 0 -4px 8px rgba(249, 115, 22, 0.9)">
+<span class="text-sm font-medium tracking-tight text-zinc-900">
+                            Explore Components
+                        </span>
+<span class="flex items-center justify-center rounded-full bg-black/10 px-3 py-1">
+<svg class="group-hover:translate-x-1 transition-transform" data-icon-replaced="true" data-icon-set="lucide" data-lucide="arrow-up-right" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" style="color: rgb(15, 23, 42);" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+</span>
+</button>
+<button class="hover:bg-zinc-50 hover:text-zinc- transition-all flex text-sm font-medium text-zinc-600 bg-gradient-to-b from-black/10 via-black/20 to-black/10 rounded-full pt-3 pr-6 pb-3 pl-6 shadow-[0px_0px_0px_1px_rgba(0,0,0,0.06),0px_1px_1px_-0.5px_rgba(0,0,0,0.06),0px_3px_3px_-1.5px_rgba(0,0,0,0.06),_0px_6px_6px_-3px_rgba(0,0,0,0.06),0px_12px_12px_-6px_rgba(0,0,0,0.06),0px_24px_24px_-12px_rgba(0,0,0,0.06)] gap-x-2 gap-y-2 items-center" style="box-shadow: 0 18px 35px rgba(31, 41, 55, 0.25), 0 0 0 1px rgba(209, 213, 219, 0.3); color: #e5e7eb; position: relative; --border-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.8), rgba(0, 0, 0, 0.4), rgba(255, 255, 255, 0.8)); --border-radius-before: 9999px">
+<span class="text-sm font-medium text-black/60 tracking-tight">
+                            View Examples
+                        </span>
+<svg class="" data-icon-replaced="true" data-icon-set="lucide" data-lucide="arrow-right" fill="none" height="16" stroke="#666" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" style="color: rgb(229, 231, 235);" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+</button>
+</div>
+<!-- Footer Stats with Curved Lines -->
+<div class="flex flex-wrap gap-2 md:gap-6 mt-auto gap-x-2 gap-y-2 items-center">
+<!-- Stat 1 -->
+<div class="flex items-center group cursor-default">
+<div class="px-1 text-center">
+<p class="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest mb-1 group-hover:text-zinc-600 transition-colors">
+                            Sections</p>
+<p class="text-sm text-zinc-900 font-medium">7</p>
+</div>
+<div class="curve-separator opacity-60 ml-4 md:ml-8"></div>
+</div>
+<!-- Stat 2 -->
+<div class="flex items-center group cursor-default">
+<div class="px-1 text-center">
+<p class="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest mb-1 group-hover:text-zinc-600 transition-colors">
+                            Components</p>
+<p class="text-sm text-zinc-900 font-medium">20+</p>
+</div>
+<div class="curve-separator md:ml-8 opacity-60 ml-4"></div>
+</div>
+<!-- Stat 3 -->
+<div class="flex items-center group cursor-default">
+<div class="px-1 text-center">
+<p class="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest mb-1 group-hover:text-zinc-600 transition-colors">
+                            Patterns</p>
+<p class="text-sm text-zinc-900 font-medium">Complete</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Visual Card -->
+<div class="lg:col-span-5 h-full min-h-[400px] lg:min-h-0 relative group perspective-1000">
+<div class="absolute inset-0 rounded-[2rem] overflow-hidden shadow-2xl shadow-zinc-900/20 transition-all duration-700 ease-out border border-white/20">
+<!-- Background Asset -->
+<img alt="Sci-fi landscape" class="transition-transform duration-[2s] ease-in-out group-hover:scale-110 filter saturate-[0.8] w-full h-full object-cover absolute top-0 right-0 bottom-0 left-0" src="assets/96e3ccfa-3799-4c9c-9f2a-263c0f_f43320a4382a.webp"/>
+<!-- Gradient Overlay -->
+<div class="absolute inset-0 bg-gradient-to-t from-zinc-900/90 via-zinc-900/20 to-zinc-900/10"></div>
+<!-- Overlay Content Container -->
+<div class="flex flex-col pt-8 pr-8 pb-8 pl-8 absolute top-0 right-0 bottom-0 left-0 justify-between">
+<!-- Top Row: Status Badges -->
+<div class="flex items-start justify-between">
+<div class="flex gap-2 bg-gradient-to-b from-white/10 to-white/0 rounded-full pt-1.5 pr-3 pb-1.5 pl-3 gap-x-2 gap-y-2 items-center" style="position: relative; --border-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0)); --border-radius-before: 9999px">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+</span>
+<span class="text-[10px] uppercase font-semibold text-white tracking-wide">Live System</span>
+</div>
+<div class="flex hover:bg-white/20 transition-colors cursor-pointer text-white bg-gradient-to-b from-white/10 to-white/0 w-10 h-10 rounded-full items-center justify-center" style="position: relative; --border-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0)); --border-radius-before: 9999px">
+<svg class="lucide lucide-bell" fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg">
+<path class="" d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+<path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+</svg>
+</div>
+</div>
+<!-- Middle: Floating Widget -->
+<div class="self-end transform group-hover:translate-y-0 transition-transform duration-700 ease-out bg-gradient-to-b from-white/10 to-white/0 w-full max-w-[240px] rounded-xl mt-60 pt-4 pr-4 pb-4 pl-4 backdrop-blur translate-y-4" style="position: relative; --border-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0)); --border-radius-before: 12px">
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center text-white text-[10px] font-bold">
+                                    DS</div>
+<span class="text-xs text-white font-medium">Components</span>
+</div>
+<span class="text-[10px] text-emerald-400 font-mono">+100%</span>
+</div>
+<div class="h-12 w-full mb-2 flex items-end gap-1">
+<div class="w-1/5 bg-white/20 rounded-t-sm h-[40%]"></div>
+<div class="w-1/5 bg-white/20 rounded-t-sm h-[70%]"></div>
+<div class="w-1/5 bg-white/20 rounded-t-sm h-[50%]"></div>
+<div class="w-1/5 bg-white/30 rounded-t-sm h-[85%]"></div>
+<div class="w-1/5 bg-emerald-500 rounded-t-sm h-[95%] shadow-[0_0_10px_rgba(16,185,129,0.5)]">
+</div>
+</div>
+<div class="flex justify-between items-end">
+<div class="flex flex-col">
+<span class="text-[9px] text-white/60 uppercase">Components</span>
+<span class="text-sm text-white font-mono font-medium">20+</span>
+</div>
+</div>
+</div>
+<!-- Bottom: Animated Carousel -->
+<div class="overflow-hidden w-full h-[100px] border-white/10 rounded-xl border-t mt-auto pt-4 relative">
+<div class="carousel-track flex flex-col h-[300px]">
+<!-- Item 1 -->
+<div class="flex flex-col h-[100px] justify-start">
+<div class="flex gap-3 mb-2 gap-x-3 gap-y-3 items-center">
+<img alt="Reviewer" class="w-8 h-8 rounded-full object-cover border border-white/20" src="assets/7b1ee7e8-7554-433d-a435-029da3_9bd09ac29fdb.webp"/>
+<div class="flex flex-col">
+<span class="text-white text-xs font-semibold tracking-wide">Design System</span>
+<span class="text-white/50 text-[9px] uppercase tracking-wider">Pattern Library</span>
+</div>
+</div>
+<p class="text-white/80 text-xs font-light leading-relaxed line-clamp-2">
+                                    "A complete reference for all design patterns. Every component documented with usage guidelines."
+                                </p>
+</div>
+<!-- Item 2 -->
+<div class="h-[100px] flex flex-col justify-start">
+<div class="flex items-center gap-3 mb-2">
+<img alt="Reviewer" class="w-8 h-8 rounded-full object-cover border border-white/20" src="assets/b3f17582-5cb8-4efd-895a-b59c93_5343306160e6.webp"/>
+<div class="flex flex-col">
+<span class="text-white text-xs font-semibold tracking-wide">Component Showcase</span>
+<span class="text-white/50 text-[9px] uppercase tracking-wider">UI Elements</span>
+</div>
+</div>
+<p class="text-white/80 text-xs font-light leading-relaxed line-clamp-2">
+                                    "Every UI component with live examples and code snippets. Perfect for maintaining consistency."
+                                </p>
+</div>
+<!-- Item 3 -->
+<div class="h-[100px] flex flex-col justify-start">
+<div class="flex items-center gap-3 mb-2">
+<img alt="Reviewer" class="w-8 h-8 rounded-full object-cover border border-white/20" src="assets/08cf0e21-ab10-49b1-b896-e0bfbc_49a8ee583926.webp"/>
+<div class="flex flex-col">
+<span class="text-white text-xs font-semibold tracking-wide">Design Tokens</span>
+<span class="text-white/50 text-[9px] uppercase tracking-wider">Typography & Colors</span>
+</div>
+</div>
+<p class="text-white/80 text-xs font-light leading-relaxed line-clamp-2">
+                                    "All design tokens documented with specifications. Colors, typography, spacing, and more."
+                                </p>
+</div>
+</div>
+<!-- Fade overlay for smooth exit/entry visually -->
+<div class="absolute top-0 left-0 w-full h-4 bg-gradient-to-b from-zinc-900/0 to-transparent pointer-events-none">
+</div>
+<div class="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-zinc-900/50 to-transparent pointer-events-none">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 1: Typography -->
+<!-- Typography section: Displays all text styles used in the design system with live previews and specifications. -->
+<section id="typography" class="mb-24">
+<div class="mb-16">
+<h2 class="md:text-5xl text-3xl font-medium text-zinc-900 tracking-tighter mb-4">Typography</h2>
+<p class="text-sm text-zinc-500 font-medium leading-relaxed">All text styles used throughout the platform, organized by hierarchy and size.</p>
+</div>
+<!-- Typography Spec Table -->
+<div class="space-y-6">
+<!-- Heading 1: Largest display heading for hero sections and major page titles -->
+<div class="flex items-baseline justify-between border-b border-zinc-200 pb-4">
+<div class="flex-1">
+<h1 class="leading-[0.95] lg:text-[5rem] text-5xl font-medium text-zinc-900 tracking-tighter">Heading 1</h1>
+<p class="text-xs text-zinc-400 mt-2">Hero headings and major page titles</p>
+</div>
+<div class="text-xs text-zinc-400 font-mono text-right ml-8">48px / 45.6px</div>
+</div>
+<!-- Heading 2: Section headings for content areas -->
+<div class="flex items-baseline justify-between border-b border-zinc-200 pb-4">
+<div class="flex-1">
+<h2 class="md:text-5xl text-3xl font-medium text-zinc-900 tracking-tighter">Heading 2</h2>
+<p class="text-xs text-zinc-400 mt-2">Section headings and content area titles</p>
+</div>
+<div class="text-xs text-zinc-400 font-mono text-right ml-8">48px / 48px</div>
+</div>
+<!-- Heading 3: Subsection headings and card titles -->
+<div class="flex items-baseline justify-between border-b border-zinc-200 pb-4">
+<div class="flex-1">
+<h3 class="text-lg font-semibold text-zinc-900 tracking-tight">Heading 3</h3>
+<p class="text-xs text-zinc-400 mt-2">Card titles and subsection headings</p>
+</div>
+<div class="text-xs text-zinc-400 font-mono text-right ml-8">18px / 28px</div>
+</div>
+<!-- Body Large: Larger body text for emphasis -->
+<div class="flex items-baseline justify-between border-b border-zinc-200 pb-4">
+<div class="flex-1">
+<p class="leading-relaxed text-base font-medium text-zinc-900 font-normal">Body Large</p>
+<p class="text-xs text-zinc-400 mt-2">Emphasized body text and descriptions</p>
+</div>
+<div class="text-xs text-zinc-400 font-mono text-right ml-8">16px / 26px</div>
+</div>
+<!-- Body Regular: Standard body text -->
+<div class="flex items-baseline justify-between border-b border-zinc-200 pb-4">
+<div class="flex-1">
+<p class="text-sm text-zinc-500 font-medium leading-relaxed">Body Regular</p>
+<p class="text-xs text-zinc-400 mt-2">Standard body text for paragraphs and descriptions</p>
+</div>
+<div class="text-xs text-zinc-400 font-mono text-right ml-8">14px / 22.75px</div>
+</div>
+<!-- Body Small: Smaller supporting text -->
+<div class="flex items-baseline justify-between border-b border-zinc-200 pb-4">
+<div class="flex-1">
+<p class="text-xs text-zinc-500 font-medium">Body Small</p>
+<p class="text-xs text-zinc-400 mt-2">Supporting text, captions, and metadata</p>
+</div>
+<div class="text-xs text-zinc-400 font-mono text-right ml-8">12px / 16px</div>
+</div>
+<!-- Gradient Text: Decorative gradient text for emphasis -->
+<div class="flex items-baseline justify-between border-b border-zinc-200 pb-4">
+<div class="flex-1">
+<h1 class="text-transparent bg-clip-text bg-gradient-to-r from-zinc-400 to-zinc-200 font-light text-5xl">Gradient Text</h1>
+<p class="text-xs text-zinc-400 mt-2">Decorative gradient text for visual emphasis</p>
+</div>
+<div class="text-xs text-zinc-400 font-mono text-right ml-8">48px / 48px</div>
+</div>
+</div>
+</section>
+<!-- Section 2: Colors & Surfaces -->
+<!-- Colors & Surfaces section: Documents all background colors, borders, gradients, and surface treatments used in the design. -->
+<section id="colors" class="mb-24">
+<div class="mb-16">
+<h2 class="md:text-5xl text-3xl font-medium text-zinc-900 tracking-tighter mb-4">Colors & Surfaces</h2>
+<p class="text-sm text-zinc-500 font-medium leading-relaxed">Background colors, borders, gradients, and surface treatments.</p>
+</div>
+<!-- Background Colors -->
+<div class="mb-12">
+<h3 class="text-lg font-semibold text-zinc-900 mb-6 tracking-tight">Background Colors</h3>
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+<!-- White: Primary background for cards and panels -->
+<div class="flex flex-col">
+<div class="h-24 bg-white rounded-lg border border-zinc-200 mb-2"></div>
+<p class="text-xs text-zinc-600 font-medium">White</p>
+<p class="text-[10px] text-zinc-400">Card backgrounds</p>
+</div>
+<!-- Zinc 50: Subtle background for sections -->
+<div class="flex flex-col">
+<div class="h-24 bg-zinc-50 rounded-lg border border-zinc-200 mb-2"></div>
+<p class="text-xs text-zinc-600 font-medium">Zinc 50</p>
+<p class="text-[10px] text-zinc-400">Section backgrounds</p>
+</div>
+<!-- Zinc 100: Light background for hover states -->
+<div class="flex flex-col">
+<div class="h-24 bg-zinc-100 rounded-lg border border-zinc-200 mb-2"></div>
+<p class="text-xs text-zinc-600 font-medium">Zinc 100</p>
+<p class="text-[10px] text-zinc-400">Hover states</p>
+</div>
+<!-- Zinc 200: Grid and divider backgrounds -->
+<div class="flex flex-col">
+<div class="h-24 bg-zinc-200 rounded-lg border border-zinc-200 mb-2"></div>
+<p class="text-xs text-zinc-600 font-medium">Zinc 200</p>
+<p class="text-[10px] text-zinc-400">Grid lines</p>
+</div>
+<!-- Zinc 900: Dark backgrounds for contrast -->
+<div class="flex flex-col">
+<div class="h-24 bg-zinc-900 rounded-lg border border-zinc-200 mb-2"></div>
+<p class="text-xs text-white font-medium">Zinc 900</p>
+<p class="text-[10px] text-zinc-400">Dark sections</p>
+</div>
+<!-- Glass Panel: Translucent background with blur -->
+<div class="flex flex-col">
+<div class="h-24 glass-panel rounded-lg border border-white/20 mb-2"></div>
+<p class="text-xs text-zinc-600 font-medium">Glass Panel</p>
+<p class="text-[10px] text-zinc-400">Main container</p>
+</div>
+</div>
+</div>
+<!-- Gradients -->
+<div class="mb-12">
+<h3 class="text-lg font-semibold text-zinc-900 mb-6 tracking-tight">Gradients</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Gradient 1: Subtle overlay gradient -->
+<div class="h-32 bg-gradient-to-b from-black/10 via-black/20 to-black/10 rounded-xl border border-zinc-200 p-4">
+<p class="text-xs text-zinc-600 font-medium mb-1">Subtle Overlay</p>
+<p class="text-[10px] text-zinc-400">from-black/10 via-black/20 to-black/10</p>
+</div>
+<!-- Gradient 2: Text gradient -->
+<div class="h-32 bg-gradient-to-r from-zinc-400 to-zinc-200 rounded-xl border border-zinc-200 p-4">
+<p class="text-xs text-zinc-600 font-medium mb-1">Text Gradient</p>
+<p class="text-[10px] text-zinc-400">from-zinc-400 to-zinc-200</p>
+</div>
+</div>
+</div>
+<!-- Borders -->
+<div>
+<h3 class="text-lg font-semibold text-zinc-900 mb-6 tracking-tight">Borders</h3>
+<div class="space-y-4">
+<div class="h-16 bg-white border border-zinc-200 rounded-lg flex items-center px-4">
+<span class="text-xs text-zinc-600 font-medium">border-zinc-200</span>
+</div>
+<div class="h-16 bg-white border border-white/20 rounded-lg flex items-center px-4">
+<span class="text-xs text-zinc-600 font-medium">border-white/20</span>
+</div>
+<div class="h-16 bg-white border-2 border-zinc-300 rounded-lg flex items-center px-4">
+<span class="text-xs text-zinc-600 font-medium">border-2 border-zinc-300</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 3: UI Components -->
+<!-- UI Components section: Shows all interactive components with their states and usage examples. -->
+<section id="components" class="mb-24">
+<div class="mb-16">
+<h2 class="md:text-5xl text-3xl font-medium text-zinc-900 tracking-tighter mb-4">UI Components</h2>
+<p class="text-sm text-zinc-500 font-medium leading-relaxed">Interactive components with all states and variants.</p>
+</div>
+<!-- Buttons -->
+<div class="mb-12">
+<h3 class="text-lg font-semibold text-zinc-900 mb-6 tracking-tight">Buttons</h3>
+<div class="flex flex-wrap gap-4">
+<!-- Primary Button: Main call-to-action button with gradient background and hover effects -->
+<button class="hover:bg-black transition-all flex group shadow-zinc-900/10 hover:shadow-2xl hover:shadow-zinc-900/20 hover:-translate-y-0.5 text-sm font-medium text-zinc-900 rounded-full pt-3 pr-6 pb-3 pl-6 shadow-xl gap-x-3 gap-y-3 items-center justify-between" style="background: radial-gradient(circle at 10% 0%, #fed7aa 0%, #fb923c 100%); box-shadow: 0 15px 25px -10px rgba(248, 113, 22, 0.7), inset 0 4px 8px rgba(253, 230, 138, 0.9), inset 0 -4px 8px rgba(249, 115, 22, 0.9)">
+<span class="text-sm font-medium tracking-tight text-zinc-900">Primary Button</span>
+<span class="flex items-center justify-center rounded-full bg-black/10 px-3 py-1">
+<svg class="group-hover:translate-x-1 transition-transform" data-icon-replaced="true" data-icon-set="lucide" data-lucide="arrow-up-right" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" style="color: rgb(15, 23, 42);" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+</span>
+</button>
+<!-- Secondary Button: Secondary action button with subtle gradient and border -->
+<button class="hover:bg-zinc-50 hover:text-zinc- transition-all flex text-sm font-medium text-zinc-600 bg-gradient-to-b from-black/10 via-black/20 to-black/10 rounded-full pt-3 pr-6 pb-3 pl-6 shadow-[0px_0px_0px_1px_rgba(0,0,0,0.06),0px_1px_1px_-0.5px_rgba(0,0,0,0.06),0px_3px_3px_-1.5px_rgba(0,0,0,0.06),_0px_6px_6px_-3px_rgba(0,0,0,0.06),0px_12px_12px_-6px_rgba(0,0,0,0.06),0px_24px_24px_-12px_rgba(0,0,0,0.06)] gap-x-2 gap-y-2 items-center" style="box-shadow: 0 18px 35px rgba(31, 41, 55, 0.25), 0 0 0 1px rgba(209, 213, 219, 0.3); color: #e5e7eb; position: relative; --border-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.8), rgba(0, 0, 0, 0.4), rgba(255, 255, 255, 0.8)); --border-radius-before: 9999px">
+<span class="text-sm font-medium text-black/60 tracking-tight">Secondary Button</span>
+<svg class="" data-icon-replaced="true" data-icon-set="lucide" data-lucide="arrow-right" fill="none" height="16" stroke="#666" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" style="color: rgb(229, 231, 235);" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+</button>
+<!-- White Button: Light background button for dark sections -->
+<button class="group flex items-center gap-3 bg-white hover:bg-zinc-100 transition-all text-zinc-900 text-sm font-medium rounded-full px-6 py-3 w-fit shadow-lg hover:shadow-xl hover:-translate-y-0.5">
+<span>White Button</span>
+<svg class="group-hover:translate-x-1 transition-transform" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+</button>
+</div>
+</div>
+<!-- Cards -->
+<div class="mb-12">
+<h3 class="text-lg font-semibold text-zinc-900 mb-6 tracking-tight">Cards</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Standard Card: Basic card with hover state -->
+<div class="group hover:bg-zinc-50 transition-colors flex flex-col min-h-[200px] bg-white h-full pt-8 pr-8 pb-8 pl-8 relative justify-between rounded-xl border border-zinc-200">
+<h3 class="text-lg font-semibold text-zinc-900 mb-2 tracking-tight">Standard Card</h3>
+<p class="text-sm text-zinc-500 font-medium leading-relaxed font-normal">Basic card component with hover state transition.</p>
+</div>
+<!-- Glass Card: Translucent card with backdrop blur -->
+<div class="glass-card flex flex-col min-h-[200px] h-full pt-8 pr-8 pb-8 pl-8 relative justify-between rounded-xl">
+<h3 class="text-lg font-semibold text-white mb-2 tracking-tight">Glass Card</h3>
+<p class="text-sm text-white/80 font-medium leading-relaxed font-normal">Translucent card with backdrop blur effect.</p>
+</div>
+</div>
+</div>
+<!-- Inputs -->
+<div>
+<h3 class="text-lg font-semibold text-zinc-900 mb-6 tracking-tight">Inputs</h3>
+<div class="max-w-md space-y-4">
+<!-- Text Input: Standard text input with border and focus state -->
+<input class="w-full bg-zinc-50 border border-zinc-200 rounded-xl p-3 shadow-sm text-sm text-zinc-700 placeholder:text-zinc-400 outline-none focus:border-zinc-400 focus:shadow-md transition-all" placeholder="Your email address" type="email"/>
+</div>
+</div>
+</section>
+<!-- Section 4: Layout & Spacing -->
+<!-- Layout & Spacing section: Documents grid systems, containers, and spacing patterns. -->
+<section id="layout" class="mb-24">
+<div class="mb-16">
+<h2 class="md:text-5xl text-3xl font-medium text-zinc-900 tracking-tighter mb-4">Layout & Spacing</h2>
+<p class="text-sm text-zinc-500 font-medium leading-relaxed">Grid systems, containers, and spacing patterns.</p>
+</div>
+<!-- Grid Layouts -->
+<div class="mb-12">
+<h3 class="text-lg font-semibold text-zinc-900 mb-6 tracking-tight">Grid Layouts</h3>
+<!-- 12-Column Grid: Main content grid system -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
+<div class="lg:col-span-7 bg-zinc-100 rounded-lg p-4 text-center">
+<span class="text-xs text-zinc-600 font-medium">7 columns</span>
+</div>
+<div class="lg:col-span-5 bg-zinc-200 rounded-lg p-4 text-center">
+<span class="text-xs text-zinc-600 font-medium">5 columns</span>
+</div>
+</div>
+<!-- 3-Column Grid: Card grid layout -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<div class="bg-zinc-100 rounded-lg p-4 text-center"><span class="text-xs text-zinc-600 font-medium">Column 1</span></div>
+<div class="bg-zinc-100 rounded-lg p-4 text-center"><span class="text-xs text-zinc-600 font-medium">Column 2</span></div>
+<div class="bg-zinc-100 rounded-lg p-4 text-center"><span class="text-xs text-zinc-600 font-medium">Column 3</span></div>
+</div>
+</div>
+<!-- Spacing Scale -->
+<div>
+<h3 class="text-lg font-semibold text-zinc-900 mb-6 tracking-tight">Spacing Scale</h3>
+<div class="space-y-4">
+<div class="flex items-center gap-4">
+<div class="w-2 h-2 bg-zinc-400 rounded-full"></div>
+<span class="text-xs text-zinc-600 font-mono w-16">gap-2</span>
+<span class="text-xs text-zinc-400">0.5rem / 8px</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="w-6 h-6 bg-zinc-400 rounded-full"></div>
+<span class="text-xs text-zinc-600 font-mono w-16">gap-6</span>
+<span class="text-xs text-zinc-400">1.5rem / 24px</span>
+</div>
+<div class="flex items-center gap-8">
+<div class="w-8 h-8 bg-zinc-400 rounded-full"></div>
+<span class="text-xs text-zinc-600 font-mono w-16">gap-8</span>
+<span class="text-xs text-zinc-400">2rem / 32px</span>
+</div>
+<div class="flex items-center gap-12">
+<div class="w-12 h-12 bg-zinc-400 rounded-full"></div>
+<span class="text-xs text-zinc-600 font-mono w-16">gap-12</span>
+<span class="text-xs text-zinc-400">3rem / 48px</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 5: Motion & Interaction -->
+<!-- Motion & Interaction section: Documents all animations, transitions, and interactive behaviors. -->
+<section id="motion" class="mb-24">
+<div class="mb-16">
+<h2 class="md:text-5xl text-3xl font-medium text-zinc-900 tracking-tighter mb-4">Motion & Interaction</h2>
+<p class="text-sm text-zinc-500 font-medium leading-relaxed">Animations, transitions, and interactive behaviors.</p>
+</div>
+<!-- Hover Effects -->
+<div class="mb-12">
+<h3 class="text-lg font-semibold text-zinc-900 mb-6 tracking-tight">Hover Effects</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Lift on Hover: Button that lifts slightly on hover -->
+<button class="group bg-white hover:shadow-2xl hover:-translate-y-0.5 transition-all rounded-xl p-6 border border-zinc-200">
+<span class="text-sm text-zinc-900 font-medium">Lift on Hover</span>
+</button>
+<!-- Scale on Hover: Element that scales up on hover -->
+<div class="group bg-white rounded-xl p-6 border border-zinc-200 cursor-pointer">
+<div class="w-16 h-16 bg-zinc-900 rounded-lg group-hover:scale-110 transition-transform duration-300"></div>
+<span class="text-sm text-zinc-900 font-medium mt-4 block">Scale on Hover</span>
+</div>
+<!-- Color Transition: Text color change on hover -->
+<a href="#" class="group text-sm font-medium text-zinc-600 hover:text-zinc-900 transition-colors duration-300 p-6 bg-white rounded-xl border border-zinc-200">
+Color Transition
+</a>
+</div>
+</div>
+<!-- Animations -->
+<div>
+<h3 class="text-lg font-semibold text-zinc-900 mb-6 tracking-tight">Animations</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Ping Animation: Pulsing indicator for live status -->
+<div class="bg-white rounded-xl p-6 border border-zinc-200">
+<span class="relative flex h-3 w-3 mb-4">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+</span>
+<span class="text-sm text-zinc-900 font-medium">Ping Animation</span>
+</div>
+<!-- Vertical Scroll: Carousel animation -->
+<div class="bg-white rounded-xl p-6 border border-zinc-200 overflow-hidden h-32">
+<div class="carousel-track flex flex-col h-[300px]">
+<div class="h-32 flex items-center justify-center bg-zinc-100 rounded-lg mb-2">
+<span class="text-xs text-zinc-600">Item 1</span>
+</div>
+<div class="h-32 flex items-center justify-center bg-zinc-100 rounded-lg mb-2">
+<span class="text-xs text-zinc-600">Item 2</span>
+</div>
+<div class="h-32 flex items-center justify-center bg-zinc-100 rounded-lg">
+<span class="text-xs text-zinc-600">Item 3</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 6: Icons -->
+<!-- Icons section: Documents icon system, sizes, and usage patterns. -->
+<section id="icons" class="mb-24">
+<div class="mb-16">
+<h2 class="md:text-5xl text-3xl font-medium text-zinc-900 tracking-tighter mb-4">Icons</h2>
+<p class="text-sm text-zinc-500 font-medium leading-relaxed">Icon system, sizes, and usage patterns.</p>
+</div>
+<!-- Icon Sizes -->
+<div class="mb-12">
+<h3 class="text-lg font-semibold text-zinc-900 mb-6 tracking-tight">Icon Sizes</h3>
+<div class="flex items-center gap-8">
+<div class="flex flex-col items-center gap-2">
+<svg class="w-[14px] h-[14px] text-zinc-600" fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+<span class="text-xs text-zinc-400 font-mono">14px</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<svg class="w-[16px] h-[16px] text-zinc-600" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+<span class="text-xs text-zinc-400 font-mono">16px</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<svg class="w-[20px] h-[20px] text-zinc-600" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+<span class="text-xs text-zinc-400 font-mono">20px</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<svg class="w-[24px] h-[24px] text-zinc-600" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+<span class="text-xs text-zinc-400 font-mono">24px</span>
+</div>
+</div>
+</div>
+<!-- Icon Colors -->
+<div>
+<h3 class="text-lg font-semibold text-zinc-900 mb-6 tracking-tight">Icon Colors</h3>
+<div class="flex flex-wrap gap-6">
+<div class="flex flex-col items-center gap-2">
+<svg class="w-6 h-6 text-zinc-600" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+<span class="text-xs text-zinc-400">zinc-600</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<svg class="w-6 h-6 text-zinc-400" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+<span class="text-xs text-zinc-400">zinc-400</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<svg class="w-6 h-6 text-orange-500" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+<span class="text-xs text-zinc-400">orange-500</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<svg class="w-6 h-6 text-emerald-500" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+<span class="text-xs text-zinc-400">emerald-500</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+</body>
+</html>

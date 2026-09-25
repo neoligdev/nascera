@@ -1,0 +1,103 @@
+/*
+ * The Typekit service used to deliver this font or fonts for use on websites
+ * is provided by Adobe and is subject to these Terms of Use
+ * http://www.adobe.com/products/eulas/tou_typekit. For font license
+ * information, see the list below.
+ *
+ * vinila:
+ *   - http://typekit.com/eulas/00000000000000007736bf3a
+ *   - http://typekit.com/eulas/00000000000000007736bf3b
+ *   - http://typekit.com/eulas/00000000000000007736bf3d
+ *   - http://typekit.com/eulas/00000000000000007736bf35
+ * vinila-compressed:
+ *   - http://typekit.com/eulas/00000000000000007736bf36
+ *   - http://typekit.com/eulas/00000000000000007736bf34
+ *   - http://typekit.com/eulas/00000000000000007736bf37
+ *   - http://typekit.com/eulas/00000000000000007736bf44
+ * vinila-extended:
+ *   - http://typekit.com/eulas/000000000000000077371892
+ *   - http://typekit.com/eulas/00000000000000007736bf51
+ *   - http://typekit.com/eulas/00000000000000007736bf58
+ *   - http://typekit.com/eulas/00000000000000007736bf4a
+ *
+ * © 2009-2025 Adobe Systems Incorporated. All Rights Reserved.
+ */
+/*{"last_published":"2023-06-19 17:51:09 UTC"}*/
+
+@import url("p_448df28ae5ca.css");
+
+@font-face {
+font-family:"vinila";
+src:url("l_a09c99821cc4") format("woff2"),url("d_7774951e39c8") format("woff"),url("a_e20b15efe23d") format("opentype");
+font-display:auto;font-style:italic;font-weight:400;font-stretch:normal;
+}
+
+@font-face {
+font-family:"vinila";
+src:url("l_bc203a70a77c") format("woff2"),url("d_a42c020c5af3") format("woff"),url("a_4fb9c3f64d81") format("opentype");
+font-display:auto;font-style:italic;font-weight:700;font-stretch:normal;
+}
+
+@font-face {
+font-family:"vinila";
+src:url("l_d33f15819b08") format("woff2"),url("d_a7d193fa3aca") format("woff"),url("a_e2997d33c08a") format("opentype");
+font-display:auto;font-style:normal;font-weight:700;font-stretch:normal;
+}
+
+@font-face {
+font-family:"vinila";
+src:url("l_d996e323d000") format("woff2"),url("d_4143cefb83b7") format("woff"),url("a_e332a78b7394") format("opentype");
+font-display:auto;font-style:normal;font-weight:400;font-stretch:normal;
+}
+
+@font-face {
+font-family:"vinila-compressed";
+src:url("l_57d83b0a30f0") format("woff2"),url("d_73ff131c86e6") format("woff"),url("a_69acb2ea58da") format("opentype");
+font-display:auto;font-style:normal;font-weight:700;font-stretch:normal;
+}
+
+@font-face {
+font-family:"vinila-compressed";
+src:url("l_ff5cbaa7971f") format("woff2"),url("d_d2efb504f68e") format("woff"),url("a_4269bbd8fb2c") format("opentype");
+font-display:auto;font-style:italic;font-weight:700;font-stretch:normal;
+}
+
+@font-face {
+font-family:"vinila-compressed";
+src:url("l_ded0a229b5a6") format("woff2"),url("d_5ec2d459f07a") format("woff"),url("a_93ae029220c8") format("opentype");
+font-display:auto;font-style:normal;font-weight:400;font-stretch:normal;
+}
+
+@font-face {
+font-family:"vinila-compressed";
+src:url("l_932e3705922f") format("woff2"),url("d_8ae462cb37d4") format("woff"),url("a_3f77d7eaf0ff") format("opentype");
+font-display:auto;font-style:italic;font-weight:400;font-stretch:normal;
+}
+
+@font-face {
+font-family:"vinila-extended";
+src:url("l_6486e4c46dd1") format("woff2"),url("d_be6973544f43") format("woff"),url("a_5e84b1d6020b") format("opentype");
+font-display:auto;font-style:normal;font-weight:700;font-stretch:normal;
+}
+
+@font-face {
+font-family:"vinila-extended";
+src:url("l_28f49f7b7765") format("woff2"),url("d_39295e905730") format("woff"),url("a_949663345602") format("opentype");
+font-display:auto;font-style:normal;font-weight:400;font-stretch:normal;
+}
+
+@font-face {
+font-family:"vinila-extended";
+src:url("l_27d5ec66d2e4") format("woff2"),url("d_076eae2665a3") format("woff"),url("a_87f0b6ff5ffb") format("opentype");
+font-display:auto;font-style:italic;font-weight:400;font-stretch:normal;
+}
+
+@font-face {
+font-family:"vinila-extended";
+src:url("l_0f28e7c7a51f") format("woff2"),url("d_b955ca7d1056") format("woff"),url("a_ba1ab71b4671") format("opentype");
+font-display:auto;font-style:italic;font-weight:700;font-stretch:normal;
+}
+
+.tk-vinila { font-family: "vinila",sans-serif; }
+.tk-vinila-compressed { font-family: "vinila-compressed",sans-serif; }
+.tk-vinila-extended { font-family: "vinila-extended",sans-serif; }

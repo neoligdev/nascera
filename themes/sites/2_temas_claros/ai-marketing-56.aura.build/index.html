@@ -1,0 +1,1090 @@
+<html lang="pt-BR"><head>
+<script id="aura-supabase-token-firewall">(function () {
+  if (window.__AURA_SUPABASE_FIREWALL__) return;
+  window.__AURA_SUPABASE_FIREWALL__ = true;
+
+  var SUPABASE_HOST = "hoirqrkdgbmvpwutwuwj.supabase.co";
+  var BLOCKED_KEY_PATTERNS = [
+    /^sb-[a-z0-9-]+-auth-token$/i,
+    /^supabase\.auth\.token$/i
+  ];
+
+  function isBlockedStorageKey(key) {
+    if (typeof key !== "string") return false;
+    for (var i = 0; i < BLOCKED_KEY_PATTERNS.length; i++) {
+      if (BLOCKED_KEY_PATTERNS[i].test(key)) return true;
+    }
+    return false;
+  }
+
+  function toAbsoluteUrl(input) {
+    try {
+      return new URL(input, window.location.href);
+    } catch {
+      return null;
+    }
+  }
+
+  function isSupabaseDestination(input) {
+    var parsed = toAbsoluteUrl(input);
+    if (!parsed) return false;
+    if (SUPABASE_HOST && parsed.host === SUPABASE_HOST) return true;
+    return parsed.host.endsWith(".supabase.co");
+  }
+
+  function pathLooksSensitive(input) {
+    var parsed = toAbsoluteUrl(input);
+    if (!parsed) return false;
+    return /^\/(auth|rest|functions)\/v1\//.test(parsed.pathname || "");
+  }
+
+  function headersContainAuth(headersLike) {
+    if (!headersLike) return false;
+
+    try {
+      if (typeof Headers !== "undefined" && headersLike instanceof Headers) {
+        return !!(headersLike.get("authorization") || headersLike.get("apikey"));
+      }
+    } catch {}
+
+    if (Array.isArray(headersLike)) {
+      for (var i = 0; i < headersLike.length; i++) {
+        var pair = headersLike[i] || [];
+        var name = String(pair[0] || "").toLowerCase();
+        if (name === "authorization" || name === "apikey") return true;
+      }
+      return false;
+    }
+
+    if (typeof headersLike === "object") {
+      var keys = Object.keys(headersLike);
+      for (var j = 0; j < keys.length; j++) {
+        var k = keys[j].toLowerCase();
+        if (k === "authorization" || k === "apikey") return true;
+      }
+    }
+    return false;
+  }
+
+  function requestLooksSensitive(input, init, extraHeaders) {
+    var url = "";
+    try {
+      if (typeof input === "string") {
+        url = input;
+      } else if (input && typeof input.url === "string") {
+        url = input.url;
+      }
+    } catch {}
+
+    var headers =
+      (init && init.headers) ||
+      (input && input.headers) ||
+      extraHeaders ||
+      null;
+    var hasAuthHeaders = headersContainAuth(headers);
+    if (hasAuthHeaders) return true;
+
+    if (!url) return false;
+    if (isSupabaseDestination(url) && pathLooksSensitive(url)) return true;
+    return false;
+  }
+
+  function patchStorage(storage, storageName) {
+    if (!storage) return;
+    var proto = Object.getPrototypeOf(storage);
+    if (!proto || proto.__auraSupabaseFirewallPatched) return;
+
+    var rawGetItem = proto.getItem;
+    var rawSetItem = proto.setItem;
+    var rawRemoveItem = proto.removeItem;
+    var rawKey = proto.key;
+    var rawLengthDescriptor = Object.getOwnPropertyDescriptor(proto, "length");
+    var rawLengthGet = rawLengthDescriptor && rawLengthDescriptor.get;
+
+    function getRawLength(instance) {
+      try {
+        if (rawLengthGet) return Number(rawLengthGet.call(instance) || 0);
+      } catch {}
+      try {
+        return Number(instance.length || 0);
+      } catch {}
+      return 0;
+    }
+
+    function getVisibleKeys(instance) {
+      var visible = [];
+      var total = getRawLength(instance);
+      for (var i = 0; i < total; i++) {
+        var currentKey = rawKey.call(instance, i);
+        if (currentKey && !isBlockedStorageKey(currentKey)) {
+          visible.push(currentKey);
+        }
+      }
+      return visible;
+    }
+
+    function maskBlockedKeyProperty(instance, keyName) {
+      if (!keyName || !isBlockedStorageKey(keyName)) return;
+      try {
+        Object.defineProperty(instance, keyName, {
+          configurable: true,
+          enumerable: false,
+          get: function () {
+            return null;
+          },
+          set: function () {
+            return true;
+          }
+        });
+      } catch {}
+    }
+
+    function syncBlockedKeyProperties(instance) {
+      var total = getRawLength(instance);
+      for (var i = 0; i < total; i++) {
+        var k = rawKey.call(instance, i);
+        if (k) maskBlockedKeyProperty(instance, k);
+      }
+    }
+
+    proto.getItem = function (key) {
+      syncBlockedKeyProperties(this);
+      if (isBlockedStorageKey(String(key))) return null;
+      return rawGetItem.call(this, key);
+    };
+
+    proto.setItem = function (key, value) {
+      if (isBlockedStorageKey(String(key))) return;
+      return rawSetItem.call(this, key, value);
+    };
+
+    proto.removeItem = function (key) {
+      if (isBlockedStorageKey(String(key))) return;
+      return rawRemoveItem.call(this, key);
+    };
+
+    proto.key = function (index) {
+      syncBlockedKeyProperties(this);
+      var visible = getVisibleKeys(this);
+      return visible[index] || null;
+    };
+
+    try {
+      Object.defineProperty(proto, "length", {
+        configurable: true,
+        enumerable: false,
+        get: function () {
+          syncBlockedKeyProperties(this);
+          return getVisibleKeys(this).length;
+        }
+      });
+    } catch {}
+
+    var proxyStorage = null;
+    try {
+      proxyStorage = new Proxy(storage, {
+        get: function (target, prop) {
+          if (typeof prop === "string" && isBlockedStorageKey(prop)) return null;
+          if (prop === "length") return getVisibleKeys(target).length;
+          if (prop === "key") {
+            return function (index) {
+              var visible = getVisibleKeys(target);
+              return visible[index] || null;
+            };
+          }
+
+          var value = target[prop];
+          if (typeof value === "function") return value.bind(target);
+          return value;
+        },
+        set: function (target, prop, value) {
+          if (typeof prop === "string" && isBlockedStorageKey(prop)) return true;
+          target[prop] = value;
+          return true;
+        },
+        has: function (target, prop) {
+          if (typeof prop === "string" && isBlockedStorageKey(prop)) return false;
+          return prop in target;
+        },
+        ownKeys: function (target) {
+          return getVisibleKeys(target);
+        },
+        getOwnPropertyDescriptor: function (target, prop) {
+          if (typeof prop === "string" && isBlockedStorageKey(prop)) {
+            return undefined;
+          }
+          if (prop === "length") {
+            return {
+              configurable: true,
+              enumerable: false,
+              value: getVisibleKeys(target).length,
+              writable: false
+            };
+          }
+          return Object.getOwnPropertyDescriptor(target, prop);
+        }
+      });
+    } catch {}
+
+    try {
+      if (proxyStorage) {
+        Object.defineProperty(window, storageName, {
+          configurable: true,
+          enumerable: true,
+          get: function () {
+            return proxyStorage;
+          }
+        });
+      }
+    } catch {}
+
+    syncBlockedKeyProperties(storage);
+    proto.__auraSupabaseFirewallPatched = true;
+  }
+
+  function patchCookieAccess() {
+    try {
+      var cookieDescriptor = Object.getOwnPropertyDescriptor(Document.prototype, "cookie");
+      if (!cookieDescriptor || !cookieDescriptor.configurable) return;
+
+      Object.defineProperty(document, "cookie", {
+        configurable: true,
+        enumerable: false,
+        get: function () {
+          return "";
+        },
+        set: function () {
+          return true;
+        }
+      });
+    } catch {}
+  }
+
+  function patchFetch() {
+    if (typeof window.fetch !== "function") return;
+    var rawFetch = window.fetch.bind(window);
+    window.fetch = function (input, init) {
+      if (requestLooksSensitive(input, init, null)) {
+        return Promise.reject(new Error("Blocked by Aura security policy"));
+      }
+      return rawFetch(input, init);
+    };
+  }
+
+  function patchXHR() {
+    if (typeof XMLHttpRequest === "undefined") return;
+    var rawOpen = XMLHttpRequest.prototype.open;
+    var rawSetHeader = XMLHttpRequest.prototype.setRequestHeader;
+    var rawSend = XMLHttpRequest.prototype.send;
+
+    XMLHttpRequest.prototype.open = function (method, url) {
+      this.__auraRequestUrl = String(url || "");
+      this.__auraHeaders = {};
+      return rawOpen.apply(this, arguments);
+    };
+
+    XMLHttpRequest.prototype.setRequestHeader = function (name, value) {
+      if (!this.__auraHeaders) this.__auraHeaders = {};
+      this.__auraHeaders[String(name || "").toLowerCase()] = String(value || "");
+      return rawSetHeader.apply(this, arguments);
+    };
+
+    XMLHttpRequest.prototype.send = function () {
+      if (requestLooksSensitive(this.__auraRequestUrl || "", null, this.__auraHeaders || null)) {
+        throw new Error("Blocked by Aura security policy");
+      }
+      return rawSend.apply(this, arguments);
+    };
+  }
+
+  function patchBeacon() {
+    if (typeof navigator.sendBeacon !== "function") return;
+    var rawBeacon = navigator.sendBeacon.bind(navigator);
+    navigator.sendBeacon = function (url, data) {
+      if (requestLooksSensitive(url, null, null)) return false;
+      return rawBeacon(url, data);
+    };
+  }
+
+  function patchWebSocket() {
+    if (typeof WebSocket === "undefined") return;
+    var RawWebSocket = WebSocket;
+    window.WebSocket = function (url, protocols) {
+      if (requestLooksSensitive(String(url || ""), null, null)) {
+        throw new Error("Blocked by Aura security policy");
+      }
+      return new RawWebSocket(url, protocols);
+    };
+    window.WebSocket.prototype = RawWebSocket.prototype;
+  }
+
+  patchStorage(window.localStorage, "localStorage");
+  patchStorage(window.sessionStorage, "sessionStorage");
+  patchCookieAccess();
+  patchFetch();
+  patchXHR();
+  patchBeacon();
+  patchWebSocket();
+})();</script><meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Fluxo | O "Lovable" para Estratégia de Marketing</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="assets/css2_7d028f1edcf5.css" rel="stylesheet"/>
+<!-- Tailwind & Icons -->
+<script src="assets/resource_3fa48481346f.es"></script>
+<script src="assets/iconify-icon_e19829e7f0e8.js"></script>
+<script src="assets/three_0c6c900ec0e1.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+// Interaction logic for pricing cards
+const cards = ['tier-starter', 'tier-pro', 'tier-agency'];
+function updateState(selectedId) {
+cards.forEach(id => {
+const card = document.getElementById(id);
+if (!card) return;
+const isSelected = id === selectedId;
+if (isSelected) {
+card.classList.add('scale-[1.02]', 'shadow-2xl', 'z-10', 'ring-1', 'ring-obsidian/5', 'opacity-100');
+card.classList.remove('scale-[0.98]', 'opacity-60', 'hover:shadow-xl');
+if (id !== 'tier-pro') {
+card.classList.add('border-obsidian');
+card.classList.remove('border-border');
+}
+} else {
+card.classList.remove('scale-[1.02]', 'shadow-2xl', 'z-10', 'border-obsidian', 'ring-1', 'ring-obsidian/5', 'opacity-100');
+card.classList.add('border-border', 'opacity-60', 'scale-[0.98]');
+}
+});
+}
+cards.forEach(id => {
+const card = document.getElementById(id);
+if (card) {
+card.addEventListener('click', () => updateState(id));
+card.addEventListener('mouseenter', () => {
+if (card.classList.contains('opacity-60')) {
+card.classList.remove('opacity-60');
+card.classList.add('opacity-90');
+}
+});
+card.addEventListener('mouseleave', () => {
+const isSelected = card.classList.contains('z-10');
+if (!isSelected) {
+card.classList.remove('opacity-90');
+card.classList.add('opacity-60');
+}
+});
+}
+});
+updateState('tier-pro');
+});
+</script>
+<script>
+tailwind.config = {
+theme: {
+extend: {
+fontFamily: {
+sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+mono: ['"JetBrains Mono"', 'monospace'],
+},
+colors: {
+canvas: '#FAFAFA',
+surface: '#FFFFFF',
+obsidian: '#111111',
+subtle: '#737373',
+border: '#E5E5E5',
+},
+letterSpacing: {
+tight: '-0.02em',
+tighter: '-0.04em',
+}
+}
+}
+}
+</script>
+<style>
+html { scroll-behavior: smooth; }
+body { margin: 0; background-color: #FAFAFA; color: #111111; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+.technical-grid {
+background-size: 40px 40px;
+background-image: linear-gradient(to right, rgba(0, 0, 0, 0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+mask-image: linear-gradient(to bottom, black 30%, transparent 100%);
+}
+.premium-card {
+background: #FFFFFF; border: 1px solid #EAEAEA;
+box-shadow: 0 2px 4px rgba(0,0,0,0.02), 0 8px 16px -4px rgba(0,0,0,0.04);
+transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.premium-card:hover {
+transform: translateY(-2px);
+box-shadow: 0 4px 8px rgba(0,0,0,0.03), 0 12px 24px -6px rgba(0,0,0,0.06);
+border-color: #D4D4D4;
+}
+@keyframes shimmer { 100% { transform: translateX(100%); } }
+.shimmer-layer { transform: translateX(-100%); }
+.group:hover .shimmer-layer { animation: shimmer 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
+.pricing-transition { transition: all 500ms cubic-bezier(0.22, 1, 0.36, 1); will-change: transform, opacity, box-shadow; }
+</style><style data-scroll-fix="true">
+        /* Scroll fixes for offline viewing */
+        html, body {
+            overflow: auto !important;
+            overflow-x: hidden !important;
+            height: auto !important;
+            min-height: 100% !important;
+            scroll-behavior: auto !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+        
+        /* Force visibility - many sites use JS animations for initial display */
+        body, .wrapper, main, #__next, #app, .page, .content {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: none !important;
+        }
+        
+        /* Disable loader/preloader overlays */
+        .loader, .preloader, .loading, [class*="loader"], [class*="preloader"] {
+            display: none !important;
+            opacity: 0 !important;
+        }
+        
+        /* Show elements that might be hidden for animation */
+        .word-inner, .char, .line, [data-aos], [data-scroll],
+        .hero-text span, .hero-fade, [class*="hero"] span {
+            opacity: 1 !important;
+            transform: none !important;
+            visibility: visible !important;
+        }
+        
+        /* Reset Tailwind animation utility classes */
+        .translate-y-full, .translate-x-full, .-translate-y-full, .-translate-x-full,
+        .translate-y-1\/2, .-translate-y-1\/2, .translate-y-\[100\%\], .translate-y-\[110\%\] {
+            transform: none !important;
+        }
+        
+        /* Force visibility on common hidden-for-animation patterns */
+        .opacity-0, [class*="opacity-0"] {
+            opacity: 1 !important;
+        }
+        
+        /* Reset scale transforms used for animations */
+        .scale-0, .scale-50, .scale-75 {
+            transform: none !important;
+        }
+        
+        html.lenis, html.lenis-smooth, 
+        body.lenis, body.lenis-smooth,
+        .lenis-wrapper, .lenis-content,
+        [data-lenis-prevent], [data-scroll-container] {
+            overflow: visible !important;
+            height: auto !important;
+        }
+        
+        /* Fix flex containers that might cut off content */
+        body.flex.items-center,
+        body.flex.justify-center {
+            align-items: flex-start !important;
+            min-height: 100vh;
+            height: auto !important;
+        }
+        
+        /* Ensure main content scrolls */
+        main, #__next, #__nuxt, #app, .main-content {
+            overflow: visible !important;
+            height: auto !important;
+        }
+        </style></head>
+<body class="w-full relative bg-canvas">
+<!-- Fixed Backgrounds -->
+<div class="fixed inset-0 z-0 technical-grid pointer-events-none"></div>
+<div class="fixed inset-0 z-0 opacity-80" id="canvas-container"></div>
+<!-- Navigation -->
+<header class="fixed top-0 left-0 right-0 z-50 w-full px-6 py-5 md:px-12 flex justify-between items-center bg-canvas/90 backdrop-blur-md border-b border-border/50 transition-all duration-300">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 bg-obsidian text-white flex items-center justify-center rounded-sm">
+<iconify-icon icon="solar:infinity-bold" width="16"></iconify-icon>
+</div>
+<span class="font-sans text-sm font-bold tracking-tight text-obsidian uppercase">Fluxo</span>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="font-sans text-xs font-medium text-subtle hover:text-obsidian transition-colors" href="#como-funciona">Como funciona</a>
+<a class="font-sans text-xs font-medium text-subtle hover:text-obsidian transition-colors" href="#exemplos">Exemplos</a>
+<a class="font-sans text-xs font-medium text-subtle hover:text-obsidian transition-colors" href="#manifesto">Manifesto</a>
+</nav>
+<div class="flex items-center gap-4">
+<a class="hidden md:block font-sans text-xs font-medium text-subtle hover:text-obsidian transition-colors" href="#">Login</a>
+<button class="group relative isolate overflow-hidden bg-obsidian text-white text-xs font-semibold px-5 py-2 rounded shadow-sm ring-1 ring-white/10 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-obsidian/20">
+<div class="shimmer-layer absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent z-10"></div>
+<span class="relative z-20">Acesso Antecipado</span>
+</button>
+</div>
+</header>
+<!-- Content Wrapper -->
+<div class="z-10 flex flex-col w-full relative">
+<!-- HERO SECTION -->
+<section class="relative min-h-[90vh] flex flex-col lg:flex-row items-center justify-between px-6 md:px-12 lg:px-20 pt-32 pb-20 gap-16">
+<div class="max-w-2xl space-y-8 relative z-10">
+<div class="space-y-6">
+<div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-border/60 shadow-sm backdrop-blur-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></span>
+<span class="font-sans text-[11px] font-medium text-subtle tracking-tight">Vagas abertas para o Beta Privado</span>
+</div>
+<h1 class="font-sans text-5xl md:text-7xl font-semibold tracking-tighter text-obsidian leading-[0.95]"> 
+                Estratégia de marketing, <br/>
+<span class="text-subtle bg-clip-text text-transparent bg-gradient-to-r from-subtle to-obsidian/40">gerada por IA.</span>
+</h1>
+<p class="max-w-md font-sans text-base text-subtle leading-relaxed"> 
+                O "Lovable" para times de crescimento. Transforme ideias vagas em estratégias completas, calendário editorial e implementação em segundos.
+            </p>
+</div>
+<!-- Validation Form -->
+<form class="max-w-sm flex flex-col sm:flex-row gap-2" onsubmit="event.preventDefault();">
+<input class="flex-1 bg-white border border-border rounded px-4 py-3 text-sm text-obsidian placeholder-subtle/50 focus:outline-none focus:ring-2 focus:ring-obsidian/10 focus:border-obsidian transition-all shadow-sm" placeholder="seu@email.com.br" type="email"/>
+<button class="bg-obsidian text-white px-6 py-3 rounded text-sm font-semibold hover:bg-black transition-colors shadow-lg shadow-obsidian/10 whitespace-nowrap" type="submit">
+                Validar Acesso
+            </button>
+</form>
+<p class="text-[10px] text-subtle/60">Sem spam. Apenas 100 vagas no primeiro lote.</p>
+<!-- Social Proof Text -->
+<div class="flex items-center gap-4 pt-4 border-t border-border/40 max-w-sm">
+<div class="flex -space-x-2">
+<div class="w-7 h-7 rounded-full border border-white bg-gray-200"></div>
+<div class="w-7 h-7 rounded-full border border-white bg-gray-300"></div>
+<div class="w-7 h-7 rounded-full border border-white bg-gray-400"></div>
+</div>
+<span class="text-xs font-medium text-subtle">+420 marketers na lista de espera.</span>
+</div>
+</div>
+<!-- Visual -->
+<div class="relative w-full max-w-lg aspect-square lg:aspect-[4/3] flex items-center justify-center">
+<div class="absolute inset-0 bg-gradient-to-tr from-canvas via-indigo-500/5 to-canvas opacity-50 blur-3xl"></div>
+<div class="premium-card w-full h-full p-6 relative overflow-hidden rounded-xl bg-white/80 backdrop-blur-xl">
+<!-- Window Controls -->
+<div class="flex gap-2 mb-6">
+<div class="w-2.5 h-2.5 rounded-full bg-border"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-border"></div>
+</div>
+<!-- UI Mockup: Chat/Generative Interface -->
+<div class="flex flex-col h-full relative">
+<!-- Chat Message 1 (User) -->
+<div class="self-end max-w-[80%] mb-6 transform translate-y-2 opacity-0 animate-[fadeInUp_0.5s_ease-out_forwards]">
+<div class="bg-obsidian text-white text-xs p-3 rounded-l-lg rounded-tr-lg shadow-md">
+                        Crie uma estratégia de lançamento para um SaaS B2B focada em CFOs.
+                    </div>
+</div>
+<!-- Chat Message 2 (AI) -->
+<div class="self-start w-full transform translate-y-4 opacity-0 animate-[fadeInUp_0.5s_ease-out_0.5s_forwards]">
+<div class="flex items-center gap-2 mb-2">
+<iconify-icon class="text-indigo-600" icon="solar:stars-minimalistic-linear"></iconify-icon>
+<span class="text-[10px] font-semibold text-obsidian">Fluxo AI</span>
+</div>
+<div class="bg-canvas border border-border p-4 rounded-r-lg rounded-tl-lg shadow-sm space-y-4">
+<!-- Generated Plan Visual -->
+<div class="space-y-3">
+<div class="flex items-center justify-between border-b border-border/50 pb-2">
+<span class="text-[10px] font-bold text-obsidian uppercase tracking-wider">Plano Gerado</span>
+<span class="text-[10px] text-green-600 bg-green-50 px-1.5 py-0.5 rounded">Alta Confiança</span>
+</div>
+<!-- Item 1 -->
+<div class="flex gap-3 items-center group cursor-pointer hover:bg-gray-50 p-1 rounded transition-colors">
+<div class="w-6 h-6 rounded flex items-center justify-center bg-white border border-border shadow-sm text-indigo-600">
+<iconify-icon icon="solar:target-linear" width="14"></iconify-icon>
+</div>
+<div class="flex-1">
+<div class="h-1.5 w-24 bg-obsidian rounded-full mb-1"></div>
+<div class="h-1 w-12 bg-subtle/30 rounded-full"></div>
+</div>
+<div class="w-4 h-4 rounded-full border border-border flex items-center justify-center">
+<iconify-icon class="text-subtle opacity-0 group-hover:opacity-100" icon="solar:check-read-linear" width="10"></iconify-icon>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="flex gap-3 items-center group cursor-pointer hover:bg-gray-50 p-1 rounded transition-colors">
+<div class="w-6 h-6 rounded flex items-center justify-center bg-white border border-border shadow-sm text-purple-600">
+<iconify-icon icon="solar:calendar-linear" width="14"></iconify-icon>
+</div>
+<div class="flex-1">
+<div class="h-1.5 w-32 bg-obsidian rounded-full mb-1"></div>
+<div class="h-1 w-16 bg-subtle/30 rounded-full"></div>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="flex gap-3 items-center group cursor-pointer hover:bg-gray-50 p-1 rounded transition-colors">
+<div class="w-6 h-6 rounded flex items-center justify-center bg-white border border-border shadow-sm text-blue-600">
+<iconify-icon icon="solar:pen-new-square-linear" width="14"></iconify-icon>
+</div>
+<div class="flex-1">
+<div class="h-1.5 w-20 bg-obsidian rounded-full mb-1"></div>
+<div class="h-1 w-24 bg-subtle/30 rounded-full"></div>
+</div>
+</div>
+</div>
+<div class="flex gap-2 mt-2">
+<button class="text-[10px] font-medium border border-border px-2 py-1 rounded bg-white hover:bg-gray-50 transition-colors">Gerar Copy</button>
+<button class="text-[10px] font-medium border border-border px-2 py-1 rounded bg-white hover:bg-gray-50 transition-colors">Agendar</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Floating Elements -->
+<div class="absolute -bottom-10 -right-10 w-40 h-40 bg-indigo-500/10 blur-3xl rounded-full pointer-events-none"></div>
+</div>
+</div>
+</section>
+<!-- LOGOS -->
+<section class="border-y border-border/60 py-12 bg-white">
+<div class="max-w-7xl mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-8">
+<p class="text-xs font-semibold text-subtle whitespace-nowrap md:w-auto w-full text-center md:text-left tracking-wide"> 
+            FERRAMENTA ESCOLHIDA POR FUNDADORES DA
+        </p>
+<div class="flex flex-wrap justify-center md:justify-end gap-x-10 gap-y-6 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
+<span class="font-sans text-lg font-bold text-obsidian tracking-tight flex items-center gap-2">
+<iconify-icon icon="simple-icons:ycombinator" width="20"></iconify-icon> Y Combinator
+            </span>
+<span class="font-sans text-lg font-bold text-obsidian tracking-tight flex items-center gap-2">
+<iconify-icon icon="simple-icons:notion" width="20"></iconify-icon> Notion
+            </span>
+<span class="font-sans text-lg font-bold text-obsidian tracking-tight flex items-center gap-2">
+<iconify-icon icon="simple-icons:linear" width="20"></iconify-icon> Linear
+            </span>
+<span class="font-sans text-lg font-bold text-obsidian tracking-tight flex items-center gap-2">
+<iconify-icon icon="simple-icons:vercel" width="20"></iconify-icon> Vercel
+            </span>
+</div>
+</div>
+</section>
+<!-- LIFECYCLE SCROLL SECTION -->
+<section class="relative w-full bg-canvas border-b border-border/60" id="como-funciona" style="height: 350vh;">
+<div class="sticky top-0 left-0 w-full h-screen overflow-hidden flex flex-col items-center justify-center">
+<div class="absolute inset-0 bg-[radial-gradient(#00000008_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none"></div>
+<div class="max-w-4xl w-full px-6 md:px-12 relative z-10 flex flex-col items-center h-full py-20">
+<div class="text-center mb-12 shrink-0 opacity-0 transition-opacity duration-700" id="lifecycle-header">
+<h2 class="font-sans text-2xl md:text-3xl font-semibold text-obsidian tracking-tight mb-2"> 
+                    Do Prompt à Publicação 
+                </h2>
+<p class="text-subtle text-sm max-w-md mx-auto"> 
+                    Um fluxo contínuo de criação e execução.
+                </p>
+</div>
+<div class="relative w-full max-w-2xl flex-1 flex flex-col justify-center my-auto">
+<!-- Line -->
+<div class="absolute left-1/2 top-4 bottom-4 w-px bg-border/60 -translate-x-1/2"></div>
+<div class="absolute left-1/2 top-4 w-px bg-obsidian -translate-x-1/2 transition-all duration-75 ease-linear h-0 max-h-[calc(100%-2rem)]" id="lifecycle-line"></div>
+<div class="space-y-16 py-8 relative">
+<!-- Step 1 -->
+<div class="lifecycle-step group flex items-center justify-between w-full opacity-30 transition-all duration-500" data-threshold="0.1">
+<div class="w-[42%] text-right pr-8">
+<span class="font-mono text-[10px] text-subtle uppercase tracking-wider block mb-1"> 01 Input </span>
+<h3 class="font-sans text-base font-semibold text-obsidian"> Contexto &amp; Marca </h3>
+<p class="text-xs text-subtle mt-1 hidden md:block"> Defina o objetivo. </p>
+</div>
+<div class="relative shrink-0 z-10">
+<div class="w-3 h-3 rounded-full border border-border bg-canvas group-[.active]:border-obsidian group-[.active]:bg-obsidian transition-colors duration-300"></div>
+</div>
+<div class="w-[42%] pl-8">
+<div class="bg-white border border-border p-3 rounded shadow-sm inline-block">
+<div class="flex items-center gap-2">
+<iconify-icon class="text-subtle" icon="solar:chat-round-line-linear"></iconify-icon>
+<span class="text-xs font-medium text-obsidian"> "Lançamento Feature X" </span>
+</div>
+</div>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="lifecycle-step group flex items-center justify-between w-full opacity-30 transition-all duration-500" data-threshold="0.3">
+<div class="w-[42%] text-right pr-8">
+<div class="bg-white border border-border p-3 rounded shadow-sm inline-block text-left">
+<span class="text-[10px] text-subtle block mb-1"> Persona </span>
+<span class="text-xs font-medium text-obsidian"> CTOs em Scale-ups </span>
+</div>
+</div>
+<div class="relative shrink-0 z-10">
+<div class="w-3 h-3 rounded-full border border-border bg-canvas group-[.active]:border-obsidian group-[.active]:bg-obsidian transition-colors duration-300"></div>
+</div>
+<div class="w-[42%] pl-8">
+<span class="font-mono text-[10px] text-subtle uppercase tracking-wider block mb-1"> 02 Estratégia </span>
+<h3 class="font-sans text-base font-semibold text-obsidian"> Geração de Plano </h3>
+<p class="text-xs text-subtle mt-1 hidden md:block"> Canais e mensagens chave. </p>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="lifecycle-step group flex items-center justify-between w-full opacity-30 transition-all duration-500" data-threshold="0.5">
+<div class="w-[42%] text-right pr-8">
+<span class="font-mono text-[10px] text-subtle uppercase tracking-wider block mb-1"> 03 Criação </span>
+<h3 class="font-sans text-base font-semibold text-obsidian"> Conteúdo On-Brand </h3>
+<p class="text-xs text-subtle mt-1 hidden md:block"> Copy, Design e Variações. </p>
+</div>
+<div class="relative shrink-0 z-10">
+<div class="w-3 h-3 rounded-full border border-border bg-canvas group-[.active]:border-obsidian group-[.active]:bg-obsidian transition-colors duration-300"></div>
+</div>
+<div class="w-[42%] pl-8">
+<div class="bg-white border border-border p-2 rounded shadow-sm inline-flex items-center gap-2">
+<div class="w-6 h-6 bg-indigo-50 rounded flex items-center justify-center border border-indigo-100">
+<iconify-icon class="text-indigo-600" icon="solar:magic-stick-3-linear"></iconify-icon>
+</div>
+<div class="text-[10px] font-medium"> 3 Emails + 5 Posts gerados </div>
+</div>
+</div>
+</div>
+<!-- Step 4 -->
+<div class="lifecycle-step group flex items-center justify-between w-full opacity-30 transition-all duration-500" data-threshold="0.75">
+<div class="w-[42%] text-right pr-8">
+<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-obsidian text-white text-xs font-semibold shadow-lg shadow-obsidian/20">
+<span>Agendado</span>
+<iconify-icon icon="solar:clock-circle-linear" width="12"></iconify-icon>
+</span>
+</div>
+<div class="relative shrink-0 z-10">
+<div class="w-3 h-3 rounded-full border border-border bg-canvas group-[.active]:border-obsidian group-[.active]:bg-obsidian transition-colors duration-300"></div>
+</div>
+<div class="w-[42%] pl-8">
+<span class="font-mono text-[10px] text-subtle uppercase tracking-wider block mb-1"> 04 Execução </span>
+<h3 class="font-sans text-base font-semibold text-obsidian"> Distribuição </h3>
+<p class="text-xs text-subtle mt-1 hidden md:block"> LinkedIn, Email, Twitter. </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script> 
+    (function(){
+        const section=document.getElementById('como-funciona');
+        const header=document.getElementById('lifecycle-header');
+        const line=document.getElementById('lifecycle-line');
+        const steps=section.querySelectorAll('.lifecycle-step');
+        function handleScroll(){
+            if(!section)return;
+            const rect=section.getBoundingClientRect();
+            const viewH=window.innerHeight;
+            const travelDistance=rect.height-viewH;
+            const scrolled=-rect.top;
+            let progress=scrolled/travelDistance;
+            progress=Math.max(0,Math.min(1,progress));
+            
+            if(progress>0.02) header.style.opacity='1'; else header.style.opacity='0';
+            line.style.height=(progress*100)+'%';
+            
+            steps.forEach(step=>{
+                const t=parseFloat(step.dataset.threshold);
+                if(progress>=t){
+                    if(progress<t+0.15){
+                        step.classList.add('active');
+                        step.classList.replace('opacity-30','opacity-100');
+                        step.style.transform='scale(1.05)';
+                    }else{
+                        step.classList.add('active');
+                        step.classList.replace('opacity-30','opacity-50');
+                        step.style.transform='scale(1)';
+                    }
+                }else{
+                    step.classList.remove('active');
+                    step.classList.replace('opacity-100','opacity-30');
+                    step.classList.replace('opacity-50','opacity-30');
+                    step.style.transform='scale(1)';
+                }
+            });
+        };
+        window.addEventListener('scroll',handleScroll,{passive:true});
+        handleScroll();
+    })(); 
+    </script>
+</section>
+<!-- FEATURES GRID -->
+<section class="py-32 px-6 md:px-12 lg:px-20 bg-canvas">
+<div class="max-w-7xl mx-auto">
+<div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
+<div class="max-w-xl">
+<h2 class="font-sans text-3xl md:text-4xl font-semibold text-obsidian tracking-tight mb-4"> 
+                    Criatividade estruturada. <br/> <span class="text-subtle">Escala ilimitada.</span>
+</h2>
+<p class="text-subtle text-base leading-relaxed"> 
+                    Não é apenas um gerador de texto. É uma engine de estratégia que entende seu funil.
+                </p>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- Card 1: Tom de Voz -->
+<div class="md:col-span-7 group relative bg-white border border-border rounded-xl overflow-hidden hover:border-obsidian/30 transition-all duration-500">
+<div class="relative z-10 p-8 h-full flex flex-col justify-between">
+<div>
+<div class="w-10 h-10 bg-canvas border border-border rounded flex items-center justify-center mb-6 text-obsidian shadow-sm">
+<iconify-icon icon="solar:tuning-square-2-linear" width="20"></iconify-icon>
+</div>
+<h3 class="text-xl font-semibold text-obsidian mb-2"> Calibração de Tom </h3>
+<p class="text-subtle text-sm"> Ajuste a personalidade da IA para cada canal. Do corporativo ao irreverente em um clique. </p>
+</div>
+<!-- Interactive Slider Visual -->
+<div class="mt-10 bg-canvas border border-border rounded-lg p-6 select-none">
+<div class="flex justify-between text-[10px] font-semibold text-subtle uppercase tracking-wider mb-2">
+<span>Analítico</span>
+<span>Inspirador</span>
+</div>
+<div class="relative h-2 bg-border/40 rounded-full mb-6">
+<div class="absolute left-0 top-0 h-full w-[60%] bg-obsidian rounded-full"></div>
+<div class="absolute left-[60%] top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-obsidian rounded-full shadow-md cursor-pointer hover:scale-110 transition-transform"></div>
+</div>
+<div class="space-y-2">
+<div class="flex gap-2">
+<div class="w-1 h-full bg-border rounded"></div>
+<p class="text-[11px] text-obsidian font-medium bg-white p-2 rounded border border-border/50 shadow-sm">
+                                    "Nossos dados indicam um aumento de 40% na eficiência..."
+                                </p>
+</div>
+<div class="flex gap-2 opacity-50">
+<div class="w-1 h-full bg-border rounded"></div>
+<p class="text-[11px] text-subtle bg-white p-2 rounded border border-border/50 shadow-sm">
+                                    "Imagine alcançar 40% a mais de eficiência..."
+                                </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 2: Analytics -->
+<div class="md:col-span-5 group relative bg-white border border-border rounded-xl overflow-hidden hover:border-obsidian/30 transition-all duration-500 flex flex-col">
+<div class="p-8 relative z-10 flex flex-col h-full">
+<div class="w-10 h-10 bg-canvas border border-border rounded flex items-center justify-center mb-6 text-obsidian shadow-sm">
+<iconify-icon icon="solar:graph-new-up-linear" width="20"></iconify-icon>
+</div>
+<h3 class="text-xl font-semibold text-obsidian mb-2"> Feedback Loop </h3>
+<p class="text-sm text-subtle mb-8"> A IA aprende com o que performa. Seus próximos posts serão melhores que os anteriores. </p>
+<!-- Graph Visual -->
+<div class="mt-auto relative h-32 w-full border-t border-dashed border-border/60 pt-4 flex items-end justify-between px-2 gap-2">
+<div class="w-full bg-indigo-50/50 rounded-t h-[40%] group-hover:h-[50%] transition-all duration-700 delay-0 relative"><div class="absolute top-0 w-full h-px bg-indigo-500/20"></div></div>
+<div class="w-full bg-indigo-50/50 rounded-t h-[30%] group-hover:h-[60%] transition-all duration-700 delay-100 relative"><div class="absolute top-0 w-full h-px bg-indigo-500/20"></div></div>
+<div class="w-full bg-indigo-50/50 rounded-t h-[55%] group-hover:h-[75%] transition-all duration-700 delay-200 relative"><div class="absolute top-0 w-full h-px bg-indigo-500/20"></div></div>
+<div class="w-full bg-indigo-50/50 rounded-t h-[45%] group-hover:h-[85%] transition-all duration-700 delay-300 relative">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-obsidian text-white text-[9px] px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity delay-500">ROI</div>
+<div class="absolute top-0 w-full h-px bg-indigo-500"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 3: Multi-channel -->
+<div class="md:col-span-12 group relative bg-white border border-border rounded-xl overflow-hidden hover:border-obsidian/30 transition-all duration-500">
+<div class="absolute inset-0 bg-[linear-gradient(to_right,#00000008_1px,transparent_1px),linear-gradient(to_bottom,#00000008_1px,transparent_1px)] bg-[size:24px_24px] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+<div class="p-10 flex flex-col md:flex-row items-center gap-12 relative z-10">
+<div class="flex-1 max-w-lg">
+<div class="w-10 h-10 bg-canvas border border-border rounded flex items-center justify-center mb-6 text-obsidian shadow-sm">
+<iconify-icon icon="solar:layers-minimalistic-linear" width="20"></iconify-icon>
+</div>
+<h3 class="text-xl font-semibold text-obsidian mb-2"> Orquestração Multicanal </h3>
+<p class="text-subtle leading-relaxed"> 
+                            Um único comando gera ativos nativos para LinkedIn, Twitter, Email Marketing e Blog. Formatos respeitados, threads criadas automaticamente.
+                        </p>
+</div>
+<!-- Icons Visual -->
+<div class="flex-1 w-full flex items-center justify-center gap-4">
+<div class="w-14 h-14 rounded-xl border border-border bg-white shadow-sm flex items-center justify-center transform -rotate-12 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+<iconify-icon class="text-[#0a66c2]" icon="simple-icons:linkedin" width="24"></iconify-icon>
+</div>
+<div class="w-16 h-16 rounded-xl border border-border bg-white shadow-lg flex items-center justify-center z-10">
+<iconify-icon class="text-obsidian" icon="solar:rocket-2-linear" width="32"></iconify-icon>
+</div>
+<div class="w-14 h-14 rounded-xl border border-border bg-white shadow-sm flex items-center justify-center transform rotate-12 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+<iconify-icon class="text-red-500" icon="simple-icons:gmail" width="24"></iconify-icon>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SOCIAL PROOF / QUOTES -->
+<section class="py-24 px-6 md:px-12 lg:px-20 border-b border-border/60 bg-white">
+<div class="max-w-4xl mx-auto text-center">
+<h2 class="font-sans text-2xl font-semibold text-obsidian mb-12">Por que fundadores estão entrando na lista?</h2>
+<div class="grid md:grid-cols-2 gap-8 text-left">
+<div class="p-6 rounded-lg bg-canvas border border-border hover:border-obsidian/20 transition-colors">
+<div class="flex gap-1 text-orange-400 mb-3">
+<iconify-icon icon="solar:star-bold" width="14"></iconify-icon>
+<iconify-icon icon="solar:star-bold" width="14"></iconify-icon>
+<iconify-icon icon="solar:star-bold" width="14"></iconify-icon>
+<iconify-icon icon="solar:star-bold" width="14"></iconify-icon>
+<iconify-icon icon="solar:star-bold" width="14"></iconify-icon>
+</div>
+<p class="text-sm text-subtle mb-4">"Marketing sempre foi nosso gargalo. A promessa de gerar uma estratégia completa baseada no contexto do nosso Notion é exatamente o que precisamos."</p>
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-gradient-to-br from-gray-200 to-gray-300"></div>
+<div>
+<div class="text-xs font-bold text-obsidian">Carlos M.</div>
+<div class="text-[10px] text-subtle">SaaS Founder</div>
+</div>
+</div>
+</div>
+<div class="p-6 rounded-lg bg-canvas border border-border hover:border-obsidian/20 transition-colors">
+<div class="flex gap-1 text-orange-400 mb-3">
+<iconify-icon icon="solar:star-bold" width="14"></iconify-icon>
+<iconify-icon icon="solar:star-bold" width="14"></iconify-icon>
+<iconify-icon icon="solar:star-bold" width="14"></iconify-icon>
+<iconify-icon icon="solar:star-bold" width="14"></iconify-icon>
+<iconify-icon icon="solar:star-bold" width="14"></iconify-icon>
+</div>
+<p class="text-sm text-subtle mb-4">"Já testei dezenas de ferramentas de AI copy. Nenhuma delas entende 'Estratégia' como o demo do Fluxo mostrou. Ansiosa pelo beta."</p>
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-gradient-to-br from-gray-200 to-gray-300"></div>
+<div>
+<div class="text-xs font-bold text-obsidian">Ana B.</div>
+<div class="text-[10px] text-subtle">Head of Growth</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- PRICING / ACCESS -->
+<section class="py-32 px-6 md:px-12 lg:px-20 border-b border-border bg-canvas">
+<div class="max-w-5xl mx-auto">
+<div class="text-center mb-16">
+<h2 class="font-sans text-3xl md:text-4xl font-semibold text-obsidian tracking-tight mb-4"> 
+                Acesso Exclusivo 
+            </h2>
+<p class="text-subtle text-base"> 
+                Estamos liberando acessos em lotes semanais. Garanta sua posição.
+            </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8" id="pricing-grid">
+<!-- Tier 1 -->
+<div class="pricing-card group relative p-8 rounded-xl border border-border bg-white flex flex-col cursor-pointer transition-all duration-300" id="tier-starter">
+<div class="mb-4 relative z-10">
+<span class="font-semibold text-obsidian text-sm uppercase tracking-wide">Starter</span>
+</div>
+<div class="mb-4 flex items-baseline gap-1 relative z-10">
+<span class="text-3xl font-semibold text-obsidian">Waitlist</span>
+</div>
+<p class="text-xs text-subtle mb-8 leading-relaxed relative z-10"> 
+                    Para solopreneurs validando ideias.
+                </p>
+<ul class="space-y-3 mb-8 flex-1 relative z-10">
+<li class="flex gap-3 text-xs text-subtle"> <span class="text-obsidian">✓</span> 1 Perfil de Marca </li>
+<li class="flex gap-3 text-xs text-subtle"> <span class="text-obsidian">✓</span> 5 Gerações/semana </li>
+</ul>
+<button class="w-full py-2.5 rounded border border-border text-xs font-semibold text-obsidian bg-white hover:border-obsidian transition-all"> 
+                    Entrar na Fila 
+                </button>
+</div>
+<!-- Tier 2 (Focus) -->
+<div class="pricing-card group relative p-8 rounded-xl bg-obsidian text-white shadow-2xl flex flex-col cursor-pointer scale-[1.02] z-10 ring-1 ring-white/10" id="tier-pro">
+<div class="absolute top-0 right-0 p-3">
+<span class="bg-white/20 text-[10px] font-bold px-2 py-1 rounded text-white backdrop-blur-sm">MAIS PROCURADO</span>
+</div>
+<div class="mb-4">
+<span class="font-semibold text-sm uppercase tracking-wide">Pro Founder</span>
+</div>
+<div class="mb-4 flex items-baseline gap-1">
+<span class="text-3xl font-semibold">Beta Access</span>
+</div>
+<p class="text-xs text-white/60 mb-8 leading-relaxed"> 
+                    Para startups em estágio de tração. Acesso prioritário.
+                </p>
+<ul class="space-y-3 mb-8 flex-1">
+<li class="flex gap-3 text-xs text-white/80"> <span class="text-white">✓</span> Estratégia Ilimitada </li>
+<li class="flex gap-3 text-xs text-white/80"> <span class="text-white">✓</span> Integração Notion/Linear </li>
+<li class="flex gap-3 text-xs text-white/80"> <span class="text-white">✓</span> Agendamento Automático </li>
+</ul>
+<button class="w-full py-2.5 rounded bg-white text-obsidian text-xs font-semibold hover:bg-gray-100 transition-all shadow-lg shadow-white/10"> 
+                    Solicitar Acesso Pro 
+                </button>
+</div>
+<!-- Tier 3 -->
+<div class="pricing-card group relative p-8 rounded-xl border border-border bg-white flex flex-col cursor-pointer transition-all duration-300" id="tier-agency">
+<div class="mb-4 relative z-10">
+<span class="font-semibold text-obsidian text-sm uppercase tracking-wide">Agency</span>
+</div>
+<div class="mb-4 flex items-baseline gap-1 relative z-10">
+<span class="text-3xl font-semibold text-obsidian">Partner</span>
+</div>
+<p class="text-xs text-subtle mb-8 leading-relaxed relative z-10"> 
+                    White-label para agências de performance.
+                </p>
+<ul class="space-y-3 mb-8 flex-1 relative z-10">
+<li class="flex gap-3 text-xs text-subtle"> <span class="text-obsidian">✓</span> Workspaces Múltiplos </li>
+<li class="flex gap-3 text-xs text-subtle"> <span class="text-obsidian">✓</span> API Access </li>
+</ul>
+<button class="w-full py-2.5 rounded border border-border text-xs font-semibold text-obsidian bg-white hover:border-obsidian transition-all"> 
+                    Falar com Vendas 
+                </button>
+</div>
+</div>
+</div>
+</section>
+<!-- FOOTER -->
+<footer class="bg-white py-20 px-6 md:px-12 lg:px-20 border-t border-border/40">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between gap-12">
+<div class="max-w-xs space-y-6">
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 bg-obsidian text-white flex items-center justify-center rounded-sm text-[8px]">
+<iconify-icon icon="solar:infinity-bold"></iconify-icon>
+</div>
+<span class="font-bold text-sm tracking-tight text-obsidian uppercase">Fluxo</span>
+</div>
+<p class="text-xs text-subtle leading-relaxed"> 
+                Desenvolvido no Brasil. <br/> Inteligência de marketing para a próxima geração de empresas. 
+            </p>
+<div class="text-[10px] text-border text-subtle"> © 2024 Fluxo AI Ltda. </div>
+</div>
+<div class="flex gap-16">
+<div class="space-y-4">
+<h4 class="text-xs font-bold text-obsidian">Produto</h4>
+<ul class="space-y-2 text-xs text-subtle">
+<li><a class="hover:text-obsidian" href="#">Manifesto</a></li>
+<li><a class="hover:text-obsidian" href="#">Roadmap</a></li>
+<li><a class="hover:text-obsidian" href="#">Pricing</a></li>
+</ul>
+</div>
+<div class="space-y-4">
+<h4 class="text-xs font-bold text-obsidian">Social</h4>
+<ul class="space-y-2 text-xs text-subtle">
+<li><a class="hover:text-obsidian" href="#">Twitter / X</a></li>
+<li><a class="hover:text-obsidian" href="#">LinkedIn</a></li>
+<li><a class="hover:text-obsidian" href="#">Instagram</a></li>
+</ul>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<!-- Three.js Visuals (Subtle Particles) -->
+<script id="vertexShader" type="x-shader/x-vertex"> 
+uniform float uTime; uniform float uDistortion; uniform float uSize; uniform vec2 uMouse; varying float vNoise; 
+vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; } 
+vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; } 
+vec4 permute(vec4 x) { return mod289(((x*34.0)+1.0)*x); } 
+vec4 taylorInvSqrt(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; } 
+float snoise(vec3 v) { const vec2 C = vec2(1.0/6.0, 1.0/3.0) ; const vec4 D = vec4(0.0, 0.5, 1.0, 2.0); vec3 i = floor(v + dot(v, C.yyy) ); vec3 x0 = v - i + dot(i, C.xxx) ; vec3 g = step(x0.yzx, x0.xyz); vec3 l = 1.0 - g; vec3 i1 = min( g.xyz, l.zxy ); vec3 i2 = max( g.xyz, l.zxy ); vec3 x1 = x0 - i1 + 1.0 * C.xxx; vec3 x2 = x0 - i2 + 2.0 * C.xxx; vec3 x3 = x0 - 1.0 + 3.0 * C.xxx; i = mod289(i); vec4 p = permute( permute( permute( i.z + vec4(0.0, i1.z, i2.z, 1.0 )) + i.y + vec4(0.0, i1.y, i2.y, 1.0 )) + i.x + vec4(0.0, i1.x, i2.x, 1.0 )); float n_ = 1.0/7.0; vec3 ns = n_ * D.wyz - D.xzx; vec4 j = p - 49.0 * floor(p * ns.z *ns.z); vec4 x_ = floor(j * ns.z); vec4 y_ = floor(j - 7.0 * x_ ); vec4 x = x_ *ns.x + ns.yyyy; vec4 y = y_ *ns.x + ns.yyyy; vec4 h = 1.0 - abs(x) - abs(y); vec4 b0 = vec4( x.xy, y.xy ); vec4 b1 = vec4( x.zw, y.zw ); vec4 s0 = floor(b0)*2.0 + 1.0; vec4 s1 = floor(b1)*2.0 + 1.0; vec4 sh = -step(h, vec4(0.0)); vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ; vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ; vec3 p0 = vec3(a0.xy,h.x); vec3 p1 = vec3(a0.zw,h.y); vec3 p2 = vec3(a1.xy,h.z); vec3 p3 = vec3(a1.zw,h.w); vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3))); p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w; vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0); m = m * m; return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3) ) ); } 
+void main() { vec3 pos = position; float noise = snoise(vec3(pos.x * 0.5 + uTime * 0.15, pos.y * 0.5, pos.z * 0.5)); vNoise = noise; vec3 newPos = pos + (normal * noise * uDistortion); float dist = distance(uMouse * 10.0, newPos.xy); float interaction = smoothstep(6.0, 0.0, dist); newPos.z += interaction * 1.5; vec4 mvPosition = modelViewMatrix * vec4(newPos, 1.0); gl_Position = projectionMatrix * mvPosition; gl_PointSize = uSize * (20.0 / -mvPosition.z); } 
+</script>
+<script id="fragmentShader" type="x-shader/x-fragment"> 
+uniform vec3 uColor; varying float vNoise; 
+void main() { vec2 center = gl_PointCoord - vec2(0.5); float dist = length(center); if (dist > 0.45) discard; float alpha = 1.0; vec3 color1 = uColor; vec3 color2 = vec3(0.3, 0.3, 0.4); vec3 finalColor = mix(color1, color2, vNoise * 0.5 + 0.5); gl_FragColor = vec4(finalColor, alpha); } 
+</script>
+<script> 
+const container = document.getElementById('canvas-container'); 
+const scene = new THREE.Scene(); 
+scene.fog = new THREE.FogExp2(0xF5F5F7, 0.04); 
+const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100); 
+camera.position.set(0, 0, 20); 
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); 
+renderer.setSize(window.innerWidth, window.innerHeight); 
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); 
+container.appendChild(renderer.domElement); 
+const objectGroup = new THREE.Group(); 
+scene.add(objectGroup); 
+// Using a slightly tighter sphere for a more "Product" feel
+const geometry = new THREE.IcosahedronGeometry(7, 40); 
+const uniforms = { uTime: { value: 0 }, uDistortion: { value: 0.15 }, uSize: { value: 1.6 }, uColor: { value: new THREE.Color('#111111') }, uMouse: { value: new THREE.Vector2(0, 0) } }; 
+const material = new THREE.ShaderMaterial({ vertexShader: document.getElementById('vertexShader').textContent, fragmentShader: document.getElementById('fragmentShader').textContent, uniforms: uniforms, transparent: true, blending: THREE.NormalBlending }); 
+const points = new THREE.Points(geometry, material); 
+objectGroup.add(points); 
+let time = 0; let mouseX = 0, mouseY = 0; 
+document.addEventListener('mousemove', (e) => { mouseX = (e.clientX / window.innerWidth) * 2 - 1; mouseY = -(e.clientY / window.innerHeight) * 2 + 1; uniforms.uMouse.value.x += (mouseX - uniforms.uMouse.value.x) * 0.03; uniforms.uMouse.value.y += (mouseY - uniforms.uMouse.value.y) * 0.03; }); 
+function adjustLayout() { const w = window.innerWidth; if(w < 1024) { objectGroup.position.set(0, 2, -10); objectGroup.scale.set(0.6, 0.6, 0.6); } else { objectGroup.position.set(5, 0, 0); objectGroup.scale.set(0.8, 0.8, 0.8); } } 
+window.addEventListener('resize', () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); adjustLayout(); }); 
+adjustLayout(); 
+function animate() { requestAnimationFrame(animate); time += 0.005; objectGroup.rotation.y = time * 0.1; uniforms.uTime.value = time; renderer.render(scene, camera); } 
+animate(); 
+</script>
+<script data-img-fallback-handler="">!function(){var f=["https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/917d6f93-fb36-439a-8c48-884b67b35381_1600w.jpg","https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/4734259a-bad7-422f-981e-ce01e79184f2_1600w.jpg","https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/c543a9e1-f226-4ced-80b0-feb8445a75b9_1600w.jpg","https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/5bab247f-35d9-400d-a82b-fd87cfe913d2_1600w.webp","https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/30104e3c-5eea-4b93-93e9-5313698a7156_1600w.webp"],h=new Set;function g(s){for(var x=0,i=0;i<s.length;i++)x=(x<<5)-x+s.charCodeAt(i)|0;return f[Math.abs(x)%f.length]}function r(t){var s=t.src;if(s&&!h.has(s)){h.add(s);t.src=g(s)}}window.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG")r(t)},!0);function c(){document.querySelectorAll("img").forEach(function(i){if(i.complete&&!i.naturalWidth&&i.src)r(i)})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",c);else c()}()</script></body></html>

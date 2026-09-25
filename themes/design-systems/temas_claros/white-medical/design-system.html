@@ -1,0 +1,719 @@
+<html class="scroll-smooth" lang="en"><head><meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>VITALIS - Design System</title>
+<script src="assets/resource_3fa48481346f.js"></script>
+<script src="assets/iconify_654a1ef798a3.js"></script>
+<script src="assets/lucide_latest_2eebd0ebe8c2.js"></script>
+<link href="assets/css2_19fd9cc6b396.css" rel="stylesheet"/>
+<style>
+body { font-family: 'Inter', sans-serif; }
+h1, h2, h3, h4, h5, h6 { font-family: 'Plus Jakarta Sans', sans-serif; }
+/* Grid definitions */
+:root {
+--gx-1: 6%;
+--gx-2: 28%;
+--gx-3: 62%;
+--gx-4: 94%;
+--gy-1: 100px;
+--gy-2: 62vh;
+--gy-3: 94vh;
+--grid-color: rgba(0, 0, 0, 0.04);
+--beam-color: #0ea5e9; /* Sky 500 */
+}
+.grid-line-v {
+position: absolute;
+top: 0;
+bottom: 0;
+width: 1px;
+background: var(--grid-color);
+z-index: 0;
+}
+.grid-line-h {
+position: absolute;
+left: 0;
+right: 0;
+height: 1px;
+background: var(--grid-color);
+z-index: 0;
+}
+.marker {
+position: absolute;
+width: 5px;
+height: 5px;
+background-color: #0f172a; /* Slate 900 */
+z-index: 30;
+opacity: 0;
+animation: fade-in 0.5s ease-out 1s forwards;
+}
+/* Animations */
+@keyframes reveal-up {
+0% { clip-path: inset(100% 0 0 0); transform: translateY(20px); opacity: 0; }
+100% { clip-path: inset(0 0 0 0); transform: translateY(0); opacity: 1; }
+}
+@keyframes fade-in {
+0% { opacity: 0; }
+100% { opacity: 1; }
+}
+.animate-reveal {
+opacity: 0;
+animation: reveal-up 1.0s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+/* Scroll Triggered Animation Class */
+.scroll-reveal {
+opacity: 0;
+transform: translateY(20px);
+transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.scroll-reveal.is-visible {
+opacity: 1;
+transform: translateY(0);
+}
+.delay-100 { animation-delay: 0.1s; transition-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; transition-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; transition-delay: 0.3s; }
+.delay-500 { animation-delay: 0.5s; transition-delay: 0.5s; }
+/* Beams */
+@keyframes beam-h {
+0% { left: -200px; opacity: 0; }
+10% { opacity: 1; }
+90% { opacity: 1; }
+100% { left: 100%; opacity: 0; }
+}
+@keyframes beam-v {
+0% { top: -200px; opacity: 0; }
+10% { opacity: 1; }
+90% { opacity: 1; }
+100% { top: 100%; opacity: 0; }
+}
+.beam-h {
+position: absolute;
+height: 1px;
+width: 200px;
+background: linear-gradient(90deg, transparent, var(--beam-color), transparent);
+z-index: 10;
+opacity: 0;
+}
+.beam-v {
+position: absolute;
+width: 1px;
+height: 200px;
+background: linear-gradient(180deg, transparent, var(--beam-color), transparent);
+z-index: 10;
+opacity: 0;
+}
+/* Design System Specific Styles */
+.ds-section {
+    padding: 6rem 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+.ds-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #94a3b8;
+    margin-bottom: 1rem;
+    display: block;
+}
+.ds-swatch {
+    width: 100%;
+    height: 80px;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+</style>
+<link href="assets/css2_86e10c4bcbd4.css" rel="stylesheet"/>
+<link href="assets/css2_0fc20595ebff.css" rel="stylesheet"/>
+<link href="assets/css2_23afcbef9bdd.css" rel="stylesheet"/>
+<link href="assets/css2_82ced711bf49.css" rel="stylesheet"/>
+<link href="assets/css2_fa22aa91016e.css" rel="stylesheet"/>
+<link href="assets/css2_2b2d87bc82d8.css" rel="stylesheet"/>
+<link href="assets/css2_4fef849c83da.css" rel="stylesheet"/>
+<link href="assets/css2_a7b22b336fe1.css" rel="stylesheet"/>
+<link href="assets/css2_0b2072b66163.css" rel="stylesheet"/>
+<link href="assets/css2_9b8bf743d4a8.css" rel="stylesheet"/>
+<link href="assets/css2_8e191ef32247.css" rel="stylesheet"/>
+<link href="assets/css2_70fd47a02eed.css" rel="stylesheet"/>
+<link href="assets/css2_b52fc18295f8.css" rel="stylesheet"/>
+<link href="assets/css2_62759cd015bd.css" rel="stylesheet"/>
+<link href="assets/css2_f495c2faa2a6.css" rel="stylesheet"/>
+<link href="assets/css2_6f16cdd6fd9f.css" rel="stylesheet"/>
+<link href="assets/css2_94cb6f0c406a.css" rel="stylesheet"/>
+<link href="assets/css2_6c160a0c4e6f.css" rel="stylesheet"/>
+<link href="assets/css2_bd407d5ceb4b.css" rel="stylesheet"/>
+<link href="assets/css2_176e25227b5e.css" rel="stylesheet"/>
+<link href="assets/css2_e5ca562f8909.css" rel="stylesheet"/>
+</head>
+<body class="bg-white text-slate-900 min-h-screen w-full selection:bg-teal-100 selection:text-teal-900 relative overflow-x-hidden antialiased">
+
+<!-- Design System Nav -->
+<nav class="fixed top-0 left-0 right-0 z-[100] bg-white/90 backdrop-blur-md border-b border-slate-200 px-6 h-14 flex items-center justify-between">
+    <div class="font-bold text-slate-900 tracking-tight">VITALIS <span class="text-slate-400 font-normal">Design System</span></div>
+    <div class="hidden md:flex gap-6 text-xs font-semibold uppercase tracking-wider text-slate-500">
+        <a href="#typography" class="hover:text-teal-600 transition-colors">Typography</a>
+        <a href="#colors" class="hover:text-teal-600 transition-colors">Colors</a>
+        <a href="#components" class="hover:text-teal-600 transition-colors">Components</a>
+        <a href="#layout" class="hover:text-teal-600 transition-colors">Layout</a>
+        <a href="#motion" class="hover:text-teal-600 transition-colors">Motion</a>
+    </div>
+</nav>
+
+<!-- 0) Hero Clone -->
+<section class="flex flex-col lg:block lg:h-[calc(100vh-100px)] z-10 w-full relative mt-14">
+<!-- Background Grid Lines for Context -->
+<div class="fixed inset-0 z-0 pointer-events-none hidden lg:block h-screen">
+<div class="grid-line-v" style="left: var(--gx-1)"></div>
+<div class="grid-line-v" style="left: var(--gx-2)">
+<div class="beam-v" style="animation: beam-v 6s infinite 1s;"></div>
+</div>
+<div class="grid-line-v" style="left: var(--gx-3)">
+<div class="beam-v" style="animation: beam-v 7s infinite 3s;"></div>
+</div>
+<div class="grid-line-v" style="left: var(--gx-4)"></div>
+<div class="grid-line-h" style="top: var(--gy-1)"></div>
+<div class="grid-line-h" style="top: 35%"></div>
+<div class="grid-line-h" style="top: 75%"></div>
+</div>
+
+<!-- Hero Text -->
+<div class="order-1 flex flex-col lg:py-0 lg:absolute lg:top-0 lg:right-[38%] lg:bottom-[6%] lg:left-[28%] lg:pr-12 lg:pl-12 z-20 pointer-events-none pt-20 pr-12 pb-12 pl-12 relative justify-center">
+<h1 class="sm:text-6xl md:text-7xl lg:text-[3.5rem] xl:text-[4.5rem] leading-[1] lg:leading-[0.95] lg:text-left text-5xl font-semibold text-slate-900 tracking-tight text-center">
+<span class="block animate-reveal delay-100">Vitalis</span>
+<span class="block text-slate-400 lg:ml-[0.5em] animate-reveal delay-200">
+            Design
+          </span>
+<span class="block text-teal-600 animate-reveal delay-300">
+            System
+          </span>
+</h1>
+<div class="flex animate-reveal delay-500 lg:justify-start lg:pl-2 lg:mt-12 pointer-events-auto mt-12 pl-2 gap-x-6 gap-y-6 items-center justify-center">
+<button class="group flex items-center gap-3 pl-6 pr-2 py-2 bg-white hover:bg-slate-50 border border-slate-200 rounded-full transition-all shadow-sm">
+<span class="text-sm font-medium text-slate-700">
+              Get Started
+            </span>
+<div class="w-9 h-9 bg-slate-100 rounded-full flex items-center justify-center text-slate-900 group-hover:bg-teal-50 group-hover:text-teal-600 transition-colors">
+<span class="iconify w-4 h-4" data-icon="solar:arrow-right-linear"></span>
+</div>
+</button>
+<div class="flex flex-col text-left">
+<span class="text-xs font-semibold text-slate-900 uppercase tracking-wide">
+              Status
+            </span>
+<div class="flex items-center gap-2">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+</span>
+<span class="text-xs text-slate-500 font-mono">LIVE v1.0</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Sidebar Area (Clone) -->
+<div class="relative order-2 w-full px-6 py-12 border-y border-slate-100 lg:border-y-0 lg:border-r lg:absolute lg:left-[6%] lg:top-0 lg:bottom-[6%] lg:w-[22%] lg:px-0 lg:py-0 flex flex-col bg-slate-50/50 lg:bg-transparent">
+<div class="lg:pt-12 lg:pr-8 lg:absolute lg:top-0 lg:h-[62%] lg:w-full animate-reveal delay-200">
+<p class="leading-relaxed lg:text-left lg:mx-0 text-base font-normal text-slate-500 text-center max-w-md mx-auto">
+            This design system documents the visual language of Vitalis, ensuring consistency across all digital touchpoints.
+          </p>
+</div>
+<div class="mt-12 lg:mt-0 lg:absolute lg:top-[62%] lg:bottom-0 lg:left-0 lg:right-0 lg:border-t border-slate-100 lg:pt-6 flex flex-col justify-between animate-reveal delay-300 items-center lg:items-start">
+<!-- Markers -->
+<div class="hidden lg:block marker -top-[2.5px] -left-[2.5px]"></div>
+<div class="hidden lg:block marker -top-[2.5px] -right-[2.5px]"></div>
+<!-- Beam -->
+<div class="absolute top-[-1px] left-0 right-0 h-[1px] overflow-hidden hidden lg:block">
+<div class="beam-h" style="animation: beam-h 5s infinite;"></div>
+</div>
+<div class="lg:text-left text-center w-full overflow-hidden">
+<p class="text-[10px] font-semibold tracking-widest text-slate-400 uppercase mb-6 pl-1">
+              Core Principles
+            </p>
+<div class="flex flex-col gap-2">
+    <div class="text-slate-400 font-semibold text-lg flex items-center gap-2">
+    <span class="iconify w-6 h-6" data-icon="solar:shield-check-linear"></span>
+                    Precision
+    </div>
+    <div class="text-slate-400 font-semibold text-lg flex items-center gap-2">
+    <span class="iconify w-6 h-6" data-icon="solar:heart-pulse-linear"></span>
+                    Care
+    </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Image Grid Cell (Clone) -->
+<div class="relative order-3 w-full h-64 sm:h-80 lg:absolute lg:left-[62%] lg:right-[6%] lg:top-0 lg:h-[62%] lg:border-l lg:w-auto border-slate-100 overflow-hidden group animate-reveal delay-200">
+<!-- Beam -->
+<div class="absolute top-0 bottom-0 left-[-1px] w-[1px] overflow-hidden z-20 hidden lg:block">
+<div class="beam-v" style="animation: beam-v 4s infinite;"></div>
+</div>
+<!-- Markers -->
+<div class="hidden lg:block marker -top-[2.5px] -left-[2.5px]"></div>
+<div class="hidden lg:block marker -top-[2.5px] -right-[2.5px]"></div>
+<img alt="Medical Lab" class="group-hover:scale-105 transition-transform duration-1000 ease-out w-full h-full object-cover" src="assets/9f023d8e-7464-4eea-9789-18f1b0_f8655a97e45a.webp"/>
+<div class="absolute inset-0 bg-gradient-to-t from-slate-900/10 to-transparent"></div>
+<div class="absolute bottom-6 left-6 z-20 bg-white/90 backdrop-blur border border-slate-200 p-3 rounded shadow-sm">
+<span class="iconify w-6 h-6 text-slate-700" data-icon="solar:layers-minimalistic-linear"></span>
+</div>
+</div>
+<!-- Interactive Card (Clone) -->
+<div class="relative order-4 p-6 flex items-center justify-center animate-reveal delay-300 lg:p-0 lg:absolute lg:right-[6%] lg:top-[62%] lg:bottom-[6%] lg:border-l lg:border-t lg:border-slate-100 lg:left-[62%]">
+<!-- Beams -->
+<div class="absolute top-[-1px] left-0 right-0 h-[1px] overflow-hidden z-20 hidden lg:block">
+<div class="beam-h" style="animation: beam-h 6s infinite reverse;"></div>
+</div>
+<div class="absolute top-0 bottom-0 left-[-1px] w-[1px] overflow-hidden z-20 hidden lg:block">
+<div class="beam-v" style="animation: beam-v 6s infinite 2s;"></div>
+</div>
+<!-- Card -->
+<div class="flex flex-col bg-white w-full h-full lg:rounded-none rounded-sm pt-8 pr-8 pb-8 pl-8 relative shadow-lg shadow-slate-200/50 justify-between transition-all duration-500 border border-slate-100 lg:border-none">
+<div class="flex items-start justify-between relative z-10 min-h-[60px]">
+<div class="transition-all duration-300 ease-out">
+<div class="flex items-center gap-2 text-teal-600 mb-2">
+<span class="iconify w-4 h-4" data-icon="solar:ruler-pen-linear"></span>
+<span class="text-[10px] font-semibold uppercase tracking-widest">
+                  Component
+                </span>
+</div>
+<h3 class="text-xl font-semibold leading-tight tracking-tight text-slate-900">
+                Interactive Cards
+              </h3>
+</div>
+</div>
+<div class="relative z-10 flex flex-col justify-end flex-1 mt-6">
+<p class="text-sm text-slate-500 font-medium leading-relaxed mb-4 border-l-2 border-teal-100 pl-3">
+              Modular UI elements
+              <span class="text-slate-400 font-normal">
+                Responsive • Accessible
+              </span>
+</p>
+<div class="flex items-center justify-between border-t border-slate-100 pt-4">
+<div class="flex -space-x-2">
+<span class="w-2 h-2 rounded-full bg-slate-200"></span>
+<span class="w-2 h-2 rounded-full bg-slate-300"></span>
+</div>
+<button class="text-xs font-semibold uppercase tracking-wide text-teal-600 hover:text-teal-800 transition-colors flex items-center gap-1">
+                View Specs
+                <span class="iconify w-3.5 h-3.5" data-icon="solar:arrow-right-linear"></span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- 1) Typography -->
+<section id="typography" class="ds-section relative z-10 bg-white">
+    <div class="max-w-[1600px] mx-auto px-6 lg:px-[6%]">
+        <span class="ds-label">01 / Typography</span>
+        <div class="grid grid-cols-1 gap-12">
+            
+            <!-- Heading 1 -->
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-8">
+                <div class="w-full lg:w-1/4 text-sm text-slate-400">Heading 1</div>
+                <div class="w-full lg:w-1/2">
+                    <h1 class="text-5xl lg:text-[3.5rem] font-semibold text-slate-900 tracking-tight leading-[1]">
+                        Precision Healthcare
+                    </h1>
+                </div>
+                <div class="w-full lg:w-1/4 text-right font-mono text-xs text-slate-400">3.5rem / 1.0</div>
+            </div>
+
+            <!-- Heading 2 -->
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-8">
+                <div class="w-full lg:w-1/4 text-sm text-slate-400">Heading 2</div>
+                <div class="w-full lg:w-1/2">
+                    <h2 class="text-4xl lg:text-6xl font-semibold text-slate-900 tracking-tight leading-[1.05]">
+                        Data-driven care
+                    </h2>
+                </div>
+                <div class="w-full lg:w-1/4 text-right font-mono text-xs text-slate-400">3.75rem / 1.05</div>
+            </div>
+
+            <!-- Heading 3 -->
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-8">
+                <div class="w-full lg:w-1/4 text-sm text-slate-400">Heading 3</div>
+                <div class="w-full lg:w-1/2">
+                    <h3 class="text-3xl font-medium text-slate-900 tracking-tight">
+                        Ready to prioritize?
+                    </h3>
+                </div>
+                <div class="w-full lg:w-1/4 text-right font-mono text-xs text-slate-400">1.875rem / 1.25</div>
+            </div>
+
+            <!-- Heading 4 -->
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-8">
+                <div class="w-full lg:w-1/4 text-sm text-slate-400">Heading 4</div>
+                <div class="w-full lg:w-1/2">
+                    <h4 class="text-xl font-semibold text-slate-900 tracking-tight">
+                        Specialist Network
+                    </h4>
+                </div>
+                <div class="w-full lg:w-1/4 text-right font-mono text-xs text-slate-400">1.25rem / 1.25</div>
+            </div>
+
+            <!-- Large Body -->
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-8">
+                <div class="w-full lg:w-1/4 text-sm text-slate-400">Body Large</div>
+                <div class="w-full lg:w-1/2">
+                    <p class="text-lg text-slate-500 font-light leading-relaxed">
+                        We continuously monitor outcomes to ensure the highest standard of care. Our predictive models help prevent complications.
+                    </p>
+                </div>
+                <div class="w-full lg:w-1/4 text-right font-mono text-xs text-slate-400">1.125rem / 1.625</div>
+            </div>
+
+            <!-- Regular Body -->
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-8">
+                <div class="w-full lg:w-1/4 text-sm text-slate-400">Body Regular</div>
+                <div class="w-full lg:w-1/2">
+                    <p class="text-base font-normal text-slate-500 leading-relaxed">
+                        VITALIS combines advanced diagnostics with compassionate care to create a new standard for medical excellence.
+                    </p>
+                </div>
+                <div class="w-full lg:w-1/4 text-right font-mono text-xs text-slate-400">1rem / 1.5</div>
+            </div>
+
+            <!-- Label/Mono -->
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-8">
+                <div class="w-full lg:w-1/4 text-sm text-slate-400">Label / Mono</div>
+                <div class="w-full lg:w-1/2">
+                    <p class="text-[10px] font-semibold tracking-widest text-slate-400 uppercase">
+                        In Network With
+                    </p>
+                </div>
+                <div class="w-full lg:w-1/4 text-right font-mono text-xs text-slate-400">0.625rem / Auto</div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- 2) Colors & Surfaces -->
+<section id="colors" class="ds-section relative z-10 bg-slate-50">
+    <div class="max-w-[1600px] mx-auto px-6 lg:px-[6%]">
+        <span class="ds-label">02 / Colors & Surfaces</span>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 mb-12">
+            <!-- Teal -->
+            <div>
+                <div class="ds-swatch bg-teal-600"></div>
+                <div class="text-xs font-mono text-slate-500">Teal 600<br/>#0d9488</div>
+            </div>
+            <div>
+                <div class="ds-swatch bg-teal-500"></div>
+                <div class="text-xs font-mono text-slate-500">Teal 500<br/>#14b8a6</div>
+            </div>
+            <div>
+                <div class="ds-swatch bg-teal-100"></div>
+                <div class="text-xs font-mono text-slate-500">Teal 100<br/>#ccfbf1</div>
+            </div>
+            <div>
+                <div class="ds-swatch bg-teal-50"></div>
+                <div class="text-xs font-mono text-slate-500">Teal 50<br/>#f0fdfa</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 mb-12">
+            <!-- Slate -->
+            <div>
+                <div class="ds-swatch bg-slate-900"></div>
+                <div class="text-xs font-mono text-slate-500">Slate 900<br/>#0f172a</div>
+            </div>
+            <div>
+                <div class="ds-swatch bg-slate-500"></div>
+                <div class="text-xs font-mono text-slate-500">Slate 500<br/>#64748b</div>
+            </div>
+            <div>
+                <div class="ds-swatch bg-slate-400"></div>
+                <div class="text-xs font-mono text-slate-500">Slate 400<br/>#94a3b8</div>
+            </div>
+            <div>
+                <div class="ds-swatch bg-slate-200"></div>
+                <div class="text-xs font-mono text-slate-500">Slate 200<br/>#e2e8f0</div>
+            </div>
+            <div>
+                <div class="ds-swatch bg-slate-100"></div>
+                <div class="text-xs font-mono text-slate-500">Slate 100<br/>#f1f5f9</div>
+            </div>
+            <div>
+                <div class="ds-swatch bg-slate-50"></div>
+                <div class="text-xs font-mono text-slate-500">Slate 50<br/>#f8fafc</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+            <!-- Emerald & Gradients -->
+            <div>
+                <div class="ds-swatch bg-emerald-500"></div>
+                <div class="text-xs font-mono text-slate-500">Emerald 500<br/>#10b981</div>
+            </div>
+            <div>
+                <div class="ds-swatch bg-gradient-to-r from-teal-600 to-emerald-500"></div>
+                <div class="text-xs font-mono text-slate-500">Gradient Main<br/>Teal-Emerald</div>
+            </div>
+            <div>
+                <div class="ds-swatch bg-gradient-to-t from-slate-900/10 to-transparent"></div>
+                <div class="text-xs font-mono text-slate-500">Gradient Overlay<br/>Image Cover</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 3) UI Components -->
+<section id="components" class="ds-section relative z-10 bg-white">
+    <div class="max-w-[1600px] mx-auto px-6 lg:px-[6%]">
+        <span class="ds-label">03 / UI Components</span>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+            
+            <!-- Buttons & Actions -->
+            <div class="space-y-8">
+                <h4 class="text-sm font-semibold text-slate-900 border-b border-slate-100 pb-2">Buttons</h4>
+                
+                <!-- Primary CTA -->
+                <div class="flex items-center gap-4">
+                    <button class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider bg-slate-900 text-white py-2.5 px-5 rounded hover:bg-slate-800 transition-all shadow-md shadow-slate-200 hover:shadow-lg">
+                        Book Consultation
+                    </button>
+                    <span class="text-xs font-mono text-slate-400">Primary Small</span>
+                </div>
+
+                <!-- Secondary Pill -->
+                <div class="flex items-center gap-4">
+                    <button class="group flex items-center gap-3 pl-6 pr-2 py-2 bg-white hover:bg-slate-50 border border-slate-200 rounded-full transition-all shadow-sm">
+                        <span class="text-sm font-medium text-slate-700">Find a specialist</span>
+                        <div class="w-9 h-9 bg-slate-100 rounded-full flex items-center justify-center text-slate-900 group-hover:bg-teal-50 group-hover:text-teal-600 transition-colors">
+                            <span class="iconify w-4 h-4" data-icon="solar:arrow-right-linear"></span>
+                        </div>
+                    </button>
+                    <span class="text-xs font-mono text-slate-400">Secondary Pill</span>
+                </div>
+
+                <!-- Text Link -->
+                <div class="flex items-center gap-4">
+                    <button class="text-xs font-semibold uppercase tracking-wide text-teal-600 hover:text-teal-800 transition-colors flex items-center gap-1">
+                        View Details
+                        <span class="iconify w-3.5 h-3.5" data-icon="solar:arrow-right-linear"></span>
+                    </button>
+                    <span class="text-xs font-mono text-slate-400">Text Link</span>
+                </div>
+
+                 <!-- Big CTA -->
+                 <div class="flex items-center gap-4">
+                    <button class="bg-white text-slate-900 pl-8 pr-6 py-4 rounded font-semibold text-xs uppercase tracking-widest hover:bg-slate-100 transition-all flex items-center gap-4 group/btn shadow-lg border border-slate-100">
+                        Schedule Visit
+                        <div class="w-6 h-6 bg-slate-900 text-white rounded-full flex items-center justify-center group-hover/btn:scale-110 transition-transform">
+                            <span class="iconify w-3.5 h-3.5" data-icon="solar:arrow-right-linear"></span>
+                        </div>
+                    </button>
+                    <span class="text-xs font-mono text-slate-400">Large CTA</span>
+                </div>
+            </div>
+
+            <!-- Badges & Status -->
+            <div class="space-y-8">
+                <h4 class="text-sm font-semibold text-slate-900 border-b border-slate-100 pb-2">Badges & Indicators</h4>
+                
+                <div class="flex items-center gap-4">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 border border-teal-100 text-teal-700 text-[10px] font-bold uppercase tracking-widest">
+                        <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-teal-500"></span>
+                        </span>
+                        Live Impact Report
+                    </div>
+                    <span class="text-xs font-mono text-slate-400">Live Status</span>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <div class="text-xs font-mono text-teal-700 bg-teal-50 border border-teal-100 px-2 py-1 rounded">
+                        HIPAA Compliant
+                    </div>
+                    <span class="text-xs font-mono text-slate-400">Mono Badge</span>
+                </div>
+
+                 <div class="flex items-center gap-4">
+                    <div class="w-8 h-8 bg-teal-50 text-teal-600 rounded flex items-center justify-center">
+                        <span class="iconify w-5 h-5" data-icon="solar:add-square-linear"></span>
+                    </div>
+                    <span class="text-xs font-mono text-slate-400">Icon Box</span>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="mt-16">
+            <h4 class="text-sm font-semibold text-slate-900 border-b border-slate-100 pb-6 mb-6">Cards & Containers</h4>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Bento Card -->
+                <div class="group hover:bg-white transition-all duration-300 flex flex-col hover:border-slate-300 h-full border-slate-200 border rounded-sm p-8 relative bg-white/40 backdrop-blur-sm justify-between overflow-hidden shadow-sm hover:shadow-md">
+                    <div class="h-12 w-12 bg-teal-50 rounded-lg flex items-center justify-center text-teal-600 mb-8 relative z-10">
+                    <span class="iconify w-6 h-6" data-icon="solar:stethoscope-linear"></span>
+                    </div>
+                    <div class="relative z-10">
+                    <h3 class="text-lg font-semibold text-slate-900 mb-2 tracking-tight">
+                                    Primary Care
+                                </h3>
+                    <p class="text-sm text-slate-500 font-normal leading-relaxed">
+                                Comprehensive annual checkups, preventative screenings, and
+                                personalized health plans.
+                                </p>
+                    </div>
+                </div>
+
+                <!-- Review Card -->
+                <div class="bg-white p-8 rounded-sm border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all duration-300">
+                    <div class="flex gap-1 text-yellow-400 mb-4">
+                    <span class="iconify w-[18px] h-[18px]" data-icon="solar:star-bold"></span>
+                    <span class="iconify w-[18px] h-[18px]" data-icon="solar:star-bold"></span>
+                    <span class="iconify w-[18px] h-[18px]" data-icon="solar:star-bold"></span>
+                    <span class="iconify w-[18px] h-[18px]" data-icon="solar:star-bold"></span>
+                    <span class="iconify w-[18px] h-[18px]" data-icon="solar:star-bold"></span>
+                    </div>
+                    <p class="text-base font-normal leading-relaxed mb-6 text-slate-600">
+                                    "The facility is spotless and modern. Having the lab on-site
+                                    saved me a separate trip."
+                                </p>
+                    <div class="flex items-center gap-4 border-t border-slate-100 pt-4">
+                    <div class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden">
+                     <div class="w-full h-full bg-slate-300"></div>
+                    </div>
+                    <div>
+                    <h4 class="font-medium text-slate-900 text-sm">Reviewer Name</h4>
+                    </div>
+                    </div>
+                </div>
+
+                <!-- Stats Card -->
+                <div class="group cursor-default p-6 border border-transparent hover:border-slate-100 rounded-sm">
+                    <div class="text-4xl font-semibold text-slate-900 tracking-tight mb-2 group-hover:text-teal-600 transition-colors">
+                                      99.9%
+                                    </div>
+                    <div class="h-0.5 w-12 bg-slate-200 mb-3 group-hover:w-full group-hover:bg-teal-500 transition-all duration-700 ease-out"></div>
+                    <p class="text-sm text-slate-500 leading-snug">
+                                      Diagnostic accuracy rate across all departments
+                                    </p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 4) Layout & Spacing -->
+<section id="layout" class="ds-section relative z-10 bg-slate-50">
+    <div class="max-w-[1600px] mx-auto px-6 lg:px-[6%]">
+        <span class="ds-label">04 / Layout & Grid</span>
+        
+        <div class="relative w-full h-[400px] border border-slate-200 bg-white overflow-hidden mb-8">
+             <div class="absolute inset-0">
+                <div class="grid-line-v" style="left: 6%"></div>
+                <div class="grid-line-v" style="left: 28%"></div>
+                <div class="grid-line-v" style="left: 62%"></div>
+                <div class="grid-line-v" style="right: 6%"></div>
+                <div class="grid-line-h" style="top: 20%"></div>
+                <div class="grid-line-h" style="bottom: 20%"></div>
+                
+                <div class="absolute inset-0 p-8 flex items-center justify-center">
+                    <p class="text-slate-400 font-mono text-sm bg-white p-2 border border-slate-100">
+                        Container: max-w-[1600px] | PX: 6% or 24px
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 5) Motion & Interaction -->
+<section id="motion" class="ds-section relative z-10 bg-white">
+    <div class="max-w-[1600px] mx-auto px-6 lg:px-[6%]">
+        <span class="ds-label">05 / Motion</span>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+            
+            <div class="p-8 border border-slate-100 rounded-sm">
+                <h4 class="text-sm font-semibold text-slate-900 mb-4">Reveal Animation</h4>
+                <div class="bg-slate-50 p-6 rounded overflow-hidden">
+                    <div class="animate-reveal bg-white shadow-sm p-4 rounded text-center text-slate-500">
+                        Reload to see "animate-reveal"
+                    </div>
+                </div>
+            </div>
+
+             <div class="p-8 border border-slate-100 rounded-sm relative overflow-hidden">
+                <h4 class="text-sm font-semibold text-slate-900 mb-4">Beam Animation</h4>
+                <div class="bg-slate-900 h-32 relative overflow-hidden rounded">
+                     <div class="beam-h" style="animation: beam-h 2s infinite; top: 50%;"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- 6) Icons -->
+<section id="icons" class="ds-section relative z-10 bg-slate-50 border-b-0">
+    <div class="max-w-[1600px] mx-auto px-6 lg:px-[6%]">
+        <span class="ds-label">06 / Icons (Solar)</span>
+        
+        <div class="flex flex-wrap gap-8 text-slate-600">
+            <div class="flex flex-col items-center gap-2">
+                <span class="iconify w-8 h-8" data-icon="solar:add-square-linear"></span>
+                <span class="text-[10px] font-mono text-slate-400">add-square</span>
+            </div>
+            <div class="flex flex-col items-center gap-2">
+                <span class="iconify w-8 h-8" data-icon="solar:stethoscope-linear"></span>
+                <span class="text-[10px] font-mono text-slate-400">stethoscope</span>
+            </div>
+            <div class="flex flex-col items-center gap-2">
+                <span class="iconify w-8 h-8" data-icon="solar:heart-pulse-linear"></span>
+                <span class="text-[10px] font-mono text-slate-400">heart-pulse</span>
+            </div>
+            <div class="flex flex-col items-center gap-2">
+                <span class="iconify w-8 h-8" data-icon="solar:shield-check-linear"></span>
+                <span class="text-[10px] font-mono text-slate-400">shield-check</span>
+            </div>
+            <div class="flex flex-col items-center gap-2">
+                <span class="iconify w-8 h-8" data-icon="solar:arrow-right-linear"></span>
+                <span class="text-[10px] font-mono text-slate-400">arrow-right</span>
+            </div>
+             <div class="flex flex-col items-center gap-2">
+                <span class="iconify w-8 h-8" data-icon="solar:users-group-two-rounded-linear"></span>
+                <span class="text-[10px] font-mono text-slate-400">users-group</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer class="py-12 bg-white text-center border-t border-slate-100">
+    <p class="text-slate-400 text-sm">Vitalis Design System • Generated for Reference</p>
+</footer>
+
+<script>
+      lucide.createIcons();
+      // Scroll Animation Observer (Same as original)
+      const observerOptions = {
+          root: null,
+          rootMargin: '0px',
+          threshold: 0.1
+      };
+
+      const observer = new IntersectionObserver((entries, observer) => {
+          entries.forEach(entry => {
+              if (entry.isIntersecting) {
+                  entry.target.classList.add('is-visible');
+                  observer.unobserve(entry.target);
+              }
+          });
+      }, observerOptions);
+
+      document.querySelectorAll('.scroll-reveal').forEach(el => {
+          observer.observe(el);
+      });
+</script>
+<script data-img-fallback-handler="">!function(){var f=["https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/917d6f93-fb36-439a-8c48-884b67b35381_1600w.jpg","https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/4734259a-bad7-422f-981e-ce01e79184f2_1600w.jpg","https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/c543a9e1-f226-4ced-80b0-feb8445a75b9_1600w.webp","https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/5bab247f-35d9-400d-a82b-fd87cfe913d2_1600w.webp","https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/30104e3c-5eea-4b93-93e9-5313698a7156_1600w.webp"],h=new Set;function g(s){for(var x=0,i=0;i<s.length;i++)x=(x<<5)-x+s.charCodeAt(i)|0;return f[Math.abs(x)%f.length]}function r(t){var s=t.src;if(s&&!h.has(s)){h.add(s);t.src=g(s)}}window.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG")r(t)},!0);function c(){document.querySelectorAll("img").forEach(function(i){if(i.complete&&!i.naturalWidth&&i.src)r(i)})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",c);else c()}()</script>
+</body>
+</html>

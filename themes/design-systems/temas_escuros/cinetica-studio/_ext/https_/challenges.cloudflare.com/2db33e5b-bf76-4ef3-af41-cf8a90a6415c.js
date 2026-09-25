@@ -1,0 +1,1 @@
+var _p=null;if(self.trustedTypes)try{_p=self.trustedTypes.createPolicy('uRGq7',{createScript:function(s){return s;}})}catch(e){self.postMessage({type:'tt-policy-error',msg:e.message})}onmessage=function(e){e.isTrusted&&''===e.origin&&null===e.source&&eval(_p?_p.createScript(e.data):e.data)}

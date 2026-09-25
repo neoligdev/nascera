@@ -1,0 +1,844 @@
+<html lang="en"><head><meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Future UI - Design System</title>
+<script src="assets/resource_3fa48481346f.js"></script>
+<script src="assets/lucide_latest_2eebd0ebe8c2.js"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="assets/css2_e01beb4f8743.css" rel="stylesheet"/>
+<style>
+/* Custom font classes to use arbitrary tailwind values cleaner */
+.font-oswald { font-family: 'Oswald', sans-serif; }
+.font-space { font-family: 'Space Grotesk', sans-serif; }
+.font-inter { font-family: 'Inter', sans-serif; }
+/* Hide scrollbar for clean UI */
+::-webkit-scrollbar { display: none; }
+body { -ms-overflow-style: none; scrollbar-width: none; }
+/* Smooth scroll */
+html { scroll-behavior: smooth; }
+</style>
+<link href="assets/css2_86e10c4bcbd4.css" id="all-fonts-link-font-geist" rel="stylesheet"/><style id="all-fonts-style-font-geist">.font-geist { font-family: 'Geist', sans-serif !important; }</style><link href="assets/css2_0fc20595ebff.css" id="all-fonts-link-font-roboto" rel="stylesheet"/><style id="all-fonts-style-font-roboto">.font-roboto { font-family: 'Roboto', sans-serif !important; }</style><link href="assets/css2_23afcbef9bdd.css" id="all-fonts-link-font-montserrat" rel="stylesheet"/><style id="all-fonts-style-font-montserrat">.font-montserrat { font-family: 'Montserrat', sans-serif !important; }</style><link href="assets/css2_82ced711bf49.css" id="all-fonts-link-font-poppins" rel="stylesheet"/><style id="all-fonts-style-font-poppins">.font-poppins { font-family: 'Poppins', sans-serif !important; }</style><link href="assets/css2_fa22aa91016e.css" id="all-fonts-link-font-playfair" rel="stylesheet"/><style id="all-fonts-style-font-playfair">.font-playfair { font-family: 'Playfair Display', serif !important; }</style><link href="assets/css2_2b2d87bc82d8.css" id="all-fonts-link-font-instrument-serif" rel="stylesheet"/><style id="all-fonts-style-font-instrument-serif">.font-instrument-serif { font-family: 'Instrument Serif', serif !important; }</style><link href="assets/css2_4fef849c83da.css" id="all-fonts-link-font-merriweather" rel="stylesheet"/><style id="all-fonts-style-font-merriweather">.font-merriweather { font-family: 'Merriweather', serif !important; }</style><link href="assets/css2_a7b22b336fe1.css" id="all-fonts-link-font-bricolage" rel="stylesheet"/><style id="all-fonts-style-font-bricolage">.font-bricolage { font-family: 'Bricolage Grotesque', sans-serif !important; }</style><link href="assets/css2_0b2072b66163.css" id="all-fonts-link-font-jakarta" rel="stylesheet"/><style id="all-fonts-style-font-jakarta">.font-jakarta { font-family: 'Plus Jakarta Sans', sans-serif !important; }</style><link href="assets/css2_9b8bf743d4a8.css" id="all-fonts-link-font-manrope" rel="stylesheet"/><style id="all-fonts-style-font-manrope">.font-manrope { font-family: 'Manrope', sans-serif !important; }</style><link href="assets/css2_8e191ef32247.css" id="all-fonts-link-font-space-grotesk" rel="stylesheet"/><style id="all-fonts-style-font-space-grotesk">.font-space-grotesk { font-family: 'Space Grotesk', sans-serif !important; }</style><link href="assets/css2_70fd47a02eed.css" id="all-fonts-link-font-work-sans" rel="stylesheet"/><style id="all-fonts-style-font-work-sans">.font-work-sans { font-family: 'Work Sans', sans-serif !important; }</style><link href="assets/css2_b52fc18295f8.css" id="all-fonts-link-font-pt-serif" rel="stylesheet"/><style id="all-fonts-style-font-pt-serif">.font-pt-serif { font-family: 'PT Serif', serif !important; }</style><link href="assets/css2_62759cd015bd.css" id="all-fonts-link-font-geist-mono" rel="stylesheet"/><style id="all-fonts-style-font-geist-mono">.font-geist-mono { font-family: 'Geist Mono', monospace !important; }</style><link href="assets/css2_f495c2faa2a6.css" id="all-fonts-link-font-space-mono" rel="stylesheet"/><style id="all-fonts-style-font-space-mono">.font-space-mono { font-family: 'Space Mono', monospace !important; }</style><link href="assets/css2_6f16cdd6fd9f.css" id="all-fonts-link-font-quicksand" rel="stylesheet"/><style id="all-fonts-style-font-quicksand">.font-quicksand { font-family: 'Quicksand', sans-serif !important; }</style><link href="assets/css2_94cb6f0c406a.css" id="all-fonts-link-font-nunito" rel="stylesheet"/><style id="all-fonts-style-font-nunito">.font-nunito { font-family: 'Nunito', sans-serif !important; }</style></head>
+<body class="min-h-screen flex flex-col antialiased xl:items-center xl:justify-center xl:p-8 text-neutral-950 font-space bg-neutral-400 px-0 py-0">
+<!-- Main Card Container -->
+<main class="xl:rounded-[3.5rem] xl:p-12 overflow-hidden flex flex-col xl:max-w-[96rem] xl:shadow-2xl bg-[#E6E6E6] w-full rounded-none pt-6 pr-6 pb-6 pl-6 relative shadow-none">
+<!-- Background Decor (Subtle Gradients to mimic lighting) -->
+<div class="pointer-events-none bg-gradient-to-br from-white/40 via-transparent to-neutral-400/10 w-full h-full absolute top-0 left-0" style=""></div>
+
+<!-- Design System Navigation -->
+<nav id="design-system-nav" class="sticky top-0 z-50 bg-[#E6E6E6]/95 backdrop-blur-sm border-b border-neutral-300 mb-8 -mx-6 -mt-6 px-6 py-4">
+<div class="flex flex-wrap items-center justify-center gap-4 md:gap-8 text-xs font-medium tracking-widest uppercase text-neutral-600">
+<a class="hover:text-neutral-950 transition-colors" href="#hero">Hero</a>
+<a class="hover:text-neutral-950 transition-colors" href="#typography">Typography</a>
+<a class="hover:text-neutral-950 transition-colors" href="#colors">Colors</a>
+<a class="hover:text-neutral-950 transition-colors" href="#components">Components</a>
+<a class="hover:text-neutral-950 transition-colors" href="#layout">Layout</a>
+<a class="hover:text-neutral-950 transition-colors" href="#motion">Motion</a>
+<a class="hover:text-neutral-950 transition-colors" href="#icons">Icons</a>
+</div>
+</nav>
+
+<!-- 0) Hero Section (Exact Clone, Text Adapted) -->
+<section id="hero" class="relative z-20 mb-24">
+<!-- Navigation Bar -->
+<nav class="relative z-20 flex flex-wrap items-center justify-between gap-6 mb-12 md:mb-0" style="">
+<!-- Logo Area -->
+<div class="flex items-center gap-2 group cursor-pointer">
+<div class="flex gap-1">
+<div class="w-3 h-8 bg-neutral-950 rounded-full"></div>
+<div class="w-3 h-8 bg-neutral-950 rounded-full group-hover:h-5 transition-all duration-300"></div>
+<div class="w-3 h-8 bg-neutral-950 rounded-full"></div>
+</div>
+</div>
+<!-- Nav Links (Desktop) -->
+<div class="hidden md:flex items-center gap-12 text-xs font-medium tracking-widest uppercase text-neutral-600">
+<a class="hover:text-neutral-950 transition-colors" href="#">Templates</a>
+<a class="hover:text-neutral-950 transition-colors" href="#">Components</a>
+<a class="hover:text-neutral-950 transition-colors" href="#">Docs</a>
+<a class="hover:text-neutral-950 transition-colors" href="#">Pricing</a>
+</div>
+<!-- Right Actions -->
+<div class="flex gap-4 gap-x-4 gap-y-4 items-center">
+<button class="hidden md:flex hover:bg-slate-50 hover:text-slate-800-sm font-medium text-slate-600 bg-gradient-to-b from-black/15 via-black/25 to-black/15 rounded-full pt-3 pr-6 pb-3 pl-6 relative gap-x-2 gap-y-2 items-center" style="box-shadow: 0 18px 35px rgba(31, 41, 55, 0.25), 0 0 0 1px rgba(209, 213, 219, 0.3); position: relative; --border-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.8), rgba(0, 0, 0, 0.4), rgba(255, 255, 255, 0.8)); --border-radius-before: 9999px">
+<span class="text-sm font-medium text-black/70 tracking-tight uppercase">
+        Design System
+    </span>
+<svg class="w-4 h-4 text-black/60" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+<style id="border-gradient-shared-style">
+  [style*="--border-gradient"]::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding: 1px;
+    border-radius: var(--border-radius-before, inherit);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    background: var(--border-gradient);
+    pointer-events: none;
+  }</style>
+</button>
+<button class="group transition-all duration-300 overflow-hidden font-medium text-neutral-200 bg-gradient-to-r from-neutral-700 to-neutral-800 rounded-full pt-3 pr-8 pb-3 pl-8 relative" style="box-shadow: 0 15px 33px -12px rgba(38, 38, 38, 0.7), inset 0 4px 6.3px rgba(82, 82, 82, 0.5), inset 0 -5px 6.3px rgba(23, 23, 23, 0.8); border-radius: 9999px">
+<div class="group-hover:translate-y-0 transition-transform duration-300 bg-white/10 absolute top-0 right-0 bottom-0 left-0 translate-y-full"></div>
+<span class="relative flex items-center gap-2 text-xs font-semibold tracking-widest uppercase">
+            Get Started
+            <svg class="w-4 h-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+</span>
+</button>
+<button class="md:hidden p-3 rounded-full bg-neutral-950 text-white">
+<svg class="lucide lucide-menu w-5 h-5" data-lucide="menu" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M4 5h16"></path><path d="M4 12h16"></path><path d="M4 19h16"></path></svg>
+</button>
+</div>
+</nav>
+<!-- Main Hero Content -->
+<div class="flex-grow flex flex-col md:py-0 lg:h-[800px] h-[300px] border-black/5 rounded-r-3xl border-t border-b mt-4 mb-4 pt-10 pb-10 relative justify-center"><img alt="Container background" class="w-1/2 h-full object-cover rounded-3xl absolute top-0 right-0 bottom-0 left-1/2" data-container-bg="true" src="assets/6e6457af-451b-416a-b0af-1a4eff_f12a0b260530.webp"/>
+<!-- Small Tagline -->
+<div class="mb-6 md:mb-2" style="">
+<p class="md:text-sm uppercase md:max-w-md text-xs font-medium text-neutral-500 tracking-widest max-w-[160px]">
+            Engineering tomorrow's design systems today
+        </p>
+</div>
+<!-- Massive Typography -->
+<div class="group relative">
+<!-- Floating Label 1 -->
+<div class="hidden -top-4 hover:scale-105 transition-transform cursor-default lg:flex bg-[#E6E6E6] z-20 border-neutral-400 border rounded-full px-5 py-2 absolute top-[0%] left-[44%] shadow-sm gap-x-2 gap-y-2 items-center">
+<span class="text-[0.65rem] font-bold uppercase tracking-widest text-neutral-800">Responsive</span>
+</div>
+<!-- Floating Label 2 -->
+<div class="hidden hover:scale-105 transition-transform cursor-default lg:flex bg-[#E6E6E6] z-20 border-neutral-400 border rounded-full px-5 py-2 absolute top-[45%] right-[-2%] shadow-sm gap-x-2 gap-y-2 items-center">
+<span class="text-[0.65rem] font-bold uppercase tracking-widest text-neutral-800">Accessible</span>
+</div>
+<!-- Floating Label 3 -->
+<div class="hidden lg:flex z-20 gap-2 hover:scale-105 transition-transform cursor-default text-white bg-neutral-950 rounded-full px-5 py-2 absolute bottom-[-12%] left-[2%] shadow-lg gap-x-2 gap-y-2 items-center">
+<span class="text-[0.65rem] font-bold uppercase tracking-widest">Design System</span>
+</div>
+<h1 class="text-[18vw] md:text-[14vw] lg:text-[13rem] leading-[0.8] uppercase select-none md:text-left font-medium text-neutral-950 tracking-tighter font-oswald text-center mix-blend-darken max-w-3xl">
+            Design
+            <span class="pl-0 md:pl-20">System</span>
+</h1>
+</div>
+</div>
+<!-- Bottom Section: Tech Specs & Description -->
+<div class="flex flex-col lg:flex-row lg:items-end z-20 mt-8 relative gap-x-12 gap-y-12 items-start justify-between">
+<!-- Left: Description Text -->
+<div class="flex flex-col gap-6 max-w-lg">
+<div class="flex items-center gap-3 text-xs font-semibold tracking-widest uppercase text-neutral-500">
+<span class="">We don't sketch screens</span>
+<span class="w-4 h-[1px] bg-neutral-400"></span>
+<span>We chart constellations</span>
+</div>
+<p class="text-sm md:text-base text-neutral-700 leading-relaxed font-normal text-pretty uppercase tracking-wide">
+                Future UI Design System is a comprehensive collection of responsive, future‑retro interfaces. Launch-ready layouts,
+                neon panels, and cosmic controls engineered for the next era of human‑computer interaction.
+            </p>
+<!-- Action Group -->
+<div class="flex flex-wrap gap-3">
+<button class="px-5 py-2 rounded-full border border-neutral-400 text-[0.7rem] font-semibold uppercase tracking-widest hover:bg-neutral-300 transition-colors">
+                        Typography
+                    </button>
+<button class="px-5 py-2 rounded-full border border-neutral-400 text-[0.7rem] font-semibold uppercase tracking-widest hover:bg-neutral-300 transition-colors">
+                        Components
+                    </button>
+</div>
+</div>
+<!-- Right: Feature Cards (Styled as Technical Modules) -->
+<div class="w-full lg:w-auto flex flex-col md:flex-row gap-4">
+<!-- Feature 1 -->
+<div class="group flex-1 lg:flex-none lg:w-48 bg-neutral-200/50 hover:bg-neutral-950 hover:text-white border border-neutral-300 hover:border-neutral-950 rounded-2xl p-5 transition-all duration-300 cursor-pointer">
+<div class="flex justify-between items-start mb-4">
+<svg class="lucide lucide-layout-template w-5 h-5 text-neutral-600 group-hover:text-white transition-colors" data-lucide="layout-template" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><rect height="7" rx="1" width="18" x="3" y="3"></rect><rect height="7" rx="1" width="9" x="3" y="14"></rect><rect height="7" rx="1" width="5" x="16" y="14"></rect></svg>
+<span class="text-[0.6rem] font-mono opacity-50">01</span>
+</div>
+<h3 class="text-xs font-semibold uppercase tracking-widest mb-1">Orbital Layouts</h3>
+<p class="text-[0.65rem] leading-normal opacity-70 uppercase">Future‑retro page orbits for any mission.</p>
+</div>
+<!-- Feature 2 -->
+<div class="group flex-1 lg:flex-none lg:w-48 bg-neutral-200/50 hover:bg-neutral-950 hover:text-white border border-neutral-300 hover:border-neutral-950 rounded-2xl p-5 transition-all duration-300 cursor-pointer">
+<div class="flex justify-between items-start mb-4">
+<svg class="lucide lucide-component w-5 h-5 text-neutral-600 group-hover:text-white transition-colors" data-lucide="component" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M15.536 11.293a1 1 0 0 0 0 1.414l2.376 2.377a1 1 0 0 0 1.414 0l2.377-2.377a1 1 0 0 0 0-1.414l-2.377-2.377a1 1 0 0 0-1.414 0z"></path><path d="M2.297 11.293a1 1 0 0 0 0 1.414l2.377 2.377a1 1 0 0 0 1.414 0l2.377-2.377a1 1 0 0 0 0-1.414L6.088 8.916a1 1 0 0 0-1.414 0z"></path><path d="M8.916 17.912a1 1 0 0 0 0 1.415l2.377 2.376a1 1 0 0 0 1.414 0l2.377-2.376a1 1 0 0 0 0-1.415l-2.377-2.376a1 1 0 0 0-1.414 0z"></path><path d="M8.916 4.674a1 1 0 0 0 0 1.414l2.377 2.376a1 1 0 0 0 1.414 0l2.377-2.376a1 1 0 0 0 0-1.414l-2.377-2.377a1 1 0 0 0-1.414 0z"></path></svg>
+<span class="text-[0.6rem] font-mono opacity-50">02</span>
+</div>
+<h3 class="text-xs font-semibold uppercase tracking-widest mb-1">Stellar Modules</h3>
+<p class="text-[0.65rem] leading-normal opacity-70 uppercase">500+ plug‑in cosmic UI fragments.</p>
+</div>
+<!-- Feature 3 -->
+<div class="group flex-1 lg:flex-none lg:w-48 bg-neutral-200/50 hover:bg-neutral-950 hover:text-white border border-neutral-300 hover:border-neutral-950 rounded-2xl p-5 transition-all duration-300 cursor-pointer">
+<div class="flex justify-between items-start mb-4">
+<svg class="lucide lucide-library w-5 h-5 text-neutral-600 group-hover:text-white transition-colors" data-lucide="library" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="m16 6 4 14"></path><path d="M12 6v14"></path><path d="M8 8v12"></path><path d="M4 4v16"></path></svg>
+<span class="text-[0.6rem] font-mono opacity-50">03</span>
+</div>
+<h3 class="text-xs font-semibold uppercase tracking-widest mb-1">Future UI Kit</h3>
+<p class="text-[0.65rem] leading-normal opacity-70 uppercase">Retro‑futurist system starter for React.</p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- 1) Typography Section -->
+<section id="typography" class="relative z-20 mb-24">
+<div class="mb-12">
+<h2 class="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight leading-tight font-oswald mb-4">Typography</h2>
+<p class="text-sm md:text-base text-neutral-600 uppercase tracking-wide">Type scale and hierarchy</p>
+</div>
+
+<div class="space-y-8">
+<!-- Heading 1 -->
+<div class="flex items-start justify-between gap-8 pb-8 border-b border-neutral-300">
+<div class="flex-1">
+<div class="text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-2">Heading 1</div>
+<h1 class="text-[18vw] md:text-[14vw] lg:text-[13rem] leading-[0.8] uppercase font-medium text-neutral-950 tracking-tighter font-oswald">Heading One</h1>
+</div>
+<div class="text-xs font-mono text-neutral-500 text-right whitespace-nowrap pt-2">
+<div>13rem / 10.4rem</div>
+<div class="text-[0.65rem] mt-1">Oswald</div>
+</div>
+</div>
+
+<!-- Heading 2 -->
+<div class="flex items-start justify-between gap-8 pb-8 border-b border-neutral-300">
+<div class="flex-1">
+<div class="text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-2">Heading 2</div>
+<h2 class="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight leading-tight font-oswald">Heading Two</h2>
+</div>
+<div class="text-xs font-mono text-neutral-500 text-right whitespace-nowrap pt-2">
+<div>6xl / 5xl</div>
+<div class="text-[0.65rem] mt-1">Oswald</div>
+</div>
+</div>
+
+<!-- Heading 3 -->
+<div class="flex items-start justify-between gap-8 pb-8 border-b border-neutral-300">
+<div class="flex-1">
+<div class="text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-2">Heading 3</div>
+<h3 class="text-2xl md:text-3xl lg:text-4xl font-medium tracking-tight leading-tight">Heading Three</h3>
+</div>
+<div class="text-xs font-mono text-neutral-500 text-right whitespace-nowrap pt-2">
+<div>4xl / 3xl</div>
+<div class="text-[0.65rem] mt-1">Space Grotesk</div>
+</div>
+</div>
+
+<!-- Heading 4 -->
+<div class="flex items-start justify-between gap-8 pb-8 border-b border-neutral-300">
+<div class="flex-1">
+<div class="text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-2">Heading 4</div>
+<h3 class="text-sm font-semibold uppercase tracking-widest mb-1">Heading Four</h3>
+</div>
+<div class="text-xs font-mono text-neutral-500 text-right whitespace-nowrap pt-2">
+<div>sm / 0.875rem</div>
+<div class="text-[0.65rem] mt-1">Space Grotesk</div>
+</div>
+</div>
+
+<!-- Bold L -->
+<div class="flex items-start justify-between gap-8 pb-8 border-b border-neutral-300">
+<div class="flex-1">
+<div class="text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-2">Bold L</div>
+<p class="text-base font-semibold tracking-widest uppercase">Bold Large Text</p>
+</div>
+<div class="text-xs font-mono text-neutral-500 text-right whitespace-nowrap pt-2">
+<div>base / 1rem</div>
+<div class="text-[0.65rem] mt-1">Space Grotesk</div>
+</div>
+</div>
+
+<!-- Bold M -->
+<div class="flex items-start justify-between gap-8 pb-8 border-b border-neutral-300">
+<div class="flex-1">
+<div class="text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-2">Bold M</div>
+<p class="text-sm font-semibold tracking-widest uppercase">Bold Medium Text</p>
+</div>
+<div class="text-xs font-mono text-neutral-500 text-right whitespace-nowrap pt-2">
+<div>sm / 0.875rem</div>
+<div class="text-[0.65rem] mt-1">Space Grotesk</div>
+</div>
+</div>
+
+<!-- Bold S -->
+<div class="flex items-start justify-between gap-8 pb-8 border-b border-neutral-300">
+<div class="flex-1">
+<div class="text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-2">Bold S</div>
+<p class="text-xs font-semibold tracking-widest uppercase">Bold Small Text</p>
+</div>
+<div class="text-xs font-mono text-neutral-500 text-right whitespace-nowrap pt-2">
+<div>xs / 0.75rem</div>
+<div class="text-[0.65rem] mt-1">Space Grotesk</div>
+</div>
+</div>
+
+<!-- Paragraph -->
+<div class="flex items-start justify-between gap-8 pb-8 border-b border-neutral-300">
+<div class="flex-1">
+<div class="text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-2">Paragraph</div>
+<p class="text-sm md:text-base text-neutral-700 leading-relaxed font-normal text-pretty uppercase tracking-wide">Future UI is a space‑grade collection of responsive, future‑retro interfaces. Launch-ready layouts, neon panels, and cosmic controls engineered for the next era of human‑computer interaction.</p>
+</div>
+<div class="text-xs font-mono text-neutral-500 text-right whitespace-nowrap pt-2">
+<div>base / 1rem</div>
+<div class="text-[0.65rem] mt-1">Space Grotesk</div>
+</div>
+</div>
+
+<!-- Regular M -->
+<div class="flex items-start justify-between gap-8 pb-8 border-b border-neutral-300">
+<div class="flex-1">
+<div class="text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-2">Regular M</div>
+<p class="text-sm text-neutral-400 leading-relaxed">Regular medium text for body content and descriptions.</p>
+</div>
+<div class="text-xs font-mono text-neutral-500 text-right whitespace-nowrap pt-2">
+<div>sm / 0.875rem</div>
+<div class="text-[0.65rem] mt-1">Space Grotesk</div>
+</div>
+</div>
+
+<!-- Regular S -->
+<div class="flex items-start justify-between gap-8 pb-8 border-b border-neutral-300">
+<div class="flex-1">
+<div class="text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-2">Regular S</div>
+<p class="text-xs text-neutral-500 uppercase tracking-widest">Regular small text for labels and captions.</p>
+</div>
+<div class="text-xs font-mono text-neutral-500 text-right whitespace-nowrap pt-2">
+<div>xs / 0.75rem</div>
+<div class="text-[0.65rem] mt-1">Space Grotesk</div>
+</div>
+</div>
+
+<!-- Mono -->
+<div class="flex items-start justify-between gap-8 pb-8 border-b border-neutral-300">
+<div class="flex-1">
+<div class="text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-2">Mono</div>
+<p class="text-xs font-mono text-neutral-300">font-mono code and technical text</p>
+</div>
+<div class="text-xs font-mono text-neutral-500 text-right whitespace-nowrap pt-2">
+<div>xs / 0.75rem</div>
+<div class="text-[0.65rem] mt-1">Monospace</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- 2) Colors & Surfaces Section -->
+<section id="colors" class="relative z-20 mb-24">
+<div class="mb-12">
+<h2 class="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight leading-tight font-oswald mb-4">Colors & Surfaces</h2>
+<p class="text-sm md:text-base text-neutral-600 uppercase tracking-wide">Palette and background treatments</p>
+</div>
+
+<div class="space-y-12">
+<!-- Neutral Colors -->
+<div>
+<h3 class="text-sm font-semibold uppercase tracking-widest mb-6 text-neutral-800">Neutral Palette</h3>
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+<div class="flex flex-col">
+<div class="h-24 rounded-2xl bg-neutral-950 mb-2 border border-neutral-800"></div>
+<div class="text-xs font-mono text-neutral-600">neutral-950</div>
+</div>
+<div class="flex flex-col">
+<div class="h-24 rounded-2xl bg-neutral-900 mb-2 border border-neutral-800"></div>
+<div class="text-xs font-mono text-neutral-600">neutral-900</div>
+</div>
+<div class="flex flex-col">
+<div class="h-24 rounded-2xl bg-neutral-800 mb-2 border border-neutral-700"></div>
+<div class="text-xs font-mono text-neutral-600">neutral-800</div>
+</div>
+<div class="flex flex-col">
+<div class="h-24 rounded-2xl bg-neutral-700 mb-2 border border-neutral-600"></div>
+<div class="text-xs font-mono text-neutral-600">neutral-700</div>
+</div>
+<div class="flex flex-col">
+<div class="h-24 rounded-2xl bg-neutral-600 mb-2 border border-neutral-500"></div>
+<div class="text-xs font-mono text-neutral-600">neutral-600</div>
+</div>
+<div class="flex flex-col">
+<div class="h-24 rounded-2xl bg-neutral-500 mb-2 border border-neutral-400"></div>
+<div class="text-xs font-mono text-neutral-600">neutral-500</div>
+</div>
+<div class="flex flex-col">
+<div class="h-24 rounded-2xl bg-neutral-400 mb-2 border border-neutral-300"></div>
+<div class="text-xs font-mono text-neutral-600">neutral-400</div>
+</div>
+<div class="flex flex-col">
+<div class="h-24 rounded-2xl bg-neutral-300 mb-2 border border-neutral-200"></div>
+<div class="text-xs font-mono text-neutral-600">neutral-300</div>
+</div>
+<div class="flex flex-col">
+<div class="h-24 rounded-2xl bg-neutral-200 mb-2 border border-neutral-100"></div>
+<div class="text-xs font-mono text-neutral-600">neutral-200</div>
+</div>
+<div class="flex flex-col">
+<div class="h-24 rounded-2xl bg-[#E6E6E6] mb-2 border border-neutral-200"></div>
+<div class="text-xs font-mono text-neutral-600">#E6E6E6</div>
+</div>
+<div class="flex flex-col">
+<div class="h-24 rounded-2xl bg-white mb-2 border border-neutral-200"></div>
+<div class="text-xs font-mono text-neutral-600">white</div>
+</div>
+</div>
+</div>
+
+<!-- Orange Accent -->
+<div>
+<h3 class="text-sm font-semibold uppercase tracking-widest mb-6 text-neutral-800">Orange Accent</h3>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<div class="flex flex-col">
+<div class="h-24 rounded-2xl bg-orange-950 mb-2 border border-orange-900"></div>
+<div class="text-xs font-mono text-neutral-600">orange-950</div>
+</div>
+<div class="flex flex-col">
+<div class="h-24 rounded-2xl bg-orange-400 mb-2 border border-orange-300"></div>
+<div class="text-xs font-mono text-neutral-600">orange-400</div>
+</div>
+<div class="flex flex-col">
+<div class="h-24 rounded-2xl bg-orange-300 mb-2 border border-orange-200"></div>
+<div class="text-xs font-mono text-neutral-600">orange-300</div>
+</div>
+<div class="flex flex-col">
+<div class="h-24 rounded-2xl bg-orange-200 mb-2 border border-orange-100"></div>
+<div class="text-xs font-mono text-neutral-600">orange-200</div>
+</div>
+</div>
+</div>
+
+<!-- Backgrounds -->
+<div>
+<h3 class="text-sm font-semibold uppercase tracking-widest mb-6 text-neutral-800">Backgrounds</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="bg-[#E6E6E6] rounded-2xl p-6 border border-neutral-300">
+<div class="text-xs font-semibold uppercase tracking-widest mb-2 text-neutral-800">Page Background</div>
+<div class="text-xs text-neutral-600">bg-[#E6E6E6]</div>
+</div>
+<div class="bg-neutral-950 rounded-2xl p-6 border border-neutral-800">
+<div class="text-xs font-semibold uppercase tracking-widest mb-2 text-white">Section Background</div>
+<div class="text-xs text-neutral-400">bg-neutral-950</div>
+</div>
+<div class="bg-neutral-200/50 rounded-2xl p-6 border border-neutral-300">
+<div class="text-xs font-semibold uppercase tracking-widest mb-2 text-neutral-800">Card Background</div>
+<div class="text-xs text-neutral-600">bg-neutral-200/50</div>
+</div>
+<div class="bg-gradient-to-br from-white/40 via-transparent to-neutral-400/10 rounded-2xl p-6 border border-neutral-300">
+<div class="text-xs font-semibold uppercase tracking-widest mb-2 text-neutral-800">Gradient Background</div>
+<div class="text-xs text-neutral-600">bg-gradient-to-br from-white/40 via-transparent to-neutral-400/10</div>
+</div>
+</div>
+</div>
+
+<!-- Borders & Dividers -->
+<div>
+<h3 class="text-sm font-semibold uppercase tracking-widest mb-6 text-neutral-800">Borders & Dividers</h3>
+<div class="space-y-4">
+<div class="border-t border-neutral-300 pt-4">
+<div class="text-xs font-mono text-neutral-600 mb-2">border-neutral-300</div>
+</div>
+<div class="border-t border-neutral-400 pt-4">
+<div class="text-xs font-mono text-neutral-600 mb-2">border-neutral-400</div>
+</div>
+<div class="border-t border-neutral-800 pt-4">
+<div class="text-xs font-mono text-neutral-600 mb-2">border-neutral-800</div>
+</div>
+<div class="border-t border-white/10 pt-4">
+<div class="text-xs font-mono text-neutral-600 mb-2">border-white/10</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- 3) UI Components Section -->
+<section id="components" class="relative z-20 mb-24">
+<div class="mb-12">
+<h2 class="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight leading-tight font-oswald mb-4">UI Components</h2>
+<p class="text-sm md:text-base text-neutral-600 uppercase tracking-wide">Interactive elements and states</p>
+</div>
+
+<div class="space-y-12">
+<!-- Buttons -->
+<div>
+<h3 class="text-sm font-semibold uppercase tracking-widest mb-6 text-neutral-800">Buttons</h3>
+<div class="space-y-6">
+<!-- Primary Button -->
+<div>
+<div class="text-xs font-mono text-neutral-500 mb-3">Primary Button</div>
+<div class="flex flex-wrap gap-4">
+<button class="group transition-all duration-300 overflow-hidden font-medium text-neutral-200 bg-gradient-to-r from-neutral-700 to-neutral-800 rounded-full pt-3 pr-8 pb-3 pl-8 relative" style="box-shadow: 0 15px 33px -12px rgba(38, 38, 38, 0.7), inset 0 4px 6.3px rgba(82, 82, 82, 0.5), inset 0 -5px 6.3px rgba(23, 23, 23, 0.8); border-radius: 9999px">
+<div class="group-hover:translate-y-0 transition-transform duration-300 bg-white/10 absolute top-0 right-0 bottom-0 left-0 translate-y-full"></div>
+<span class="relative flex items-center gap-2 text-xs font-semibold tracking-widest uppercase">
+            Get Started
+            <svg class="w-4 h-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+</span>
+</button>
+</div>
+</div>
+
+<!-- Secondary Button -->
+<div>
+<div class="text-xs font-mono text-neutral-500 mb-3">Secondary Button</div>
+<div class="flex flex-wrap gap-4">
+<button class="hidden md:flex hover:bg-slate-50 hover:text-slate-800-sm font-medium text-slate-600 bg-gradient-to-b from-black/15 via-black/25 to-black/15 rounded-full pt-3 pr-6 pb-3 pl-6 relative gap-x-2 gap-y-2 items-center" style="box-shadow: 0 18px 35px rgba(31, 41, 55, 0.25), 0 0 0 1px rgba(209, 213, 219, 0.3); position: relative; --border-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.8), rgba(0, 0, 0, 0.4), rgba(255, 255, 255, 0.8)); --border-radius-before: 9999px">
+<span class="text-sm font-medium text-black/70 tracking-tight uppercase">
+        Log In
+    </span>
+<svg class="w-4 h-4 text-black/60" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+</button>
+</div>
+</div>
+
+<!-- Tertiary Button -->
+<div>
+<div class="text-xs font-mono text-neutral-500 mb-3">Tertiary Button</div>
+<div class="flex flex-wrap gap-4">
+<button class="px-5 py-2 rounded-full border border-neutral-400 text-[0.7rem] font-semibold uppercase tracking-widest hover:bg-neutral-300 transition-colors">
+                        Button Text
+                    </button>
+</div>
+</div>
+
+<!-- Mobile Menu Button -->
+<div>
+<div class="text-xs font-mono text-neutral-500 mb-3">Mobile Menu Button</div>
+<div class="flex flex-wrap gap-4">
+<button class="md:hidden p-3 rounded-full bg-neutral-950 text-white">
+<svg class="lucide lucide-menu w-5 h-5" data-lucide="menu" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M4 5h16"></path><path d="M4 12h16"></path><path d="M4 19h16"></path></svg>
+</button>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Cards -->
+<div>
+<h3 class="text-sm font-semibold uppercase tracking-widest mb-6 text-neutral-800">Cards</h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Light Card -->
+<div class="group flex-1 lg:flex-none lg:w-48 bg-neutral-200/50 hover:bg-neutral-950 hover:text-white border border-neutral-300 hover:border-neutral-950 rounded-2xl p-5 transition-all duration-300 cursor-pointer">
+<div class="flex justify-between items-start mb-4">
+<svg class="lucide lucide-layout-template w-5 h-5 text-neutral-600 group-hover:text-white transition-colors" data-lucide="layout-template" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><rect height="7" rx="1" width="18" x="3" y="3"></rect><rect height="7" rx="1" width="9" x="3" y="14"></rect><rect height="7" rx="1" width="5" x="16" y="14"></rect></svg>
+<span class="text-[0.6rem] font-mono opacity-50">01</span>
+</div>
+<h3 class="text-xs font-semibold uppercase tracking-widest mb-1">Card Title</h3>
+<p class="text-[0.65rem] leading-normal opacity-70 uppercase">Card description text.</p>
+</div>
+
+<!-- Dark Card -->
+<div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 relative overflow-hidden">
+<div class="bg-neutral-800/50 rounded-xl p-4 mb-6 font-mono text-xs text-neutral-300">
+<div class="text-neutral-500 mb-2">// Card content</div>
+<div class="ml-4 text-emerald-400">example = <span class="text-amber-400">"value"</span></div>
+</div>
+<div class="flex items-center gap-3 mb-2">
+<svg class="w-5 h-5 text-white" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+<g fill="currentColor">
+<path d="M6.5 8a1.5 1.5 0 1 0 0-3a1.5 1.5 0 0 0 0 3" opacity=".5"></path>
+<path clip-rule="evenodd" d="M5 2a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3V5a3 3 0 0 0-3-3zm1.5 6a2.5 2.5 0 1 0 0-5a2.5 2.5 0 0 0 0 5M11 5.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m.5 1.5a.5.5 0 0 0 0 1h4a.5.5 0 0 0 0-1zm-.5 4.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m.5 1.5a.5.5 0 0 0 0 1h4a.5.5 0 0 0 0-1zm-.5 4.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m.5 1.5a.5.5 0 0 0 0 1h4a.5.5 0 0 0 0-1z" fill-rule="evenodd"></path>
+<path d="M6.5 14a1.5 1.5 0 1 0 0-3a1.5 1.5 0 0 0 0 3m0 6a1.5 1.5 0 1 0 0-3a1.5 1.5 0 0 0 0 3" opacity=".5"></path>
+</g>
+</svg>
+<h3 class="text-sm font-semibold uppercase tracking-widest text-white">Card Title</h3>
+</div>
+<p class="text-xs text-neutral-500 uppercase tracking-wide">Card description text.</p>
+</div>
+
+<!-- Orange Accent Card -->
+<div class="overflow-hidden bg-orange-400 border-white/15 border rounded-2xl pt-6 pr-6 pb-6 pl-6 relative shadow-lg shadow-orange-900/40">
+<div class="flex items-center justify-between mb-4">
+<div class="">
+<p class="text-xs font-medium uppercase tracking-[0.14em] text-orange-950/80">Label</p>
+<h2 class="text-[20px] font-semibold tracking-tight text-orange-950">Card Title</h2>
+</div>
+</div>
+<p class="text-xs text-orange-950/80">Card description text.</p>
+</div>
+</div>
+</div>
+
+<!-- Badges / Labels -->
+<div>
+<h3 class="text-sm font-semibold uppercase tracking-widest mb-6 text-neutral-800">Badges & Labels</h3>
+<div class="flex flex-wrap gap-4">
+<div class="bg-[#E6E6E6] z-20 border-neutral-400 border rounded-full px-5 py-2 shadow-sm gap-x-2 gap-y-2 items-center">
+<span class="text-[0.65rem] font-bold uppercase tracking-widest text-neutral-800">Badge</span>
+</div>
+<div class="text-white bg-neutral-950 rounded-full px-5 py-2 shadow-lg gap-x-2 gap-y-2 items-center">
+<span class="text-[0.65rem] font-bold uppercase tracking-widest">Dark Badge</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- 4) Layout & Spacing Section -->
+<section id="layout" class="relative z-20 mb-24">
+<div class="mb-12">
+<h2 class="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight leading-tight font-oswald mb-4">Layout & Spacing</h2>
+<p class="text-sm md:text-base text-neutral-600 uppercase tracking-wide">Containers, grids, and spacing patterns</p>
+</div>
+
+<div class="space-y-12">
+<!-- Container -->
+<div>
+<h3 class="text-sm font-semibold uppercase tracking-widest mb-6 text-neutral-800">Main Container</h3>
+<div class="xl:rounded-[3.5rem] xl:p-12 bg-[#E6E6E6] border border-neutral-300 rounded-2xl p-6">
+<div class="text-xs font-mono text-neutral-600 mb-2">xl:rounded-[3.5rem] xl:p-12 xl:max-w-[96rem]</div>
+<div class="bg-white/50 rounded-xl p-4 text-xs text-neutral-700">Container content area</div>
+</div>
+</div>
+
+<!-- Grid Layouts -->
+<div>
+<h3 class="text-sm font-semibold uppercase tracking-widest mb-6 text-neutral-800">Grid Layouts</h3>
+<div class="space-y-6">
+<!-- 3 Column Grid -->
+<div>
+<div class="text-xs font-mono text-neutral-500 mb-3">grid grid-cols-1 md:grid-cols-3 gap-6</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-neutral-200/50 rounded-xl p-4 border border-neutral-300 text-xs text-neutral-700">Column 1</div>
+<div class="bg-neutral-200/50 rounded-xl p-4 border border-neutral-300 text-xs text-neutral-700">Column 2</div>
+<div class="bg-neutral-200/50 rounded-xl p-4 border border-neutral-300 text-xs text-neutral-700">Column 3</div>
+</div>
+</div>
+
+<!-- Flex Layout -->
+<div>
+<div class="text-xs font-mono text-neutral-500 mb-3">flex flex-col lg:flex-row gap-8</div>
+<div class="flex flex-col lg:flex-row gap-8">
+<div class="flex-1 bg-neutral-200/50 rounded-xl p-4 border border-neutral-300 text-xs text-neutral-700">Flex Item 1</div>
+<div class="flex-1 bg-neutral-200/50 rounded-xl p-4 border border-neutral-300 text-xs text-neutral-700">Flex Item 2</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Spacing Scale -->
+<div>
+<h3 class="text-sm font-semibold uppercase tracking-widest mb-6 text-neutral-800">Spacing Scale</h3>
+<div class="space-y-4">
+<div class="flex items-center gap-4">
+<div class="w-2 h-2 bg-neutral-950 rounded-full"></div>
+<div class="text-xs font-mono text-neutral-600">gap-2 (0.5rem)</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-4 h-4 bg-neutral-950 rounded-full"></div>
+<div class="text-xs font-mono text-neutral-600">gap-4 (1rem)</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="w-6 h-6 bg-neutral-950 rounded-full"></div>
+<div class="text-xs font-mono text-neutral-600">gap-6 (1.5rem)</div>
+</div>
+<div class="flex items-center gap-8">
+<div class="w-8 h-8 bg-neutral-950 rounded-full"></div>
+<div class="text-xs font-mono text-neutral-600">gap-8 (2rem)</div>
+</div>
+<div class="flex items-center gap-12">
+<div class="w-12 h-12 bg-neutral-950 rounded-full"></div>
+<div class="text-xs font-mono text-neutral-600">gap-12 (3rem)</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- 5) Motion & Interaction Section -->
+<section id="motion" class="relative z-20 mb-24">
+<div class="mb-12">
+<h2 class="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight leading-tight font-oswald mb-4">Motion & Interaction</h2>
+<p class="text-sm md:text-base text-neutral-600 uppercase tracking-wide">Animations and transitions</p>
+</div>
+
+<div class="space-y-12">
+<!-- Hover Transitions -->
+<div>
+<h3 class="text-sm font-semibold uppercase tracking-widest mb-6 text-neutral-800">Hover Transitions</h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-neutral-200/50 hover:bg-neutral-950 hover:text-white border border-neutral-300 hover:border-neutral-950 rounded-2xl p-5 transition-all duration-300 cursor-pointer">
+<div class="text-xs font-semibold uppercase tracking-widest mb-1">Hover Card</div>
+<div class="text-[0.65rem] opacity-70">transition-all duration-300</div>
+</div>
+<div class="group bg-neutral-200/50 border border-neutral-300 rounded-2xl p-5 cursor-pointer">
+<div class="group-hover:translate-y-0 transition-transform duration-300 bg-white/10 absolute top-0 right-0 bottom-0 left-0 translate-y-full rounded-2xl"></div>
+<div class="relative text-xs font-semibold uppercase tracking-widest mb-1">Slide Overlay</div>
+<div class="relative text-[0.65rem] opacity-70">group-hover:translate-y-0</div>
+</div>
+<div class="hover:scale-105 transition-transform cursor-pointer bg-neutral-200/50 border border-neutral-300 rounded-2xl p-5">
+<div class="text-xs font-semibold uppercase tracking-widest mb-1">Scale on Hover</div>
+<div class="text-[0.65rem] opacity-70">hover:scale-105</div>
+</div>
+</div>
+</div>
+
+<!-- Color Transitions -->
+<div>
+<h3 class="text-sm font-semibold uppercase tracking-widest mb-6 text-neutral-800">Color Transitions</h3>
+<div class="flex flex-wrap gap-4">
+<a class="hover:text-neutral-950 transition-colors text-neutral-600 text-xs font-medium tracking-widest uppercase">Link Hover</a>
+<button class="px-5 py-2 rounded-full border border-neutral-400 text-[0.7rem] font-semibold uppercase tracking-widest hover:bg-neutral-300 transition-colors">
+                        Button Hover
+                    </button>
+</div>
+</div>
+
+<!-- Animation Gallery -->
+<div>
+<h3 class="text-sm font-semibold uppercase tracking-widest mb-6 text-neutral-800">Animation Gallery</h3>
+<div class="hidden lg:block mix-blend-overlay w-full z-50 pointer-events-none relative h-64 bg-neutral-200/30 rounded-2xl p-8">
+<!-- Circle 1 -->
+<div class="absolute w-12 h-12 rounded-full border border-neutral-600" style="top: 10%; left: 20%; animation: float1 6s ease-in-out infinite;"></div>
+<!-- Circle 2 -->
+<div class="absolute w-10 h-10 rounded-full bg-neutral-600" style="top: 60%; left: 70%; animation: float2 8s ease-in-out infinite;"></div>
+<!-- Circle 3 -->
+<div class="absolute w-14 h-14 rounded-full border border-neutral-600" style="top: 80%; left: 30%; animation: float3 7s ease-in-out infinite;"></div>
+<!-- Square 1 -->
+<div class="w-10 h-10 border-neutral-600 border absolute" style="top: 15%; left: 60%; animation: float2 5s ease-in-out infinite; transform-origin: center"></div>
+<!-- Square 2 -->
+<div class="absolute w-12 h-12 bg-neutral-600" style="top: 40%; left: 10%; animation: spin1 10s linear infinite;">
+</div>
+<!-- Square 3 -->
+<div class="absolute w-8 h-8 border border-neutral-600" style="top: 70%; left: 80%; animation: float1 9s ease-in-out infinite; transform: rotate(45deg);"></div>
+<!-- Triangle 1 -->
+<div class="absolute" style="top: 25%; left: 45%; width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-bottom: 20px solid rgb(82, 82, 82); animation: float3 6s ease-in-out infinite;">
+</div>
+<!-- Triangle 2 -->
+<div class="absolute" style="top: 55%; left: 25%; width: 0; height: 0; border-left: 14px solid transparent; border-right: 14px solid transparent; border-bottom: 24px solid rgb(82, 82, 82); animation: float1 8s ease-in-out infinite;">
+</div>
+<!-- Triangle 3 -->
+<div class="absolute" style="top: 15%; left: 85%; width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-bottom: 16px solid rgb(82, 82, 82); animation: spin2 12s linear infinite;">
+</div>
+<!-- Triangle 4 -->
+<div class="absolute" style="top: 85%; left: 55%; width: 0; height: 0; border-left: 11px solid transparent; border-right: 11px solid transparent; border-bottom: 18px solid rgb(82, 82, 82); animation: float2 7s ease-in-out infinite;">
+</div>
+<div class="absolute bottom-4 left-4 text-xs font-mono text-neutral-600">
+<div>float1, float2, float3, spin1, spin2</div>
+</div>
+</div>
+</div>
+</div>
+
+<style>
+            @keyframes float1 {
+                0%,
+                100% {
+                    transform: translateY(0) translateX(0);
+                }
+                50% {
+                    transform: translateY(-15px) translateX(5px);
+                }
+            }
+
+            @keyframes float2 {
+                0%,
+                100% {
+                    transform: translateY(0) translateX(0);
+                }
+                50% {
+                    transform: translateY(10px) translateX(-8px);
+                }
+            }
+
+            @keyframes float3 {
+                0%,
+                100% {
+                    transform: translateY(0) translateX(0);
+                }
+                50% {
+                    transform: translateY(-8px) translateX(-5px);
+                }
+            }
+
+            @keyframes spin1 {
+                0% {
+                    transform: rotate(0deg);
+                }
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+
+            @keyframes spin2 {
+                0% {
+                    transform: rotate(0deg);
+                }
+                100% {
+                    transform: rotate(-360deg);
+                }
+            }
+        </style>
+</section>
+
+<!-- 6) Icons Section -->
+<section id="icons" class="relative z-20 mb-24">
+<div class="mb-12">
+<h2 class="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight leading-tight font-oswald mb-4">Icons</h2>
+<p class="text-sm md:text-base text-neutral-600 uppercase tracking-wide">Lucide icon system</p>
+</div>
+
+<div class="space-y-12">
+<!-- Icon Sizes -->
+<div>
+<h3 class="text-sm font-semibold uppercase tracking-widest mb-6 text-neutral-800">Icon Sizes</h3>
+<div class="flex flex-wrap items-center gap-8">
+<div class="flex flex-col items-center gap-2">
+<svg class="lucide lucide-layout-template w-4 h-4 text-neutral-950" data-lucide="layout-template" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><rect height="7" rx="1" width="18" x="3" y="3"></rect><rect height="7" rx="1" width="9" x="3" y="14"></rect><rect height="7" rx="1" width="5" x="16" y="14"></rect></svg>
+<div class="text-xs font-mono text-neutral-600">w-4 h-4</div>
+</div>
+<div class="flex flex-col items-center gap-2">
+<svg class="lucide lucide-layout-template w-5 h-5 text-neutral-950" data-lucide="layout-template" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><rect height="7" rx="1" width="18" x="3" y="3"></rect><rect height="7" rx="1" width="9" x="3" y="14"></rect><rect height="7" rx="1" width="5" x="16" y="14"></rect></svg>
+<div class="text-xs font-mono text-neutral-600">w-5 h-5</div>
+</div>
+<div class="flex flex-col items-center gap-2">
+<svg class="lucide lucide-layout-template w-6 h-6 text-neutral-950" data-lucide="layout-template" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><rect height="7" rx="1" width="18" x="3" y="3"></rect><rect height="7" rx="1" width="9" x="3" y="14"></rect><rect height="7" rx="1" width="5" x="16" y="14"></rect></svg>
+<div class="text-xs font-mono text-neutral-600">w-6 h-6</div>
+</div>
+</div>
+</div>
+
+<!-- Icon Colors -->
+<div>
+<h3 class="text-sm font-semibold uppercase tracking-widest mb-6 text-neutral-800">Icon Colors</h3>
+<div class="flex flex-wrap items-center gap-8">
+<div class="flex flex-col items-center gap-2">
+<svg class="lucide lucide-component w-5 h-5 text-neutral-950" data-lucide="component" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M15.536 11.293a1 1 0 0 0 0 1.414l2.376 2.377a1 1 0 0 0 1.414 0l2.377-2.377a1 1 0 0 0 0-1.414l-2.377-2.377a1 1 0 0 0-1.414 0z"></path><path d="M2.297 11.293a1 1 0 0 0 0 1.414l2.377 2.377a1 1 0 0 0 1.414 0l2.377-2.377a1 1 0 0 0 0-1.414L6.088 8.916a1 1 0 0 0-1.414 0z"></path><path d="M8.916 17.912a1 1 0 0 0 0 1.415l2.377 2.376a1 1 0 0 0 1.414 0l2.377-2.376a1 1 0 0 0 0-1.415l-2.377-2.376a1 1 0 0 0-1.414 0z"></path><path d="M8.916 4.674a1 1 0 0 0 0 1.414l2.377 2.376a1 1 0 0 0 1.414 0l2.377-2.376a1 1 0 0 0 0-1.414l-2.377-2.377a1 1 0 0 0-1.414 0z"></path></svg>
+<div class="text-xs font-mono text-neutral-600">text-neutral-950</div>
+</div>
+<div class="flex flex-col items-center gap-2">
+<svg class="lucide lucide-component w-5 h-5 text-neutral-600" data-lucide="component" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M15.536 11.293a1 1 0 0 0 0 1.414l2.376 2.377a1 1 0 0 0 1.414 0l2.377-2.377a1 1 0 0 0 0-1.414l-2.377-2.377a1 1 0 0 0-1.414 0z"></path><path d="M2.297 11.293a1 1 0 0 0 0 1.414l2.377 2.377a1 1 0 0 0 1.414 0l2.377-2.377a1 1 0 0 0 0-1.414L6.088 8.916a1 1 0 0 0-1.414 0z"></path><path d="M8.916 17.912a1 1 0 0 0 0 1.415l2.377 2.376a1 1 0 0 0 1.414 0l2.377-2.376a1 1 0 0 0 0-1.415l-2.377-2.376a1 1 0 0 0-1.414 0z"></path><path d="M8.916 4.674a1 1 0 0 0 0 1.414l2.377 2.376a1 1 0 0 0 1.414 0l2.377-2.376a1 1 0 0 0 0-1.414l-2.377-2.377a1 1 0 0 0-1.414 0z"></path></svg>
+<div class="text-xs font-mono text-neutral-600">text-neutral-600</div>
+</div>
+<div class="flex flex-col items-center gap-2">
+<svg class="lucide lucide-component w-5 h-5 text-white" data-lucide="component" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M15.536 11.293a1 1 0 0 0 0 1.414l2.376 2.377a1 1 0 0 0 1.414 0l2.377-2.377a1 1 0 0 0 0-1.414l-2.377-2.377a1 1 0 0 0-1.414 0z"></path><path d="M2.297 11.293a1 1 0 0 0 0 1.414l2.377 2.377a1 1 0 0 0 1.414 0l2.377-2.377a1 1 0 0 0 0-1.414L6.088 8.916a1 1 0 0 0-1.414 0z"></path><path d="M8.916 17.912a1 1 0 0 0 0 1.415l2.377 2.376a1 1 0 0 0 1.414 0l2.377-2.376a1 1 0 0 0 0-1.415l-2.377-2.376a1 1 0 0 0-1.414 0z"></path><path d="M8.916 4.674a1 1 0 0 0 0 1.414l2.377 2.376a1 1 0 0 0 1.414 0l2.377-2.376a1 1 0 0 0 0-1.414l-2.377-2.377a1 1 0 0 0-1.414 0z"></path></svg>
+<div class="bg-neutral-950 rounded p-1">
+<div class="text-xs font-mono text-white">text-white</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Common Icons -->
+<div>
+<h3 class="text-sm font-semibold uppercase tracking-widest mb-6 text-neutral-800">Common Icons</h3>
+<div class="grid grid-cols-4 md:grid-cols-8 gap-6">
+<div class="flex flex-col items-center gap-2">
+<svg class="lucide lucide-menu w-5 h-5 text-neutral-950" data-lucide="menu" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M4 5h16"></path><path d="M4 12h16"></path><path d="M4 19h16"></path></svg>
+<div class="text-xs text-neutral-600">menu</div>
+</div>
+<div class="flex flex-col items-center gap-2">
+<svg class="lucide lucide-layout-template w-5 h-5 text-neutral-950" data-lucide="layout-template" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><rect height="7" rx="1" width="18" x="3" y="3"></rect><rect height="7" rx="1" width="9" x="3" y="14"></rect><rect height="7" rx="1" width="5" x="16" y="14"></rect></svg>
+<div class="text-xs text-neutral-600">layout</div>
+</div>
+<div class="flex flex-col items-center gap-2">
+<svg class="lucide lucide-component w-5 h-5 text-neutral-950" data-lucide="component" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M15.536 11.293a1 1 0 0 0 0 1.414l2.376 2.377a1 1 0 0 0 1.414 0l2.377-2.377a1 1 0 0 0 0-1.414l-2.377-2.377a1 1 0 0 0-1.414 0z"></path><path d="M2.297 11.293a1 1 0 0 0 0 1.414l2.377 2.377a1 1 0 0 0 1.414 0l2.377-2.377a1 1 0 0 0 0-1.414L6.088 8.916a1 1 0 0 0-1.414 0z"></path><path d="M8.916 17.912a1 1 0 0 0 0 1.415l2.377 2.376a1 1 0 0 0 1.414 0l2.377-2.376a1 1 0 0 0 0-1.415l-2.377-2.376a1 1 0 0 0-1.414 0z"></path><path d="M8.916 4.674a1 1 0 0 0 0 1.414l2.377 2.376a1 1 0 0 0 1.414 0l2.377-2.376a1 1 0 0 0 0-1.414l-2.377-2.377a1 1 0 0 0-1.414 0z"></path></svg>
+<div class="text-xs text-neutral-600">component</div>
+</div>
+<div class="flex flex-col items-center gap-2">
+<svg class="lucide lucide-library w-5 h-5 text-neutral-950" data-lucide="library" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="m16 6 4 14"></path><path d="M12 6v14"></path><path d="M8 8v12"></path><path d="M4 4v16"></path></svg>
+<div class="text-xs text-neutral-600">library</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Decorative Robot Circle Placeholder (Mimicking the visual weight on the right) -->
+<div class="absolute top-[30%] right-[-10%] md:right-[5%] w-[30vw] h-[30vw] md:w-[20rem] md:h-[20rem] rounded-full bg-gradient-to-b from-neutral-200 to-neutral-400 opacity-20 blur-3xl pointer-events-none mix-blend-multiply" style=""></div>
+</main>
+<script class="">
+        lucide.createIcons();
+    </script>
+<script data-img-fallback-handler="">!function(){var f=["https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/917d6f93-fb36-439a-8c48-884b67b35381_1600w.jpg","https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/4734259a-bad7-422f-981e-ce01e79184f2_1600w.jpg","https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/c543a9e1-f226-4ced-80b0-feb8445a75b9_1600w.jpg","https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/5bab247f-35d9-400d-a82b-fd87cfe913d2_1600w.webp","https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/30104e3c-5eea-4b93-93e9-5313698a7156_1600w.webp"],h=new Set;function g(s){for(var x=0,i=0;i<s.length;i++)x=(x<<5)-x+s.charCodeAt(i)|0;return f[Math.abs(x)%f.length]}function r(t){var s=t.src;if(s&&!h.has(s)){h.add(s);t.src=g(s)}}window.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG")r(t)},!0);function c(){document.querySelectorAll("img").forEach(function(i){if(i.complete&&!i.naturalWidth&&i.src)r(i)})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",c);else c()}()</script></body></html>
+

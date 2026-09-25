@@ -1,0 +1,1 @@
+import{t as e}from"./createLucideIcon-DengoS-c.js";var r=e("ChevronUp",[["path",{d:"m18 15-6-6-6 6",key:"153udz"}]]);export{r as t};

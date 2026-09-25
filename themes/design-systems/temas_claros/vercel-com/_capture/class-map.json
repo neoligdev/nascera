@@ -1,0 +1,122 @@
+[
+  {
+    "prefix": "text",
+    "count": 525
+  },
+  {
+    "prefix": "focus",
+    "count": 474
+  },
+  {
+    "prefix": "outline",
+    "count": 373
+  },
+  {
+    "prefix": "items",
+    "count": 254
+  },
+  {
+    "prefix": "gap",
+    "count": 211
+  },
+  {
+    "prefix": "group",
+    "count": 181
+  },
+  {
+    "prefix": "cursor",
+    "count": 178
+  },
+  {
+    "prefix": "transition",
+    "count": 165
+  },
+  {
+    "prefix": "aria",
+    "count": 163
+  },
+  {
+    "prefix": "py",
+    "count": 137
+  },
+  {
+    "prefix": "duration",
+    "count": 120
+  },
+  {
+    "prefix": "font",
+    "count": 98
+  },
+  {
+    "prefix": "inline",
+    "count": 92
+  },
+  {
+    "prefix": "rounded",
+    "count": 90
+  },
+  {
+    "prefix": "px",
+    "count": 89
+  },
+  {
+    "prefix": "leading",
+    "count": 88
+  },
+  {
+    "prefix": "no",
+    "count": 85
+  },
+  {
+    "prefix": "data",
+    "count": 81
+  },
+  {
+    "prefix": "flex",
+    "count": 68
+  },
+  {
+    "prefix": "bg",
+    "count": 65
+  },
+  {
+    "prefix": "justify",
+    "count": 62
+  },
+  {
+    "prefix": "pointer",
+    "count": 59
+  },
+  {
+    "prefix": "shrink",
+    "count": 57
+  },
+  {
+    "prefix": "select",
+    "count": 52
+  },
+  {
+    "prefix": "min",
+    "count": 43
+  },
+  {
+    "prefix": "max",
+    "count": 39
+  },
+  {
+    "prefix": "decoration",
+    "count": 32
+  },
+  {
+    "prefix": "underline",
+    "count": 32
+  },
+  {
+    "prefix": "ease",
+    "count": 30
+  },
+  {
+    "prefix": "dark",
+    "count": 30
+  }
+]

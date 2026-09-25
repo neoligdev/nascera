@@ -1,0 +1,854 @@
+<html lang="en"><head><meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Fluxora — Hero</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="assets/css2_2832c0ff631d.css" rel="stylesheet"/>
+<script src="assets/resource_3fa48481346f.js"></script>
+<script src="assets/iconify_654a1ef798a3.js"></script>
+<script src="assets/chart_ba9eca532d10.js"></script>
+<style>
+/* Animation Keyframe */
+@keyframes fadeSlideIn {
+0% {
+opacity: 0;
+transform: translateY(30px);
+filter: blur(8px);
+}
+100% {
+opacity: 1;
+transform: translateY(0);
+filter: blur(0px);
+}
+}
+/* Border gradient shared style */
+.border-gradient {
+position: relative;
+}
+.border-gradient::before {
+content: "";
+position: absolute;
+inset: 0;
+border-radius: inherit;
+padding: 1px;
+-webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+-webkit-mask-composite: xor;
+mask-composite: exclude;
+background: linear-gradient(225deg, rgba(255, 255, 255, 0.0) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.0) 100%);
+pointer-events: none;
+}
+</style>
+<script>
+/* Animation on Scroll */
+(function () {
+const style = document.createElement("style");
+style.textContent = `
+.animate-on-scroll { animation-play-state: paused !important; }
+.animate-on-scroll.animate { animation-play-state: running !important; }
+`;
+document.head.appendChild(style);
+const once = true;
+if (!window.__inViewIO) {
+window.__inViewIO = new IntersectionObserver((entries) => {
+entries.forEach((entry) => {
+if (entry.isIntersecting) {
+entry.target.classList.add("animate");
+if (once) window.__inViewIO.unobserve(entry.target);
+}
+});
+}, { threshold: 0.2, rootMargin: "0px 0px -10% 0px" });
+}
+window.initInViewAnimations = function (selector = ".animate-on-scroll") {
+document.querySelectorAll(selector).forEach((el) => {
+window.__inViewIO.observe(el);
+});
+};
+document.addEventListener("DOMContentLoaded", () => initInViewAnimations());
+})();
+</script>
+<meta content="font-geist,font-roboto,font-montserrat,font-poppins,font-playfair,font-instrument-serif,font-merriweather,font-bricolage,font-jakarta,font-manrope,font-space-grotesk,font-work-sans,font-pt-serif,font-geist-mono,font-space-mono,font-quicksand,font-nunito" name="disabled-font-classes"/><style>
+/* Scroll fallback - ensures native scroll works if JS scroll fails */
+html, body {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    height: auto !important;
+    min-height: 100vh !important;
+}
+/* Remove position:fixed from wrappers that may block scroll */
+body > div:first-child,
+.wrapper,
+main,
+#__next,
+#root,
+#app {
+    position: static !important;
+    overflow: visible !important;
+    height: auto !important;
+}
+/* Ensure body is visible even if JS opacity:0 fails */
+body {
+    opacity: 1 !important;
+}
+/* Force content to be scrollable */
+section, article, div[class*="container"] {
+    position: relative !important;
+}
+</style></head>
+<body class="min-h-screen bg-neutral-950 text-white antialiased" style="font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;">
+<!-- Background (component) added by Aura -->
+<div class="aura-background-component top-0 w-full h-screen z-0 absolute brightness-50 saturate-50" data-alpha-mask="80" style="; mask-image: linear-gradient(to bottom, transparent, black 0%, black 80%, transparent); -webkit-mask-image: linear-gradient(to bottom, transparent, black 0%, black 80%, transparent)"><div class="fixed inset-0 -z-10 bg-black">
+<div class="aura-background-component absolute inset-0 w-full h-full" data-alpha-mask="80" style="
+      /* Fade from solid to transparent near bottom */
+      -webkit-mask-image: linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 80%, rgba(255,255,255,0) 100%);
+              mask-image: linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 80%, rgba(255,255,255,0) 100%);
+      -webkit-mask-repeat: no-repeat;
+              mask-repeat: no-repeat;
+      -webkit-mask-size: 100% 100%;
+              mask-size: 100% 100%;
+    ">
+<div class="absolute inset-0 w-full h-full bg-neutral-950" data-us-project="XxCmD31vVBmiINgvYCho">
+</div>
+<script type="text/javascript">
+      !function () {
+        if (!window.UnicornStudio) {
+          window.UnicornStudio = { isInitialized: !1 };
+          var i = document.createElement("script");
+          i.src = "https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.4.29/dist/unicornStudio.umd.js",
+          i.onload = function () {
+            window.UnicornStudio.isInitialized || (UnicornStudio.init(), window.UnicornStudio.isInitialized = !0)
+          },
+          (document.head || document.body).appendChild(i)
+        }
+      }();
+    </script>
+</div>
+</div></div>
+<!-- Background -->
+<div class="fixed inset-0 -z-10">
+<div class="absolute inset-0 opacity-[0.03]">
+<svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<pattern height="64" id="grid" patternunits="userSpaceOnUse" width="64">
+<path d="M64 0H0v64" fill="none" stroke="white" stroke-width="0.5"></path>
+</pattern>
+</defs>
+<rect fill="url(#grid)" height="100%" width="100%"></rect>
+</svg>
+</div>
+</div>
+<!-- Header -->
+<header class="relative [animation:fadeSlideIn_0.8s_ease-out_0s_both] animate-on-scroll z-10 animate">
+<nav class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-5 flex items-center justify-between">
+<a class="flex items-center gap-3" href="#">
+<span class="inline-flex items-center justify-center bg-white/10 w-9 h-9 rounded-full backdrop-blur border-gradient" style="border-radius: 9999px;">
+<svg aria-hidden="true" data-height="16" data-icon="solar:star-fall-minimalistic-2-bold-duotone" data-width="16" height="16" role="img" style="color: rgb(255, 255, 255);" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M11.811 6.727C12.825 4.909 13.331 4 14.09 4c.757 0 1.264.909 2.277 2.727l.262.47c.288.517.432.775.657.945c.224.17.504.234 1.063.36l.51.116c1.967.445 2.95.667 3.185 1.42s-.437 1.537-1.778 3.106l-.347.406c-.381.445-.572.668-.658.944s-.057.573 0 1.168l.053.541c.203 2.094.305 3.14-.308 3.605s-1.534.041-3.377-.807l-.476-.22c-.524-.24-.786-.361-1.063-.361c-.278 0-.54.12-1.063.361l-.477.22c-1.842.848-2.763 1.272-3.376.807s-.511-1.511-.309-3.605l.053-.541c.057-.595.086-.892 0-1.168s-.276-.498-.657-.944l-.347-.406C6.57 11.575 5.9 10.79 6.135 10.038s1.218-.975 3.185-1.42l.51-.116c.559-.126.838-.19 1.063-.36s.368-.428.656-.945z" fill="currentColor"></path><path clip-rule="evenodd" d="M8.745 5.202c-1.981-.57-4.107-.269-6.158.932l-.208.122a.75.75 0 0 1-.758-1.294l.208-.122C4.19 3.457 6.737 3.063 9.161 3.76l.208.06a.75.75 0 0 1-.416 1.441zM4.836 9.936a.75.75 0 0 1-.683.811c-.154.014-.27.02-.37.027a3 3 0 0 0-.444.048c-.196.038-.452.117-.915.349a.75.75 0 1 1-.67-1.342c.537-.268.926-.408 1.302-.48c.247-.048.502-.064.731-.08l.238-.016a.75.75 0 0 1 .811.683m1.082 5.92a3.99 3.99 0 0 0-3.365.733a.75.75 0 1 1-.928-1.178a5.49 5.49 0 0 1 4.635-1.015a.75.75 0 0 1-.342 1.46" fill="currentColor" fill-rule="evenodd" opacity=".5"></path></svg>
+</span>
+<span class="text-lg font-semibold tracking-tight">Fluxora</span>
+</a>
+<div class="hidden md:flex items-center gap-8 text-sm text-neutral-300">
+<a class="hover:text-white transition-colors font-medium" href="#">Platform</a>
+<a class="hover:text-white transition-colors font-medium" href="#">Stories</a>
+<a class="hover:text-white transition-colors font-medium" href="#">Pricing</a>
+<a class="hover:text-white transition-colors font-medium" href="#">Docs</a>
+</div>
+<div class="flex items-center gap-3">
+<div class="hidden sm:flex items-center gap-2 rounded-full border-gradient bg-white/5 px-3 py-1.5" style="border-radius: 9999px;">
+<span class="h-2 w-2 rounded-full bg-blue-400"></span>
+<span class="text-xs text-neutral-300 font-medium">Online</span>
+</div>
+<button class="inline-flex items-center gap-2 rounded-full border-gradient bg-white/5 backdrop-blur-xl px-4 py-2.5 text-sm font-medium text-white/80 hover:text-white transition-all hover:-translate-y-0.5" style="border-radius: 9999px;">
+        Contact
+        <svg aria-hidden="true" class="" data-height="16" data-icon="solar:arrow-right-linear" data-width="16" height="16" role="img" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M4 12h16m0 0l-6-6m6 6l-6 6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+</button>
+</div>
+</nav>
+</header>
+<!-- Hero -->
+<main class="relative z-10">
+<section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-8 pb-16 md:pb-24 lg:pt-24">
+<!-- Pill -->
+<div class="mx-auto w-fit mb-6 [animation:fadeSlideIn_0.8s_ease-out_0.1s_both] animate-on-scroll animate">
+<div class="inline-flex items-center gap-2 rounded-full border-gradient bg-white/5 px-3 py-1.5 text-xs text-neutral-300" style="border-radius: 9999px;">
+<span class="inline-flex items-center justify-center rounded-full bg-blue-400/20 text-blue-300 px-2 py-0.5">
+          New
+        </span>
+<span class="font-medium">Simple pricing</span>
+<svg aria-hidden="true" data-height="14" data-icon="solar:star-fall-minimalistic-2-bold-duotone" data-width="14" height="14" role="img" style="color: rgb(96, 165, 250);" viewbox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg"><path d="M11.811 6.727C12.825 4.909 13.331 4 14.09 4c.757 0 1.264.909 2.277 2.727l.262.47c.288.517.432.775.657.945c.224.17.504.234 1.063.36l.51.116c1.967.445 2.95.667 3.185 1.42s-.437 1.537-1.778 3.106l-.347.406c-.381.445-.572.668-.658.944s-.057.573 0 1.168l.053.541c.203 2.094.305 3.14-.308 3.605s-1.534.041-3.377-.807l-.476-.22c-.524-.24-.786-.361-1.063-.361c-.278 0-.54.12-1.063.361l-.477.22c-1.842.848-2.763 1.272-3.376.807s-.511-1.511-.309-3.605l.053-.541c.057-.595.086-.892 0-1.168s-.276-.498-.657-.944l-.347-.406C6.57 11.575 5.9 10.79 6.135 10.038s1.218-.975 3.185-1.42l.51-.116c.559-.126.838-.19 1.063-.36s.368-.428.656-.945z" fill="currentColor"></path><path clip-rule="evenodd" d="M8.745 5.202c-1.981-.57-4.107-.269-6.158.932l-.208.122a.75.75 0 0 1-.758-1.294l.208-.122C4.19 3.457 6.737 3.063 9.161 3.76l.208.06a.75.75 0 0 1-.416 1.441zM4.836 9.936a.75.75 0 0 1-.683.811c-.154.014-.27.02-.37.027a3 3 0 0 0-.444.048c-.196.038-.452.117-.915.349a.75.75 0 1 1-.67-1.342c.537-.268.926-.408 1.302-.48c.247-.048.502-.064.731-.08l.238-.016a.75.75 0 0 1 .811.683m1.082 5.92a3.99 3.99 0 0 0-3.365.733a.75.75 0 1 1-.928-1.178a5.49 5.49 0 0 1 4.635-1.015a.75.75 0 0 1-.342 1.46" fill="currentColor" fill-rule="evenodd" opacity=".5"></path></svg>
+</div>
+</div>
+<!-- Heading -->
+<div class="[animation:fadeSlideIn_0.8s_ease-out_0.2s_both] animate-on-scroll text-center animate">
+<h1 class="mx-auto max-w-4xl text-4xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tighter">
+        Powering the next wave of AI‑driven products
+      </h1>
+<p class="mx-auto mt-5 max-w-2xl text-base sm:text-lg text-neutral-300">
+        Fluxora helps ambitious teams prototype, launch, and scale with reliable infrastructure and human‑centered design.
+      </p>
+<!-- CTAs -->
+<div class="flex flex-col sm:flex-row gap-3 mt-8 items-center justify-center">
+<button class="inline-flex items-center gap-2 rounded-full bg-white text-neutral-900 px-6 py-3 text-sm font-semibold shadow-[0_1px_0_0_rgba(255,255,255,0.4)_inset,0_1px_2px_rgba(0,0,0,0.2)] hover:-translate-y-0.5 transition-all" style="border-radius: 9999px;">
+          Start Free
+        </button>
+<div class="inline-block group relative">
+<button class="inline-flex gap-2 border-gradient hover:text-white transition-all hover:-translate-y-0.5 text-sm font-medium text-white/80 bg-white/5 rounded-full pt-3 pr-5 pb-3 pl-5 backdrop-blur-xl gap-x-2 gap-y-2 items-center" style="border-radius: 9999px">
+<svg aria-hidden="true" data-height="16" data-icon="solar:play-circle-bold-duotone" data-width="16" height="16" role="img" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path clip-rule="evenodd" d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2S2 6.477 2 12s4.477 10 10 10" fill="currentColor" fill-rule="evenodd" opacity=".5"></path><path d="m15.414 13.059l-4.72 2.787C9.934 16.294 9 15.71 9 14.786V9.214c0-.924.934-1.507 1.694-1.059l4.72 2.787c.781.462.781 1.656 0 2.118" fill="currentColor"></path></svg>
+            Watch demo
+          </button>
+<span aria-hidden="true" class="pointer-events-none absolute -bottom-3 left-1/2 z-0 h-6 w-44 -translate-x-1/2 rounded-full opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100" style="background: radial-gradient(60% 100% at 50% 50%, rgba(59,130,246,.55), rgba(59,130,246,.28) 35%, transparent 70%); filter: blur(10px) saturate(120%);"></span>
+</div>
+</div>
+</div>
+<!-- Bento Grid -->
+<div class="grid grid-cols-1 auto-rows-[200px] md:mt-16 md:grid-cols-6 md:gap-6 lg:grid-cols-12 lg:mt-32 overflow-hidden h-[800px] mt-16 gap-4" style="mask-image: linear-gradient(180deg, transparent, black 0%, black 60%, transparent); -webkit-mask-image: linear-gradient(180deg, transparent, black 0%, black 60%, transparent);">
+<!-- Team Image Card -->
+<div class="relative overflow-hidden rounded-3xl border-gradient md:col-span-3 lg:col-span-6 md:row-span-2 [animation:fadeSlideIn_0.8s_ease-out_0.3s_both] animate-on-scroll animate" style="background:linear-gradient(225deg,rgba(255,255,255,0.0) 0%,rgba(255,255,255,0.05) 50%,rgba(255,255,255,0.0) 100%); border-radius: 24px;">
+<img alt="Product team" class="h-full w-full object-cover opacity-90" src="assets/357cb3d1-9f65-4810-884b-f0072a_b391591fa18c.webp"/>
+<div class="absolute inset-0 bg-gradient-to-t from-neutral-950/60 to-transparent"></div>
+<div class="absolute left-4 top-4">
+<span class="inline-flex items-center gap-1 text-[11px] border-gradient text-slate-300 bg-white/5 rounded-full px-2.5 py-1 backdrop-blur" style="border-radius: 9999px;">
+            Product Team
+          </span>
+</div>
+<div class="absolute bottom-4 left-4 right-4 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="h-8 w-8 rounded-full ring-2 ring-white/20 overflow-hidden">
+<img alt="avatar" class="h-full w-full object-cover" src="assets/61cab6ed-0aeb-4671-824c-5b8a0c_e10faac70cf6.webp"/>
+</div>
+<div class="h-8 w-8 rounded-full ring-2 ring-white/20 overflow-hidden -ml-2">
+<img alt="avatar" class="h-full w-full object-cover" src="assets/2f999a94-8031-4c3e-b64e-836c1b_2b2994f08fa2.webp"/>
+</div>
+<div class="h-8 w-8 rounded-full ring-2 ring-white/20 overflow-hidden -ml-2">
+<img alt="avatar" class="w-full h-full object-cover" src="assets/08b00610-61b2-45b5-b8fc-e9305c_9db0da3c4b8d.webp"/>
+</div>
+</div>
+<span class="text-xs text-neutral-200 font-medium">Design sync at 10:00</span>
+</div>
+</div>
+<!-- Stat Card -->
+<div class="rounded-3xl bg-white text-neutral-900 p-6 border-gradient md:col-span-3 lg:col-span-3 [animation:fadeSlideIn_0.8s_ease-out_0.4s_both] animate-on-scroll animate" style="background:linear-gradient(225deg,rgba(255,255,255,0.95) 0%,rgba(255,255,255,1) 50%,rgba(255,255,255,0.95) 100%); border-radius: 24px;">
+<p class="text-4xl tracking-tighter">140+</p>
+<p class="mt-2 text-sm text-neutral-600 font-medium">Active customers</p>
+<div class="mt-4 flex items-center gap-2 text-blue-600">
+<svg aria-hidden="true" data-height="16" data-icon="solar:graph-up-bold-duotone" data-width="16" height="16" role="img" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M2 12c0-4.714 0-7.071 1.464-8.536C4.93 2 7.286 2 12 2s7.071 0 8.535 1.464C22 4.93 22 7.286 22 12s0 7.071-1.465 8.535C19.072 22 16.714 22 12 22s-7.071 0-8.536-1.465C2 19.072 2 16.714 2 12" fill="currentColor" opacity=".5"></path><path d="M14.5 10.75a.75.75 0 0 1 0-1.5H17a.75.75 0 0 1 .75.75v2.5a.75.75 0 0 1-1.5 0v-.69l-2.013 2.013a1.75 1.75 0 0 1-2.474 0l-1.586-1.586a.25.25 0 0 0-.354 0L7.53 14.53a.75.75 0 0 1-1.06-1.06l2.293-2.293a1.75 1.75 0 0 1 2.474 0l1.586 1.586a.25.25 0 0 0 .354 0l2.012-2.013z" fill="currentColor"></path></svg>
+<span class="text-xs font-medium">Q4 growth 23%</span>
+</div>
+</div>
+<!-- Code Card -->
+<article class="overflow-hidden border-gradient rounded-3xl relative md:col-span-3 lg:col-span-3 md:row-span-2 [animation:fadeSlideIn_0.8s_ease-out_0.5s_both] animate-on-scroll animate" style="background:linear-gradient(225deg,rgba(255,255,255,0.0) 0%,rgba(255,255,255,0.05) 50%,rgba(255,255,255,0.0) 100%); border-radius: 24px;">
+<div class="h-full p-6 relative flex flex-col">
+<div class="relative mx-auto h-full w-full flex items-center justify-center flex-1">
+<div class="scale-[0.75] w-full">
+<div class="backdrop-blur-[2px] bg-white/[0.03] border-gradient rounded-2xl">
+<div class="px-4 py-3 border-b border-white/10 flex items-center gap-2">
+<svg aria-hidden="true" data-height="16" data-icon="solar:code-bold-duotone" data-width="16" height="16" role="img" style="color: rgba(255,255,255,0.7);" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M16.443 7.328a.75.75 0 0 1 1.059-.056l1.737 1.564c.737.663 1.347 1.212 1.767 1.71c.44.525.754 1.088.754 1.784c0 .695-.313 1.258-.754 1.782c-.42.499-1.03 1.049-1.767 1.711l-1.737 1.564a.75.75 0 1 1-1.004-1.115l1.697-1.527c.788-.709 1.319-1.19 1.663-1.598c.33-.393.402-.622.402-.817c0-.196-.072-.425-.402-.818c-.344-.409-.875-.889-1.663-1.598l-1.697-1.527a.75.75 0 0 1-.056-1.06m-8.94 1.06a.75.75 0 0 0-1.004-1.115L4.761 8.836c-.737.663-1.347 1.212-1.767 1.71c-.44.525-.754 1.088-.754 1.784c0 .695.313 1.258.754 1.782c.42.499 1.03 1.049 1.767 1.711l1.737 1.564a.75.75 0 1 0 1.004-1.115l-1.697-1.527c-.788-.709-1.319-1.19-1.663-1.598c-.33-.393-.402-.622-.402-.817c0-.196.072-.425.402-.818c.344-.409.875-.889 1.663-1.598z" fill="currentColor"></path><path d="M14.182 4.276a.75.75 0 0 1 .53.918l-3.974 14.83a.75.75 0 1 1-1.449-.389l3.974-14.83a.75.75 0 0 1 .919-.53" fill="currentColor" opacity=".5"></path></svg>
+<span class="text-[11px] font-medium text-white/80">config.tsx</span>
+<span class="ml-auto text-[10px] text-white/50">modified</span>
+</div>
+<pre class="text-[11px] leading-relaxed text-white/80 p-4">export const appConfig = {
+  framework: "next",
+  runtime: "edge",
+  regions: ["sfo1", "iad1"],
+  env: {
+    DATABASE_URL: process.env.DB,
+    REDIS_TOKEN: process.env.CACHE
+  }
+}
+
+deploy(appConfig)</pre>
+</div>
+</div>
+</div>
+<div class="relative pt-2">
+<h3 class="text-lg font-semibold tracking-tight text-white/95">Deploy instantly</h3>
+<p class="mt-2 text-sm text-white/70">Push to production in seconds with zero configuration.</p>
+</div>
+</div>
+</article>
+<!-- Chart Card -->
+<div class="rounded-3xl border-gradient p-6 md:col-span-3 lg:col-span-3 md:row-span-2 [animation:fadeSlideIn_0.8s_ease-out_0.6s_both] animate-on-scroll animate" style="background:linear-gradient(225deg,rgba(255,255,255,0.0) 0%,rgba(255,255,255,0.05) 50%,rgba(255,255,255,0.0) 100%); border-radius: 24px;">
+<h3 class="text-base font-semibold tracking-tight">Delivery success</h3>
+<p class="mt-1 text-sm text-neutral-300">Last 30 days</p>
+<div class="mt-4 rounded-xl bg-black/30 p-3 border-gradient">
+<div class="relative w-full h-28">
+<canvas class="" height="224" id="successChart" style="display: block; box-sizing: border-box; height: 112px; width: 214px;" width="428"></canvas>
+</div>
+</div>
+<div class="mt-4 flex items-center justify-between">
+<div class="flex items-center gap-2 text-blue-400">
+<span class="h-2 w-2 rounded-full bg-blue-400"></span>
+<span class="text-sm font-semibold tracking-tight">97.8%</span>
+</div>
+<span class="text-xs text-neutral-300 font-medium">SLA met</span>
+</div>
+</div>
+<!-- Global Card -->
+<div class="relative overflow-hidden rounded-3xl border-gradient md:col-span-3 lg:col-span-3 md:row-span-2 [animation:fadeSlideIn_0.8s_ease-out_0.7s_both] animate-on-scroll animate" style="background:linear-gradient(225deg,rgba(255,255,255,0.0) 0%,rgba(255,255,255,0.05) 50%,rgba(255,255,255,0.0) 100%); border-radius: 24px;">
+<div class="p-6">
+<p class="text-3xl tracking-tighter">35+</p>
+<p class="mt-1 text-sm text-neutral-300">Global launches this year</p>
+<div class="mt-4 flex flex-wrap gap-2">
+<span class="inline-flex items-center rounded-full bg-blue-400/15 text-blue-300 px-2.5 py-1 text-xs font-medium border-gradient" style="border-radius: 9999px;">Japan</span>
+<span class="inline-flex items-center rounded-full bg-blue-400/15 text-blue-300 px-2.5 py-1 text-xs font-medium border-gradient" style="border-radius: 9999px;">Canada</span>
+<span class="inline-flex items-center rounded-full bg-blue-400/15 text-blue-300 px-2.5 py-1 text-xs font-medium border-gradient" style="border-radius: 9999px;">Portugal</span>
+</div>
+</div>
+<div class="px-6 pb-6">
+<div class="overflow-hidden rounded-2xl border-gradient">
+<img alt="Globe" class="h-40 w-full object-cover" src="assets/d25a1767-0ea8-4aac-b981-6afd67_6569b7be86ab.webp"/>
+</div>
+</div>
+</div>
+<!-- AI Card -->
+<article class="relative overflow-hidden hover:bg-white/[0.08] transition-all group rounded-3xl border-gradient md:col-span-3 lg:col-span-3 md:row-span-2 [animation:fadeSlideIn_0.8s_ease-out_0.8s_both] animate-on-scroll animate" style="background:linear-gradient(225deg,rgba(255,255,255,0.0) 0%,rgba(255,255,255,0.05) 50%,rgba(255,255,255,0.0) 100%); border-radius: 24px;">
+<div class="flex p-6 items-center justify-between">
+<h4 class="text-base font-semibold tracking-tight">Custom AI Agents</h4>
+<span class="inline-flex items-center gap-1 text-[11px] border-gradient text-slate-300 bg-white/5 rounded-full px-2.5 py-1" style="border-radius: 9999px;">
+            AI-Powered
+          </span>
+</div>
+<div class="flex-1 flex p-6 pt-0 items-center">
+<div class="relative w-full">
+<div class="hover:bg-black/50 transition-all bg-black/60 border-gradient rounded-xl p-3 backdrop-blur">
+<div class="flex gap-1 mb-2 items-center">
+<span class="h-2.5 w-2.5 rounded-full bg-rose-400/80"></span>
+<span class="h-2.5 w-2.5 rounded-full bg-amber-400/80"></span>
+<span class="h-2.5 w-2.5 rounded-full bg-blue-400/80"></span>
+</div>
+<div class="overflow-x-auto">
+<pre class="text-[10px] leading-tight min-w-max text-slate-300"><code># AI Agent
+class BusinessAgent:
+  def __init__(self):
+    self.mode = "adaptive"
+
+  def analyze(self):
+    return insights
+</code></pre>
+</div>
+</div>
+</div>
+</div>
+</article>
+<!-- Orbit Card -->
+<section class="group relative overflow-hidden border-gradient rounded-3xl md:col-span-3 lg:col-span-3 md:row-span-2 [animation:fadeSlideIn_0.8s_ease-out_0.9s_both] animate-on-scroll animate" style="background:linear-gradient(225deg,rgba(255,255,255,0.0) 0%,rgba(255,255,255,0.05) 50%,rgba(255,255,255,0.0) 100%); border-radius: 24px;">
+<div class="relative h-full overflow-hidden flex flex-col">
+<div class="flex-1 relative overflow-hidden">
+<div class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+<div class="absolute left-1/2 top-1/2 h-[240px] w-[240px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/10 animate-pulse" style="animation-delay:0s;"></div>
+<div class="absolute left-1/2 top-1/2 h-[200px] w-[200px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/10 animate-pulse" style="animation-delay:.6s;"></div>
+<div class="absolute left-1/2 top-1/2 h-[280px] w-[280px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/10 animate-pulse" style="animation-delay:1.2s;"></div>
+</div>
+<div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+<div class="relative flex h-28 w-28 items-center justify-center rounded-full border-gradient bg-neutral-900/70 backdrop-blur-md transition-transform duration-300 group-hover:scale-105" style="border-radius: 9999px;">
+<svg aria-hidden="true" data-height="48" data-icon="solar:widget-6-bold-duotone" data-width="48" height="48" role="img" viewbox="0 0 24 24" width="48" xmlns="http://www.w3.org/2000/svg"><path d="M2 17.5A4.5 4.5 0 0 1 6.5 13h2.7c.63 0 .945 0 1.186.123c.211.107.384.28.491.491c.123.24.123.556.123 1.186v2.7a4.5 4.5 0 1 1-9 0m11-11a4.5 4.5 0 1 1 4.5 4.5h-3.214c-.15 0-.224 0-.287-.007a1.125 1.125 0 0 1-.992-.992C13 9.938 13 9.864 13 9.714z" fill="currentColor"></path><path d="M2 6.5a4.5 4.5 0 0 1 9 0v3c0 .349 0 .523-.038.666a1.13 1.13 0 0 1-.796.796C10.023 11 9.85 11 9.5 11h-3A4.5 4.5 0 0 1 2 6.5m11 8c0-.349 0-.523.038-.666c.104-.388.408-.692.796-.796c.143-.038.317-.038.666-.038h3a4.5 4.5 0 1 1-4.5 4.5z" fill="currentColor" opacity=".5"></path></svg>
+</div>
+</div>
+</div>
+<div class="relative border-t border-white/10">
+<div class="p-6">
+<h3 class="text-xl tracking-tight font-semibold text-slate-100">Adaptive Automations</h3>
+<p class="leading-relaxed text-slate-400 mt-3 text-sm">Event‑driven flows across your stack.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Testimonial Card -->
+<div class="flex flex-col rounded-3xl border-gradient p-6 backdrop-blur-md transition md:col-span-3 lg:col-span-3 md:row-span-2 [animation:fadeSlideIn_0.8s_ease-out_1s_both] animate-on-scroll animate" style="background:linear-gradient(225deg,rgba(255,255,255,0.0) 0%,rgba(255,255,255,0.05) 50%,rgba(255,255,255,0.0) 100%); border-radius: 24px;">
+<div class="mb-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<img alt="" class="h-10 w-10 rounded-full object-cover" src="assets/67ea0bb9-359c-4e9a-a90d-b44f07_3a0c7631490b.webp"/>
+<div class="">
+<p class="text-xs font-semibold text-white">Serena Cardenas</p>
+<p class="text-[10px] text-white/60">Design Ops</p>
+</div>
+</div>
+</div>
+<p class="leading-snug text-sm font-medium mb-4 text-white">
+          "Animations feel organic, copy is on point, and accessibility is baked in from day one."
+        </p>
+<div class="mb-4 rounded-lg border-gradient p-3">
+<p class="text-xs text-white/80 mb-2 font-medium">Key Results:</p>
+<ul class="text-xs text-white/70 space-y-1">
+<li>• 127% user engagement</li>
+<li>• 43% fewer tickets</li>
+<li>• 98% compliance</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<!-- Testimonials Section -->
+<section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-20 pb-20 relative">
+<div class="overflow-hidden rounded-3xl ring-white/10 ring-1 p-6 sm:p-8 relative backdrop-blur border-gradient" style="background:linear-gradient(225deg,rgba(255,255,255,0.0) 0%,rgba(255,255,255,0.05) 50%,rgba(255,255,255,0.0) 100%); border-radius: 24px;">
+<div class="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-blue-500/10 blur-3xl"></div>
+<!-- Header -->
+<div class="[animation:fadeSlideIn_0.8s_ease-out_0.1s_both] animate-on-scroll text-center mb-12 animate">
+<div class="mb-6">
+<div class="flex items-center justify-between text-[13px] sm:text-sm font-medium uppercase tracking-tight text-blue-400">
+<span>TESTIMONIALS</span>
+<span>(02)</span>
+</div>
+<div class="mt-2 h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+</div>
+<div class="flex flex-col sm:flex-row sm:items-end sm:items-center sm:justify-between mb-0">
+<h2 class="text-3xl sm:text-4xl md:text-5xl text-white text-left mt-0 tracking-tighter">
+            What our customers say
+          </h2>
+<p class="text-sm sm:text-base text-slate-300 text-left max-w-[42ch]">Real feedback from teams using Fluxora to build better, ship faster, and scale smarter.</p>
+</div>
+</div>
+<!-- Testimonial -->
+<section class="relative [animation:fadeSlideIn_0.8s_ease-out_0.2s_both] animate-on-scroll animate">
+<div class="overflow-hidden ring-white/10 ring-1 rounded-3xl p-6 sm:p-10 relative backdrop-blur border-gradient" style="min-height: 540px; background:linear-gradient(225deg,rgba(255,255,255,0.0) 0%,rgba(255,255,255,0.05) 50%,rgba(255,255,255,0.0) 100%); border-radius: 24px;">
+<div class="pointer-events-none absolute inset-0 opacity-[0.08] [background-image:linear-gradient(to_right,rgba(255,255,255,0.12)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.12)_1px,transparent_1px)] bg-[size:64px_64px]"></div>
+<div class="pointer-events-none absolute -top-24 -left-24 h-96 w-96 rounded-full bg-blue-500/10 blur-3xl"></div>
+<div class="pointer-events-none absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-blue-400/10 blur-3xl"></div>
+<div class="absolute top-6 left-6 opacity-10 text-white">
+<span class="iconify" data-height="64" data-icon="solar:quote-down-circle-bold-duotone" data-width="64"></span>
+</div>
+<div class="flex flex-col justify-between" style="min-height: 420px;">
+<blockquote class="relative text-center max-w-5xl mx-auto transition-opacity duration-300 flex-1 flex items-center justify-center" id="testimonial-quote">
+<p class="text-2xl sm:text-4xl md:text-5xl lg:text-6xl leading-tight text-white tracking-tighter">
+                Fluxora completely
+                <span class="text-blue-400 tracking-tighter">transformed the way</span>
+                our team ships products.
+                It keeps us focused, efficient, and aligned —
+                <span class="text-blue-400 tracking-tighter">without endless meetings</span> or context switching.
+              </p>
+</blockquote>
+<div class="mt-8 text-center transition-opacity duration-300" id="testimonial-author">
+<p class="text-sm sm:text-base text-slate-200 font-medium">
+                Sarah Nguyen <span class="text-slate-400 font-normal">Engineering Lead, Quantum Labs</span>
+</p>
+</div>
+<div class="mt-10 flex items-end justify-center gap-3 sm:gap-4">
+<img alt="Avatar 1" class="h-12 w-12 sm:h-14 sm:w-14 rounded-xl object-cover ring-1 ring-white/10 opacity-40 grayscale cursor-pointer transition-opacity duration-200 hover:opacity-60" data-testimonial-index="0" data-testimonial-name="Michael Chen" data-testimonial-quote="The AI automation in Fluxora has &lt;span class='text-blue-400 tracking-tighter'&gt;saved us countless hours&lt;/span&gt; every week. Our team is more productive than ever, and we can finally focus on what really matters — &lt;span class='text-blue-400 tracking-tighter'&gt;building great products&lt;/span&gt;." data-testimonial-role="CEO, TechFlow" src="assets/4c9aa348-4474-47a8-8f1e-3fe52a_c0d694eeb444.webp"/>
+<img alt="Avatar 2" class="h-12 w-12 sm:h-14 sm:w-14 rounded-xl object-cover ring-1 ring-white/10 opacity-40 grayscale cursor-pointer transition-opacity duration-200 hover:opacity-60" data-testimonial-index="1" data-testimonial-name="Emily Rodriguez" data-testimonial-quote="Switching to Fluxora was the &lt;span class='text-blue-400 tracking-tighter'&gt;best decision&lt;/span&gt; we made this year. The integrations are seamless, the interface is intuitive, and our team collaboration has &lt;span class='text-blue-400 tracking-tighter'&gt;never been stronger&lt;/span&gt;." data-testimonial-role="Product Lead, Innovate Labs" src="assets/8a90d32f-809f-4383-b71f-6a9c50_d9b8524ca8f1.jpg"/>
+<img alt="Avatar 3" class="h-12 w-12 sm:h-14 sm:w-14 rounded-xl object-cover ring-1 ring-white/10 opacity-40 grayscale cursor-pointer transition-opacity duration-200 hover:opacity-60" data-testimonial-index="2" data-testimonial-name="David Kim" data-testimonial-quote="Fluxora's intelligent task prioritization helps us &lt;span class='text-blue-400 tracking-tighter'&gt;ship features faster&lt;/span&gt; and with more confidence. The real-time sync across our distributed team is a &lt;span class='text-blue-400 tracking-tighter'&gt;game-changer&lt;/span&gt;." data-testimonial-role="Engineering Manager, CloudBase" src="assets/a90aa9b5-558b-479a-9570-1ceaa6_05be8580ab0c.jpg"/>
+<img alt="Avatar highlighted" class="h-14 w-14 sm:h-16 sm:w-16 rounded-xl object-cover ring-2 ring-white/20 shadow-lg cursor-pointer" data-active="true" data-testimonial-index="3" data-testimonial-name="Sarah Nguyen" data-testimonial-quote="Fluxora completely &lt;span class='text-blue-400 tracking-tighter'&gt;transformed the way&lt;/span&gt; our team ships products. It keeps us focused, efficient, and aligned — &lt;span class='text-blue-400 tracking-tighter'&gt;without endless meetings&lt;/span&gt; or context switching." data-testimonial-role="Engineering Lead, Quantum Labs" src="assets/ca2dff12-04ff-4713-9404-e3cb60_87cde19ab04b.jpg"/>
+<img alt="Avatar 5" class="h-12 w-12 sm:h-14 sm:w-14 rounded-xl object-cover ring-1 ring-white/10 opacity-40 grayscale cursor-pointer transition-opacity duration-200 hover:opacity-60" data-testimonial-index="4" data-testimonial-name="Jessica Park" data-testimonial-quote="From onboarding to daily workflows, Fluxora makes everything &lt;span class='text-blue-400 tracking-tighter'&gt;effortless and efficient&lt;/span&gt;. We've reduced planning time by 40% and our team satisfaction scores have &lt;span class='text-blue-400 tracking-tighter'&gt;skyrocketed&lt;/span&gt;." data-testimonial-role="Operations Director, Nexus Group" src="assets/eae5dceb-fa80-4934-b110-86decb_3618b1ad7cdd.webp"/>
+<img alt="Avatar 6" class="h-12 w-12 sm:h-14 sm:w-14 rounded-xl object-cover ring-1 ring-white/10 opacity-40 grayscale cursor-pointer transition-opacity duration-200 hover:opacity-60" data-testimonial-index="5" data-testimonial-name="Alex Thompson" data-testimonial-quote="The visual clarity and smart notifications in Fluxora help us stay aligned without &lt;span class='text-blue-400 tracking-tighter'&gt;constant check-ins&lt;/span&gt;. Our design process is smoother and we deliver &lt;span class='text-blue-400 tracking-tighter'&gt;higher quality work&lt;/span&gt; on time." data-testimonial-role="Design Lead, Studio Bright" src="assets/7d4bf47a-eb10-4503-a4f3-1940c4_75f723c711cd.webp"/>
+<img alt="Avatar 7" class="h-12 w-12 sm:h-14 sm:w-14 rounded-xl object-cover ring-1 ring-white/10 opacity-40 grayscale cursor-pointer transition-opacity duration-200 hover:opacity-60" data-testimonial-index="6" data-testimonial-name="Rachel Foster" data-testimonial-quote="Fluxora has become the &lt;span class='text-blue-400 tracking-tighter'&gt;single source of truth&lt;/span&gt; for our entire team. Campaign planning, execution, and reporting are all in one place, making us &lt;span class='text-blue-400 tracking-tighter'&gt;incredibly agile&lt;/span&gt;." data-testimonial-role="Marketing VP, Growth Co" src="assets/photo-1544717305-2782549b5136_0c7b7e92eb08.jpg"/>
+</div>
+</div>
+</div>
+</section>
+</div>
+</section>
+<!-- About Section -->
+<section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-24 mb-24 relative">
+<div class="pointer-events-none absolute -z-10 inset-0">
+<div class="absolute -top-10 -left-10 h-80 w-80 rounded-full bg-blue-500/10 blur-3xl"></div>
+<div class="absolute bottom-0 right-1/3 h-64 w-64 rounded-full bg-blue-400/10 blur-3xl"></div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+<!-- Visual -->
+<div class="[animation:fadeSlideIn_0.5s_ease-out_0s_both] animate-on-scroll border-gradient bg-gradient-to-br from-blue-500/10 via-blue-500/5 to-blue-300/10 rounded-[28px] p-2 animate">
+<div class="overflow-hidden rounded-[22px] bg-black/30 ring-1 ring-white/10">
+<img alt="AI platform" class="md:h-[520px] w-full h-[320px] object-cover" src="assets/bd276cb3-a53d-4683-83d8-727dc1_51d114d3ab2a.webp"/>
+</div>
+</div>
+<!-- Copy -->
+<div class="[animation:fadeSlideIn_0.5s_ease-out_0.1s_both] animate-on-scroll animate">
+<div class="inline-flex items-center gap-2 text-sm text-blue-200/80">
+<span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-500/15 ring-1 ring-white/10">
+<svg aria-hidden="true" data-height="14" data-icon="solar:star-fall-minimalistic-2-bold-duotone" data-width="14" height="14" role="img" viewbox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg"><path d="M11.811 6.727C12.825 4.909 13.331 4 14.09 4c.757 0 1.264.909 2.277 2.727l.262.47c.288.517.432.775.657.945c.224.17.504.234 1.063.36l.51.116c1.967.445 2.95.667 3.185 1.42s-.437 1.537-1.778 3.106l-.347.406c-.381.445-.572.668-.658.944s-.057.573 0 1.168l.053.541c.203 2.094.305 3.14-.308 3.605s-1.534.041-3.377-.807l-.476-.22c-.524-.24-.786-.361-1.063-.361c-.278 0-.54.12-1.063.361l-.477.22c-1.842.848-2.763 1.272-3.376.807s-.511-1.511-.309-3.605l.053-.541c.057-.595.086-.892 0-1.168s-.276-.498-.657-.944l-.347-.406C6.57 11.575 5.9 10.79 6.135 10.038s1.218-.975 3.185-1.42l.51-.116c.559-.126.838-.19 1.063-.36s.368-.428.656-.945z" fill="currentColor"></path><path clip-rule="evenodd" d="M8.745 5.202c-1.981-.57-4.107-.269-6.158.932l-.208.122a.75.75 0 0 1-.758-1.294l.208-.122C4.19 3.457 6.737 3.063 9.161 3.76l.208.06a.75.75 0 0 1-.416 1.441zM4.836 9.936a.75.75 0 0 1-.683.811c-.154.014-.27.02-.37.027a3 3 0 0 0-.444.048c-.196.038-.452.117-.915.349a.75.75 0 1 1-.67-1.342c.537-.268.926-.408 1.302-.48c.247-.048.502-.064.731-.08l.238-.016a.75.75 0 0 1 .811.683m1.082 5.92a3.99 3.99 0 0 0-3.365.733a.75.75 0 1 1-.928-1.178a5.49 5.49 0 0 1 4.635-1.015a.75.75 0 0 1-.342 1.46" fill="currentColor" fill-rule="evenodd" opacity=".5"></path></svg>
+</span>
+<span>About Fluxora</span>
+</div>
+<h2 class="mt-4 text-4xl sm:text-5xl md:text-6xl text-white tracking-tighter">
+          Intelligent infrastructure, exceptional results.
+        </h2>
+<p class="mt-5 text-base md:text-lg leading-relaxed text-white/70 max-w-2xl">
+          Fluxora combines cutting-edge AI technology with thoughtful design principles to help you build and scale products faster. Our platform empowers teams of all sizes to bring their vision to life.
+        </p>
+<div class="mt-8">
+<a class="group inline-flex items-center gap-2 hover:opacity-90 transition-opacity border-gradient text-sm font-medium text-black bg-gradient-to-r from-blue-400 via-blue-400 to-blue-300 rounded-full pt-2.5 pr-5 pb-2.5 pl-5 shadow-[0_8px_30px_rgba(59,130,246,0.25)]" href="#" style="border-radius: 9999px">
+            Discover Our Story
+            <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-black/10 text-black">
+<svg aria-hidden="true" data-height="16" data-icon="solar:arrow-right-up-linear" data-width="16" height="16" role="img" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M6 18L18 6m0 0H9m9 0v9" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+</span>
+</a>
+</div>
+<!-- Feature cards -->
+<div class="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4 [animation:fadeSlideIn_0.5s_ease-out_0.2s_both] animate-on-scroll animate">
+<div class="rounded-2xl bg-white/5 ring-1 ring-white/10 p-5 border-gradient">
+<h3 class="text-base tracking-tight text-white font-semibold leading-none">Lightning Fast</h3>
+<p class="mt-3 text-sm text-neutral-400">Launch products in minutes, not months.</p>
+</div>
+<div class="rounded-2xl bg-white/5 ring-1 ring-white/10 p-5 border-gradient">
+<h3 class="text-base tracking-tight text-white font-semibold leading-none">AI-Powered</h3>
+<p class="mt-3 text-sm text-neutral-400">Advanced intelligence handles complexity for you.</p>
+</div>
+<div class="rounded-2xl bg-white/5 ring-1 ring-white/10 p-5 border-gradient">
+<h3 class="text-base tracking-tight text-white font-semibold leading-none">Fully Scalable</h3>
+<p class="mt-3 text-sm text-neutral-400">Complete control and infrastructure that grows with you.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- How it Works -->
+<section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-24 relative">
+<div class="rounded-3xl border-gradient p-6 sm:p-8 relative backdrop-blur" style="background:linear-gradient(225deg,rgba(255,255,255,0.0) 0%,rgba(255,255,255,0.05) 50%,rgba(255,255,255,0.0) 100%); border-radius: 24px;">
+<!-- Header -->
+<div class="flex gap-6 pr-1 pl-1 items-center [animation:fadeSlideIn_0.8s_ease-out_0.1s_both] animate-on-scroll animate">
+<h2 class="text-[44px] sm:text-6xl lg:text-7xl xl:text-8xl leading-[0.9] text-white tracking-tighter">How it works.</h2>
+<span aria-hidden="true" aria-orientation="vertical" class="w-px bg-white/20 h-10" role="separator"></span>
+<p class="sm:text-base text-sm text-slate-300 mt-1 tracking-tight">Three simple steps to deploy faster</p>
+</div>
+<div class="h-px bg-white/20 mt-4"></div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-10 mt-6 sm:mt-8 relative items-stretch">
+<!-- STEP 1 -->
+<div class="lg:col-span-4 border-gradient rounded-[28px] p-6 sm:p-8 relative h-full flex flex-col [animation:fadeSlideIn_0.8s_ease-out_0.2s_both] animate-on-scroll animate" style="background:linear-gradient(225deg,rgba(255,255,255,0.0) 0%,rgba(255,255,255,0.05) 50%,rgba(255,255,255,0.0) 100%);">
+<span class="absolute -top-4 left-6 inline-flex items-center px-4 py-1.5 rounded-full border border-white/20 bg-neutral-950 text-xs sm:text-sm text-white tracking-tight" style="border-radius: 9999px;">STEP 1</span>
+<div class="relative h-48 sm:h-56 rounded-2xl bg-white/5 border border-white/10 overflow-hidden">
+<div class="absolute inset-0 p-4 sm:p-6">
+<div class="bg-neutral-900/90 border border-white/10 rounded-xl p-4 w-full shadow-2xl">
+<div class="flex items-center gap-2 mb-3">
+<svg aria-hidden="true" data-height="16" data-icon="solar:document-text-bold-duotone" data-width="16" height="16" role="img" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M3 10c0-3.771 0-5.657 1.172-6.828S7.229 2 11 2h2c3.771 0 5.657 0 6.828 1.172S21 6.229 21 10v4c0 3.771 0 5.657-1.172 6.828S16.771 22 13 22h-2c-3.771 0-5.657 0-6.828-1.172S3 17.771 3 14z" fill="currentColor" opacity=".5"></path><path clip-rule="evenodd" d="M7.25 12a.75.75 0 0 1 .75-.75h8a.75.75 0 0 1 0 1.5H8a.75.75 0 0 1-.75-.75m0-4A.75.75 0 0 1 8 7.25h8a.75.75 0 0 1 0 1.5H8A.75.75 0 0 1 7.25 8m0 8a.75.75 0 0 1 .75-.75h5a.75.75 0 0 1 0 1.5H8a.75.75 0 0 1-.75-.75" fill="currentColor" fill-rule="evenodd"></path></svg>
+<div class="h-2 w-24 bg-white/80 rounded"></div>
+</div>
+<div class="h-2 w-full bg-white/10 rounded mb-2"></div>
+<div class="h-2 w-4/5 bg-white/10 rounded mb-2"></div>
+<div class="h-2 w-3/4 bg-white/10 rounded mb-3"></div>
+<div class="flex gap-2">
+<div class="h-6 w-16 bg-blue-400/20 rounded-lg flex items-center justify-center">
+<div class="h-1 w-8 bg-blue-400 rounded"></div>
+</div>
+<div class="h-6 w-20 bg-white/10 rounded-lg"></div>
+</div>
+</div>
+</div>
+</div>
+<h3 class="mt-6 text-3xl sm:text-4xl text-white tracking-tighter">Create your config</h3>
+<p class="mt-2 text-sm sm:text-base text-neutral-300 max-w-[52ch] tracking-tight">Simply define your infrastructure, resources, and deployment preferences. Our AI understands your architecture.</p>
+</div>
+<!-- STEP 2 -->
+<div class="lg:col-span-4 border-gradient rounded-[28px] p-6 sm:p-8 relative h-full flex flex-col [animation:fadeSlideIn_0.8s_ease-out_0.3s_both] animate-on-scroll animate" style="background:linear-gradient(225deg,rgba(255,255,255,0.0) 0%,rgba(255,255,255,0.05) 50%,rgba(255,255,255,0.0) 100%);">
+<span class="absolute -top-4 left-6 inline-flex items-center px-4 py-1.5 rounded-full border border-white/20 bg-neutral-950 text-xs sm:text-sm text-white tracking-tight" style="border-radius: 9999px;">STEP 2</span>
+<div class="relative h-48 sm:h-56 rounded-2xl border border-white/10 overflow-hidden bg-gradient-to-br from-white/5 to-white/0 p-4">
+<div class="grid grid-cols-2 gap-3 h-full">
+<div class="bg-neutral-900/80 border border-white/10 rounded-lg p-3 shadow-sm">
+<div class="flex items-center gap-2 mb-2">
+<svg aria-hidden="true" data-height="12" data-icon="solar:chat-round-bold-duotone" data-width="12" height="12" role="img" viewbox="0 0 24 24" width="12" xmlns="http://www.w3.org/2000/svg"><path d="M7.456 3.09A10 10 0 0 0 2 12c0 1.6.376 3.112 1.043 4.453c.178.356.237.764.134 1.148l-.595 2.226a1.3 1.3 0 0 0 1.591 1.592l2.226-.596a1.63 1.63 0 0 1 1.149.134A9.96 9.96 0 0 0 12 22c4.885 0 8.952-3.503 9.826-8.134A9 9 0 0 1 7.456 3.09" fill="currentColor"></path><path d="M21.826 13.866q.172-.909.174-1.866c0-5.523-4.477-10-10-10a9.96 9.96 0 0 0-4.544 1.09a9 9 0 0 0 14.37 10.776" fill="currentColor" opacity=".5"></path></svg>
+<div class="h-1.5 w-12 bg-blue-400 rounded"></div>
+</div>
+<div class="space-y-1">
+<div class="h-1 w-full bg-white/20 rounded"></div>
+<div class="h-1 w-4/5 bg-white/20 rounded"></div>
+<div class="h-1 w-3/4 bg-white/20 rounded"></div>
+</div>
+</div>
+<div class="bg-neutral-900/80 border border-white/10 rounded-lg p-3 shadow-sm">
+<div class="flex items-center gap-2 mb-2">
+<svg aria-hidden="true" data-height="12" data-icon="solar:monitor-bold-duotone" data-width="12" height="12" role="img" viewbox="0 0 24 24" width="12" xmlns="http://www.w3.org/2000/svg"><path d="M10 2h4c3.771 0 5.657 0 6.828 1.172S22 6.229 22 10v1c0 .552 0 1.55-.006 2H2.007C2 12.55 2 11.552 2 11v-1c0-3.771 0-5.657 1.172-6.828S6.229 2 10 2" fill="currentColor" opacity=".5"></path><path d="M7.985 17.5c-2.84 0-4.26 0-5.141-.879C2.272 16.052 2.07 15.258 2 14v-1h20v1c-.07 1.258-.272 2.052-.844 2.621c-.882.879-2.301.879-5.14.879h-3.263v4h3.262c.416 0 .753.336.753.75s-.337.75-.753.75h-8.03a.75.75 0 0 1-.753-.75c0-.414.337-.75.753-.75h3.262v-4z" fill="currentColor"></path></svg>
+<div class="h-1.5 w-10 bg-blue-400 rounded"></div>
+</div>
+<div class="space-y-1">
+<div class="h-1 w-full bg-white/20 rounded"></div>
+<div class="h-1 w-5/6 bg-white/20 rounded"></div>
+<div class="h-1 w-2/3 bg-white/20 rounded"></div>
+</div>
+</div>
+<div class="bg-neutral-900/80 border border-white/10 rounded-lg p-3 shadow-sm">
+<div class="flex items-center gap-2 mb-2">
+<svg aria-hidden="true" data-height="12" data-icon="solar:book-bold-duotone" data-width="12" height="12" role="img" viewbox="0 0 24 24" width="12" xmlns="http://www.w3.org/2000/svg"><path d="M7.426 18H20c-.003.93-.022 1.623-.113 2.17c-.11.653-.31.998-.616 1.244c-.307.246-.737.407-1.55.494c-.837.09-1.946.092-3.536.092h-4.43c-1.59 0-2.7-.001-3.536-.092c-.813-.087-1.243-.248-1.55-.494s-.506-.591-.616-1.243l-.022-.151c-.04-.291-.06-.437.066-.78c.127-.344.181-.397.291-.505a2.6 2.6 0 0 1 1.285-.667c.29-.062.67-.068 1.753-.068" fill="currentColor"></path><path d="M4.727 2.733c.306-.308.734-.508 1.544-.618C7.105 2.002 8.209 2 9.793 2h4.414c1.584 0 2.688.002 3.522.115c.81.11 1.238.31 1.544.618c.305.308.504.74.613 1.557c.112.84.114 1.955.114 3.552V18H7.426c-1.084 0-1.462.006-1.753.068c-.513.11-.96.347-1.285.667c-.11.108-.164.161-.291.505A1.3 1.3 0 0 0 4 19.7V7.842c0-1.597.002-2.711.114-3.552c.109-.816.308-1.249.613-1.557" fill="currentColor" opacity=".5"></path><path d="M7.25 7A.75.75 0 0 1 8 6.25h8a.75.75 0 0 1 0 1.5H8A.75.75 0 0 1 7.25 7M8 9.75a.75.75 0 0 0 0 1.5h5a.75.75 0 0 0 0-1.5z" fill="currentColor"></path></svg>
+<div class="h-1.5 w-14 bg-blue-400 rounded"></div>
+</div>
+<div class="space-y-1">
+<div class="h-1 w-full bg-white/20 rounded"></div>
+<div class="h-1 w-4/5 bg-white/20 rounded"></div>
+<div class="h-1 w-3/5 bg-white/20 rounded"></div>
+</div>
+</div>
+<div class="bg-neutral-900/80 border border-white/10 rounded-lg p-3 shadow-sm">
+<div class="flex items-center gap-2 mb-2">
+<svg aria-hidden="true" data-height="12" data-icon="solar:layers-bold-duotone" data-width="12" height="12" role="img" viewbox="0 0 24 24" width="12" xmlns="http://www.w3.org/2000/svg"><path d="M4.979 9.685C2.993 8.891 2 8.494 2 8s.993-.89 2.979-1.685l2.808-1.123C9.773 4.397 10.767 4 12 4s2.227.397 4.213 1.192l2.808 1.123C21.007 7.109 22 7.506 22 8s-.993.89-2.979 1.685l-2.808 1.124C14.227 11.603 13.233 12 12 12s-2.227-.397-4.213-1.191z" fill="currentColor"></path><path clip-rule="evenodd" d="M2 8c0 .494.993.89 2.979 1.685l2.808 1.124C9.773 11.603 10.767 12 12 12s2.227-.397 4.213-1.191l2.808-1.124C21.007 8.891 22 8.494 22 8s-.993-.89-2.979-1.685l-2.808-1.123C14.227 4.397 13.233 4 12 4s-2.227.397-4.213 1.192L4.98 6.315C2.993 7.109 2 7.506 2 8" fill="currentColor" fill-rule="evenodd"></path><path d="m5.766 10l-.787.315C2.993 11.109 2 11.507 2 12s.993.89 2.979 1.685l2.808 1.124C9.773 15.603 10.767 16 12 16s2.227-.397 4.213-1.191l2.808-1.124C21.007 12.891 22 12.493 22 12s-.993-.89-2.979-1.685L18.234 10l-2.021.809C14.227 11.603 13.233 12 12 12s-2.227-.397-4.213-1.191z" fill="currentColor" opacity=".7"></path><path d="m5.766 14l-.787.315C2.993 15.109 2 15.507 2 16s.993.89 2.979 1.685l2.808 1.124C9.773 19.603 10.767 20 12 20s2.227-.397 4.213-1.192l2.808-1.123C21.007 16.891 22 16.494 22 16c0-.493-.993-.89-2.979-1.685L18.234 14l-2.021.809C14.227 15.603 13.233 16 12 16s-2.227-.397-4.213-1.191z" fill="currentColor" opacity=".4"></path></svg>
+<div class="h-1.5 w-8 bg-blue-400 rounded"></div>
+</div>
+<div class="space-y-1">
+<div class="h-1 w-full bg-white/20 rounded"></div>
+<div class="h-1 w-3/4 bg-white/20 rounded"></div>
+<div class="h-1 w-4/5 bg-white/20 rounded"></div>
+</div>
+</div>
+</div>
+</div>
+<h3 class="mt-6 text-3xl sm:text-4xl text-white tracking-tighter">AI optimizes setup</h3>
+<p class="mt-2 text-sm sm:text-base text-neutral-300 max-w-[52ch] tracking-tight">Our AI creates optimized infrastructure configurations across different environments in seconds.</p>
+</div>
+<!-- STEP 3 -->
+<div class="lg:col-span-4 border-gradient rounded-[28px] p-6 sm:p-8 relative h-full flex flex-col [animation:fadeSlideIn_0.8s_ease-out_0.4s_both] animate-on-scroll animate" style="background:linear-gradient(225deg,rgba(255,255,255,0.0) 0%,rgba(255,255,255,0.05) 50%,rgba(255,255,255,0.0) 100%);">
+<span class="absolute -top-4 left-6 inline-flex items-center px-4 py-1.5 rounded-full border border-white/20 bg-neutral-950 text-xs sm:text-sm text-white tracking-tight" style="border-radius: 9999px;">STEP 3</span>
+<div class="relative h-48 sm:h-56 rounded-2xl bg-white/5 border border-white/10 overflow-hidden p-4">
+<div class="w-full h-full rounded-xl overflow-hidden bg-neutral-900/80 border border-white/10 p-3">
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 bg-blue-400/20 rounded-lg flex items-center justify-center">
+<svg aria-hidden="true" data-height="12" data-icon="solar:refresh-bold-duotone" data-width="12" height="12" role="img" viewbox="0 0 24 24" width="12" xmlns="http://www.w3.org/2000/svg"><path d="M12.079 2.25c-4.794 0-8.734 3.663-9.118 8.333H2a.75.75 0 0 0-.528 1.283l1.68 1.666a.75.75 0 0 0 1.056 0l1.68-1.666a.75.75 0 0 0-.528-1.283h-.893c.38-3.831 3.638-6.833 7.612-6.833a7.66 7.66 0 0 1 6.537 3.643a.75.75 0 1 0 1.277-.786A9.16 9.16 0 0 0 12.08 2.25" fill="currentColor"></path><path d="M20.841 10.467a.75.75 0 0 0-1.054 0L18.1 12.133a.75.75 0 0 0 .527 1.284h.899c-.381 3.83-3.651 6.833-7.644 6.833a7.7 7.7 0 0 1-6.565-3.644a.75.75 0 1 0-1.276.788a9.2 9.2 0 0 0 7.84 4.356c4.809 0 8.766-3.66 9.151-8.333H22a.75.75 0 0 0 .527-1.284z" fill="currentColor" opacity=".5"></path></svg>
+</div>
+<div class="h-2 w-16 bg-white/80 rounded"></div>
+</div>
+<div class="w-4 h-4 bg-blue-400 rounded-full"></div>
+</div>
+<div class="grid grid-cols-3 gap-2 mb-3">
+<div class="bg-blue-400/10 border border-blue-400/20 rounded p-2 text-center">
+<svg aria-hidden="true" data-height="12" data-icon="solar:chat-round-bold-duotone" data-width="12" height="12" role="img" viewbox="0 0 24 24" width="12" xmlns="http://www.w3.org/2000/svg"><path d="M7.456 3.09A10 10 0 0 0 2 12c0 1.6.376 3.112 1.043 4.453c.178.356.237.764.134 1.148l-.595 2.226a1.3 1.3 0 0 0 1.591 1.592l2.226-.596a1.63 1.63 0 0 1 1.149.134A9.96 9.96 0 0 0 12 22c4.885 0 8.952-3.503 9.826-8.134A9 9 0 0 1 7.456 3.09" fill="currentColor"></path><path d="M21.826 13.866q.172-.909.174-1.866c0-5.523-4.477-10-10-10a9.96 9.96 0 0 0-4.544 1.09a9 9 0 0 0 14.37 10.776" fill="currentColor" opacity=".5"></path></svg>
+<div class="h-1 w-8 bg-blue-400 rounded mx-auto"></div>
+</div>
+<div class="bg-blue-400/10 border border-blue-400/20 rounded p-2 text-center">
+<svg aria-hidden="true" data-height="12" data-icon="solar:letter-bold-duotone" data-width="12" height="12" role="img" viewbox="0 0 24 24" width="12" xmlns="http://www.w3.org/2000/svg"><path d="M14.2 3H9.8C5.652 3 3.577 3 2.289 4.318S1 7.758 1 12s0 6.364 1.289 7.682S5.652 21 9.8 21h4.4c4.148 0 6.223 0 7.511-1.318S23 16.242 23 12s0-6.364-1.289-7.682S18.348 3 14.2 3" fill="currentColor" opacity=".5"></path><path d="M19.128 8.033a.825.825 0 0 0-1.056-1.268l-2.375 1.98c-1.026.855-1.738 1.447-2.34 1.833c-.582.375-.977.5-1.357.5s-.774-.125-1.357-.5c-.601-.386-1.314-.978-2.34-1.834L5.928 6.765a.825.825 0 0 0-1.056 1.268l2.416 2.014c.975.812 1.765 1.47 2.463 1.92c.726.466 1.434.762 2.25.762c.814 0 1.522-.296 2.249-.763c.697-.448 1.487-1.107 2.462-1.92z" fill="currentColor"></path></svg>
+<div class="h-1 w-6 bg-blue-400 rounded mx-auto"></div>
+</div>
+<div class="bg-blue-400/10 border border-blue-400/20 rounded p-2 text-center">
+<svg aria-hidden="true" data-height="12" data-icon="solar:monitor-bold-duotone" data-width="12" height="12" role="img" viewbox="0 0 24 24" width="12" xmlns="http://www.w3.org/2000/svg"><path d="M10 2h4c3.771 0 5.657 0 6.828 1.172S22 6.229 22 10v1c0 .552 0 1.55-.006 2H2.007C2 12.55 2 11.552 2 11v-1c0-3.771 0-5.657 1.172-6.828S6.229 2 10 2" fill="currentColor" opacity=".5"></path><path d="M7.985 17.5c-2.84 0-4.26 0-5.141-.879C2.272 16.052 2.07 15.258 2 14v-1h20v1c-.07 1.258-.272 2.052-.844 2.621c-.882.879-2.301.879-5.14.879h-3.263v4h3.262c.416 0 .753.336.753.75s-.337.75-.753.75h-8.03a.75.75 0 0 1-.753-.75c0-.414.337-.75.753-.75h3.262v-4z" fill="currentColor"></path></svg>
+<div class="h-1 w-10 bg-blue-400 rounded mx-auto"></div>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-2 mb-3">
+<div class="bg-blue-400/10 border border-blue-400/20 rounded p-2 text-center">
+<svg aria-hidden="true" data-height="12" data-icon="solar:chat-round-bold-duotone" data-width="12" height="12" role="img" viewbox="0 0 24 24" width="12" xmlns="http://www.w3.org/2000/svg"><path d="M7.456 3.09A10 10 0 0 0 2 12c0 1.6.376 3.112 1.043 4.453c.178.356.237.764.134 1.148l-.595 2.226a1.3 1.3 0 0 0 1.591 1.592l2.226-.596a1.63 1.63 0 0 1 1.149.134A9.96 9.96 0 0 0 12 22c4.885 0 8.952-3.503 9.826-8.134A9 9 0 0 1 7.456 3.09" fill="currentColor"></path><path d="M21.826 13.866q.172-.909.174-1.866c0-5.523-4.477-10-10-10a9.96 9.96 0 0 0-4.544 1.09a9 9 0 0 0 14.37 10.776" fill="currentColor" opacity=".5"></path></svg>
+<div class="h-1 w-8 bg-blue-400 rounded mx-auto"></div>
+</div>
+<div class="text-center bg-blue-400/10 border-blue-400/20 border rounded p-2">
+<svg aria-hidden="true" data-height="12" data-icon="solar:letter-bold-duotone" data-width="12" height="12" role="img" viewbox="0 0 24 24" width="12" xmlns="http://www.w3.org/2000/svg"><path d="M14.2 3H9.8C5.652 3 3.577 3 2.289 4.318S1 7.758 1 12s0 6.364 1.289 7.682S5.652 21 9.8 21h4.4c4.148 0 6.223 0 7.511-1.318S23 16.242 23 12s0-6.364-1.289-7.682S18.348 3 14.2 3" fill="currentColor" opacity=".5"></path><path d="M19.128 8.033a.825.825 0 0 0-1.056-1.268l-2.375 1.98c-1.026.855-1.738 1.447-2.34 1.833c-.582.375-.977.5-1.357.5s-.774-.125-1.357-.5c-.601-.386-1.314-.978-2.34-1.834L5.928 6.765a.825.825 0 0 0-1.056 1.268l2.416 2.014c.975.812 1.765 1.47 2.463 1.92c.726.466 1.434.762 2.25.762c.814 0 1.522-.296 2.249-.763c.697-.448 1.487-1.107 2.462-1.92z" fill="currentColor"></path></svg>
+<div class="h-1 w-6 bg-blue-400 rounded mx-auto"></div>
+</div>
+<div class="bg-blue-400/10 border border-blue-400/20 rounded p-2 text-center">
+<svg aria-hidden="true" data-height="12" data-icon="solar:monitor-bold-duotone" data-width="12" height="12" role="img" viewbox="0 0 24 24" width="12" xmlns="http://www.w3.org/2000/svg"><path d="M10 2h4c3.771 0 5.657 0 6.828 1.172S22 6.229 22 10v1c0 .552 0 1.55-.006 2H2.007C2 12.55 2 11.552 2 11v-1c0-3.771 0-5.657 1.172-6.828S6.229 2 10 2" fill="currentColor" opacity=".5"></path><path d="M7.985 17.5c-2.84 0-4.26 0-5.141-.879C2.272 16.052 2.07 15.258 2 14v-1h20v1c-.07 1.258-.272 2.052-.844 2.621c-.882.879-2.301.879-5.14.879h-3.263v4h3.262c.416 0 .753.336.753.75s-.337.75-.753.75h-8.03a.75.75 0 0 1-.753-.75c0-.414.337-.75.753-.75h3.262v-4z" fill="currentColor"></path></svg>
+<div class="h-1 w-10 bg-blue-400 rounded mx-auto"></div>
+</div>
+</div>
+</div>
+</div>
+<h3 class="mt-6 text-3xl sm:text-4xl text-white tracking-tighter">Deploy &amp; monitor</h3>
+<p class="mt-2 text-sm sm:text-base text-neutral-300 max-w-[52ch] tracking-tight">Your infrastructure is deployed globally with real-time monitoring and automatic optimization.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Services Section -->
+<section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-24 relative">
+<div class="rounded-3xl border-gradient p-6 sm:p-8 backdrop-blur" style="background:linear-gradient(225deg,rgba(255,255,255,0.0) 0%,rgba(255,255,255,0.05) 50%,rgba(255,255,255,0.0) 100%); border-radius: 24px;">
+<!-- Header -->
+<div class="flex gap-6 pr-1 pl-1 items-center [animation:fadeSlideIn_0.8s_ease-out_0.1s_both] animate-on-scroll animate">
+<span class="text-4xl text-white tracking-tighter">Services</span>
+<span aria-hidden="true" aria-orientation="vertical" class="w-px bg-white/10 h-10" role="separator"></span>
+<span class="text-sm text-neutral-300">what we offer</span>
+</div>
+<div class="h-px bg-white/10 mt-4"></div>
+<div class="grid grid-cols-1 lg:grid-cols-12 items-center gap-8 sm:gap-10 mt-6 sm:mt-8">
+<!-- Left content -->
+<div class="lg:col-span-6 [animation:fadeSlideIn_0.8s_ease-out_0.2s_both] animate-on-scroll animate">
+<h1 class="text-[44px] sm:text-6xl md:text-7xl leading-[1.05] text-zinc-100 tracking-tighter">Let's Build Something Extraordinary</h1>
+<div class="h-px bg-white/10 mt-6"></div>
+<div class="mt-6">
+<div class="flex items-center gap-3">
+<h3 class="text-2xl sm:text-3xl text-zinc-100 tracking-tighter">AI Infrastructure</h3>
+<span class="inline-flex items-center rounded-full px-3 py-1 text-sm text-zinc-200 bg-white/5 ring-1 ring-white/10 hover:bg-white/10 transition-colors duration-200" style="border-radius: 9999px;">Starting at $2,999</span>
+</div>
+<p class="text-zinc-400 text-sm sm:text-base mt-3">Building scalable AI-powered platforms that adapt and grow with your business</p>
+</div>
+<div class="h-px bg-white/10 mt-6"></div>
+<div class="mt-6">
+<div class="flex items-center gap-3">
+<h3 class="text-2xl sm:text-3xl text-zinc-100 tracking-tighter">Edge Computing</h3>
+<span class="inline-flex items-center rounded-full px-3 py-1 text-sm text-zinc-200 bg-white/5 ring-1 ring-white/10 hover:bg-white/10 transition-colors duration-200" style="border-radius: 9999px;">Starting at $5,999</span>
+</div>
+<p class="text-zinc-400 text-sm sm:text-base mt-3">Global edge infrastructure for lightning-fast delivery and unmatched performance.</p>
+</div>
+<div class="flex gap-6 mt-8 items-center flex-wrap">
+<a class="group inline-flex items-center gap-2 hover:opacity-90 transition-opacity border-gradient text-sm font-medium text-black bg-gradient-to-r from-blue-400 via-blue-400 to-blue-300 rounded-full pt-2.5 pr-5 pb-2.5 pl-5 shadow-[0_8px_30px_rgba(59,130,246,0.25)]" href="#" style="border-radius: 9999px">View Work</a>
+<button class="inline-flex border-gradient hover:text-white transition-all hover:-translate-y-0.5 text-sm font-medium text-white/80 bg-white/5 rounded-full pt-3 pr-5 pb-3 pl-5 backdrop-blur-xl gap-x-2 gap-y-2 items-center" style="border-radius: 9999px">
+<svg aria-hidden="true" data-height="16" data-icon="solar:play-circle-bold-duotone" data-width="16" height="16" role="img" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path clip-rule="evenodd" d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2S2 6.477 2 12s4.477 10 10 10" fill="currentColor" fill-rule="evenodd" opacity=".5"></path><path d="m15.414 13.059l-4.72 2.787C9.934 16.294 9 15.71 9 14.786V9.214c0-.924.934-1.507 1.694-1.059l4.72 2.787c.781.462.781 1.656 0 2.118" fill="currentColor"></path></svg>
+            Watch demo
+          </button>
+</div>
+</div>
+<!-- Right showcase -->
+<div class="lg:col-span-6 [animation:fadeSlideIn_0.8s_ease-out_0.3s_both] animate-on-scroll animate">
+<div class="relative mx-auto w-full max-w-[860px]" style="filter: drop-shadow(0 20px 60px rgba(0,0,0,0.6));">
+<div class="rounded-[28px] bg-neutral-900/60 ring-1 ring-white/10 p-3">
+<div class="relative overflow-hidden rounded-[22px] bg-neutral-950 border border-white/10">
+<div class="flex items-center gap-2 px-4 py-3 border-b border-white/10">
+<span class="h-3 w-3 rounded-full bg-zinc-700"></span>
+<span class="h-3 w-3 rounded-full bg-zinc-700/70"></span>
+<span class="h-3 w-3 rounded-full bg-zinc-700/50"></span>
+</div>
+<div class="p-4 sm:p-6">
+<div class="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+<div class="relative overflow-hidden rounded-xl border border-white/10 bg-neutral-900 hover:scale-105 transition-transform duration-300">
+<img alt="Project" class="w-full h-full object-cover opacity-90" src="assets/60ce3768-2f2c-44d1-a27e-eeed66_c1e9f78937c0.webp"/>
+<div class="absolute inset-0 bg-gradient-to-b from-black/0 via-black/20 to-black/50"></div>
+</div>
+<div class="relative overflow-hidden rounded-xl border border-white/10 bg-neutral-900 hover:scale-105 transition-transform duration-300">
+<img alt="Project" class="w-full h-full object-cover opacity-90" src="assets/29c82139-abf4-41db-815e-796411_5191d81a2105.webp"/>
+<div class="absolute inset-0 bg-gradient-to-b from-black/0 via-black/20 to-black/50"></div>
+</div>
+<div class="relative overflow-hidden rounded-xl border border-white/10 bg-neutral-900 md:row-span-2 hover:scale-105 transition-transform duration-300">
+<img alt="Project" class="w-full h-full object-cover opacity-90" src="assets/9b8cd27e-1b06-4e82-ac51-1f7e26_f108bb5cca57.webp"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"></div>
+</div>
+<div class="relative overflow-hidden rounded-xl border border-white/10 bg-neutral-900 hover:scale-105 transition-transform duration-300">
+<img alt="Project" class="w-full h-full object-cover opacity-90" src="assets/0ed12d3f-3fa4-43a9-a33e-214e46_5189ac8f96bf.webp"/>
+<div class="absolute inset-0 bg-gradient-to-b from-black/0 via-black/20 to-black/50"></div>
+</div>
+<div class="relative overflow-hidden rounded-xl border border-white/10 bg-neutral-900 hover:scale-105 transition-transform duration-300">
+<img alt="Project" class="w-full h-full object-cover opacity-90" src="assets/44d41d4e-32d5-4432-bf2b-95b01b_b958f89073af.webp"/>
+<div class="absolute inset-0 bg-gradient-to-b from-black/0 via-black/20 to-black/50"></div>
+</div>
+</div>
+</div>
+<div class="pointer-events-none absolute -right-24 bottom-0 w-72 h-72 rounded-full bg-white/10 blur-3xl"></div>
+<div class="pointer-events-none absolute -left-24 -top-24 w-80 h-80 rounded-full bg-white/5 blur-3xl"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-32 mb-16">
+<div class="rounded-3xl border-gradient p-8 sm:p-12 backdrop-blur" style="background:linear-gradient(225deg,rgba(255,255,255,0.0) 0%,rgba(255,255,255,0.05) 50%,rgba(255,255,255,0.0) 100%); border-radius: 24px;">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+<!-- Brand -->
+<div class="md:col-span-1">
+<a class="flex items-center gap-3 mb-4" href="#">
+<span class="inline-flex items-center justify-center bg-white/10 w-9 h-9 rounded-full backdrop-blur border-gradient" style="border-radius: 9999px;">
+<svg aria-hidden="true" data-height="16" data-icon="solar:star-fall-minimalistic-2-bold-duotone" data-width="16" height="16" role="img" style="color: rgb(255, 255, 255);" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M11.811 6.727C12.825 4.909 13.331 4 14.09 4c.757 0 1.264.909 2.277 2.727l.262.47c.288.517.432.775.657.945c.224.17.504.234 1.063.36l.51.116c1.967.445 2.95.667 3.185 1.42s-.437 1.537-1.778 3.106l-.347.406c-.381.445-.572.668-.658.944s-.057.573 0 1.168l.053.541c.203 2.094.305 3.14-.308 3.605s-1.534.041-3.377-.807l-.476-.22c-.524-.24-.786-.361-1.063-.361c-.278 0-.54.12-1.063.361l-.477.22c-1.842.848-2.763 1.272-3.376.807s-.511-1.511-.309-3.605l.053-.541c.057-.595.086-.892 0-1.168s-.276-.498-.657-.944l-.347-.406C6.57 11.575 5.9 10.79 6.135 10.038s1.218-.975 3.185-1.42l.51-.116c.559-.126.838-.19 1.063-.36s.368-.428.656-.945z" fill="currentColor"></path><path clip-rule="evenodd" d="M8.745 5.202c-1.981-.57-4.107-.269-6.158.932l-.208.122a.75.75 0 0 1-.758-1.294l.208-.122C4.19 3.457 6.737 3.063 9.161 3.76l.208.06a.75.75 0 0 1-.416 1.441zM4.836 9.936a.75.75 0 0 1-.683.811c-.154.014-.27.02-.37.027a3 3 0 0 0-.444.048c-.196.038-.452.117-.915.349a.75.75 0 1 1-.67-1.342c.537-.268.926-.408 1.302-.48c.247-.048.502-.064.731-.08l.238-.016a.75.75 0 0 1 .811.683m1.082 5.92a3.99 3.99 0 0 0-3.365.733a.75.75 0 1 1-.928-1.178a5.49 5.49 0 0 1 4.635-1.015a.75.75 0 0 1-.342 1.46" fill="currentColor" fill-rule="evenodd" opacity=".5"></path></svg>
+</span>
+<span class="text-lg font-semibold tracking-tight">Fluxora</span>
+</a>
+<p class="text-sm text-neutral-400 max-w-xs">Powering the next wave of AI‑driven products with intelligent infrastructure.</p>
+</div>
+<!-- Links -->
+<div>
+<h4 class="text-sm font-semibold text-white mb-4">Platform</h4>
+<ul class="space-y-3 text-sm text-neutral-400">
+<li><a class="hover:text-white transition-colors" href="#">Features</a></li>
+<li><a class="hover:text-white transition-colors" href="#">Pricing</a></li>
+<li><a class="hover:text-white transition-colors" href="#">Security</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-sm font-semibold text-white mb-4">Resources</h4>
+<ul class="space-y-3 text-sm text-neutral-400">
+<li><a class="hover:text-white transition-colors" href="#">Documentation</a></li>
+<li><a class="hover:text-white transition-colors" href="#">API Reference</a></li>
+<li><a class="hover:text-white transition-colors" href="#">Guides</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-sm font-semibold text-white mb-4">Company</h4>
+<ul class="space-y-3 text-sm text-neutral-400">
+<li><a class="hover:text-white transition-colors" href="#">About</a></li>
+<li><a class="hover:text-white transition-colors" href="#">Blog</a></li>
+<li><a class="hover:text-white transition-colors" href="#">Careers</a></li>
+</ul>
+</div>
+</div>
+<div class="h-px bg-white/10 my-8"></div>
+<div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+<p class="text-sm text-neutral-400">© 2024 Fluxora. All rights reserved.</p>
+<div class="flex items-center gap-6">
+<a class="text-neutral-400 hover:text-white transition-colors" href="#">
+<span class="iconify" data-height="20" data-icon="solar:twitter-bold-duotone" data-width="20"></span>
+</a>
+<a class="text-neutral-400 hover:text-white transition-colors" href="#">
+<span class="iconify" data-height="20" data-icon="solar:github-bold-duotone" data-width="20"></span>
+</a>
+<a class="text-neutral-400 hover:text-white transition-colors" href="#">
+<span class="iconify" data-height="20" data-icon="solar:linkedin-bold-duotone" data-width="20"></span>
+</a>
+</div>
+</div>
+</div>
+</footer>
+</main>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Testimonial switcher
+    const testimonials = document.querySelectorAll('[data-testimonial-index]');
+    const quoteEl = document.getElementById('testimonial-quote');
+    const authorEl = document.getElementById('testimonial-author');
+
+    testimonials.forEach(function(thumbnail) {
+      thumbnail.addEventListener('click', function() {
+        testimonials.forEach(function(t) {
+          const isActive = t.getAttribute('data-active') === 'true';
+          t.removeAttribute('data-active');
+          
+          if (isActive) {
+            t.classList.remove('h-14', 'w-14', 'sm:h-16', 'sm:w-16', 'ring-2', 'ring-white/20', 'shadow-lg');
+            t.classList.add('h-12', 'w-12', 'sm:h-14', 'sm:w-14', 'ring-1', 'ring-white/10', 'opacity-40', 'grayscale');
+          }
+        });
+
+        thumbnail.setAttribute('data-active', 'true');
+        thumbnail.classList.remove('h-12', 'w-12', 'sm:h-14', 'sm:w-14', 'ring-1', 'ring-white/10', 'opacity-40', 'grayscale');
+        thumbnail.classList.add('h-14', 'w-14', 'sm:h-16', 'sm:w-16', 'ring-2', 'ring-white/20', 'shadow-lg');
+
+        quoteEl.style.opacity = '0';
+        authorEl.style.opacity = '0';
+
+        setTimeout(function() {
+          var quote = thumbnail.getAttribute('data-testimonial-quote');
+          var name = thumbnail.getAttribute('data-testimonial-name');
+          var role = thumbnail.getAttribute('data-testimonial-role');
+
+          quoteEl.querySelector('p').innerHTML = quote;
+          authorEl.querySelector('p').innerHTML = name + ' <span class="text-slate-400 font-normal">' + role + '</span>';
+
+          quoteEl.style.opacity = '1';
+          authorEl.style.opacity = '1';
+        }, 250);
+      });
+    });
+
+    // Chart
+    const ctx = document.getElementById('successChart');
+    if (ctx) {
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
+          datasets: [{
+            label: 'Success',
+            data: [92, 96, 98, 97, 99, 98, 97],
+            backgroundColor: ['#3b82f6','#3b82f6','#3b82f6','#3b82f6','#3b82f6','#3b82f6','#3b82f6'],
+            borderRadius: 6,
+            borderSkipped: false,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: 'rgba(17,17,17,0.9)',
+              titleColor: '#fff',
+              bodyColor: '#d1d5db',
+              padding: 10,
+              displayColors: false
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { color: '#9ca3af', font: { family: 'Inter', weight: '500' } }
+            },
+            y: {
+              grid: { color: 'rgba(255,255,255,0.08)' },
+              ticks: { color: '#9ca3af', font: { family: 'Inter', weight: '500' }, stepSize: 20, callback: (v) => v + '%' },
+              min: 60,
+              max: 100
+            }
+          }
+        }
+      });
+    }
+  });
+</script>
+<script data-img-fallback-handler="">!function(){var f=["https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/917d6f93-fb36-439a-8c48-884b67b35381_1600w.jpg","https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/4734259a-bad7-422f-981e-ce01e79184f2_1600w.jpg","https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/c543a9e1-f226-4ced-80b0-feb8445a75b9_1600w.jpg","https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/5bab247f-35d9-400d-a82b-fd87cfe913d2_1600w.webp","https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/30104e3c-5eea-4b93-93e9-5313698a7156_1600w.webp"],h=new Set;function g(s){for(var x=0,i=0;i<s.length;i++)x=(x<<5)-x+s.charCodeAt(i)|0;return f[Math.abs(x)%f.length]}function r(t){var s=t.src;if(s&&!h.has(s)){h.add(s);t.src=g(s)}}window.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG")r(t)},!0);function c(){document.querySelectorAll("img").forEach(function(i){if(i.complete&&!i.naturalWidth&&i.src)r(i)})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",c);else c()}()</script></body></html>

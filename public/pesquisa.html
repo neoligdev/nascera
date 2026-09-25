@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <title>Pesquisa Nascera</title>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box}
+    body{font-family:Inter,ui-sans-serif,system-ui,sans-serif;margin:0;height:100vh;overflow:hidden}
+    .border-gradient{position:relative}
+    .border-gradient::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;background:linear-gradient(225deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.15) 50%,rgba(255,255,255,0) 100%);pointer-events:none}
+    @keyframes fadeUp{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:translateY(0)}}.fade-in{animation:fadeUp .35s ease-out both}
+    @keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.3}}.pulse-dot{animation:pulse-dot 1.2s ease-in-out infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}.spinner{animation:spin .8s linear infinite}
+    @keyframes scan{0%{background-position:200% 0}100%{background-position:-200% 0}}.scan-line{background:linear-gradient(90deg,transparent 30%,rgba(59,130,246,.08) 50%,transparent 70%);background-size:200% 100%;animation:scan 2s linear infinite}
+    ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.06);border-radius:2px}
+    .mod-node{transition:all .2s ease;cursor:pointer}.mod-node:hover{transform:translateY(-1px)}
+    .expand-panel{position:fixed;right:0;top:56px;bottom:0;width:520px;max-width:92vw;background:rgba(10,10,10,.97);backdrop-filter:blur(24px);border-left:1px solid rgba(255,255,255,.08);z-index:40;transform:translateX(100%);transition:transform .3s ease;overflow-y:auto}.expand-panel.open{transform:translateX(0)}
+    .prose h2{font-size:1.05rem;font-weight:700;margin:1rem 0 .5rem;color:#fff}.prose h3{font-size:.9rem;font-weight:600;margin:.7rem 0 .3rem;color:#d4d4d4}.prose p{margin:.3rem 0;line-height:1.55;font-size:.82rem}.prose ul,.prose ol{margin:.3rem 0;padding-left:1.2rem}.prose li{margin:.15rem 0;line-height:1.45;font-size:.8rem}.prose table{width:100%;border-collapse:collapse;margin:.4rem 0;font-size:.78rem}.prose th,.prose td{border:1px solid rgba(255,255,255,.1);padding:4px 8px;text-align:left}.prose th{background:rgba(255,255,255,.05);font-weight:600}.prose strong{color:#fff}
+    .progress-ring{transition:stroke-dashoffset .3s ease}
+  </style>
+</head>
+<body class="bg-neutral-950 text-white antialiased">
+  <div class="fixed inset-0 -z-10 bg-neutral-950">
+    <div class="absolute inset-0 opacity-[0.03]"><svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg"><defs><pattern height="64" id="grid" patternUnits="userSpaceOnUse" width="64"><path d="M64 0H0v64" fill="none" stroke="white" stroke-width=".5"/></pattern></defs><rect fill="url(#grid)" height="100%" width="100%"/></svg></div>
+    <div class="pointer-events-none fixed -top-32 -left-32 h-[500px] w-[500px] rounded-full bg-blue-500/[0.05] blur-3xl"></div>
+    <div class="pointer-events-none fixed -bottom-32 -right-32 h-[400px] w-[400px] rounded-full bg-cyan-400/[0.04] blur-3xl"></div>
+  </div>
+
+  <header class="sticky top-0 z-30 border-b border-white/5 bg-neutral-950/80 backdrop-blur-xl">
+    <div class="max-w-full mx-auto px-6 h-14 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="/home.html" class="text-neutral-500 hover:text-white transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg></a>
+        <div class="flex items-center gap-2">
+          <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          <h1 class="text-base font-semibold">Pesquisa Nascera</h1>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="text-[10px] text-neutral-600 mr-2" id="statsBar"></div>
+        <button onclick="showHistory()" class="text-xs text-neutral-500 hover:text-white transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-white/5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Historico
+        </button>
+        <button onclick="resetToInput()" class="text-xs font-medium px-4 py-1.5 rounded-lg bg-white text-black hover:bg-neutral-200 transition-colors">Nova Pesquisa</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="h-[calc(100vh-56px)] overflow-auto p-6" id="mainContent">
+    <!-- INPUT VIEW -->
+    <div id="viewInput" class="fade-in">
+      <div class="max-w-lg mx-auto mt-8">
+        <div class="text-center mb-8">
+          <div class="w-16 h-16 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          </div>
+          <h2 class="text-xl font-bold mb-1">Raio X Completo</h2>
+          <p class="text-neutral-500 text-xs">Pesquisa profunda em todas as fontes disponiveis</p>
+        </div>
+        <div class="space-y-3">
+          <div>
+            <label class="block text-[10px] font-medium text-neutral-400 mb-1.5 uppercase tracking-wider">Nome Completo *</label>
+            <input id="inName" type="text" placeholder="Nome completo da pessoa" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-blue-500/30 transition-all"/>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[10px] font-medium text-neutral-400 mb-1.5 uppercase tracking-wider">CPF (opcional)</label>
+              <input id="inCPF" type="text" placeholder="000.000.000-00" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-blue-500/30 transition-all"/>
+            </div>
+            <div>
+              <label class="block text-[10px] font-medium text-neutral-400 mb-1.5 uppercase tracking-wider">CNPJ (opcional)</label>
+              <input id="inCNPJ" type="text" placeholder="00.000.000/0001-00" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-blue-500/30 transition-all"/>
+            </div>
+          </div>
+          <div>
+            <label class="block text-[10px] font-medium text-neutral-400 mb-1.5 uppercase tracking-wider">Instagram (opcional)</label>
+            <input id="inInsta" type="text" placeholder="@usuario" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-blue-500/30 transition-all"/>
+          </div>
+          <div>
+            <label class="block text-[10px] font-medium text-neutral-400 mb-1.5 uppercase tracking-wider">Informacoes Extras (opcional)</label>
+            <textarea id="inExtra" rows="2" placeholder="Cidade, profissao, empresa, qualquer info que ajude a refinar..." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-blue-500/30 transition-all resize-y"></textarea>
+          </div>
+          <button onclick="startResearch()" id="btnStart" class="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold text-sm hover:from-blue-500 hover:to-cyan-500 transition-all flex items-center justify-center gap-2 mt-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+            Iniciar Raio X
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESEARCH VIEW (nodes grid) -->
+    <div id="viewResearch" class="hidden fade-in">
+      <!-- Target name -->
+      <div class="text-center mb-6">
+        <h2 class="text-lg font-bold" id="targetName"></h2>
+        <p class="text-xs text-neutral-500" id="targetStatus">Pesquisando...</p>
+      </div>
+
+      <!-- Module Nodes Grid -->
+      <div class="max-w-5xl mx-auto">
+        <!-- Category: Web -->
+        <div class="mb-4">
+          <div class="text-[10px] uppercase tracking-wider text-neutral-600 font-medium mb-2 px-1">Web</div>
+          <div class="grid grid-cols-3 gap-3" id="gridWeb"></div>
+        </div>
+        <!-- Category: Social -->
+        <div class="mb-4">
+          <div class="text-[10px] uppercase tracking-wider text-neutral-600 font-medium mb-2 px-1">Redes Sociais</div>
+          <div class="grid grid-cols-5 gap-3" id="gridSocial"></div>
+        </div>
+        <!-- Category: Legal -->
+        <div class="mb-4">
+          <div class="text-[10px] uppercase tracking-wider text-neutral-600 font-medium mb-2 px-1">Juridico</div>
+          <div class="grid grid-cols-4 gap-3" id="gridLegal"></div>
+        </div>
+        <!-- Category: Business -->
+        <div class="mb-4">
+          <div class="text-[10px] uppercase tracking-wider text-neutral-600 font-medium mb-2 px-1">Empresarial</div>
+          <div class="grid grid-cols-3 gap-3" id="gridBusiness"></div>
+        </div>
+
+        <!-- AI Analysis Node -->
+        <div class="mt-6">
+          <div class="border-gradient rounded-2xl bg-white/[0.03] p-5 cursor-pointer hover:bg-white/[0.05] transition-all" onclick="openPanel('analysis')" id="nodeAnalysis">
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-10 h-10 rounded-xl bg-blue-500/15 flex items-center justify-center">
+                <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z"/></svg>
+              </div>
+              <div>
+                <div class="text-sm font-semibold text-blue-400">Analise IA — Raio X</div>
+                <div class="text-[10px] text-neutral-500" id="analysisStatus">Aguardando dados...</div>
+              </div>
+            </div>
+            <div class="prose text-[11px] text-neutral-400 max-h-40 overflow-hidden" id="analysisPreview"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Expand Panel -->
+  <div class="expand-panel" id="expandPanel">
+    <div class="p-5">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-2.5" id="panelHeader"></div>
+        <button onclick="closePanel()" class="text-neutral-500 hover:text-white p-1"><svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+      </div>
+      <div class="prose text-sm text-neutral-300" id="panelContent"></div>
+    </div>
+  </div>
+
+  <!-- History Modal -->
+  <div id="historyModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeHistory()"></div>
+    <div class="relative w-full max-w-xl max-h-[70vh] overflow-y-auto bg-neutral-900 border border-white/10 rounded-2xl p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-semibold">Historico</h3>
+        <button onclick="closeHistory()" class="text-neutral-500 hover:text-white"><svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+      </div>
+      <div id="historyList" class="space-y-3"></div>
+    </div>
+  </div>
+
+<script>
+const MODULES = {
+  google_web:    { name:'Google Web',       color:'#60a5fa', cat:'web' },
+  google_news:   { name:'Noticias',         color:'#34d399', cat:'web' },
+  google_images: { name:'Imagens',          color:'#c084fc', cat:'web' },
+  instagram:     { name:'Instagram',        color:'#f472b6', cat:'social' },
+  facebook:      { name:'Facebook',         color:'#60a5fa', cat:'social' },
+  linkedin:      { name:'LinkedIn',         color:'#22d3ee', cat:'social' },
+  twitter:       { name:'Twitter/X',        color:'#a3a3a3', cat:'social' },
+  tiktok:        { name:'TikTok',           color:'#f472b6', cat:'social' },
+  jusbrasil:     { name:'JusBrasil',        color:'#fbbf24', cat:'legal' },
+  escavador:     { name:'Escavador',        color:'#fbbf24', cat:'legal' },
+  datajud:       { name:'DataJud CNJ',      color:'#f87171', cat:'legal' },
+  court_google:  { name:'Processos',        color:'#fbbf24', cat:'legal' },
+  empresas:      { name:'Empresas/CNPJ',    color:'#22d3ee', cat:'business' },
+};
+
+let token = localStorage.getItem('nascera_token') || localStorage.getItem('fluxora_token');
+if (!token) window.location.href = '/';
+
+let currentResearchId = null;
+let ws = null;
+let moduleData = {};
+let analysisContent = '';
+
+document.addEventListener('DOMContentLoaded', () => {
+  const hash = window.location.hash.slice(1);
+  if (hash) loadExisting(hash);
+});
+
+// ─── Build Module Nodes ─────────────────────────────────────────────
+function buildNodes() {
+  const grids = { web: 'gridWeb', social: 'gridSocial', legal: 'gridLegal', business: 'gridBusiness' };
+  for (const g of Object.values(grids)) document.getElementById(g).innerHTML = '';
+
+  for (const [id, mod] of Object.entries(MODULES)) {
+    const gridId = grids[mod.cat];
+    const grid = document.getElementById(gridId);
+    moduleData[id] = { status: 'pending', count: 0, results: null };
+
+    const node = document.createElement('div');
+    node.className = 'mod-node border-gradient rounded-xl bg-white/[0.03] p-3';
+    node.id = `mod-${id}`;
+    node.onclick = () => openModule(id);
+    node.innerHTML = `
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="w-6 h-6 rounded-lg flex items-center justify-center" style="background:${mod.color}15">
+          <div class="w-2 h-2 rounded-full" style="background:${mod.color}" id="dot-${id}"></div>
+        </div>
+        <span class="text-[10px] font-mono text-neutral-600" id="count-${id}">—</span>
+      </div>
+      <div class="text-[11px] font-medium" style="color:${mod.color}">${mod.name}</div>
+      <div class="text-[9px] text-neutral-600 mt-0.5" id="modstatus-${id}">Aguardando</div>`;
+    grid.appendChild(node);
+  }
+}
+
+function updateModuleNode(id, status, count) {
+  const dot = document.getElementById(`dot-${id}`);
+  const countEl = document.getElementById(`count-${id}`);
+  const statusEl = document.getElementById(`modstatus-${id}`);
+  const node = document.getElementById(`mod-${id}`);
+  if (!dot) return;
+
+  moduleData[id].status = status;
+  moduleData[id].count = count || 0;
+
+  if (status === 'searching') {
+    dot.className = 'w-2 h-2 rounded-full pulse-dot';
+    statusEl.textContent = 'Buscando...';
+    if (node) node.classList.add('scan-line');
+  } else if (status === 'done') {
+    dot.style.background = '#34d399';
+    dot.className = 'w-2 h-2 rounded-full';
+    countEl.textContent = count || 0;
+    statusEl.textContent = count ? `${count} resultado${count > 1 ? 's' : ''}` : 'Nenhum';
+    if (node) node.classList.remove('scan-line');
+  } else if (status === 'error') {
+    dot.style.background = '#f87171';
+    dot.className = 'w-2 h-2 rounded-full';
+    statusEl.textContent = 'Erro';
+    if (node) node.classList.remove('scan-line');
+  }
+
+  updateStats();
+}
+
+function updateStats() {
+  const mods = Object.values(moduleData);
+  const done = mods.filter(m => m.status === 'done' || m.status === 'error').length;
+  const total = mods.length;
+  const results = mods.reduce((s, m) => s + (m.count || 0), 0);
+  document.getElementById('statsBar').textContent = `${done}/${total} modulos | ${results} resultados`;
+}
+
+// ─── Start Research ─────────────────────────────────────────────────
+async function startResearch() {
+  const name = document.getElementById('inName').value.trim();
+  if (!name) return alert('Informe o nome');
+
+  const btn = document.getElementById('btnStart');
+  btn.disabled = true;
+  btn.innerHTML = '<svg class="w-5 h-5 spinner" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-opacity=".3"/><path d="M12 2a10 10 0 019.95 9"/></svg> Iniciando...';
+
+  try {
+    const res = await fetch('/api/pesquisa/research', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({
+        name,
+        cpf: document.getElementById('inCPF').value.trim(),
+        cnpj: document.getElementById('inCNPJ').value.trim(),
+        instagram: document.getElementById('inInsta').value.trim(),
+        extraInfo: document.getElementById('inExtra').value.trim(),
+      }),
+    });
+    if (!res.ok) { const e = await res.json(); throw new Error(e.error); }
+    const data = await res.json();
+    currentResearchId = data.researchId;
+    window.location.hash = currentResearchId;
+
+    showResearchView(name);
+    connectWS();
+  } catch (err) {
+    alert(err.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg> Iniciar Raio X';
+  }
+}
+
+function showResearchView(name) {
+  document.getElementById('viewInput').classList.add('hidden');
+  document.getElementById('viewResearch').classList.remove('hidden');
+  document.getElementById('targetName').textContent = name;
+  buildNodes();
+}
+
+// ─── Load Existing ──────────────────────────────────────────────────
+async function loadExisting(id) {
+  try {
+    const res = await fetch(`/api/pesquisa/research/${id}`, { headers: { 'Authorization': 'Bearer ' + token } });
+    if (!res.ok) return;
+    const r = await res.json();
+    currentResearchId = id;
+    showResearchView(r.inputs.name);
+
+    // Populate existing data
+    for (const [modId, mod] of Object.entries(r.modules)) {
+      moduleData[modId] = { status: mod.status, count: mod.count, results: mod.results };
+      updateModuleNode(modId, mod.status, mod.count);
+    }
+
+    if (r.analysis && r.analysis.content) {
+      analysisContent = r.analysis.content;
+      document.getElementById('analysisPreview').innerHTML = marked.parse(analysisContent.substring(0, 500));
+      document.getElementById('analysisStatus').textContent = r.analysis.status === 'done' ? 'Concluido' : 'Em andamento';
+    }
+
+    if (r.status === 'completed') {
+      document.getElementById('targetStatus').textContent = 'Pesquisa concluida';
+    } else if (['running', 'analyzing'].includes(r.status)) {
+      connectWS();
+    }
+  } catch { /* ignore */ }
+}
+
+// ─── WebSocket ──────────────────────────────────────────────────────
+function connectWS() {
+  if (ws) ws.close();
+  const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+  ws = new WebSocket(`${proto}://${location.host}/ws?token=${token}`);
+  ws.onopen = () => ws.send(JSON.stringify({ type: 'pesq:subscribe', researchId: currentResearchId }));
+  ws.onmessage = (evt) => { try { handleMsg(JSON.parse(evt.data)); } catch {} };
+  ws.onclose = () => { if (currentResearchId) setTimeout(() => { if (currentResearchId) connectWS(); }, 3000); };
+}
+
+function handleMsg(msg) {
+  switch (msg.type) {
+    case 'pesq:module:start':
+      updateModuleNode(msg.moduleId, 'searching');
+      break;
+    case 'pesq:module:done':
+      updateModuleNode(msg.moduleId, 'done', msg.count);
+      break;
+    case 'pesq:module:error':
+      updateModuleNode(msg.moduleId, 'error');
+      break;
+    case 'pesq:phase':
+      if (msg.phase === 'analyzing') {
+        document.getElementById('targetStatus').textContent = 'Analisando com IA...';
+        document.getElementById('analysisStatus').textContent = 'Gerando Raio X...';
+        document.getElementById('nodeAnalysis').classList.add('scan-line');
+      }
+      break;
+    case 'pesq:analysis:stream':
+      analysisContent += msg.chunk;
+      document.getElementById('analysisPreview').innerHTML = marked.parse(analysisContent.substring(0, 500) + '...');
+      break;
+    case 'pesq:analysis:done':
+      analysisContent = msg.content;
+      document.getElementById('analysisPreview').innerHTML = marked.parse(analysisContent.substring(0, 500));
+      document.getElementById('analysisStatus').textContent = 'Concluido';
+      document.getElementById('nodeAnalysis').classList.remove('scan-line');
+      break;
+    case 'pesq:complete':
+      document.getElementById('targetStatus').textContent = 'Pesquisa concluida';
+      break;
+    case 'pesq:state':
+      if (msg.research) {
+        for (const [modId, mod] of Object.entries(msg.research.modules)) {
+          moduleData[modId] = { status: mod.status, count: mod.count, results: mod.results };
+          updateModuleNode(modId, mod.status, mod.count);
+        }
+      }
+      break;
+    case 'ready': case 'pong': break;
+  }
+}
+
+// ─── Panel ──────────────────────────────────────────────────────────
+function openModule(id) {
+  const mod = MODULES[id];
+  const data = moduleData[id];
+  if (!data || !data.results) return;
+
+  document.getElementById('panelHeader').innerHTML = `
+    <div class="w-8 h-8 rounded-xl flex items-center justify-center" style="background:${mod.color}15">
+      <div class="w-3 h-3 rounded-full" style="background:${mod.color}"></div>
+    </div>
+    <div><div class="text-sm font-semibold" style="color:${mod.color}">${mod.name}</div>
+    <div class="text-[10px] text-neutral-500">${data.count} resultados</div></div>`;
+
+  let html = '';
+  const r = data.results;
+  if (Array.isArray(r)) {
+    for (const item of r) {
+      html += `<div class="mb-3 p-2 rounded-lg bg-white/[0.03]">
+        <div class="text-xs font-medium text-white">${item.title || ''}</div>
+        ${item.link ? `<a href="${item.link}" target="_blank" class="text-[10px] text-blue-400 break-all">${item.link}</a>` : ''}
+        ${item.snippet ? `<p class="text-[10px] text-neutral-500 mt-1">${item.snippet}</p>` : ''}
+        ${item.url && !item.link ? `<img src="${item.url}" class="mt-1 rounded max-h-24 object-cover" onerror="this.style.display='none'"/>` : ''}
+      </div>`;
+    }
+  } else if (r.items) {
+    for (const item of r.items) {
+      html += `<div class="mb-3 p-2 rounded-lg bg-white/[0.03]">`;
+      if (item.numero) {
+        html += `<div class="text-xs font-medium text-white">[${item.tribunal}] ${item.numero}</div>
+          <div class="text-[10px] text-neutral-400">${item.classe || ''} — ${item.assuntos || ''}</div>
+          <div class="text-[10px] text-neutral-600">${item.dataAjuizamento || ''} | ${item.orgaoJulgador || ''}</div>`;
+        if (item.movimentos?.length) {
+          html += '<div class="mt-1">';
+          for (const m of item.movimentos) html += `<div class="text-[9px] text-neutral-600">• ${m.nome} (${m.data || ''})</div>`;
+          html += '</div>';
+        }
+      } else {
+        html += `<div class="text-xs font-medium text-white">${item.title || ''}</div>
+          ${item.link ? `<a href="${item.link}" target="_blank" class="text-[10px] text-blue-400 break-all">${item.link}</a>` : ''}
+          ${item.snippet ? `<p class="text-[10px] text-neutral-500 mt-1">${item.snippet}</p>` : ''}`;
+      }
+      html += '</div>';
+    }
+  } else if (r.profiles) {
+    for (const p of r.profiles) {
+      html += `<div class="mb-3 p-2 rounded-lg bg-white/[0.03]">
+        <div class="text-xs font-medium text-white">${p.name || ''} ${p.handle ? '<span class="text-neutral-500">@' + p.handle + '</span>' : ''}</div>
+        ${p.url ? `<a href="${p.url}" target="_blank" class="text-[10px] text-blue-400 break-all">${p.url}</a>` : ''}
+        ${p.headline ? `<p class="text-[10px] text-neutral-500 mt-1">${p.headline}</p>` : ''}
+      </div>`;
+    }
+  } else if (r.found && r.profile) {
+    const p = r.profile;
+    html += `<div class="text-center mb-3">${p.profilePic ? `<img src="${p.profilePic}" class="w-16 h-16 rounded-full mx-auto mb-2"/>` : ''}
+      <div class="text-sm font-semibold">${p.name || ''}</div>
+      <div class="text-[10px] text-neutral-500">@${p.username}</div></div>
+      <div class="grid grid-cols-3 gap-2 mb-3">
+        <div class="text-center p-2 rounded-lg bg-white/5"><div class="text-sm font-bold">${p.followers || '?'}</div><div class="text-[9px] text-neutral-600">Seguidores</div></div>
+        <div class="text-center p-2 rounded-lg bg-white/5"><div class="text-sm font-bold">${p.following || '?'}</div><div class="text-[9px] text-neutral-600">Seguindo</div></div>
+        <div class="text-center p-2 rounded-lg bg-white/5"><div class="text-sm font-bold">${p.posts || '?'}</div><div class="text-[9px] text-neutral-600">Posts</div></div>
+      </div>
+      <p class="text-xs text-neutral-400">${(p.bio || '').substring(0, 300)}</p>`;
+  }
+
+  if (!html) html = '<p class="text-neutral-500 text-sm">Sem detalhes disponiveis</p>';
+  document.getElementById('panelContent').innerHTML = html;
+  document.getElementById('expandPanel').classList.add('open');
+}
+
+function openPanel(type) {
+  if (type === 'analysis' && analysisContent) {
+    document.getElementById('panelHeader').innerHTML = `
+      <div class="w-8 h-8 rounded-xl bg-blue-500/15 flex items-center justify-center">
+        <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+      </div>
+      <div><div class="text-sm font-semibold text-blue-400">Raio X Completo</div>
+      <div class="text-[10px] text-neutral-500">Analise IA consolidada</div></div>`;
+    document.getElementById('panelContent').innerHTML = marked.parse(analysisContent);
+    document.getElementById('expandPanel').classList.add('open');
+  }
+}
+
+function closePanel() { document.getElementById('expandPanel').classList.remove('open'); }
+
+// ─── Navigation ─────────────────────────────────────────────────────
+function resetToInput() {
+  currentResearchId = null;
+  if (ws) { ws.close(); ws = null; }
+  window.location.hash = '';
+  analysisContent = '';
+  moduleData = {};
+  document.getElementById('viewInput').classList.remove('hidden');
+  document.getElementById('viewResearch').classList.add('hidden');
+  document.getElementById('statsBar').textContent = '';
+  closePanel();
+}
+
+function showHistory() { document.getElementById('historyModal').classList.remove('hidden'); loadHistoryList(); }
+function closeHistory() { document.getElementById('historyModal').classList.add('hidden'); }
+
+async function loadHistoryList() {
+  const list = document.getElementById('historyList');
+  try {
+    const res = await fetch('/api/pesquisa/research', { headers: { 'Authorization': 'Bearer ' + token } });
+    const items = await res.json();
+    if (!items.length) { list.innerHTML = '<p class="text-neutral-500 text-sm">Nenhuma pesquisa</p>'; return; }
+    list.innerHTML = items.map(s => `
+      <div class="border-gradient rounded-xl bg-white/5 p-3 cursor-pointer hover:bg-white/[0.07] transition-all" onclick="closeHistory();window.location.hash='${s.id}';loadExisting('${s.id}')">
+        <div class="flex items-center justify-between mb-1">
+          <span class="text-sm font-medium">${s.name}</span>
+          <span class="text-[10px] px-2 py-0.5 rounded-full ${s.status === 'completed' ? 'text-emerald-400 bg-emerald-500/10' : 'text-amber-400 bg-amber-500/10'}">${s.status === 'completed' ? 'Concluido' : s.status}</span>
+        </div>
+        <div class="text-[10px] text-neutral-600">${new Date(s.createdAt).toLocaleString('pt-BR')} | ${s.stats.totalResults} resultados</div>
+      </div>`).join('');
+  } catch { list.innerHTML = '<p class="text-red-400 text-sm">Erro</p>'; }
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
+</script>
+</body>
+</html>

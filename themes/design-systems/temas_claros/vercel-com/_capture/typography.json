@@ -1,0 +1,65 @@
+{
+  "h1": {
+    "fontFamily": "GeistSans, \"GeistSans Fallback\"",
+    "fontSize": "64px",
+    "fontWeight": "400",
+    "lineHeight": "64px",
+    "letterSpacing": "-3.84px",
+    "color": "rgb(23, 23, 23)",
+    "textSample": "Agentic Infrastructure"
+  },
+  "h2": {
+    "fontFamily": "GeistSans, \"GeistSans Fallback\"",
+    "fontSize": "56px",
+    "fontWeight": "450",
+    "lineHeight": "56px",
+    "letterSpacing": "-3.36px",
+    "color": "rgb(23, 23, 23)",
+    "textSample": "Build agents on infrastructure that thinks like them"
+  },
+  "h3": {
+    "fontFamily": "GeistSans, \"GeistSans Fallback\"",
+    "fontSize": "14px",
+    "fontWeight": "500",
+    "lineHeight": "20px",
+    "letterSpacing": "normal",
+    "color": "rgb(77, 77, 77)",
+    "textSample": "Agent Stack"
+  },
+  "p": {
+    "fontFamily": "\"Geist Mono\", ui-monospace, SFMono-Regular, Menlo, Monaco, \"Liberation Mono\", \"DejaVu Sans Mono\", \"Courier New\", monospace, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\"",
+    "fontSize": "16px",
+    "fontWeight": "400",
+    "lineHeight": "24px",
+    "letterSpacing": "normal",
+    "color": "rgb(77, 77, 77)",
+    "textSample": "To ship apps and agentsFor coding agentsFor coding agents to ship apps and agent"
+  },
+  "a": {
+    "fontFamily": "GeistSans, \"GeistSans Fallback\"",
+    "fontSize": "16px",
+    "fontWeight": "400",
+    "lineHeight": "24px",
+    "letterSpacing": "normal",
+    "color": "rgb(0, 114, 245)",
+    "textSample": "Skip to content"
+  },
+  "button": {
+    "fontFamily": "GeistSans, \"GeistSans Fallback\"",
+    "fontSize": "14px",
+    "fontWeight": "400",
+    "lineHeight": "20px",
+    "letterSpacing": "normal",
+    "color": "rgb(23, 23, 23)",
+    "textSample": "Copy Logo as SVG"
+  },
+  "body": {
+    "fontFamily": "GeistSans, \"GeistSans Fallback\"",
+    "fontSize": "16px",
+    "fontWeight": "400",
+    "lineHeight": "24px",
+    "letterSpacing": "normal",
+    "color": "rgb(23, 23, 23)",
+    "textSample": "Skip to contentCopy Logo as SVGCopy Wordmark as SVGBrand GuidelinesProductsAgent"
+  }
+}

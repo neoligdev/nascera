@@ -1,0 +1,15 @@
+:root {
+  --black: black;
+  --white: white;
+  --transparent: transparent;
+  --gap-reg: 2em;
+  --gap-small: 1em;
+  --gray: #312b2c;
+  --gap-large: 3em;
+  --size-unit: 16;
+  --size-container-ideal: 1440;
+  --size-container-min: 992px;
+  --size-container-max: 2560px;
+  --size-container: clamp(var(--size-container-min), 100vw, var(--size-container-max));
+  --size-font: calc(var(--size-container) / (var(--size-container-ideal) / var(--size-unit)));
+}

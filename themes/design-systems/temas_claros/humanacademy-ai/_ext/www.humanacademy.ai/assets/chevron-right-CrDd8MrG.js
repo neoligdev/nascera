@@ -1,0 +1,1 @@
+import{t}from"./createLucideIcon-DengoS-c.js";var e=t("ChevronLeft",[["path",{d:"m15 18-6-6 6-6",key:"1wnfg3"}]]),a=t("ChevronRight",[["path",{d:"m9 18 6-6-6-6",key:"mthhwq"}]]);export{e as n,a as t};

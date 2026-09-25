@@ -1,0 +1,74 @@
+{
+  "h1": {
+    "fontFamily": "Montserrat, sans-serif",
+    "fontSize": "17.6px",
+    "fontWeight": "400",
+    "lineHeight": "24.64px",
+    "letterSpacing": "normal",
+    "color": "rgb(255, 255, 255)",
+    "textSample": "Award-winning digital studio crafting high-impact content, immersive & interacti"
+  },
+  "h2": {
+    "fontFamily": "\"Martian Mono\", sans-serif",
+    "fontSize": "18px",
+    "fontWeight": "400",
+    "lineHeight": "21.6px",
+    "letterSpacing": "normal",
+    "color": "rgb(255, 255, 255)",
+    "textSample": "Cookie usage"
+  },
+  "h3": {
+    "fontFamily": "Gabarito, sans-serif",
+    "fontSize": "73px",
+    "fontWeight": "900",
+    "lineHeight": "73px",
+    "letterSpacing": "normal",
+    "color": "rgb(255, 255, 255)",
+    "textSample": "Immersive &Interactive Experiences"
+  },
+  "h4": {
+    "fontFamily": "Gabarito, sans-serif",
+    "fontSize": "36.8px",
+    "fontWeight": "900",
+    "lineHeight": "44.16px",
+    "letterSpacing": "normal",
+    "color": "rgb(255, 255, 255)",
+    "textSample": "XR: AR, VR & Mixed Reality"
+  },
+  "p": {
+    "fontFamily": "\"Martian Mono\", sans-serif",
+    "fontSize": "9.6px",
+    "fontWeight": "400",
+    "lineHeight": "13.44px",
+    "letterSpacing": "normal",
+    "color": "rgb(255, 255, 255)",
+    "textSample": "This website uses cookies to improve your browsing experience. By continuing to "
+  },
+  "a": {
+    "fontFamily": "Montserrat, sans-serif",
+    "fontSize": "16px",
+    "fontWeight": "400",
+    "lineHeight": "22.4px",
+    "letterSpacing": "normal",
+    "color": "rgb(255, 255, 255)",
+    "textSample": ""
+  },
+  "button": {
+    "fontFamily": "Montserrat, sans-serif",
+    "fontSize": "16px",
+    "fontWeight": "400",
+    "lineHeight": "22.4px",
+    "letterSpacing": "normal",
+    "color": "rgb(255, 255, 255)",
+    "textSample": ""
+  },
+  "body": {
+    "fontFamily": "Montserrat, sans-serif",
+    "fontSize": "16px",
+    "fontWeight": "400",
+    "lineHeight": "22.4px",
+    "letterSpacing": "normal",
+    "color": "rgb(255, 255, 255)",
+    "textSample": "/*----- Scaling System -----*/\n/* Desktop */\n:root {\n  --size-unit: 16;\n  --size"
+  }
+}

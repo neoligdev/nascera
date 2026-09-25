@@ -1,0 +1,1 @@
+var a="/assets/logo-academy-pass-B2qG8qtb.png";export{a as t};

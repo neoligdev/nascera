@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design System - Space Scroll Animation</title>
+    
+    <!-- Original Fonts and Styles -->
+    <style>
+        @font-face {font-family: 'madefor-display-bold'; src: url("assets/madefor-display-bold_2efb43704c07.woff2") format('woff2'); font-weight: 700; font-style: normal; font-display: swap;}
+        @font-face {font-family: 'madefor-text'; src: url("assets/madefor-text_d2c633af5292.woff2") format('woff2'); font-weight: 400; font-style: normal; font-display: swap;}
+        @font-face {font-family: 'madefor-text-bold'; src: url("assets/madefor-text-bold_d7ecf2f8ff3d.woff2") format('woff2'); font-weight: 700; font-style: normal; font-display: swap;}
+        
+        :root {
+            --color_1: #ffffff;
+            --color_11: #F5F4F3;
+            --color_15: #000000;
+            --color_18: #266aff;
+            --font_0: normal normal normal 106px/1.4em madefor-display-bold, sans-serif;
+            --font_2: normal normal normal 54px/0.9em madefor-text, sans-serif;
+            --font_5: normal normal normal 20px/1.4em madefor-text, sans-serif;
+            --theme-spx-ratio: 1;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--color_11);
+            font-family: 'madefor-text', sans-serif;
+            color: var(--color_15);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Nav */
+        .ds-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            padding: 0 40px;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+        .ds-nav a {
+            margin-right: 30px;
+            text-decoration: none;
+            color: #000;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Sections */
+        .ds-section {
+            padding: 100px 40px;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+        .ds-section-title {
+            font-size: 14px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 60px;
+            display: block;
+        }
+
+        /* Component Grid */
+        .ds-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 60px;
+        }
+
+        /* Original Classes Reuse */
+        .wixui-button { cursor: pointer; border: none; background: transparent; padding: 0; }
+        .StylableButton2545352419__root {
+            transition: all 0.2s ease;
+            border-radius: 100px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 32px;
+            text-decoration: none;
+            box-sizing: border-box;
+        }
+        .StylableButton2545352419__label {
+            font-family: 'madefor-text', sans-serif;
+            font-size: 14px;
+            letter-spacing: 0.05em;
+        }
+        .StylableButton2545352419__icon {
+            width: 12px;
+            height: 12px;
+            margin-left: 8px;
+            fill: currentColor;
+        }
+
+        /* Button Variant 1 (Black) */
+        .style-luhxljxy7__root {
+            background: #000000;
+            border: 1px solid #000000;
+            color: #F5F4F3;
+        }
+        .style-luhxljxy7__root:hover {
+            background: #F5F4F3;
+            color: #000000;
+        }
+
+        /* Button Variant 2 (Transparent/White Border - modified for visibility on light bg) */
+        .style-luhxbq8e2__root {
+            background: transparent;
+            border: 1px solid #000; /* Adapted for visibility */
+            color: #000;
+        }
+        .style-luhxbq8e2__root:hover {
+            background: #000;
+            color: #fff;
+        }
+
+        /* Typography Helper */
+        .font_0 { font: var(--font_0); }
+        .font_2 { font: var(--font_2); }
+        
+        .wixui-rich-text__text {
+            line-height: 1.2;
+        }
+
+        /* Color Swatches */
+        .color-card {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .color-preview {
+            height: 120px;
+            width: 100%;
+        }
+        .color-info {
+            padding: 16px;
+            font-size: 14px;
+        }
+        .color-name { font-weight: 700; display: block; margin-bottom: 4px; }
+        .color-hex { color: #666; font-family: monospace; }
+
+        /* Motion Helpers */
+        .motion-box {
+            width: 100%;
+            height: 200px;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 24px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* Simulated Clip Animation */
+        .clip-anim {
+            animation: clipReveal 2s infinite alternate ease-in-out;
+        }
+        @keyframes clipReveal {
+            0% { clip-path: inset(0 100% 0 0); }
+            100% { clip-path: inset(0 0 0 0); }
+        }
+
+        /* Layout Grid */
+        .grid-demo {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 20px;
+            height: 200px;
+            background: #eee;
+            padding: 20px;
+        }
+        .grid-col {
+            background: rgba(0,0,0,0.1);
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Hero Clone Styles */
+        .hero-clone {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(0deg, #F5F4F3 29.83%, #D2C5FF 56.75%, #345C59 76.84%, #000000 100%);
+            overflow: hidden;
+            color: #fff;
+        }
+        .hero-text-large {
+            font-family: 'madefor-display-bold', sans-serif;
+            font-size: 120px;
+            line-height: 0.9;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 2;
+        }
+        .hero-text-small {
+            font-family: 'madefor-text', sans-serif;
+            font-size: 18px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 48px;
+            position: relative;
+            z-index: 2;
+        }
+        .hero-img {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 1000px;
+            opacity: 0.6;
+            z-index: 1;
+            mix-blend-mode: screen;
+        }
+
+    </style>
+</head>
+<body>
+
+    <nav class="ds-nav">
+        <a href="#hero">Hero</a>
+        <a href="#typography">Typography</a>
+        <a href="#colors">Colors</a>
+        <a href="#components">Components</a>
+        <a href="#layout">Layout</a>
+        <a href="#motion">Motion</a>
+    </nav>
+
+    <!-- 0) Hero (Exact Clone Pattern) -->
+    <section id="hero" class="hero-clone">
+        <!-- Reusing the gradient background from #comp-lte8dpkb -->
+        
+        <img src="assets/cloud_203_e5c027668b4b.webp" class="hero-img" alt="Cloud Element">
+        
+        <div class="hero-text-large">
+            Design<br>System
+        </div>
+        
+        <div class="hero-text-small">
+            Get ready to create consistency
+        </div>
+
+        <!-- Button from #comp-luhxbq8a (Adapted to be white on dark bg for hero) -->
+        <div class="comp-luhxbq8a">
+            <a aria-label="START CREATING" class="StylableButton2545352419__root style-luhxbq8e2__root wixui-button" href="#" style="border-color: #fff; color: #fff;">
+                <span class="StylableButton2545352419__container" style="display:flex; align-items:center;">
+                    <span class="StylableButton2545352419__label">EXPLORE SYSTEM</span>
+                    <svg class="StylableButton2545352419__icon" viewBox="0 0 200 200">
+                        <path d="M20 100.002c41.21 6.266 54.993 20.886 54.993 20.886C92.289 135.827 99.952 180 99.952 180h.097s7.896-44.037 24.958-59.111c0 0 13.783-14.62 54.993-20.886v-.005c-41.21-6.266-54.993-20.886-54.993-20.886C107.944 64.037 100.048 20 100.048 20h-.097s-7.663 44.173-24.958 59.111c0 0-13.783 14.62-54.993 20.886v.005z"></path>
+                    </svg>
+                </span>
+            </a>
+        </div>
+    </section>
+
+    <!-- 1) Typography -->
+    <section id="typography" class="ds-section">
+        <span class="ds-section-title">01 / Typography</span>
+        
+        <div class="ds-grid" style="grid-template-columns: 1fr;">
+            
+            <div style="display: flex; align-items: baseline; justify-content: space-between; border-bottom: 1px solid #ddd; padding-bottom: 20px;">
+                <span style="width: 150px; font-size: 12px; color: #999;">Display H1</span>
+                <div class="font_0" style="flex: 1;">Space Scroll</div>
+                <span style="font-family: monospace; font-size: 12px; color: #999;">106px / 1.4em</span>
+            </div>
+
+            <div style="display: flex; align-items: baseline; justify-content: space-between; border-bottom: 1px solid #ddd; padding-bottom: 20px;">
+                <span style="width: 150px; font-size: 12px; color: #999;">Heading H2</span>
+                <div class="font_2" style="flex: 1;">THE BRIEF</div>
+                <span style="font-family: monospace; font-size: 12px; color: #999;">54px / 0.9em</span>
+            </div>
+
+            <div style="display: flex; align-items: baseline; justify-content: space-between; border-bottom: 1px solid #ddd; padding-bottom: 20px;">
+                <span style="width: 150px; font-size: 12px; color: #999;">Body Large</span>
+                <div class="font_5" style="flex: 1;">Get ready to embark on a voyage of illusion.</div>
+                <span style="font-family: monospace; font-size: 12px; color: #999;">20px / 1.4em</span>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- 2) Colors & Surfaces -->
+    <section id="colors" class="ds-section">
+        <span class="ds-section-title">02 / Colors & Surfaces</span>
+        
+        <div class="ds-grid">
+            
+            <div class="color-card">
+                <div class="color-preview" style="background: #F5F4F3;"></div>
+                <div class="color-info">
+                    <span class="color-name">Background Light</span>
+                    <span class="color-hex">#F5F4F3</span>
+                </div>
+            </div>
+
+            <div class="color-card">
+                <div class="color-preview" style="background: #000000;"></div>
+                <div class="color-info">
+                    <span class="color-name">Black</span>
+                    <span class="color-hex">#000000</span>
+                </div>
+            </div>
+
+            <div class="color-card">
+                <div class="color-preview" style="background: #D2C5FF;"></div>
+                <div class="color-info">
+                    <span class="color-name">Accent Purple</span>
+                    <span class="color-hex">#D2C5FF</span>
+                </div>
+            </div>
+
+            <div class="color-card">
+                <div class="color-preview" style="background: #345C59;"></div>
+                <div class="color-info">
+                    <span class="color-name">Accent Green</span>
+                    <span class="color-hex">#345C59</span>
+                </div>
+            </div>
+
+            <div class="color-card" style="grid-column: span 2;">
+                <div class="color-preview" style="background: linear-gradient(90deg, #F5F4F3 0%, #D2C5FF 50%, #345C59 75%, #000000 100%);"></div>
+                <div class="color-info">
+                    <span class="color-name">Main Gradient</span>
+                    <span class="color-hex">CSS Linear Gradient</span>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- 3) UI Components -->
+    <section id="components" class="ds-section">
+        <span class="ds-section-title">03 / UI Components</span>
+        
+        <div class="ds-grid">
+            
+            <!-- Button Style 1 -->
+            <div>
+                <h4 style="margin-bottom: 20px;">Primary Action</h4>
+                <div class="comp-luhxljxw">
+                    <button class="StylableButton2545352419__root style-luhxljxy7__root">
+                        <span class="StylableButton2545352419__container" style="display:flex; align-items:center;">
+                            <span class="StylableButton2545352419__label">START CREATING</span>
+                            <svg class="StylableButton2545352419__icon" viewBox="0 0 200 200">
+                                <path d="M20 100.002c41.21 6.266 54.993 20.886 54.993 20.886C92.289 135.827 99.952 180 99.952 180h.097s7.896-44.037 24.958-59.111c0 0 13.783-14.62 54.993-20.886v-.005c-41.21-6.266-54.993-20.886-54.993-20.886C107.944 64.037 100.048 20 100.048 20h-.097s-7.663 44.173-24.958 59.111c0 0-13.783 14.62-54.993 20.886v.005z"></path>
+                            </svg>
+                        </span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Button Style 2 -->
+            <div>
+                <h4 style="margin-bottom: 20px;">Secondary Action</h4>
+                <div class="comp-luhxbq8a">
+                    <button class="StylableButton2545352419__root style-luhxbq8e2__root">
+                        <span class="StylableButton2545352419__container" style="display:flex; align-items:center;">
+                            <span class="StylableButton2545352419__label">LEARN MORE</span>
+                            <svg class="StylableButton2545352419__icon" viewBox="0 0 200 200">
+                                <path d="M20 100.002c41.21 6.266 54.993 20.886 54.993 20.886C92.289 135.827 99.952 180 99.952 180h.097s7.896-44.037 24.958-59.111c0 0 13.783-14.62 54.993-20.886v-.005c-41.21-6.266-54.993-20.886-54.993-20.886C107.944 64.037 100.048 20 100.048 20h-.097s-7.663 44.173-24.958 59.111c0 0-13.783 14.62-54.993 20.886v.005z"></path>
+                            </svg>
+                        </span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Image Card -->
+            <div>
+                <h4 style="margin-bottom: 20px;">Content Card</h4>
+                <div style="background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+                    <img src="assets/Artboard_201_20copy_207_b29069330bd0.png" style="width: 100%; display: block;" alt="Planet">
+                    <div style="padding: 20px;">
+                        <h3 class="font_2" style="font-size: 24px; margin: 0 0 10px 0;">PLANET</h3>
+                        <p style="font-size: 14px; color: #666; margin: 0;">Scroll to explore.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- 4) Layout & Spacing -->
+    <section id="layout" class="ds-section">
+        <span class="ds-section-title">04 / Layout & Spacing</span>
+        
+        <div class="grid-demo">
+            <div class="grid-col">1</div>
+            <div class="grid-col">2</div>
+            <div class="grid-col">3</div>
+            <div class="grid-col">4</div>
+            <div class="grid-col">5</div>
+            <div class="grid-col">6</div>
+            <div class="grid-col">7</div>
+            <div class="grid-col">8</div>
+            <div class="grid-col">9</div>
+            <div class="grid-col">10</div>
+            <div class="grid-col">11</div>
+            <div class="grid-col">12</div>
+        </div>
+        <p style="margin-top: 20px; font-size: 14px; color: #666;">
+            The site uses a 12-column grid system with fluid spacing. Main container uses `display: grid` with `minmax(0, 1fr)` columns.
+        </p>
+    </section>
+
+    <!-- 5) Motion -->
+    <section id="motion" class="ds-section">
+        <span class="ds-section-title">05 / Motion</span>
+        
+        <div class="ds-grid">
+            
+            <div>
+                <h4>Clip Reveal Animation</h4>
+                <div class="motion-box">
+                    <div class="clip-anim" style="width: 100%; height: 100%; background: url('assets/Image_20by_20Jake_20Weirick_93bad8a7d4f7.jpg') center/cover;"></div>
+                </div>
+                <p style="font-size: 12px; margin-top: 10px; color: #666;">Used for text and images entering viewport.</p>
+            </div>
+
+            <div>
+                <h4>Hover Interaction</h4>
+                <div class="motion-box" style="background: #F5F4F3;">
+                    <div class="comp-luhxljxw">
+                        <button class="StylableButton2545352419__root style-luhxljxy7__root">
+                            <span class="StylableButton2545352419__container" style="display:flex; align-items:center;">
+                                <span class="StylableButton2545352419__label">HOVER ME</span>
+                                <svg class="StylableButton2545352419__icon" viewBox="0 0 200 200" style="transition: transform 0.3s ease;">
+                                    <path d="M20 100.002c41.21 6.266 54.993 20.886 54.993 20.886C92.289 135.827 99.952 180 99.952 180h.097s7.896-44.037 24.958-59.111c0 0 13.783-14.62 54.993-20.886v-.005c-41.21-6.266-54.993-20.886-54.993-20.886C107.944 64.037 100.048 20 100.048 20h-.097s-7.663 44.173-24.958 59.111c0 0-13.783 14.62-54.993 20.886v.005z"></path>
+                                </svg>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- 6) Icons -->
+    <section id="icons" class="ds-section" style="border-bottom: none;">
+        <span class="ds-section-title">06 / Icons</span>
+        
+        <div class="ds-grid" style="grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));">
+            
+            <div style="text-align: center;">
+                <svg width="40" height="40" viewBox="0 0 200 200" style="display: inline-block;">
+                    <g><path d="M20 100.002c41.21 6.266 54.993 20.886 54.993 20.886C92.289 135.827 99.952 180 99.952 180h.097s7.896-44.037 24.958-59.111c0 0 13.783-14.62 54.993-20.886v-.005c-41.21-6.266-54.993-20.886-54.993-20.886C107.944 64.037 100.048 20 100.048 20h-.097s-7.663 44.173-24.958 59.111c0 0-13.783 14.62-54.993 20.886v.005z"></path></g>
+                </svg>
+                <div style="font-size: 12px; margin-top: 10px;">Arrow Star</div>
+            </div>
+
+            <div style="text-align: center;">
+                <svg width="40" height="40" viewBox="0 0 130 130" style="display: inline-block;">
+                    <g><path d="m65 0 3.046 52.941c.096 1.67 2.078 2.492 3.327 1.379l39.589-35.282L75.68 58.627c-1.113 1.249-.292 3.231 1.379 3.327L130 65l-52.941 3.046c-1.67.096-2.492 2.078-1.379 3.327l35.282 39.589L71.373 75.68c-1.249-1.113-3.231-.292-3.327 1.379L65 130l-3.046-52.941c-.096-1.67-2.078-2.492-3.327-1.379l-39.589 35.282L54.32 71.373c1.113-1.249.292-3.231-1.379-3.327L0 65l52.941-3.046c1.67-.096 2.492-2.078 1.379-3.327L19.038 19.038 58.627 54.32c1.249 1.113 3.231.292 3.327-1.379L65 0Z" fill="#000"></path></g>
+                </svg>
+                <div style="font-size: 12px; margin-top: 10px;">Burst</div>
+            </div>
+
+            <div style="text-align: center;">
+                <svg width="40" height="40" viewBox="0 0 200 200" style="display: inline-block;">
+                    <g><path d="M180 100c0 44.183-35.817 80-80 80s-80-35.817-80-80 35.817-80 80-80 80 35.817 80 80z" stroke="#000" fill="none" stroke-width="2"></path></g>
+                </svg>
+                <div style="font-size: 12px; margin-top: 10px;">Circle</div>
+            </div>
+
+        </div>
+    </section>
+
+</body>
+</html>

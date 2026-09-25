@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Parallax Design System</title>
+<script src="assets/gsap_4a57399e4113.js"></script>
+<script src="assets/ScrollTrigger_8669edfeb171.js"></script>
+<script src="assets/resource_3fa48481346f.js"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="assets/css2_5f62d382f7c0.css" rel="stylesheet"/>
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+        
+        #canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0; /* Changed from 1 to 0 to sit behind DS content */
+            opacity: 0.6; /* Dimmed slightly for DS readability */
+        }
+
+        /* DS Specific Styles */
+        .ds-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 100;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 2rem;
+        }
+        .ds-nav a {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            margin-right: 1.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        .ds-nav a:hover {
+            color: white;
+        }
+        
+        .ds-section {
+            position: relative;
+            z-index: 10;
+            padding: 6rem 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            max-width: 80rem;
+            margin: 0 auto;
+        }
+
+        .ds-swatch {
+            width: 100%;
+            height: 6rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Utility for GSAP targeting in DS */
+        .gsap-reveal {
+            opacity: 0;
+            transform: translateY(3rem);
+        }
+    </style>
+</head>
+<body class="bg-zinc-950">
+    <canvas id="canvas"></canvas>
+
+    <!-- Navigation -->
+    <nav class="ds-nav">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <span class="font-bold text-white tracking-tight mr-8">PARALLAX DS</span>
+            <div>
+                <a href="#hero">Hero</a>
+                <a href="#typography">Typography</a>
+                <a href="#colors">Colors</a>
+                <a href="#motion">Motion</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="relative z-10">
+        
+        <!-- Hero Section (Clone) -->
+        <section id="hero" class="h-screen flex items-center justify-center px-8">
+            <div class="max-w-7xl pointer-events-auto">
+                <h1 class="text-8xl md:text-9xl font-bold leading-tight mb-12 opacity-0 transform translate-y-12 text-white tracking-tight hero-title">
+                    Design<br/>System
+                </h1>
+                <p class="text-2xl md:text-3xl leading-relaxed max-w-4xl opacity-0 transform translate-y-8 text-zinc-300 font-medium hero-desc">
+                    A living pattern library defining the geometric visual language, typography, and motion principles of the Parallax interface.
+                </p>
+            </div>
+        </section>
+
+        <!-- Typography -->
+        <section id="typography" class="ds-section">
+            <h2 class="text-4xl font-bold mb-12 text-white/50">01. Typography</h2>
+            
+            <div class="space-y-16">
+                <!-- Heading 1 -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8 items-start pb-12 border-b border-white/5">
+                    <div class="text-zinc-500 font-mono text-sm pt-4">Heading 1</div>
+                    <div class="md:col-span-3">
+                        <h1 class="text-8xl md:text-9xl font-bold leading-tight text-white tracking-tight">
+                            Outlined<br/>Dimensions
+                        </h1>
+                        <p class="mt-4 text-zinc-500 font-mono text-sm">text-8xl md:text-9xl font-bold tracking-tight leading-tight</p>
+                    </div>
+                </div>
+
+                <!-- Quote / Display -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8 items-start pb-12 border-b border-white/5">
+                    <div class="text-zinc-500 font-mono text-sm pt-4">Quote Display</div>
+                    <div class="md:col-span-3">
+                        <p class="text-3xl md:text-4xl text-zinc-400 italic font-medium">
+                            "Geometry reveals the mathematical poetry hidden within spatial relationships."
+                        </p>
+                        <p class="mt-4 text-zinc-500 font-mono text-sm">text-3xl md:text-4xl italic font-medium text-zinc-400</p>
+                    </div>
+                </div>
+
+                <!-- Body Large -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8 items-start">
+                    <div class="text-zinc-500 font-mono text-sm pt-4">Body Large</div>
+                    <div class="md:col-span-3">
+                        <p class="text-2xl md:text-3xl leading-relaxed text-zinc-300 font-medium">
+                            Navigate through wireframe planes where each geometric form exists as pure outline.
+                        </p>
+                        <p class="mt-4 text-zinc-500 font-mono text-sm">text-2xl md:text-3xl leading-relaxed font-medium text-zinc-300</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Colors -->
+        <section id="colors" class="ds-section">
+            <h2 class="text-4xl font-bold mb-12 text-white/50">02. Colors & Surfaces</h2>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <!-- Background -->
+                <div>
+                    <div class="ds-swatch bg-zinc-950"></div>
+                    <p class="text-white font-medium">Zinc 950</p>
+                    <p class="text-zinc-500 text-sm font-mono">#0a0a0a (Background)</p>
+                </div>
+                <!-- Text Primary -->
+                <div>
+                    <div class="ds-swatch bg-white"></div>
+                    <p class="text-white font-medium">White</p>
+                    <p class="text-zinc-500 text-sm font-mono">#ffffff (Headings)</p>
+                </div>
+                <!-- Text Secondary -->
+                <div>
+                    <div class="ds-swatch bg-zinc-300"></div>
+                    <p class="text-zinc-300 font-medium">Zinc 300</p>
+                    <p class="text-zinc-500 text-sm font-mono">Text Body</p>
+                </div>
+                <!-- Text Muted -->
+                <div>
+                    <div class="ds-swatch bg-zinc-400"></div>
+                    <p class="text-zinc-400 font-medium">Zinc 400</p>
+                    <p class="text-zinc-500 text-sm font-mono">Quotes / Accents</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Motion -->
+        <section id="motion" class="ds-section min-h-screen flex flex-col justify-center">
+            <h2 class="text-4xl font-bold mb-12 text-white/50">03. Motion Principles</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-16">
+                <div class="gsap-reveal-trigger">
+                    <h3 class="text-4xl font-bold mb-6 text-white gsap-reveal">Scroll Reveal</h3>
+                    <p class="text-xl text-zinc-300 gsap-reveal">
+                        Elements enter from the bottom (y: 48px) with opacity fading from 0 to 1. 
+                        The duration is 0.9s with "power3.out" easing.
+                    </p>
+                </div>
+                
+                <div class="p-8 border border-white/10 rounded-xl bg-white/5">
+                    <p class="text-zinc-400 font-mono text-sm mb-4">Code Pattern</p>
+                    <pre class="text-sm text-zinc-300 overflow-x-auto">
+gsap.to(element, { 
+  opacity: 1, 
+  y: 0, 
+  duration: 0.9, 
+  ease: "power3.out" 
+});</pre>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Original Background Script -->
+    <script type="module">
+        import * as THREE from "https://esm.sh/three@0.160.0";
+        
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Scene setup
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas'), alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x0a0a0a, 1);
+
+        // Camera position
+        camera.position.z = 15;
+
+        // Parallax groups for different layer speeds
+        const parallaxGroups = [
+            new THREE.Group(), // Foreground - fastest
+            new THREE.Group(), // Mid-ground
+            new THREE.Group(), // Background - slowest
+        ];
+
+        parallaxGroups.forEach(group => scene.add(group));
+
+        // Materials - bright wireframes for dark mode
+        const brightMaterial = new THREE.MeshBasicMaterial({ 
+            color: 0xffffff, 
+            wireframe: true,
+            transparent: true,
+            opacity: 0.9
+        });
+
+        const accentMaterial = new THREE.MeshBasicMaterial({ 
+            color: 0x60a5fa, 
+            wireframe: true,
+            transparent: true,
+            opacity: 0.8
+        });
+
+        const dustMaterial = new THREE.MeshBasicMaterial({ 
+            color: 0x71717a, 
+            wireframe: true,
+            transparent: true,
+            opacity: 0.5
+        });
+
+        const highlightMaterial = new THREE.MeshBasicMaterial({ 
+            color: 0xfbbf24, 
+            wireframe: true,
+            transparent: true,
+            opacity: 0.7
+        });
+
+        // Create geometric shapes
+        function createGeometry(type, size, material) {
+            let geometry;
+            switch(type) {
+                case 'sphere':
+                    geometry = new THREE.SphereGeometry(size, 16, 16);
+                    break;
+                case 'box':
+                    geometry = new THREE.BoxGeometry(size, size, size);
+                    break;
+                case 'octahedron':
+                    geometry = new THREE.OctahedronGeometry(size);
+                    break;
+                case 'tetrahedron':
+                    geometry = new THREE.TetrahedronGeometry(size);
+                    break;
+                case 'torus':
+                    geometry = new THREE.TorusGeometry(size, size * 0.3, 8, 16);
+                    break;
+                default:
+                    geometry = new THREE.SphereGeometry(size, 12, 12);
+            }
+            return new THREE.Mesh(geometry, material);
+        }
+
+        // Populate parallax layers
+        const shapes = [];
+        const shapeTypes = ['sphere', 'box', 'octahedron', 'tetrahedron', 'torus'];
+        const materials = [brightMaterial, accentMaterial, highlightMaterial];
+
+        // Layer 1 - Foreground (fastest parallax)
+        for(let i = 0; i < 20; i++) {
+            const type = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
+            const material = materials[Math.floor(Math.random() * materials.length)];
+            const shape = createGeometry(type, Math.random() * 1.2 + 0.6, material);
+            
+            shape.position.set(
+                (Math.random() - 0.5) * 50,
+                (Math.random() - 0.5) * 35,
+                Math.random() * 10 + 5
+            );
+            
+            shape.rotation.set(
+                Math.random() * Math.PI,
+                Math.random() * Math.PI,
+                Math.random() * Math.PI
+            );
+
+            parallaxGroups[0].add(shape);
+            shapes.push({ 
+                mesh: shape, 
+                layer: 0, 
+                speed: Math.random() * 0.6 + 0.9,
+                rotationSpeed: (Math.random() - 0.5) * 0.025,
+                initialY: shape.position.y
+            });
+        }
+
+        // Layer 2 - Mid-ground
+        for(let i = 0; i < 30; i++) {
+            const type = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
+            const shape = createGeometry(type, Math.random() * 1.5 + 0.8, brightMaterial);
+            
+            shape.position.set(
+                (Math.random() - 0.5) * 70,
+                (Math.random() - 0.5) * 45,
+                Math.random() * 15 - 5
+            );
+            
+            shape.rotation.set(
+                Math.random() * Math.PI,
+                Math.random() * Math.PI,
+                Math.random() * Math.PI
+            );
+
+            parallaxGroups[1].add(shape);
+            shapes.push({ 
+                mesh: shape, 
+                layer: 1, 
+                speed: Math.random() * 0.4 + 0.5,
+                rotationSpeed: (Math.random() - 0.5) * 0.018,
+                initialY: shape.position.y
+            });
+        }
+
+        // Layer 3 - Background (slowest parallax)
+        for(let i = 0; i < 40; i++) {
+            const type = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
+            const shape = createGeometry(type, Math.random() * 2.0 + 0.5, dustMaterial);
+            
+            shape.position.set(
+                (Math.random() - 0.5) * 90,
+                (Math.random() - 0.5) * 60,
+                Math.random() * 20 - 20
+            );
+            
+            shape.rotation.set(
+                Math.random() * Math.PI,
+                Math.random() * Math.PI,
+                Math.random() * Math.PI
+            );
+
+            parallaxGroups[2].add(shape);
+            shapes.push({ 
+                mesh: shape, 
+                layer: 2, 
+                speed: Math.random() * 0.25 + 0.15,
+                rotationSpeed: (Math.random() - 0.5) * 0.012,
+                initialY: shape.position.y
+            });
+        }
+
+        // Scroll variables
+        let scrollY = 0;
+        let mouseX = 0;
+        let mouseY = 0;
+
+        // Mouse movement
+        document.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+            mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+        });
+
+        // Scroll tracking
+        ScrollTrigger.create({
+            trigger: "body",
+            start: "top top",
+            end: "bottom bottom",
+            scrub: true,
+            onUpdate: (self) => {
+                scrollY = self.progress;
+            }
+        });
+
+        // Hero Animation
+        const heroTitle = document.querySelector(".hero-title");
+        const heroDesc = document.querySelector(".hero-desc");
+        
+        gsap.to(heroTitle, { opacity: 1, y: 0, duration: 0.9, ease: "power3.out", delay: 0.2 });
+        gsap.to(heroDesc, { opacity: 1, y: 0, duration: 0.9, delay: 0.45, ease: "power3.out" });
+
+        // DS Section Animations
+        const revealElements = document.querySelectorAll(".gsap-reveal");
+        
+        revealElements.forEach((el) => {
+            ScrollTrigger.create({
+                trigger: el,
+                start: "top 85%",
+                onEnter: () => {
+                    gsap.to(el, { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" });
+                }
+            });
+        });
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Parallax movement based on scroll
+            parallaxGroups[0].position.y = scrollY * 25; // Fastest
+            parallaxGroups[1].position.y = scrollY * 15; // Medium
+            parallaxGroups[2].position.y = scrollY * 8;  // Slowest
+
+            // Mouse parallax
+            parallaxGroups[0].rotation.x = mouseY * 0.12;
+            parallaxGroups[0].rotation.y = mouseX * 0.12;
+            parallaxGroups[1].rotation.x = mouseY * 0.06;
+            parallaxGroups[1].rotation.y = mouseX * 0.06;
+            parallaxGroups[2].rotation.x = mouseY * 0.03;
+            parallaxGroups[2].rotation.y = mouseX * 0.03;
+
+            // Individual shape animations
+            shapes.forEach((shapeData) => {
+                const { mesh, speed, rotationSpeed } = shapeData;
+                
+                // Rotation
+                mesh.rotation.x += rotationSpeed;
+                mesh.rotation.y += rotationSpeed * 0.8;
+                mesh.rotation.z += rotationSpeed * 0.5;
+                
+                // Floating motion
+                mesh.position.y += Math.sin(Date.now() * 0.001 + mesh.position.x) * 0.015;
+                
+                // Wrap around effect for continuous scrolling
+                if (mesh.position.y < -40) {
+                    mesh.position.y = 40;
+                } else if (mesh.position.y > 40) {
+                    mesh.position.y = -40;
+                }
+            });
+
+            renderer.render(scene, camera);
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+</body>
+</html>

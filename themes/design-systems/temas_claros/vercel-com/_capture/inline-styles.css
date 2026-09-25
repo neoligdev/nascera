@@ -1,0 +1,28 @@
+@layer {
+  [data-react-aria-pressable] {
+    touch-action: pan-x pan-y pinch-zoom;
+  }
+}
+
+/* ─── próximo <style> ─── */
+
+
+html[data-user-display="logged-in"]  [data-user-display="logged-out"],
+html[data-user-display="logged-out"] [data-user-display="logged-in"] {
+  display: none !important;
+}
+
+
+/* ─── próximo <style> ─── */
+
+
+      @keyframes passport-glow-ellipse-x {
+        from {
+          transform: scaleX(1);
+        }
+
+        to {
+          transform: scaleX(1.5);
+        }
+      }
+    
