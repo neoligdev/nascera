@@ -67,20 +67,20 @@ export DEBIAN_FRONTEND=noninteractive
 
 echo "→ Pacotes base"
 apt-get update -qq
-apt-get install -y -qq curl ca-certificates gnupg git rsync ufw >/dev/null
-ok "curl, git, rsync, ufw"
+apt-get install -y -qq curl ca-certificates gnupg git rsync ufw build-essential python3 bubblewrap >/dev/null
+ok "curl, git, rsync, ufw, build-essential, bubblewrap"
 
-# ── 1. Node 20+ ──
+# ── 1. Node 22.22.2+ / 24.15.0+ / 26+ (o que o package.json exige) ──
 echo "→ Node.js"
 NODE_OK=0
 if command -v node >/dev/null 2>&1; then
   MAJOR="$(node -p 'process.versions.node.split(".")[0]' 2>/dev/null || echo 0)"
-  [[ "$MAJOR" -ge 18 ]] && NODE_OK=1
+  [[ "$MAJOR" -ge 22 ]] && NODE_OK=1
 fi
 if [[ "$NODE_OK" -eq 1 ]]; then
   ok "Node $(node -v) já instalado"
 else
-  curl -fsSL https://deb.nodesource.com/setup_20.x | bash - >/dev/null 2>&1
+  curl -fsSL https://deb.nodesource.com/setup_24.x | bash - >/dev/null 2>&1
   apt-get install -y -qq nodejs >/dev/null
   ok "Node $(node -v) instalado"
 fi
@@ -98,6 +98,26 @@ else
   else
     aviso "Claude Code não instalou — rode depois: npm i -g @anthropic-ai/claude-code"
   fi
+fi
+
+# ── 2b. usuário claude-runner (sandbox de execução) ──
+# Todo processo de IA (chat e terminal) roda como este usuário sem privilégio,
+# nunca como root — server.js e servicos/terminal-ws.js dependem dele existir.
+# /root precisa de bit de travessia (só x, sem r/w) para o claude-runner
+# alcançar a pasta de projetos, que mora dentro do $HOME do root nesta VPS.
+echo "→ Usuário do sandbox (claude-runner)"
+if id claude-runner >/dev/null 2>&1; then
+  ok "usuário claude-runner já existe"
+else
+  useradd -m -s /bin/bash claude-runner
+  ok "usuário claude-runner criado"
+fi
+chmod 711 /root
+ok "/root com travessia liberada para o sandbox (711)"
+if [[ -f /root/.claude/.credentials.json ]]; then
+  node -e "require('./claude-auth.js').propagateClaudeAuth()" 2>/dev/null \
+    && ok "credencial do Claude propagada para claude-runner" \
+    || aviso "não consegui propagar a credencial do Claude agora — rode depois: node -e \"require('./claude-auth.js').propagateClaudeAuth()\""
 fi
 
 # ── 3. dependências do projeto ──
