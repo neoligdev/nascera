@@ -91,7 +91,7 @@ Z.registrar('aparencia', {
         sub: 'Ele é recolorido por filtro — o arquivo nunca é reprocessado, então dá para testar à vontade. A faixa abaixo mostra o efeito na hora.',
         corpo:
           '<div id="ap-amostra" style="height:72px;border-radius:11px;margin-bottom:16px;' +
-            'background:linear-gradient(115deg,var(--z-acc),var(--z-acc2) 55%,#e59cff);' +
+            'background:linear-gradient(115deg,var(--z-acc),var(--z-acc2) 55%,#FFDF9C);' +
             'transition:filter .18s var(--z-ease),opacity .18s var(--z-ease)"></div>' +
           '<div class="z-mb">' + C.switch('ap-video-on', 'Mostrar o vídeo de fundo para os clientes', !!tema.video.enabled) + '</div>' +
           '<div class="z-sep"></div>' +
@@ -221,7 +221,7 @@ function ligarCores() {
       var v = String(texto.value || '').trim().toLowerCase();
       if (v.charAt(0) !== '#') v = '#' + v;
       if (!HEX.test(v)) {
-        Z.erro('A cor "' + c.rot + '" precisa estar no formato #rrggbb — ex.: #9382ff.');
+        Z.erro('A cor "' + c.rot + '" precisa estar no formato #rrggbb — ex.: #99FF00.');
         texto.value = tema.colors[c.k];
         return;
       }

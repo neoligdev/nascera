@@ -288,7 +288,7 @@
     .msg-avatar {
       width: 28px; height: 28px; border-radius: 10px; flex-shrink: 0; margin-top: 2px;
       display: flex; align-items: center; justify-content: center;
-      background: linear-gradient(135deg, rgba(113,47,255,.3), rgba(var(--zh-accent2-rgb),.3));
+      background: linear-gradient(135deg, rgba(210,255,47,.3), rgba(var(--zh-accent2-rgb),.3));
       box-shadow: 0 0 12px rgba(var(--zh-accent-rgb),.1);
     }
     .msg-user-bubble {
@@ -757,7 +757,7 @@
             <!-- Badge -->
             <div style="display:inline-flex;align-items:center;gap:6px;padding:5px 14px 5px 9px;border-radius:32px;backdrop-filter:blur(6px);box-shadow:inset 0 -7px 11px rgba(var(--zh-accent-rgb),.12);position:relative;isolation:isolate;overflow:hidden;margin-bottom:16px;">
               <div style="position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(90deg,rgba(var(--zh-grad1-rgb),.24),rgba(var(--zh-accent2-rgb),.24),rgba(var(--zh-grad2-rgb),.24));-webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;"></div>
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.796 4.94L14.9 7.11l-3.804 3.22L12.18 15 8 12.42 3.82 15l1.084-4.67L1.1 7.11l5.104-1.17L8 1z" fill="url(#spk3)"/><defs><linearGradient id="spk3" x1="8" y1="1" x2="8" y2="15" gradientUnits="userSpaceOnUse"><stop stop-color="var(--zh-grad1)"/><stop offset=".5" stop-color="#ba9cff"/><stop offset="1" stop-color="var(--zh-grad2)"/></linearGradient></defs></svg>
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.796 4.94L14.9 7.11l-3.804 3.22L12.18 15 8 12.42 3.82 15l1.084-4.67L1.1 7.11l5.104-1.17L8 1z" fill="url(#spk3)"/><defs><linearGradient id="spk3" x1="8" y1="1" x2="8" y2="15" gradientUnits="userSpaceOnUse"><stop stop-color="var(--zh-grad1)"/><stop offset=".5" stop-color="#C4F877"/><stop offset="1" stop-color="var(--zh-grad2)"/></linearGradient></defs></svg>
               <span style="background:linear-gradient(0deg,rgba(255,255,255,.4),rgba(255,255,255,.4)),linear-gradient(90deg,var(--zh-grad1),var(--zh-accent2) 50%,var(--zh-grad2));background-blend-mode:normal,screen;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-size:12px;font-weight:500;">Nascera AI esta trabalhando</span>
             </div>
             <!-- Main text - rotates -->
@@ -800,7 +800,7 @@
   <!-- Loading Overlay -->
   <div id="loading" class="fixed inset-0 z-50 bg-[var(--zh-bg)] flex items-center justify-center">
     <div class="text-center">
-      <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-5 shadow-lg shadow-purple-500/25" style="background:linear-gradient(135deg,rgba(113,47,255,.5),rgba(var(--zh-accent2-rgb),.5))">
+      <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-5 shadow-lg shadow-lime-500/25" style="background:linear-gradient(135deg,rgba(210,255,47,.5),rgba(var(--zh-accent2-rgb),.5))">
         <svg class="animate-spin" width="24" height="24" viewBox="0 0 24 24" fill="none"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="white" stroke-width="3"/><path class="opacity-90" fill="white" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
       </div>
       <p class="text-sm text-neutral-400" id="loading-text">Iniciando...</p>
@@ -2093,7 +2093,7 @@ function addQuestionCard(msg) {
   }).join('');
 
   card.innerHTML =
-    '<div class="ic-header"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="stroke:var(--zh-accent2)" stroke="#ba9cff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3m.08 4h.01"/></svg>' +
+    '<div class="ic-header"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="stroke:var(--zh-accent2)" stroke="#C4F877" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3m.08 4h.01"/></svg>' +
       '<span style="flex:1">Nascera tem uma pergunta</span></div>' +
     '<div class="ic-body">' + qHtml + '</div>' +
     '<div class="ic-actions"><button class="ic-btn ic-btn-allow" onclick="submitQuestion(\'' + msg.id + '\')">Responder</button></div>';
@@ -2656,8 +2656,8 @@ function _veArmar(doc) {
     var st = doc.createElement('style');
     st.id = VE_STYLE_ID;
     st.textContent =
-      'html[data-zhve] *:hover{outline:1px dashed rgba(147,130,255,.55)!important;outline-offset:1px;cursor:text!important}' +
-      'html[data-zhve] ::selection{background:rgba(147,130,255,.3)}';
+      'html[data-zhve] *:hover{outline:1px dashed rgba(153,255,0,.55)!important;outline-offset:1px;cursor:text!important}' +
+      'html[data-zhve] ::selection{background:rgba(153,255,0,.3)}';
     (doc.head || doc.documentElement).appendChild(st);
   }
   doc.documentElement.setAttribute('data-zhve', '1');
@@ -3073,7 +3073,7 @@ window.toggleVersions = async function() {
 async function loadVersions() {
   if (!projectId) return;
   const listEl = $('versions-list');
-  listEl.innerHTML = '<div class="flex items-center justify-center py-8"><div class="animate-spin w-4 h-4 border-2 border-neutral-700 border-t-purple-400 rounded-full"></div></div>';
+  listEl.innerHTML = '<div class="flex items-center justify-center py-8"><div class="animate-spin w-4 h-4 border-2 border-neutral-700 border-t-lime-400 rounded-full"></div></div>';
   try {
     const res = await fetch('/api/projects/' + projectId + '/history', { headers: { 'Authorization': 'Bearer ' + token } });
     const data = await res.json();

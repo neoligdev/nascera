@@ -2,7 +2,7 @@
 // NASCERA — Aparência (tema do sistema)
 //
 // As cores do NASCERA estavam cravadas em centenas de lugares
-// (`rgba(147,130,255,.3)`, `#ba9cff`, …). Aqui elas viram VARIÁVEIS: os HTMLs
+// (`rgba(153,255,0,.3)`, `#C4F877`, …). Aqui elas viram VARIÁVEIS: os HTMLs
 // passaram a usar `rgba(var(--zh-accent-rgb), .3)` e este módulo serve o
 // arquivo que dá valor a essas variáveis.
 //
@@ -26,10 +26,10 @@ const MAX_UPLOAD = 5 * 1024 * 1024;   // 5 MB
 // Os valores ORIGINAIS do sistema. Mudar aqui muda o "Restaurar padrão".
 const DEFAULTS = {
   colors: {
-    accent:    '#9382ff',   // roxo principal — botões, destaques, foco
-    accent2:   '#ba9cff',   // roxo claro — links, ícones, texto de realce
-    grad1:     '#e59cff',   // ponta rosa do gradiente dos títulos
-    grad2:     '#9cb2ff',   // ponta azul do gradiente dos títulos
+    accent:    '#99FF00',   // verde principal (da marca Nascera) — botões, destaques, foco
+    accent2:   '#C4F877',   // verde claro — links, ícones, texto de realce
+    grad1:     '#C0FF9C',   // ponta clara do gradiente dos títulos
+    grad2:     '#FFDF9C',   // ponta quente do gradiente dos títulos
     bg:        '#030014',   // fundo profundo do sistema
     surface:   '#0b0718',   // cartões e barras
     text:      '#ffffff',   // texto principal
@@ -40,7 +40,7 @@ const DEFAULTS = {
   },
   video: {
     enabled: true,
-    hue: 0,          // graus  (-180 a 180)
+    hue: 174,        // graus  (-180 a 180) — recolore o buraco negro (roxo) para o verde da marca
     saturation: 100, // %      (0 a 300)
     brightness: 100, // %      (0 a 200)
     contrast: 100,   // %      (0 a 200)
@@ -49,13 +49,13 @@ const DEFAULTS = {
   },
   images: {
     logo: '/logo.png',
-    favicon: '/apple-touch-icon.png',   // não existe public/favicon.png — o ícone real é este
+    favicon: '/favicon.png',
     heroSkills: '/skills-bg.png',
     loading: '/bgloading.png',
   },
   ui: {
     radius: 12,        // px — raio dos cartões
-    glow: 100,         // % — intensidade dos brilhos roxos
+    glow: 100,         // % — intensidade dos brilhos verdes
   },
 };
 

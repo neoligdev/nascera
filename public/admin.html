@@ -1752,7 +1752,7 @@ function renderTemaCores() {
 function setCor(chave, valor, doTexto) {
   valor = String(valor).trim();
   if (!/^#[0-9a-fA-F]{6}$/.test(valor)) {
-    if (doTexto) { alert('Use o formato #rrggbb (ex.: #9382ff)'); renderTemaCores(); }
+    if (doTexto) { alert('Use o formato #rrggbb (ex.: #99FF00)'); renderTemaCores(); }
     return;
   }
   _tema.colors[chave] = valor.toLowerCase();
@@ -1919,7 +1919,7 @@ function aplicarPreview() {
 
 function previewTema() {
   aplicarPreview();
-  temaStatus('Prévia aplicada só nesta tela — nada foi salvo ainda.', 'rgba(147,130,255,.8)');
+  temaStatus('Prévia aplicada só nesta tela — nada foi salvo ainda.', 'rgba(153,255,0,.8)');
 }
 
 function salvarTema() {

@@ -25,8 +25,7 @@
 
     /* Logo */
     .logo-wrap{text-align:center;margin-bottom:28px}
-    .logo-img{width:48px;height:48px;border-radius:14px;margin:0 auto 12px;object-fit:contain}
-    .logo-title{font-size:24px;font-weight:600;background:linear-gradient(180deg,#fff 0%,rgba(255,255,255,.65) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+    .logo-img{width:240px;max-width:80%;height:auto;display:block;margin:0 auto 16px;object-fit:contain}
     .logo-sub{font-size:13px;color:rgba(255,255,255,.3);margin-top:4px}
 
     /* Badge */
@@ -86,7 +85,6 @@
     <div class="card fade-in">
       <div class="logo-wrap">
         <img src="/logo.png" class="logo-img" onerror="this.style.display='none'"/>
-        <div class="logo-title">Nascera AI</div>
       </div>
 
       <!-- Step: Login -->
@@ -411,7 +409,7 @@
           var x = cx+Math.cos(p.a)*p.d, y = cy+Math.sin(p.a)*p.d;
           var al = p.o * Math.min(1, p.d/400) * (.5+.5*Math.sin(p.ph));
           g.beginPath(); g.arc(x, y, p.r, 0, 6.28);
-          g.fillStyle = "rgba(210,200,255," + al.toFixed(3) + ")"; g.fill();
+          g.fillStyle = "rgba(196,248,119," + al.toFixed(3) + ")"; g.fill();
         }
         requestAnimationFrame(frame);
       }
@@ -459,8 +457,8 @@
       float n=fbm(warped,t);
       float glow=max(n-0.44,0.0)/0.56;glow=pow(glow,1.5);glow=clamp(glow,0.0,1.0);
       float spot=exp(-mDist*mDist*1.8)*0.20;glow=clamp(glow+spot,0.0,1.0);
-      vec3 c0=vec3(0.02,0.02,0.08);vec3 c1=vec3(0.10,0.04,0.28);
-      vec3 c2=vec3(0.50,0.15,0.90);vec3 c3=vec3(0.90,0.75,1.00);
+      vec3 c0=vec3(0.02,0.02,0.08);vec3 c1=vec3(0.24,0.28,0.04);
+      vec3 c2=vec3(0.60,0.90,0.12);vec3 c3=vec3(0.88,1.00,0.75);
       vec3 col;
       if(glow<0.33){col=mix(c0,c1,glow/0.33);}
       else if(glow<0.66){col=mix(c1,c2,(glow-0.33)/0.33);}

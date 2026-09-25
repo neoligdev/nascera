@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nascera-v1';
+const CACHE_NAME = 'nascera-v2';
 const PRECACHE = ['/blackhole.mp4', '/blackhole.webm', '/favicon.png', '/logo.png'];
 
 self.addEventListener('install', e => {

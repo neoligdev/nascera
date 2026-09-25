@@ -57,8 +57,8 @@
     /* ── Hero ── */
     .hero-zone { position: relative; overflow: hidden; min-height: 85vh; display: flex; flex-direction: column; align-items: center; }
     .hero-video-bg { position: absolute; top: 55%; left: 50%; transform: translate(-50%,-50%); width: 1224px; height: 689px; object-fit: cover; opacity: 1; pointer-events: none; z-index: 0; -webkit-mask-image: radial-gradient(50% 50% at 50% 50%, #fff 60%, transparent 100%); mask-image: radial-gradient(50% 50% at 50% 50%, #fff 60%, transparent 100%); }
-    .hero-mask { position: absolute; inset: 0; z-index: 1; background: radial-gradient(37.74% 81.78% at 50% 26.56%, rgba(148,101,255,.06) 0%, transparent 100%); pointer-events: none; }
-    .hero-glow { position: absolute; top: -100px; left: 50%; transform: translateX(-50%); width: 1440px; height: 900px; background: radial-gradient(37.74% 81.78% at 50% 26.56%, rgba(148,101,255,.08) 0%, transparent 100%); pointer-events: none; z-index: 1; }
+    .hero-mask { position: absolute; inset: 0; z-index: 1; background: radial-gradient(37.74% 81.78% at 50% 26.56%, rgba(153,255,0,.06) 0%, transparent 100%); pointer-events: none; }
+    .hero-glow { position: absolute; top: -100px; left: 50%; transform: translateX(-50%); width: 1440px; height: 900px; background: radial-gradient(37.74% 81.78% at 50% 26.56%, rgba(153,255,0,.08) 0%, transparent 100%); pointer-events: none; z-index: 1; }
     .hero-stars { position: absolute; top: 55%; left: 50%; width: 600px; height: 600px; -webkit-mask-image: radial-gradient(50% 50%,rgba(217,217,217,0) 27%,#d9d9d9 48%,rgba(217,217,217,.8) 75%,transparent); mask-image: radial-gradient(50% 50%,rgba(217,217,217,0) 27%,#d9d9d9 48%,rgba(217,217,217,.8) 75%,transparent); animation: heroStarsRotate 70s linear infinite; pointer-events: none; z-index: 1; }
     .hero-star { position: absolute; width: 2px; height: 2px; border-radius: 50%; background: transparent; animation: heroStarTwinkle linear infinite; }
     .hero-star:nth-child(3n) { opacity: .5; }
@@ -112,8 +112,8 @@
 
     /* ── Buttons ── */
     .btn-primary { position: relative; padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 500; color: #f4f0ff; backdrop-filter: blur(8px); cursor: pointer; border: none; }
-    .btn-primary::before { content: ''; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(180deg,rgba(60,8,126,0),rgba(60,8,126,.32)),rgba(113,47,255,.12); box-shadow: inset 0 0 12px rgba(191,151,255,.24); z-index: -1; transition: .2s opacity; }
-    .btn-primary::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(180deg,rgba(60,8,126,0),rgba(60,8,126,.42)),rgba(113,47,255,.24); box-shadow: inset 0 0 12px rgba(191,151,255,.44); z-index: -1; opacity: 0; transition: .2s opacity; }
+    .btn-primary::before { content: ''; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(180deg,rgba(86,126,8,0),rgba(86,126,8,.32)),rgba(210,255,47,.12); box-shadow: inset 0 0 12px rgba(225,255,151,.24); z-index: -1; transition: .2s opacity; }
+    .btn-primary::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(180deg,rgba(86,126,8,0),rgba(86,126,8,.42)),rgba(210,255,47,.24); box-shadow: inset 0 0 12px rgba(225,255,151,.44); z-index: -1; opacity: 0; transition: .2s opacity; }
     .btn-primary:hover::before { opacity: 0; }
     .btn-primary:hover::after { opacity: 1; }
     .btn-primary-border { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; }
@@ -365,7 +365,7 @@
       border-radius: 999px; z-index: 100;
       box-shadow: 0 8px 32px rgba(0,0,0,.5);
     }
-    /* Gradient border: transparent -> purple -> transparent */
+    /* Gradient border: transparent -> verde (accent) -> transparent */
     .mobile-dock::before {
       content: ''; position: absolute; inset: -1.5px; border-radius: 999px;
       background: linear-gradient(90deg, transparent 5%, rgba(var(--zh-accent-rgb),.4) 35%, rgba(var(--zh-accent2-rgb),.6) 50%, rgba(var(--zh-accent-rgb),.4) 65%, transparent 95%);
@@ -584,7 +584,7 @@ document.addEventListener('DOMContentLoaded', function() {
       </div>
       <div class="sidebar-footer px-3 py-3" style="border-top:1px solid rgba(255,255,255,.04);flex-shrink:0">
         <div class="flex items-center gap-2.5 px-1">
-          <div class="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold uppercase" id="user-avatar" style="background:linear-gradient(135deg,rgba(var(--zh-accent-rgb),.3),rgba(113,47,255,.3));border:1px solid rgba(var(--zh-accent2-rgb),.15);"></div>
+          <div class="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold uppercase" id="user-avatar" style="background:linear-gradient(135deg,rgba(var(--zh-accent-rgb),.3),rgba(var(--zh-accent2-rgb),.3));border:1px solid rgba(var(--zh-accent2-rgb),.15);"></div>
           <span id="user-label" class="text-xs flex-1 truncate" style="color:rgba(255,255,255,.4)"></span>
           <button onclick="logout()" class="p-1 rounded transition-colors" style="color:rgba(255,255,255,.25)" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='rgba(255,255,255,.25)'" title="Sair"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg></button>
         </div>
@@ -649,7 +649,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <!-- Content -->
             <div class="hero-content max-w-3xl mx-auto text-center fade-in" style="position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;padding-top:22vh;">
               <div class="hero-badge">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.796 4.94L14.9 7.11l-3.804 3.22L12.18 15 8 12.42 3.82 15l1.084-4.67L1.1 7.11l5.104-1.17L8 1z" fill="url(#sparkle)"/><defs><linearGradient id="sparkle" x1="8" y1="1" x2="8" y2="15" gradientUnits="userSpaceOnUse"><stop stop-color="var(--zh-grad1)"/><stop offset=".5" stop-color="#ba9cff"/><stop offset="1" stop-color="var(--zh-grad2)"/></linearGradient></defs></svg>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.796 4.94L14.9 7.11l-3.804 3.22L12.18 15 8 12.42 3.82 15l1.084-4.67L1.1 7.11l5.104-1.17L8 1z" fill="url(#sparkle)"/><defs><linearGradient id="sparkle" x1="8" y1="1" x2="8" y2="15" gradientUnits="userSpaceOnUse"><stop stop-color="var(--zh-grad1)"/><stop offset=".5" stop-color="#C4F877"/><stop offset="1" stop-color="var(--zh-grad2)"/></linearGradient></defs></svg>
                 <span class="hero-badge-text">Construa sem limites com IA</span>
               </div>
               <h1 class="text-3xl sm:text-4xl font-bold tracking-tight mb-3" id="hero-greeting" style="background:linear-gradient(180deg,#fff,rgba(255,255,255,.65));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Teve uma ideia?</h1>
@@ -733,7 +733,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <!-- Badge --><div style="position:relative;z-index:1">
             <div style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px 6px 15px;border-radius:32px;backdrop-filter:blur(6px);box-shadow:inset 0 -7px 11px rgba(var(--zh-accent-rgb),.12);position:relative;isolation:isolate;overflow:hidden;margin-bottom:16px;">
               <div style="position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(90deg,rgba(var(--zh-grad1-rgb),.24),rgba(var(--zh-accent2-rgb),.24),rgba(var(--zh-grad2-rgb),.24));-webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;"></div>
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.796 4.94L14.9 7.11l-3.804 3.22L12.18 15 8 12.42 3.82 15l1.084-4.67L1.1 7.11l5.104-1.17L8 1z" fill="url(#spk)"/><defs><linearGradient id="spk" x1="8" y1="1" x2="8" y2="15" gradientUnits="userSpaceOnUse"><stop stop-color="var(--zh-grad1)"/><stop offset=".5" stop-color="#ba9cff"/><stop offset="1" stop-color="var(--zh-grad2)"/></linearGradient></defs></svg>
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.796 4.94L14.9 7.11l-3.804 3.22L12.18 15 8 12.42 3.82 15l1.084-4.67L1.1 7.11l5.104-1.17L8 1z" fill="url(#spk)"/><defs><linearGradient id="spk" x1="8" y1="1" x2="8" y2="15" gradientUnits="userSpaceOnUse"><stop stop-color="var(--zh-grad1)"/><stop offset=".5" stop-color="#C4F877"/><stop offset="1" stop-color="var(--zh-grad2)"/></linearGradient></defs></svg>
               <span style="background:linear-gradient(0deg,rgba(255,255,255,.4),rgba(255,255,255,.4)),linear-gradient(90deg,var(--zh-grad1),var(--zh-accent2) 50%,var(--zh-grad2));background-blend-mode:normal,screen;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-size:13px;font-weight:500;">Marketplace</span>
             </div>
 
@@ -767,7 +767,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div style="position:relative;z-index:1">
             <div style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px 6px 15px;border-radius:32px;backdrop-filter:blur(6px);box-shadow:inset 0 -7px 11px rgba(var(--zh-accent-rgb),.12);position:relative;isolation:isolate;overflow:hidden;margin-bottom:16px;">
               <div style="position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(90deg,rgba(var(--zh-grad1-rgb),.24),rgba(var(--zh-accent2-rgb),.24),rgba(var(--zh-grad2-rgb),.24));-webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;"></div>
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.796 4.94L14.9 7.11l-3.804 3.22L12.18 15 8 12.42 3.82 15l1.084-4.67L1.1 7.11l5.104-1.17L8 1z" fill="url(#spkt)"/><defs><linearGradient id="spkt" x1="8" y1="1" x2="8" y2="15" gradientUnits="userSpaceOnUse"><stop stop-color="var(--zh-grad1)"/><stop offset=".5" stop-color="#ba9cff"/><stop offset="1" stop-color="var(--zh-grad2)"/></linearGradient></defs></svg>
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.796 4.94L14.9 7.11l-3.804 3.22L12.18 15 8 12.42 3.82 15l1.084-4.67L1.1 7.11l5.104-1.17L8 1z" fill="url(#spkt)"/><defs><linearGradient id="spkt" x1="8" y1="1" x2="8" y2="15" gradientUnits="userSpaceOnUse"><stop stop-color="var(--zh-grad1)"/><stop offset=".5" stop-color="#C4F877"/><stop offset="1" stop-color="var(--zh-grad2)"/></linearGradient></defs></svg>
               <span style="background:linear-gradient(0deg,rgba(255,255,255,.4),rgba(255,255,255,.4)),linear-gradient(90deg,var(--zh-grad1),var(--zh-accent2) 50%,var(--zh-grad2));background-blend-mode:normal,screen;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-size:13px;font-weight:500;">Laboratório</span>
             </div>
             <h2 style="font-size:40px;font-weight:500;line-height:1.15;margin:0 0 12px;font-family:Inter,system-ui,sans-serif;position:relative;">
@@ -782,7 +782,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="grid gap-4" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr))">
               <div class="skill-card" style="cursor:pointer" onclick="openUxTool()">
                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-                  <div class="skill-icon-wrap"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="stroke:var(--zh-accent2)" stroke="#ba9cff" stroke-width="1.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></div>
+                  <div class="skill-icon-wrap"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="stroke:var(--zh-accent2)" stroke="#C4F877" stroke-width="1.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></div>
                   <h3 style="font-size:14px;font-weight:600;color:rgba(255,255,255,.85);margin:0;flex:1">Extrator de UX</h3>
                   <span class="skill-badge-plugin">Ferramenta</span>
                 </div>
@@ -808,7 +808,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div style="text-align:center;margin-bottom:28px">
               <div style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px 6px 15px;border-radius:32px;backdrop-filter:blur(6px);box-shadow:inset 0 -7px 11px rgba(var(--zh-accent-rgb),.12);position:relative;isolation:isolate;overflow:hidden;margin-bottom:14px;">
                 <div style="position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(90deg,rgba(var(--zh-grad1-rgb),.24),rgba(var(--zh-accent2-rgb),.24),rgba(var(--zh-grad2-rgb),.24));-webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;"></div>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="stroke:var(--zh-accent2)" stroke="#ba9cff" stroke-width="1.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="stroke:var(--zh-accent2)" stroke="#C4F877" stroke-width="1.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
                 <span style="background:linear-gradient(0deg,rgba(255,255,255,.4),rgba(255,255,255,.4)),linear-gradient(90deg,var(--zh-grad1),var(--zh-accent2) 50%,var(--zh-grad2));background-blend-mode:normal,screen;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-size:13px;font-weight:500;">Ferramenta</span>
               </div>
               <h2 style="font-size:34px;font-weight:500;line-height:1.15;margin:0 0 10px;">
@@ -872,7 +872,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div style="position:relative;z-index:1">
             <div style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px 6px 15px;border-radius:32px;backdrop-filter:blur(6px);box-shadow:inset 0 -7px 11px rgba(var(--zh-accent-rgb),.12);position:relative;isolation:isolate;overflow:hidden;margin-bottom:16px;">
               <div style="position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(90deg,rgba(var(--zh-grad1-rgb),.24),rgba(var(--zh-accent2-rgb),.24),rgba(var(--zh-grad2-rgb),.24));-webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;"></div>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="none"><defs><linearGradient id="intg" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse"><stop stop-color="var(--zh-grad1)"/><stop offset=".5" stop-color="#ba9cff"/><stop offset="1" stop-color="var(--zh-grad2)"/></linearGradient></defs><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" stroke="url(#intg)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" stroke="url(#intg)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="none"><defs><linearGradient id="intg" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse"><stop stop-color="var(--zh-grad1)"/><stop offset=".5" stop-color="#C4F877"/><stop offset="1" stop-color="var(--zh-grad2)"/></linearGradient></defs><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" stroke="url(#intg)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" stroke="url(#intg)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
               <span style="background:linear-gradient(0deg,rgba(255,255,255,.4),rgba(255,255,255,.4)),linear-gradient(90deg,var(--zh-grad1),var(--zh-accent2) 50%,var(--zh-grad2));background-blend-mode:normal,screen;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-size:13px;font-weight:500;">Conecte tudo</span>
             </div>
 
@@ -914,7 +914,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <!-- Code Header -->
             <div class="flex items-center gap-4 px-5 flex-shrink-0" style="height:46px;border-bottom:1px solid rgba(255,255,255,.04);">
               <div class="flex items-center gap-2.5">
-                <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,rgba(113,47,255,.25),rgba(var(--zh-accent2-rgb),.25));box-shadow:0 0 12px rgba(var(--zh-accent-rgb),.1);">
+                <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,rgba(210,255,47,.25),rgba(var(--zh-accent2-rgb),.25));box-shadow:0 0 12px rgba(var(--zh-accent-rgb),.1);">
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
                 </div>
                 <div>
@@ -1095,8 +1095,8 @@ document.addEventListener('DOMContentLoaded', function() {
       <!-- AI Choose card -->
       <div class="px-6 pb-3">
         <div id="ai-choose-card" class="flex items-center gap-3 p-4 rounded-xl cursor-pointer transition-all" style="background:rgba(var(--zh-accent-rgb),.06);border:2px solid rgba(var(--zh-accent-rgb),.2);" onclick="selectPromptTheme(null, this)">
-          <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,rgba(113,47,255,.3),rgba(var(--zh-accent2-rgb),.3));">
-            <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.796 4.94L14.9 7.11l-3.804 3.22L12.18 15 8 12.42 3.82 15l1.084-4.67L1.1 7.11l5.104-1.17L8 1z" fill="url(#sp2)"/><defs><linearGradient id="sp2" x1="8" y1="1" x2="8" y2="15" gradientUnits="userSpaceOnUse"><stop stop-color="var(--zh-grad1)"/><stop offset=".5" stop-color="#ba9cff"/><stop offset="1" stop-color="var(--zh-grad2)"/></linearGradient></defs></svg>
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,rgba(210,255,47,.3),rgba(var(--zh-accent2-rgb),.3));">
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.796 4.94L14.9 7.11l-3.804 3.22L12.18 15 8 12.42 3.82 15l1.084-4.67L1.1 7.11l5.104-1.17L8 1z" fill="url(#sp2)"/><defs><linearGradient id="sp2" x1="8" y1="1" x2="8" y2="15" gradientUnits="userSpaceOnUse"><stop stop-color="var(--zh-grad1)"/><stop offset=".5" stop-color="#C4F877"/><stop offset="1" stop-color="var(--zh-grad2)"/></linearGradient></defs></svg>
           </div>
           <div>
             <p class="text-sm font-medium" style="color:rgba(255,255,255,.85);">Deixar a IA escolher o melhor</p>
@@ -1140,7 +1140,7 @@ document.addEventListener('DOMContentLoaded', function() {
   <!-- ═══ LOADING SCREEN ═══ -->
   <div id="loading-screen" class="hidden fixed inset-0 flex flex-col items-center justify-center" style="z-index:60;background:var(--zh-bg);">
     <div class="loading-logo mb-8">
-      <div class="w-14 h-14 rounded-2xl flex items-center justify-center" style="background:linear-gradient(135deg,rgba(113,47,255,.4),rgba(var(--zh-accent2-rgb),.4));box-shadow:0 0 40px rgba(var(--zh-accent-rgb),.15);">
+      <div class="w-14 h-14 rounded-2xl flex items-center justify-center" style="background:linear-gradient(135deg,rgba(210,255,47,.4),rgba(var(--zh-accent2-rgb),.4));box-shadow:0 0 40px rgba(var(--zh-accent-rgb),.15);">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M11.811 6.727C12.825 4.909 13.331 4 14.09 4c.757 0 1.264.909 2.277 2.727l.262.47c.288.517.432.775.657.945.224.17.504.234 1.063.36l.51.116c1.967.445 2.95.667 3.185 1.42s-.437 1.537-1.778 3.106l-.347.406c-.381.445-.572.668-.658.944s-.057.573 0 1.168l.053.541c.203 2.094.305 3.14-.308 3.605s-1.534.041-3.377-.807l-.476-.22c-.524-.24-.786-.361-1.063-.361-.278 0-.54.12-1.063.361l-.477.22c-1.842.848-2.763 1.272-3.376.807s-.511-1.511-.309-3.605l.053-.541c.057-.595.086-.892 0-1.168s-.276-.498-.657-.944l-.347-.406C6.57 11.575 5.9 10.79 6.135 10.038s1.218-.975 3.185-1.42l.51-.116c.559-.126.838-.19 1.063-.36s.368-.428.656-.945z"/></svg>
       </div>
     </div>
@@ -1945,8 +1945,8 @@ function renderPaletteList() {
   const list = document.getElementById('palette-list');
   let html = '';
   html += '<div class="palette-card selected" id="palette-ai" onclick="selectPalette(null,this)">'
-    + '<div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,rgba(113,47,255,.3),rgba(var(--zh-accent2-rgb),.3))">'
-    + '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.796 4.94L14.9 7.11l-3.804 3.22L12.18 15 8 12.42 3.82 15l1.084-4.67L1.1 7.11l5.104-1.17L8 1z" fill="url(#aisp)"/><defs><linearGradient id="aisp" x1="8" y1="1" x2="8" y2="15" gradientUnits="userSpaceOnUse"><stop stop-color="var(--zh-grad1)"/><stop offset=".5" stop-color="#ba9cff"/><stop offset="1" stop-color="var(--zh-grad2)"/></linearGradient></defs></svg>'
+    + '<div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,rgba(210,255,47,.3),rgba(var(--zh-accent2-rgb),.3))">'
+    + '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.796 4.94L14.9 7.11l-3.804 3.22L12.18 15 8 12.42 3.82 15l1.084-4.67L1.1 7.11l5.104-1.17L8 1z" fill="url(#aisp)"/><defs><linearGradient id="aisp" x1="8" y1="1" x2="8" y2="15" gradientUnits="userSpaceOnUse"><stop stop-color="var(--zh-grad1)"/><stop offset=".5" stop-color="#C4F877"/><stop offset="1" stop-color="var(--zh-grad2)"/></linearGradient></defs></svg>'
     + '</div><span class="text-sm flex-1" style="color:rgba(255,255,255,.8)">IA escolhe a melhor paleta</span></div>';
   PALETTES.forEach(function(p) {
     const swatches = p.colors.slice(0,6).map(function(c) { return '<div class="palette-swatch" style="background:' + c + '"></div>'; }).join('');
@@ -2197,13 +2197,13 @@ function changePassword() {
 
       document.getElementById("sc-tab-login").addEventListener("click", function() {
         settingsMode = 'login';
-        this.style.background = "rgba(var(--zh-accent-rgb),.15)"; this.style.color = "#ba9cff";
+        this.style.background = "rgba(var(--zh-accent-rgb),.15)"; this.style.color = "#C4F877";
         document.getElementById("sc-tab-token").style.background = "none"; document.getElementById("sc-tab-token").style.color = "rgba(255,255,255,.35)";
         showSettingsLoginMode();
       });
       document.getElementById("sc-tab-token").addEventListener("click", function() {
         settingsMode = 'token';
-        this.style.background = "rgba(var(--zh-accent-rgb),.15)"; this.style.color = "#ba9cff";
+        this.style.background = "rgba(var(--zh-accent-rgb),.15)"; this.style.color = "#C4F877";
         document.getElementById("sc-tab-login").style.background = "none"; document.getElementById("sc-tab-login").style.color = "rgba(255,255,255,.35)";
         showSettingsTokenMode();
       });

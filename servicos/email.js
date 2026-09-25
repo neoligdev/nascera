@@ -110,7 +110,7 @@ function criar(deps) {
     const html = '<div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#1a1a2e">' +
       texto.split('\n').map(l => l.trim() === '' ? '<br>' :
         '<p style="margin:0 0 4px;line-height:1.6">' + l.replace(/&/g, '&amp;').replace(/</g, '&lt;')
-          .replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" style="color:#6666FF">$1</a>') + '</p>').join('') +
+          .replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" style="color:#4C9A00">$1</a>') + '</p>').join('') +
       '</div>';
     return { assunto: preencher(assunto), texto, html };
   }
