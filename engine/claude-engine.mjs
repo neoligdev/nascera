@@ -19,6 +19,7 @@
 import { EventEmitter } from 'node:events';
 import crypto from 'node:crypto';
 import { CodexSession } from './codex-engine.mjs';
+import { OpenCodeSession } from './opencode-engine.mjs';
 import fs from 'node:fs';
 import { query } from '@anthropic-ai/claude-agent-sdk';
 // Fronteira ESM↔CJS: `motores.js` é CommonJS e este arquivo é ESM. O Node
@@ -852,6 +853,11 @@ const MAX_SESSOES_GLOBAL = parseInt(process.env.NASCERA_MAX_SESSOES || '0', 10)
   || Math.max(2, Math.min(24, Math.floor(os.totalmem() / (400 * 1024 * 1024))));
 const MAX_SESSOES_POR_USUARIO = parseInt(process.env.NASCERA_MAX_SESSOES_USUARIO || '3', 10);
 
+// Motor → classe de sessão. Claude fica de fora (é o padrão, ver `obtain`)
+// porque é o único que não roda por cima deste dispatch — ele É a sessão
+// viva deste arquivo.
+const CONSTRUTORES_DE_MOTOR = { codex: CodexSession, opencode: OpenCodeSession };
+
 export class SessionManager {
   constructor() {
     this.sessions = new Map();
@@ -892,9 +898,10 @@ export class SessionManager {
   }
 
   // Cria (ou retorna) a sessão viva para a chave.
-  // `opts.motor` escolhe qual dos dois motores atende: 'claude' (padrão) ou
-  // 'codex'. Os dois expõem a mesma superfície, então daqui para cima nada
-  // no NASCERA precisa saber a diferença.
+  // `opts.motor` escolhe qual motor atende: 'claude' (padrão, se ausente ou
+  // desconhecido), 'codex' ou 'opencode' — ver CONSTRUTORES_DE_MOTOR. Todos
+  // expõem a mesma superfície, então daqui para cima nada no NASCERA precisa
+  // saber a diferença.
   obtain(key, opts) {
     let s = this.sessions.get(key);
     if (s && !s.closed) return s;
@@ -910,11 +917,8 @@ export class SessionManager {
       throw err;
     }
 
-    if (opts && opts.motor === 'codex') {
-      s = new CodexSession({ ...opts, key });
-    } else {
-      s = new ClaudeSession({ ...opts, key });
-    }
+    const Ctor = (opts && CONSTRUTORES_DE_MOTOR[opts.motor]) || ClaudeSession;
+    s = new Ctor({ ...opts, key });
     s.dono = dono;   // usado pelo teto por usuário
     this.sessions.set(key, s);
     s.on('closed', () => { if (this.sessions.get(key) === s) this.sessions.delete(key); });

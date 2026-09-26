@@ -1,11 +1,14 @@
 // ═══════════════════════════════════════════════════════════════════════
 // NASCERA — Motores de IA
 //
-// O NASCERA trabalha com dois motores, e eles CONVIVEM: o dono escolhe qual
+// O NASCERA trabalha com vários motores, e eles CONVIVEM: o dono escolhe qual
 // conectar na instalação e troca quando quiser em Configurações.
 //
-//   claude → Claude Code (Anthropic), via @anthropic-ai/claude-agent-sdk
-//   codex  → GPT Codex (OpenAI), via CLI `codex exec --json`
+//   claude    → Claude Code (Anthropic), via @anthropic-ai/claude-agent-sdk
+//   codex     → GPT Codex (OpenAI), via CLI `codex exec --json`
+//   opencode  → OpenCode (multi-provedor), via CLI `opencode run --format json`
+//               O DeepSeek entra por aqui: não é um motor próprio, é um
+//               provedor configurado dentro do OpenCode (ver opencode-engine.mjs).
 //
 // Este módulo só sabe responder três perguntas, que são as que a UI precisa:
 // o CLI está instalado? está autenticado? como instalo/conecto?
@@ -13,16 +16,21 @@
 // Diferenças que a UI precisa mostrar, porque mudam o que a pessoa vê no
 // chat (medido, não suposto):
 //
-//                     Claude Code            GPT Codex
-//   sessão            viva (1 processo)      1 processo por turno
-//   permissão         pergunta no meio       decidida antes, pela sandbox
-//   modos             turbo/ask/edits/…      read-only/workspace-write/full
-//   esforço           por modelo             minimal/low/medium/high
+//                     Claude Code            GPT Codex              OpenCode
+//   sessão            viva (1 processo)      1 processo por turno   1 processo por turno
+//   permissão         pergunta no meio       decidida antes, pela   regras de config
+//                                            sandbox                (allow/deny/ask)
+//   modos             turbo/ask/edits/…      read-only/workspace-   mapeadas p/ regras
+//                                            write/full             de permissão
+//   esforço           por modelo             minimal/low/medium/    não existe — a
+//                                            high                   "profundidade" é
+//                                                                   o modelo escolhido
 // ═══════════════════════════════════════════════════════════════════════
 
 const { execFile, spawnSync } = require('child_process');
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 
 const MOTORES = {
   claude: {
@@ -46,6 +54,18 @@ const MOTORES = {
     resumo: 'Um processo por turno, com sandbox definida antes de começar.',
     comandoLogin: 'codex login',
     // O Codex não é embarcado: é um npm à parte, instalado sob demanda.
+    embarcado: false,
+  },
+  opencode: {
+    id: 'opencode',
+    nome: 'OpenCode',
+    fornecedor: 'Multi-provedor (Anthropic, OpenAI, DeepSeek…)',
+    binario: 'opencode',
+    pacote: '@opencode/cli',
+    resumo: 'Um processo por turno, multi-provedor via configuração própria. ' +
+            'O DeepSeek entra como provedor configurado dentro dele, não como motor à parte.',
+    comandoLogin: 'opencode auth login <provedor> --method api-key',
+    // Também não é embarcado: npm à parte, instalado sob demanda.
     embarcado: false,
   },
 };
@@ -179,8 +199,12 @@ function ehExecutavel(caminho) {
   } catch { return false; }
 }
 
+// Uma env var de escape por motor — o operador pode sempre apontar o binário
+// à mão, sem depender de PATH/embarcado.
+const ENV_POR_MOTOR = { claude: 'CLAUDE_CMD', codex: 'CODEX_CMD', opencode: 'OPENCODE_CMD' };
+
 // ORDEM DE PREFERÊNCIA — e o porquê de cada degrau:
-//   1. env (CLAUDE_CMD / CODEX_CMD): escape do operador, manda sempre.
+//   1. env (CLAUDE_CMD / CODEX_CMD / OPENCODE_CMD): escape do operador, manda sempre.
 //   2. embarcado no node_modules:    pinado e testado com esta versão.
 //   3. global no PATH:               o que quebrava; fica como último recurso
 //      para não regredir quem já dependia dele (ex.: Codex).
@@ -189,7 +213,7 @@ function resolverBinario(id) {
   const m = MOTORES[id];
   if (!m) return { caminho: null, origem: null };
 
-  const doAmbiente = process.env[id === 'claude' ? 'CLAUDE_CMD' : 'CODEX_CMD'];
+  const doAmbiente = process.env[ENV_POR_MOTOR[id]];
   if (ehOverrideDeVerdade(doAmbiente)) return { caminho: doAmbiente, origem: 'env' };
 
   const emb = binarioEmbarcado(id);
@@ -402,6 +426,41 @@ function rodar(cmd, args, timeout = 12000) {
 // (caminhoDo() foi removido: `estadoDe` passou a usar `resolverBinario`, que
 // já cobre env/embarcado/global — manter as duas convidava a divergirem.)
 
+// ─── OpenCode: onde mora a config de provedores (ex.: DeepSeek) ─────────
+// O OpenCode não lê variável de ambiente para mudar o caminho do config —
+// é sempre `~/.config/opencode/opencode.json(c)` (medido na v2.0.17 rodando
+// `opencode debug paths`). O NASCERA gerencia só o bloco `providers.deepseek`
+// desse arquivo (ver rotas/admin-motores.js); o resto do arquivo pode ter
+// sido escrito à mão pelo operador, por isso a leitura aqui nunca escreve,
+// só confere.
+function caminhosConfigOpenCode() {
+  const dir = path.join(os.homedir(), '.config', 'opencode');
+  return [path.join(dir, 'opencode.json'), path.join(dir, 'opencode.jsonc')];
+}
+
+// Leitura tolerante: não é um parser JSONC completo, só o bastante para o que
+// o próprio NASCERA escreve e para o exemplo padrão do OpenCode (comentário
+// de linha inteira). Arquivo ilegível ou ausente devolve null — "não sei"
+// nunca vira acusação de erro.
+function lerConfigOpenCode() {
+  for (const caminho of caminhosConfigOpenCode()) {
+    let texto;
+    try { texto = fs.readFileSync(caminho, 'utf8'); } catch { continue; }
+    try { return JSON.parse(texto.replace(/^\s*\/\/.*$/gm, '')); } catch { continue; }
+  }
+  return null;
+}
+
+// "Configurado" aqui é bem mais fraco que a prova ao vivo do Claude (que bate
+// na API da Anthropic): só confere que o bloco existe e que a env var que ele
+// declara está setada NESTE processo — não confirma que a chave é válida.
+function deepseekConfigurado() {
+  const cfg = lerConfigOpenCode();
+  const provedor = cfg && cfg.providers && cfg.providers.deepseek;
+  if (!provedor || !Array.isArray(provedor.env)) return false;
+  return provedor.env.some((nome) => !!process.env[nome]);
+}
+
 // Instalado ≠ conectado. Um CLI presente mas sem login falha só na hora do
 // primeiro turno, e aí o cliente acha que o NASCERA quebrou.
 async function estadoDe(id) {
@@ -429,6 +488,26 @@ async function estadoDe(id) {
     // usar `!ok` fazia toda instalação Unix ainda-sem-login perder o "rode
     // claude auth login" e receber no lugar o texto cru do erro.
     if (!conectado && r.naoExecutou) provaErro = (r.erro || r.saida || '').slice(-200) || null;
+  } else if (id === 'opencode') {
+    // O OpenCode não tem um "login" único como Claude/Codex: provedores
+    // mainstream (Anthropic, OpenAI…) conectam via `auth login`/`/connect` e
+    // aparecem em `auth list`; o DeepSeek, por ser um provedor customizado
+    // autenticado só por variável de ambiente (ver caminhosConfigOpenCode),
+    // NUNCA passa por ali (medido na v2.0.17: `auth list` só lista contas
+    // salvas em auth.json). Por isso somamos as duas fontes.
+    let provedoresLogados = [];
+    const r = await rodar(caminho, ['auth', 'list', '--format', 'json'], 10000);
+    try { provedoresLogados = JSON.parse(r.saida); } catch { provedoresLogados = []; }
+    const temDeepseek = deepseekConfigurado();
+    conectado = (Array.isArray(provedoresLogados) && provedoresLogados.length > 0) || temDeepseek;
+    const nomes = [
+      ...(Array.isArray(provedoresLogados)
+        ? provedoresLogados.map((p) => (p && (p.provider || p.id || p.name)) || '?')
+        : []),
+      ...(temDeepseek ? ['deepseek'] : []),
+    ];
+    conta = nomes.length ? nomes.join(', ') : null;
+    if (!conectado && r.naoExecutou) provaErro = (r.erro || r.saida || '').slice(-200) || null;
   } else {
     // O `codex login status` responde com texto livre; o que importa é
     // distinguir "não autenticado" de qualquer outra coisa.
@@ -447,8 +526,8 @@ async function estadoDe(id) {
 }
 
 async function estado() {
-  const [claude, codex] = await Promise.all([estadoDe('claude'), estadoDe('codex')]);
-  return { motores: [claude, codex] };
+  const lista = await Promise.all(Object.keys(MOTORES).map(estadoDe));
+  return { motores: lista };
 }
 
 // Versão da SDK que este NASCERA declara — é ela que define qual CLI é o certo.
@@ -1068,6 +1147,9 @@ async function diagnostico(id = 'claude') {
   const glob = binarioGlobalSync(MOTORES[id] ? MOTORES[id].binario : id);
   return {
     motor: id,
+    // Aditivo: o modal de diagnóstico do painel usa isto para não ter que
+    // adivinhar o título do card por um ternário hardcoded (ver ia.js).
+    nome: MOTORES[id] ? MOTORES[id].nome : id,
     versaoSdk: sdk,
     plataforma: `${process.platform}-${process.arch}${ehMusl() ? '-musl' : ''}`,
     embarcado: emb || null,
@@ -1120,4 +1202,7 @@ module.exports = {
   // invocação neutra de comando: fonte única para quem precisa chamar `npm` ou
   // um CLI que no Windows é shim de script (usado também pelo atualizacao.js).
   invocacaoDe, invocacaoParaPty,
+  // Config de provedores do OpenCode (ex.: DeepSeek) — leitura compartilhada
+  // entre o diagnóstico daqui e a rota admin que grava o provedor.
+  caminhosConfigOpenCode, lerConfigOpenCode, deepseekConfigurado,
 };

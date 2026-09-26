@@ -47,6 +47,8 @@ Z.registrar('ia', {
       'usar-motor':      usarMotor,
       'instalar-motor':  instalarMotor,
       'diagnostico':     abrirDiagnostico,
+      'salvar-deepseek': salvarDeepSeek,
+      'remover-deepseek':removerDeepSeek,
       'copiar':          copiar,
       'baixar-modelo':   baixarModelo,
       'testar-modelo':   testarModelo,
@@ -164,7 +166,13 @@ function encerrarSessao(key) {
 
 // ═══ ABA 2 — MOTORES ══════════════════════════════════════════════════
 function abaMotores(cx) {
-  return Z.api('/api/admin/motores').then(function (d) {
+  return Promise.all([
+    Z.api('/api/admin/motores'),
+    // Provedor DeepSeek do OpenCode — chave de instalação, não BYOK. Falha
+    // aqui não deve derrubar a aba inteira (o motor ainda funciona sem ele).
+    Z.api('/api/admin/motores/opencode/provedores/deepseek').catch(function () { return { configurada: false }; }),
+  ]).then(function (respostas) {
+    var d = respostas[0], deepseek = respostas[1] || {};
     if (apiErro(cx, d)) return;
     var lista = d.motores || [];
     var emUso = d.emUso || 'claude';
@@ -231,10 +239,64 @@ function abaMotores(cx) {
         (m.caminho ? '<div class="z-mono z-fg3" style="margin-top:9px;overflow-wrap:anywhere">' + Z.esc(m.caminho) + '</div>' : '') +
         aviso +
         (botoes.length ? '<div class="z-linha" style="margin-top:13px">' + botoes.join('') + '</div>' : '') +
+        (m.id === 'opencode' ? blocoDeepSeek(deepseek) : '') +
       '</div>';
     }).join('') + '</div>';
 
     cx.innerHTML = html;
+  });
+}
+
+// O DeepSeek não é um motor à parte — é um provedor configurado DENTRO do
+// OpenCode (ver motores.js e engine/opencode-engine.mjs). A chave aqui é de
+// NÍVEL DE INSTALAÇÃO (uma para todos os clientes), diferente da aba "IA
+// própria dos clientes" (essa é por usuário e só fala Anthropic).
+function blocoDeepSeek(info) {
+  return '<div class="z-sep"></div>' +
+    '<div class="z-rotulo" style="margin:0 0 8px">Provedor DeepSeek</div>' +
+    '<div class="z-item-chips">' +
+      (info.configurada ? C.chipPonto('Chave configurada', 'ok') : C.chip('Sem chave', 'alerta')) +
+    '</div>' +
+    '<div class="z-p z-fg3" style="margin:8px 0 10px">' +
+      'Vale para todo cliente que escolher um modelo <span class="z-mono">deepseek/…</span> dentro do OpenCode. ' +
+      'A chave nunca aparece em claro depois de salva.' +
+    '</div>' +
+    C.campo({ id: 'ia-deepseek-key', rotulo: 'Chave da API do DeepSeek', tipo: 'password', dica: 'sk-…', auto: false }) +
+    '<div class="z-linha" style="margin-top:6px">' +
+      C.btn('Salvar chave', { classe: 'primario', icone: 'check', acao: 'salvar-deepseek' }) +
+      (info.configurada ? C.btn('Remover', { classe: 'fantasma', icone: 'fechado', acao: 'remover-deepseek' }) : '') +
+    '</div>';
+}
+
+function salvarDeepSeek(_dado, el) {
+  var input = document.getElementById('ia-deepseek-key');
+  var chave = input ? input.value.trim() : '';
+  if (!chave) return Z.erro('Cole a chave do DeepSeek antes de salvar.');
+  var antes = el.innerHTML;
+  el.disabled = true; el.textContent = 'Salvando…';
+  Z.apiJson('/api/admin/motores/opencode/provedores/deepseek', 'PUT', { apiKey: chave }).then(function (d) {
+    el.disabled = false; el.innerHTML = antes;
+    if (d.error) return Z.erro(d.error);
+    Z.ok('Chave do DeepSeek salva.');
+    pintar().catch(falha);
+  }).catch(function () {
+    el.disabled = false; el.innerHTML = antes;
+    Z.erro('Não consegui salvar a chave.');
+  });
+}
+
+function removerDeepSeek() {
+  Z.confirmar({
+    titulo: 'Remover a chave do DeepSeek?',
+    texto: 'Builds que usarem um modelo deepseek/… dentro do OpenCode param de funcionar até uma chave nova ser salva.',
+    confirmar: 'Remover chave', perigo: true,
+    aoConfirmar: function () {
+      Z.apiJson('/api/admin/motores/opencode/provedores/deepseek', 'DELETE', {}).then(function (d) {
+        if (d.error) return Z.erro(d.error);
+        Z.ok('Chave removida.');
+        pintar().catch(falha);
+      });
+    },
   });
 }
 
@@ -288,10 +350,10 @@ function abrirDiagnostico() {
            '“não consigo fazer login”.',
       corpo:
         C.banner('Node desta máquina: <b class="z-mono">' + Z.esc(d.node || '—') + '</b>', 'info') +
-        '<div class="z-grid2">' + ['claude', 'codex'].map(function (k) {
+        '<div class="z-grid2">' + Object.keys(d).filter(function (k) { return k !== 'node'; }).map(function (k) {
           var m = d[k] || {};
           return C.card({
-            tit: k === 'claude' ? 'Claude Code' : 'GPT Codex',
+            tit: m.nome || k,
             corpo: '<div class="z-col" style="gap:6px">' +
               linha('Conectado', m.conectado ? '<span class="z-chip ok">sim</span>' : '<span class="z-chip erro">não</span>') +
               linha('Versão em uso', Z.esc(m.versaoEmUso || '—')) +

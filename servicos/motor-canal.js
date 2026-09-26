@@ -21,7 +21,7 @@ function criar(deps) {
     autoCommitAsync, atualizarProjeto, getCurrentVersion, generateProjectScreenshot,
     getEngine, sessionKeyFor, isDesktopLocal, escreverFerramentaDeImagem, memoriaProjeto,
     PROJECTS_BASE, normalizeBuildLevel, loadNasceraConfig, modelosLocais, motores, vpsSpawnWrapper, BUILD_LEVELS,
-    credencialIaPropria, email, loadUsers,
+    credencialIaPropria, email, loadUsers, segredos,
   } = deps;
 
   function bindChannel(ch) {
@@ -318,6 +318,15 @@ function criar(deps) {
         envDoMotor = { ...envDoMotor, [cred.envVar]: cred.valor };
         iaPropriaAtiva = true;
       }
+    }
+
+    // DeepSeek dentro do OpenCode: chave de NÍVEL DE INSTALAÇÃO (o admin cola
+    // uma vez, ver rotas/admin-motores.js), não BYOK por usuário. O
+    // opencode.json global só referencia o NOME da env var — quem entrega o
+    // valor de verdade é aqui, igual ao padrão do "modelo local" acima.
+    if (motorEscolhido === 'opencode' && segredos) {
+      const chaveDeepSeek = segredos.obter('motor:opencode:deepseek');
+      if (chaveDeepSeek) envDoMotor = { ...envDoMotor, DEEPSEEK_API_KEY: chaveDeepSeek };
     }
 
     // ONDE FICA A ESCOLHA DO BINÁRIO DO MOTOR — e por que NÃO é aqui.

@@ -1276,7 +1276,7 @@ app.post('/api/projects/:id/imagem', autorizaImagem, async (req, res) => {
 // ─── Rotas admin de motores (S4: extraídas para rotas/admin-motores.js) ───
 require('./rotas/admin-motores.js').registrar(app, {
   adminMiddleware, loadNasceraConfig, saveNasceraConfig, invalidarCmdDoMotor,
-  getChannels: () => channels, appendActivity,
+  getChannels: () => channels, appendActivity, segredos,
 });
 
 // ═══════════════ MODELOS LOCAIS (LLM open source) ═══════════════
@@ -2510,6 +2510,7 @@ const { bindChannel, ensureChannel } = require('./servicos/motor-canal.js').cria
   autoCommitAsync, atualizarProjeto, getCurrentVersion, generateProjectScreenshot,
   getEngine, sessionKeyFor, isDesktopLocal, escreverFerramentaDeImagem, memoriaProjeto,
   PROJECTS_BASE, normalizeBuildLevel, loadNasceraConfig, modelosLocais, motores, vpsSpawnWrapper, BUILD_LEVELS,
+  segredos,
   // AD.1: credencial de IA própria do dono (ou null → credencial da instalação)
   credencialIaPropria: (username) => require('./rotas/ia-propria.js')
     .credencialPara(username, { loadNasceraConfig, loadUsers, segredos }),

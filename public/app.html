@@ -1720,6 +1720,19 @@ var MODE_META_CODEX = {
   plan:   { label: 'Plan',    desc: 'Somente leitura — não altera arquivo nenhum' },
   bypass: { label: 'Bypass',  desc: 'Acesso total à máquina, sem sandbox' },
 };
+// O OpenCode roda um processo por turno, sem sessão viva — não pergunta
+// permissão no meio do caminho (não há para quem perguntar). O controle real
+// é uma regra de permissão aprovada de antemão (allow/deny) mais a flag
+// --auto (aprova o que não for negado). Por isso "Seguro"/"Edições" aqui NÃO
+// prometem confirmação em tempo real — o texto é honesto sobre isso em vez
+// de imitar o Claude/Codex.
+var MODE_META_OPENCODE = {
+  turbo:  { label: 'Turbo',   desc: 'Aprova tudo automaticamente (--auto)' },
+  ask:    { label: 'Seguro',  desc: 'Ações sensíveis não são aprovadas sozinhas — sem confirmação em tempo real' },
+  edits:  { label: 'Edições', desc: 'Mesma regra do Seguro — sem aprovação automática de ações sensíveis' },
+  plan:   { label: 'Plan',    desc: 'Sem aprovação automática — a ideia é não alterar nada' },
+  bypass: { label: 'Bypass',  desc: 'Aprova tudo automaticamente (--auto), sem exceção' },
+};
 var MODE_META = MODE_META_CLAUDE;
 
 // O Codex tem a própria escala de esforço (minimal…high), diferente da do
@@ -1733,12 +1746,23 @@ var EFFORT_STEPS_CODEX = [
 ];
 
 // Chamado no init, quando o servidor diz qual motor está atendendo.
+// EFFORT_STEPS_CLAUDE só existe depois da declaração de EFFORT_STEPS lá
+// embaixo — mas esta função só é CHAMADA a partir de uma mensagem do
+// WebSocket, bem depois do script inteiro já ter rodado, então a referência
+// aqui dentro é segura mesmo vindo antes no arquivo.
 function aplicarMotor(motor) {
-  var codex = motor === 'codex';
-  MODE_META = codex ? MODE_META_CODEX : MODE_META_CLAUDE;
-  if (codex) EFFORT_STEPS = EFFORT_STEPS_CODEX;
+  var MOTOR_META = {
+    codex:    { modeMeta: MODE_META_CODEX,    effortSteps: EFFORT_STEPS_CODEX,  label: 'GPT Codex' },
+    opencode: { modeMeta: MODE_META_OPENCODE, effortSteps: EFFORT_STEPS_CLAUDE, label: 'OpenCode' },
+  };
+  var meta = MOTOR_META[motor];
+  MODE_META = meta ? meta.modeMeta : MODE_META_CLAUDE;
+  // Sem `else` isto ficaria preso na escala do último motor não-Claude usado
+  // na aba — reatribuir sempre é o que permite trocar de motor no meio da
+  // sessão sem precisar recarregar a página.
+  EFFORT_STEPS = meta ? meta.effortSteps : EFFORT_STEPS_CLAUDE;
   var selo = document.getElementById('engine-badge');
-  if (selo) { selo.textContent = codex ? 'GPT Codex' : 'Claude Code'; selo.style.display = 'inline-block'; }
+  if (selo) { selo.textContent = meta ? meta.label : 'Claude Code'; selo.style.display = 'inline-block'; }
 }
 
 function handleEngineInit(msg) {
@@ -1845,7 +1869,10 @@ document.addEventListener('click', function(e) {
 // ── Esforço de raciocínio (effort do SDK) ──
 // Quanto o modelo pensa antes de responder. Nem todo modelo aceita todos os
 // níveis — a lista real vem do SDK em models[].effortLevels.
-var EFFORT_STEPS = [
+// Nome próprio para a escala padrão (Claude) — aplicarMotor() precisa
+// conseguir VOLTAR pra ela ao trocar de motor no meio da sessão, sem
+// depender de reatribuir por cima da variável que já foi sobrescrita.
+var EFFORT_STEPS_CLAUDE = [
   { value: null,     name: 'Padrão', desc: 'O modelo decide sozinho quanto pensar. Recomendado no dia a dia.' },
   { value: 'low',    name: 'Baixo',  desc: 'Quase sem raciocínio prévio. O mais rápido e barato — bom para tarefas mecânicas.' },
   { value: 'medium', name: 'Médio',  desc: 'Raciocínio moderado antes de agir. Equilíbrio entre velocidade e cuidado.' },
@@ -1853,6 +1880,7 @@ var EFFORT_STEPS = [
   { value: 'xhigh',  name: 'Extra',  desc: 'Raciocínio profundo. Mais lento, para problemas difíceis.' },
   { value: 'max',    name: 'Máximo', desc: 'Esforço total. O mais lento e caro — só para o que realmente exige.' },
 ];
+var EFFORT_STEPS = EFFORT_STEPS_CLAUDE;
 
 function effortIndex(v) {
   var i = EFFORT_STEPS.findIndex(function(s) { return s.value === (v || null); });
