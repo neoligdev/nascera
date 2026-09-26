@@ -79,9 +79,17 @@ function suportaStandalone(comando) {
 // isso ser confirmado.
 const MODO_USA_AUTO = { plan: false, ask: false, edits: false, turbo: true, bypass: true };
 
+// `opencode/big-pickle` é o modelo GRATUITO embutido do próprio OpenCode —
+// MEDIDO rodando de verdade: nenhuma conta, chave ou `/connect` necessário,
+// aparece pronto em `opencode models` numa instalação zerada e respondeu um
+// turno real com `cost: 0`. Os outros `opencode/…-free` da mesma família
+// (`opencode models | grep opencode/`) valem o mesmo, mas só este foi
+// testado ponta a ponta. Os DeepSeek continuam na lista para quem configurar
+// a chave (ver rotas/admin-motores.js) — nenhum dos dois exclui o outro.
 export const OPENCODE_MODELOS = [
-  { value: 'deepseek/deepseek-chat', label: 'DeepSeek Chat', description: 'Rápido, custo baixo', supportsEffort: false },
-  { value: 'deepseek/deepseek-reasoner', label: 'DeepSeek Reasoner', description: 'Raciocínio mais profundo, mais lento', supportsEffort: false },
+  { value: 'opencode/big-pickle', label: 'OpenCode (gratuito)', description: 'Modelo embutido do OpenCode, sem chave nem conta necessárias', supportsEffort: false },
+  { value: 'deepseek/deepseek-chat', label: 'DeepSeek Chat', description: 'Requer chave configurada pelo admin (aba Motores)', supportsEffort: false },
+  { value: 'deepseek/deepseek-reasoner', label: 'DeepSeek Reasoner', description: 'Raciocínio mais profundo — requer chave configurada pelo admin', supportsEffort: false },
 ];
 
 export class OpenCodeSession extends EventEmitter {
@@ -233,9 +241,12 @@ export class OpenCodeSession extends EventEmitter {
   }
 
   // Traduz o vocabulário do OpenCode para os eventos que o NASCERA já
-  // entende. Só o ramo `error` foi confirmado rodando de verdade (ver
-  // cabeçalho do arquivo); os demais são a melhor hipótese disponível e
-  // caem no `default` sem quebrar o turno se o formato vier diferente.
+  // entende. `error`, `text` e `step_finish` foram confirmados rodando um
+  // turno de verdade (modelo gratuito `opencode/big-pickle`, sem chave
+  // nenhuma — ver cabeçalho do arquivo). `tool_use` ainda não apareceu num
+  // turno real (o teste foi só texto, sem chamada de ferramenta) e segue
+  // como a melhor hipótese disponível; qualquer tipo desconhecido cai no
+  // `default` sem quebrar o turno.
   _traduzirEvento(ev, respostaFinal) {
     if (ev && ev.sessionID && ev.sessionID !== this.sessionId) {
       this.sessionId = ev.sessionID;
@@ -250,6 +261,16 @@ export class OpenCodeSession extends EventEmitter {
       case 'text': {
         const t = ev.part && typeof ev.part.text === 'string' ? ev.part.text : null;
         if (t) { this.emit('text', { content: t, parentId: null }); respostaFinal = t; }
+        break;
+      }
+      // Confirmado rodando de verdade: {part:{type:'step-finish', reason,
+      // tokens:{total,input,output,reasoning,cache:{write,read}}, cost}}.
+      case 'step_finish': {
+        const tok = ev.part && ev.part.tokens;
+        if (tok) {
+          this._tokens.entrada += tok.input || 0;
+          this._tokens.saida += tok.output || 0;
+        }
         break;
       }
       case 'tool_use': {
