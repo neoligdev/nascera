@@ -258,6 +258,7 @@ function criar(deps) {
         try { if (proj.path) memoriaProjeto.escreverArquivos(proj.path); } catch {}
         // Skill Caveman: idempotente, também cura projetos já existentes sem migração.
         try { if (proj.path && writeCavemanSkill) writeCavemanSkill(proj.path); } catch {}
+        try { if (proj.path) memoriaProjeto.escreverCaveman(proj.path); } catch {}
         // Projeto sem pasta (ex.: criado sem createNew): cria agora — o Claude
         // NUNCA deve trabalhar solto no HOME por engano.
         if (!proj.path && proj.slug) {
