@@ -82,26 +82,29 @@ Campo novo em `nascera-config.json` (`pipelineAutomatico`, default `true`) com u
 - `public/app.html` / `public/admin.html` — remoção do seletor / toggle do pipeline
 - `templates/caveman-SKILL.md` — vendorizado uma vez a partir do repo oficial
 
-## Riscos / suposições a validar antes ou durante a implementação
-1. **Se o binário `opencode` de verdade lê `AGENTS.md` do `cwd` automaticamente** — não confirmado no código atual (só o Codex está confirmado). Decide o caminho do item 5. Fazer o spike primeiro.
-2. **Se `opencode run --format json` com `--session` suporta de fato uma conversa de várias rodadas** (o modelo faz uma pergunta e espera) — o código atual só tem confirmação registrada de um turno único sem chamada de ferramenta. Testar na prática antes de confiar em produção.
-3. Licença/atribuição do arquivo vendorizado do Caveman — confirmar que um comentário de atribuição no topo do arquivo (com a URL de origem e a licença MIT) é suficiente, ou se vale copiar o `LICENSE` também.
+## Riscos / suposições — resultado
 
-## Todo — ordem de implementação sugerida
+1. **`opencode` lê `AGENTS.md` do `cwd` automaticamente — CONFIRMADO por spike real.** Instrução de teste escrita em `AGENTS.md` de um projeto de rascunho, chamada real a `opencode run --model opencode/big-pickle` (sem `--standalone`, usando o serviço de fundo já rodando na máquina): a resposta obedeceu à instrução. Comentário de `memoria-projeto.js` atualizado.
+2. **Conversa de várias rodadas via `--session`** — confirmado indiretamente pelos testes de integração (`testes/pipeline-planejamento.test.js`, caso "múltiplas rodadas"), que validam que o MESMO canal/sessão OpenCode é reaproveitado entre mensagens durante o planejamento. Não testado ainda com o binário real numa conversa de esclarecimento de verdade — fica para o teste manual em produção.
+3. Licença/atribuição do Caveman: resolvido com `templates/CAVEMAN-SKILL.LICENSE.md` (texto completo da licença MIT + origem/commit) ao lado do arquivo vendorizado, sem alterar o conteúdo original.
 
-- [ ] **Spike**: confirmar se `opencode run` lê `AGENTS.md` do `cwd` (testar num projeto de rascunho)
-- [ ] Corrigir o bug de `sessionId` em `motor-canal.js` (marcar `ch.motor`, guardar a atribuição)
-- [ ] Baixar e vendorizar `templates/caveman-SKILL.md`, com atribuição de licença
-- [ ] Adicionar `writeCavemanSkill()` em `server.js` e chamar em `ensureChannel`
-- [ ] Implementar a mesclagem em `AGENTS.md` (ou o fallback via `promptPrefixo`, conforme o resultado do spike)
-- [ ] Adicionar opt `promptPrefixo` em `engine/opencode-engine.mjs`
-- [ ] Criar `servicos/planejamento-automatico.js` (classificador, estado em memória, marcador de conclusão, teto de segurança, handoff)
-- [ ] Adicionar `registrarPRD()` em `memoria-projeto.js`
-- [ ] Extrair a lógica de troca de motor em `rotas/projetos-motor.js` para uma função reutilizável
-- [ ] Ligar tudo em `servicos/motor-ws.js` (`handleChat`) e `servicos/motor-canal.js` (`ensureChannel` resolvendo o motor temporário)
-- [ ] Adicionar campo `pipelineAutomatico` em `nascera-config.json` + toggle em `admin.html`
-- [ ] Remover o seletor manual de `public/app.html`
-- [ ] Estender `engine/fake-engine.mjs` pra despachar por `opts.motor` e simular marcador/erro/estouro de rodadas
-- [ ] Testes automatizados com `NASCERA_FAKE_ENGINE=1` cobrindo: mensagem trivial (nunca planeja), mensagem de criação em projeto vazio (planeja → PRD → volta pro Claude), estouro do teto de rodadas, erro do OpenCode
-- [ ] Teste manual com motores reais: pedido trivial (confirmar que `opencode run` nunca é chamado) e pedido complexo (confirmar spawn do `opencode/big-pickle`, PRD escrito, volta pro Claude, resultado construído) — sem nenhuma mensagem de "trocando de motor" visível e sem reload de página
+**Decisão tomada durante a implementação**: a extração de "trocarMotor reutilizável" em `rotas/projetos-motor.js` foi **descartada** — desnecessária. O handoff automático (`servicos/motor-ws.js`) não precisa da validação de CLI/instalado-conectado nem persiste `proj.motor` (a troca é só fechar a sessão OpenCode e chamar `ensureChannel` de novo, que resolve o motor certo sozinho); reaproveitar o código da rota HTTP traria complexidade sem benefício.
+
+## Todo — status final
+
+- [x] **Spike**: `opencode` lê `AGENTS.md` do `cwd` — confirmado
+- [x] Corrigir o bug de `sessionId` em `motor-canal.js`
+- [x] Baixar e vendorizar `templates/caveman-SKILL.md`, com atribuição de licença
+- [x] Adicionar `writeCavemanSkill()` em `server.js` e chamar em `ensureChannel`
+- [x] Implementar a mesclagem em `AGENTS.md` (`memoriaProjeto.escreverCaveman`)
+- [x] Adicionar opt `promptPrefixo` em `engine/opencode-engine.mjs`
+- [x] Criar `servicos/planejamento-automatico.js` (classificador, estado em memória, marcador de conclusão, teto de segurança)
+- [x] Adicionar `registrarPRD()`/`caminhoDoPRD()` em `memoria-projeto.js`
+- [x] ~~Extrair a lógica de troca de motor em `rotas/projetos-motor.js`~~ — descartado (ver decisão acima)
+- [x] Ligar tudo em `servicos/motor-ws.js` (`handleChat`) e `servicos/motor-canal.js` (`ensureChannel` resolvendo o motor temporário)
+- [x] Adicionar campo `pipelineAutomatico` em `nascera-config.json` + toggle em `admin.html`
+- [x] Remover o seletor manual de `public/app.html`
+- [x] Estender `engine/fake-engine.mjs` pra despachar por `opts.motor` e simular marcador/erro/estouro de rodadas
+- [x] Testes automatizados com `NASCERA_FAKE_ENGINE=1` (18 testes: classificador/estado + 5 de integração ponta a ponta) — todos passando
+- [ ] Teste manual com motores reais em produção (VPS): pedido trivial (confirmar que `opencode run` nunca é chamado) e pedido complexo (confirmar spawn do `opencode/big-pickle`, PRD escrito, volta pro Claude, resultado construído) — sem nenhuma mensagem de "trocando de motor" visível e sem reload de página
 - [ ] Rodar `/caveman` numa sessão real do Claude Code e do OpenCode do projeto gerado e confirmar respostas mais diretas, sem regressão perceptível de qualidade
