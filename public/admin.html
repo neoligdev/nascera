@@ -666,6 +666,15 @@
           <button class="btn btn-ghost" style="padding:5px 10px;font-size:11.5px" onclick="loadMotores()">Atualizar</button>
         </div>
         <p style="font-size:11.5px;color:rgba(255,255,255,.3);margin:0 0 14px">Quem executa as tarefas. Trocar reinicia as sessões abertas.</p>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);margin-bottom:12px">
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12.5px;color:rgba(255,255,255,.7)">Pipeline automático de planejamento</div>
+            <p style="font-size:11px;color:rgba(255,255,255,.35);margin:2px 0 0;line-height:1.5">Pedidos de construção passam primeiro por uma sessão OpenCode gratuita (planejamento), e só depois o motor acima constrói. Invisível para o cliente. Desligar aqui volta ao comportamento de motor único.</p>
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;white-space:nowrap;flex-shrink:0">
+            <input type="checkbox" id="pa-toggle" onchange="salvarPipelineAutomatico()" style="width:16px;height:16px;accent-color:var(--zh-accent)">
+          </label>
+        </div>
         <div id="mt-caixa"><div style="color:rgba(255,255,255,.35);font-size:13px">Verificando…</div></div>
       </div>
       <div class="card" style="max-width:520px;margin-bottom:14px">
@@ -2154,6 +2163,8 @@ function loadMotores() {
   if (!cx) return;
   api('/api/admin/motores').then(function(d) {
     if (d.error) { cx.innerHTML = '<p style="color:rgba(248,113,113,.8);font-size:12.5px">' + esc(d.error) + '</p>'; return; }
+    var paToggle = document.getElementById('pa-toggle');
+    if (paToggle) paToggle.checked = d.pipelineAutomatico !== false;
     cx.innerHTML = (d.motores || []).filter(Boolean).map(function(m) {
       var ativo = d.emUso === m.id;
       var pronto = m.instalado && m.conectado;
@@ -2201,6 +2212,14 @@ function usarMotor(id) {
   api('/api/admin/motores/usar', { method: 'PUT', body: JSON.stringify({ id: id }) }).then(function(r) {
     if (r.error) { alert(r.error); return; }
     loadMotores();
+  });
+}
+
+function salvarPipelineAutomatico() {
+  var chk = document.getElementById('pa-toggle');
+  var ligado = !!(chk && chk.checked);
+  api('/api/admin/motores/pipeline-automatico', { method: 'PUT', body: JSON.stringify({ ligado: ligado }) }).then(function(r) {
+    if (r.error) { alert(r.error); if (chk) chk.checked = !ligado; }
   });
 }
 

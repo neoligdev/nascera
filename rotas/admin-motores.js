@@ -70,8 +70,26 @@ function registrar(app, deps) {
 app.get('/api/admin/motores', adminMiddleware, async (_req, res) => {
   try {
     const e = await motores.estado();
-    res.json({ ...e, emUso: motores.ehValido(loadNasceraConfig().motor) ? loadNasceraConfig().motor : 'claude' });
+    const cfg = loadNasceraConfig();
+    res.json({
+      ...e,
+      emUso: motores.ehValido(cfg.motor) ? cfg.motor : 'claude',
+      pipelineAutomatico: cfg.pipelineAutomatico !== false,
+    });
   } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// Liga/desliga o pipeline de planejamento automático (OpenCode -> Claude)
+// pra instalação toda. Default ligado (chave ausente = true) — só grava a
+// chave quando o admin realmente muda algo. Não derruba sessão viva nenhuma:
+// a decisão só vale pra mensagens NOVAS a partir de agora.
+app.put('/api/admin/motores/pipeline-automatico', adminMiddleware, (req, res) => {
+  const ligado = !!(req.body && req.body.ligado);
+  const cfg = loadNasceraConfig();
+  cfg.pipelineAutomatico = ligado;
+  saveNasceraConfig(cfg);
+  appendActivity({ type: 'pipeline_automatico_alterado', user: req.user.user, data: { ligado }, at: new Date().toISOString() });
+  res.json({ ok: true, pipelineAutomatico: ligado });
 });
 
 // Diagnóstico do motor — o atalho do suporte para "não consigo fazer login".
