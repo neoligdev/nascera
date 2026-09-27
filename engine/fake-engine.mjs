@@ -88,6 +88,94 @@ class FakeClaudeSession extends EventEmitter {
   }
 }
 
+// Motor falso do OpenCode — só pra exercer o pipeline de planejamento
+// automático (servicos/planejamento-automatico.js) sem gastar 1 centavo nem
+// depender do CLI de verdade. O `result` sai com `text` (não `content`),
+// igual ao engine/opencode-engine.mjs de verdade — é essa diferença de forma
+// que o pipeline precisa tratar corretamente (ver a checagem `r.text ||
+// r.content` em servicos/motor-ws.js).
+//
+// Sentinelas no próprio texto da mensagem controlam o comportamento, pra dar
+// aos testes controle determinístico sem mexer em timers:
+//   __PLAN_ERROR__       → emite 'error' em vez de 'result' (testa o fallback)
+//   __PLAN_MULTI_ROUND__ → não emite o marcador na 1ª rodada, só na 2ª
+//   __PLAN_NEVER__       → nunca emite o marcador (testa o teto de rodadas)
+class FakeOpenCodeSession extends EventEmitter {
+  constructor(o = {}) {
+    super();
+    this.key = o.key; this.cwd = o.cwd; this.dono = o.dono || null;
+    this.closed = false; this.running = false;
+    this.sessionId = o.resumeSessionId || ('fake-oc-' + crypto.randomUUID());
+    this.initInfo = null;
+    this.pendingInteractions = new Map();
+    this._turnos = 0;
+  }
+  start() {
+    process.nextTick(() => {
+      if (this.closed) return;
+      this.initInfo = {
+        sessionId: this.sessionId, motor: 'opencode', model: 'opencode/big-pickle',
+        mode: 'turbo', effortLevels: [], models: [], commands: [],
+      };
+      this.emit('init', this.initInfo);
+    });
+  }
+  send(content) {
+    if (this.closed) throw new Error('Sessão encerrada');
+    if (this.running) { this.emit('queued', { queued: 1 }); return; }
+    this.running = true;
+    const texto = typeof content === 'string' ? content : String(content || '');
+    setImmediate(() => this._runTurn(texto));
+  }
+  _runTurn(texto) {
+    if (this.closed) return;
+    this._turnos++;
+    if (/__PLAN_ERROR__/.test(texto)) {
+      this.running = false;
+      this.emit('error', { message: 'Falha simulada do OpenCode' });
+      return;
+    }
+    const nuncaConclui = /__PLAN_NEVER__/.test(texto);
+    const multiRodada = /__PLAN_MULTI_ROUND__/.test(texto);
+    const semMarcadorAinda = nuncaConclui || (multiRodada && this._turnos < 2);
+    const resposta = semMarcadorAinda
+      ? 'Só pra confirmar: é um site de uma página ou várias?'
+      : '# PRD\nSite fake de teste.\n[[NASCERA_PRD_PRONTO]]';
+    this.emit('text', { content: resposta, parentId: null });
+    this.running = false;
+    this.emit('result', {
+      text: resposta, sessionId: this.sessionId, turns: this._turnos,
+      usage: { input_tokens: 0, output_tokens: 0 },
+    });
+  }
+  async interrupt() { this.running = false; }
+  async setModel() {}
+  async setMode() {}
+  async setEffort() { return { ok: false }; }
+  compact() {}
+  async contextUsage() { return null; }
+  async accountInfo() { return null; }
+  respondInteraction() { return false; }
+  replayPending() {}
+  status() {
+    return {
+      key: this.key, sessionId: this.sessionId, running: this.running,
+      mode: 'turbo', model: 'opencode/big-pickle', turnCount: this._turnos, totalCostUsd: 0,
+    };
+  }
+  close(reason = 'manual') {
+    if (this.closed) return;
+    this.closed = true;
+    this.emit('closed', { reason });
+    this.removeAllListeners();
+  }
+}
+
+// Motor → classe de sessão fake, mesmo espírito do CONSTRUTORES_DE_MOTOR real
+// (claude-engine.mjs) — sem isto, TODO turno em teste nasceria Claude, e o
+// pipeline de planejamento nunca teria como ser exercido sob fake engine.
+const CONSTRUTORES_DE_MOTOR_FAKE = { opencode: FakeOpenCodeSession };
+
 class FakeSessionManager {
   constructor() { this.sessions = new Map(); }
   get(k) { return this.sessions.get(k) || null; }
@@ -97,7 +185,8 @@ class FakeSessionManager {
   obtain(key, opts = {}) {
     let s = this.sessions.get(key);
     if (s && !s.closed) return s;
-    s = new FakeClaudeSession({ ...opts, key });
+    const Ctor = (opts && CONSTRUTORES_DE_MOTOR_FAKE[opts.motor]) || FakeClaudeSession;
+    s = new Ctor({ ...opts, key });
     this.sessions.set(key, s);
     s.on('closed', () => { if (this.sessions.get(key) === s) this.sessions.delete(key); });
     s.start();
@@ -111,3 +200,4 @@ class FakeSessionManager {
 
 export const sessionManager = new FakeSessionManager();
 export const ClaudeSession = FakeClaudeSession;
+export const OpenCodeSession = FakeOpenCodeSession;
