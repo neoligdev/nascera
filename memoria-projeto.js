@@ -7,9 +7,9 @@
 // ideia do que o anterior tinha construído.
 //
 // A solução: um arquivo de memória DENTRO do projeto, que os dois leem.
-// Verificado na prática: o Claude Code lê `CLAUDE.md` e o Codex lê
-// `AGENTS.md` (testado — ele obedeceu uma regra escrita lá). Então a
-// memória é gravada uma vez e espelhada nos dois arquivos.
+// Verificado na prática: o Claude Code lê `CLAUDE.md`, e o Codex e o
+// OpenCode leem `AGENTS.md` (testado nos dois — obedeceram uma regra escrita
+// lá). Então a memória é gravada uma vez e espelhada nos dois arquivos.
 //
 // O que entra aqui é o que sobrevive à troca: o que o projeto é, o que já
 // foi feito e as decisões tomadas. NÃO é transcrição de conversa — isso
@@ -23,10 +23,38 @@ const path = require('path');
 const ARQUIVO = '.nascera/MEMORIA.md';
 const MARCA_INICIO = '<!-- NASCERA:MEMORIA:INICIO -->';
 const MARCA_FIM = '<!-- NASCERA:MEMORIA:FIM -->';
+const MARCA_CAVEMAN_INICIO = '<!-- NASCERA:CAVEMAN:INICIO -->';
+const MARCA_CAVEMAN_FIM = '<!-- NASCERA:CAVEMAN:FIM -->';
+const ARQUIVO_PRD = '.nascera/prd.md';
+const TEMPLATES_DIR = path.join(__dirname, 'templates');
 const MAX_MARCOS = 40;
 
 function caminhoDaMemoria(projectPath) {
   return path.join(projectPath, ARQUIVO);
+}
+
+function caminhoDoPRD(projectPath) {
+  return path.join(projectPath, ARQUIVO_PRD);
+}
+
+// Mescla um bloco de texto marcado dentro de um arquivo, sem tocar no resto
+// do conteúdo (o que o Nascera ou a pessoa já tiver escrito ali). Usado tanto
+// pelo espelho de memória (CLAUDE.md + AGENTS.md) quanto pelo bloco Caveman
+// (só AGENTS.md) — cada um com seu próprio par de marcas, para nunca se
+// atropelarem no mesmo arquivo.
+function mesclarBloco(caminho, marcaInicio, marcaFim, texto) {
+  const bloco = `${marcaInicio}\n${texto}\n${marcaFim}`;
+  let atual = '';
+  try { atual = fs.readFileSync(caminho, 'utf8'); } catch {}
+  let novo;
+  if (atual.includes(marcaInicio) && atual.includes(marcaFim)) {
+    novo = atual.replace(
+      new RegExp(marcaInicio.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[\\s\\S]*?' + marcaFim.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')),
+      bloco);
+  } else {
+    novo = (atual ? atual.trimEnd() + '\n\n' : '') + bloco + '\n';
+  }
+  fs.writeFileSync(caminho, novo);
 }
 
 function ler(projectPath) {
@@ -154,22 +182,42 @@ function escreverArquivos(projectPath, memoria) {
     fs.writeFileSync(caminhoDaMemoria(projectPath), texto);
   } catch (e) { return { ok: false, erro: e.message }; }
 
-  const bloco = `${MARCA_INICIO}\n${texto}\n${MARCA_FIM}`;
   for (const nome of ['CLAUDE.md', 'AGENTS.md']) {
-    const alvo = path.join(projectPath, nome);
-    let atual = '';
-    try { atual = fs.readFileSync(alvo, 'utf8'); } catch {}
-    let novo;
-    if (atual.includes(MARCA_INICIO) && atual.includes(MARCA_FIM)) {
-      novo = atual.replace(
-        new RegExp(MARCA_INICIO.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[\\s\\S]*?' + MARCA_FIM.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')),
-        bloco);
-    } else {
-      novo = (atual ? atual.trimEnd() + '\n\n' : '') + bloco + '\n';
-    }
-    try { fs.writeFileSync(alvo, novo); } catch (e) { logger.error('[memoria] ' + nome + ':', e.message); }
+    try { mesclarBloco(path.join(projectPath, nome), MARCA_INICIO, MARCA_FIM, texto); }
+    catch (e) { logger.error('[memoria] ' + nome + ':', e.message); }
   }
   return { ok: true };
+}
+
+// Skill Caveman (respostas mais diretas) só entra no AGENTS.md — o Claude já
+// recebe a mesma skill de verdade via .claude/skills/ (ver server.js
+// writeCavemanSkill), então espelhar aqui também seria redundante. O
+// front-matter YAML é convenção do carregador de skills do Claude Code; sem
+// sentido dentro de um AGENTS.md, então é removido antes de mesclar.
+function escreverCaveman(projectPath) {
+  if (!projectPath) return;
+  try {
+    const src = path.join(TEMPLATES_DIR, 'caveman-SKILL.md');
+    if (!fs.existsSync(src)) return;
+    const corpo = fs.readFileSync(src, 'utf8')
+      .replace(/^---\n[\s\S]*?\n---\n/, '')
+      .trim();
+    mesclarBloco(path.join(projectPath, 'AGENTS.md'), MARCA_CAVEMAN_INICIO, MARCA_CAVEMAN_FIM, corpo);
+  } catch (e) { logger.error('[memoria] caveman AGENTS.md:', e.message); }
+}
+
+// PRD gerado pela fase de planejamento automático (OpenCode, ver
+// servicos/planejamento-automatico.js). Fica só neste arquivo — nunca é
+// espelhado em CLAUDE.md/AGENTS.md, porque não deve aparecer para o usuário
+// nem inchar o contexto de todo turno. Um arquivo único, sobrescrito a cada
+// ciclo: não há necessidade de histórico/versão para isto.
+function registrarPRD(projectPath, texto) {
+  if (!projectPath || !texto) return;
+  try {
+    fs.mkdirSync(path.join(projectPath, '.nascera'), { recursive: true });
+    fs.writeFileSync(caminhoDoPRD(projectPath), texto);
+    registrarMarco(projectPath, 'PRD de planejamento gerado — ver ' + ARQUIVO_PRD, 'opencode');
+  } catch (e) { logger.error('[memoria] registrarPRD:', e.message); }
 }
 
 // Texto injetado na primeira mensagem depois de uma troca de motor. Sem
@@ -199,4 +247,5 @@ function definirResumo(projectPath, resumo) {
 module.exports = {
   ler, definirResumo, registrarMarco, registrarDecisao, registrarTrocaDeMotor,
   escreverArquivos, textoDeContinuidade, montarTexto, ARQUIVO,
+  escreverCaveman, registrarPRD, caminhoDoPRD,
 };
