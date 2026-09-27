@@ -213,7 +213,13 @@ function criar(deps) {
           atualizarProjeto(_pid, { currentVersion: getCurrentVersion(_pp) });
         });
       }
-      if (r.sessionId) proj.sessionId = r.sessionId;
+      // Só o Claude tem sessionId retomável por aqui (Codex/OpenCode usam o
+      // próprio conceito de sessão, resolvido dentro do motor). Sem essa
+      // guarda, um canal que passasse por outro motor no meio da conversa
+      // (ex.: pipeline de planejamento) sobrescreveria proj.sessionId com um
+      // id que o Claude não entende, e a próxima sessão dele nasceria
+      // tentando retomar uma sessão inexistente.
+      if (r.sessionId && ch.motor === 'claude') proj.sessionId = r.sessionId;
       saveProjects(projects);
       if (proj.slug) {
         generateProjectScreenshot(proj).then(url => {
@@ -361,7 +367,7 @@ function criar(deps) {
     };
     if (session.initInfo) applyEffort(); else session.once('init', applyEffort);
 
-    ch = { key, projectId, session, sockets: new Set(), buildLevel, iaPropria: iaPropriaAtiva };
+    ch = { key, projectId, session, sockets: new Set(), buildLevel, iaPropria: iaPropriaAtiva, motor: motorEscolhido };
     channels.set(key, ch);
     bindChannel(ch);
     return ch;
