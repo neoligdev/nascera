@@ -19,7 +19,7 @@ function registrar(wss, deps) {
     sessions, verifyToken, loadProjects, podeAcessarProjeto, trackEvent,
     loadChatHistory, ensureChannel, loadUsers, billing, appendChatMessage,
     switchAgentForProject, agentInlinePrefix, memoriaProjeto, getIntegrationsContext,
-    getBuildScopeContext, BUILD_LEVELS,
+    getBuildScopeContext, BUILD_LEVELS, planejamentoAutomatico,
   } = deps;
 
   wss.on('connection', (ws, req) => {
@@ -126,7 +126,7 @@ function registrar(wss, deps) {
             if (!ch || ch.session.closed) ch = await ensureChannel(projectId, decoded.user);
             channel = ch;
             if (!ch.sockets.has(ws)) ch.sockets.add(ws);
-            handleChat(ch, parsed);
+            await handleChat(ch, parsed);
             break;
           }
 
@@ -213,7 +213,66 @@ function registrar(wss, deps) {
       }
     });
 
-    function handleChat(ch, parsed) {
+    // Encaminha `mensagem` pra sessão do Claude que acabou de assumir o
+    // projeto depois do handoff automático de planejamento — sem passar de
+    // novo pelo classificador (evita reentrar em planejamento por causa de
+    // uma palavra como "construa" no próprio texto de handoff) nem repetir a
+    // continuidade (já embutida na própria mensagem). Carimba o turno com o
+    // MESMO usuário/isenção da mensagem que originou o pipeline, senão o
+    // turno de build sairia sem pagador nenhum.
+    function enviarPosHandoff(novoCh, mensagem, turnoDeQuem, turnoIsento) {
+      novoCh._continuidadeEnviada = true;
+      novoCh._turnQueue = novoCh._turnQueue || [];
+      novoCh._turnQueue.push({ id: crypto.randomUUID(), user: turnoDeQuem, exempt: !!turnoIsento });
+      novoCh._turnUser = turnoDeQuem;
+      novoCh._turnExempt = !!turnoIsento;
+      novoCh.session.send(mensagem);
+    }
+
+    // Fase de planejamento concluída (marcador detectado OU teto de segurança
+    // estourado) — grava o PRD, fecha o canal OpenCode e reabre no motor
+    // normal (a escolha de proj.motor/instalação volta a valer sozinha,
+    // porque o estado de planejamento já não existe mais nesse momento).
+    async function concluirPlanejamentoEHandoff({ projectId, proj, textoResultado, ws: wsAtual, turnoDeQuem, turnoIsento }) {
+      planejamentoAutomatico.finalizarPlanejamento(projectId);
+      const prd = planejamentoAutomatico.extrairPRD(textoResultado);
+      if (proj && proj.path && prd) {
+        try { memoriaProjeto.registrarPRD(proj.path, prd); } catch {}
+      }
+      let novoCh;
+      try {
+        novoCh = await ensureChannel(projectId, turnoDeQuem);
+      } catch (err) {
+        logger.error('[planejamento] falha ao reabrir motor após handoff:', err.message);
+        return;
+      }
+      channel = novoCh;
+      if (!novoCh.sockets.has(wsAtual)) novoCh.sockets.add(wsAtual);
+      const cont = (proj && proj.path && memoriaProjeto.textoDeContinuidade(proj.path)) || '';
+      const msg = cont + '[Handoff automático de planejamento] Um PRD foi preparado em .nascera/prd.md — leia-o antes de agir e construa exatamente o que ele especifica.\n\n';
+      enviarPosHandoff(novoCh, msg, turnoDeQuem, turnoIsento);
+    }
+
+    // Sessão OpenCode falhou durante o planejamento (CLI ausente, processo
+    // morreu, etc.) — nunca deixa o usuário esperando um modelo grátis
+    // quebrado: cai direto pro motor normal com a mensagem ORIGINAL dele,
+    // como se o classificador tivesse mandado "build" desde o início.
+    async function planejamentoFalhouEFallback({ projectId, ws: wsAtual, turnoDeQuem, turnoIsento }) {
+      const mensagemOriginal = planejamentoAutomatico.mensagemParaRetomar(projectId);
+      planejamentoAutomatico.finalizarPlanejamento(projectId);
+      let novoCh;
+      try {
+        novoCh = await ensureChannel(projectId, turnoDeQuem);
+      } catch (err) {
+        logger.error('[planejamento] falha ao voltar pro motor normal:', err.message);
+        return;
+      }
+      channel = novoCh;
+      if (!novoCh.sockets.has(wsAtual)) novoCh.sockets.add(wsAtual);
+      enviarPosHandoff(novoCh, mensagemOriginal, turnoDeQuem, turnoIsento);
+    }
+
+    async function handleChat(ch, parsed) {
       const userMessage = String(parsed.message || '');
       let finalMessage = userMessage;
 
@@ -292,6 +351,83 @@ function registrar(wss, deps) {
 
       if (projectId) {
         appendChatMessage(projectId, { role: 'user', content: userMessage, timestamp: Date.now() });
+      }
+
+      // Pipeline de planejamento automático (servicos/planejamento-automatico.js):
+      // decide ANTES de montar qualquer coisa específica do Claude (agente,
+      // continuidade, escopo) — nada disso se aplica enquanto a fase for a
+      // de planejamento no OpenCode gratuito.
+      if (projectId && planejamentoAutomatico) {
+        const proj = loadProjects().find(p => p.id === projectId);
+        const jaPlanejando = planejamentoAutomatico.estaPlanejando(projectId);
+        let vaiPlanejar = jaPlanejando;
+        if (!jaPlanejando && planejamentoAutomatico.elegivelParaPipeline(proj)) {
+          vaiPlanejar = planejamentoAutomatico.classificar(userMessage, { primeiraMensagem: isFirstMessage }) === 'planejar';
+        }
+
+        if (vaiPlanejar) {
+          let canalDePlanejamento = ch;
+
+          if (!jaPlanejando) {
+            planejamentoAutomatico.iniciarPlanejamento(projectId, userMessage);
+            try { ch.session.close('planejamento automático'); } catch {}
+            try {
+              canalDePlanejamento = await ensureChannel(projectId, decoded.user);
+            } catch (err) {
+              // Nem o OpenCode abriu — desiste do planejamento pra este
+              // pedido e volta pro motor normal, como se o classificador
+              // tivesse mandado "build" desde o início.
+              planejamentoAutomatico.finalizarPlanejamento(projectId);
+              canalDePlanejamento = null;
+              try {
+                ch = await ensureChannel(projectId, decoded.user);
+                channel = ch;
+              } catch (err2) {
+                logger.error(`[${connId.slice(0, 8)}] planejamento: falha ao abrir motor:`, err2.message);
+                if (ws.readyState === WebSocket.OPEN) {
+                  ws.send(JSON.stringify({ type: 'error', data: 'Falha ao iniciar o motor: ' + err2.message }));
+                }
+                return;
+              }
+            }
+
+            if (canalDePlanejamento) {
+              channel = canalDePlanejamento;
+              ch = canalDePlanejamento;
+              if (!ch.sockets.has(ws)) ch.sockets.add(ws);
+
+              const sessaoDePlanejamento = canalDePlanejamento.session;
+              sessaoDePlanejamento.on('result', (r) => {
+                if (!planejamentoAutomatico.estaPlanejando(projectId)) return;
+                const texto = r.text || r.content || '';
+                const marcou = planejamentoAutomatico.detectarMarcador(texto);
+                if (marcou || canalDePlanejamento._planEstourou) {
+                  concluirPlanejamentoEHandoff({
+                    projectId, proj, textoResultado: texto, ws,
+                    turnoDeQuem: decoded.user, turnoIsento: _isento,
+                  }).catch(err => logger.error('[planejamento] handoff falhou:', err.message));
+                }
+              });
+              sessaoDePlanejamento.on('error', () => {
+                if (!planejamentoAutomatico.estaPlanejando(projectId)) return;
+                planejamentoFalhouEFallback({
+                  projectId, ws, turnoDeQuem: decoded.user, turnoIsento: _isento,
+                }).catch(err => logger.error('[planejamento] fallback falhou:', err.message));
+              });
+            }
+          }
+
+          if (canalDePlanejamento && planejamentoAutomatico.estaPlanejando(projectId)) {
+            const { estourou } = planejamentoAutomatico.registrarRodada(projectId, userMessage);
+            canalDePlanejamento._planEstourou = estourou;
+            logger.info(`[${connId.slice(0, 8)}] chat → planejamento (opencode):`, userMessage.substring(0, 100));
+            canalDePlanejamento.session.send(userMessage);
+            return;
+          }
+          // Só chega aqui se a abertura do motor de planejamento falhou logo
+          // acima — `ch` já foi reaberto no motor normal, e o fluxo continua
+          // abaixo como um turno comum.
+        }
       }
 
       // @agente: injeta as instruções do agente nesta mensagem (a sessão é viva,

@@ -2519,13 +2519,18 @@ function agentInlinePrefix(agent) {
   } catch { return ''; }
 }
 
+// ─── Pipeline de planejamento automático (OpenCode -> Claude) ─────────
+const planejamentoAutomatico = require('./servicos/planejamento-automatico.js').criar({
+  loadNasceraConfig, motores,
+});
+
 // ─── Canal do motor: bindChannel (S4-2: servicos/motor-canal.js) ───
 const { bindChannel, ensureChannel } = require('./servicos/motor-canal.js').criar({
   channels, appendChatMessage, loadProjects, saveProjects, billing,
   autoCommitAsync, atualizarProjeto, getCurrentVersion, generateProjectScreenshot,
   getEngine, sessionKeyFor, isDesktopLocal, escreverFerramentaDeImagem, memoriaProjeto,
   PROJECTS_BASE, normalizeBuildLevel, loadNasceraConfig, modelosLocais, motores, vpsSpawnWrapper, BUILD_LEVELS,
-  segredos, writeCavemanSkill,
+  segredos, writeCavemanSkill, planejamentoAutomatico,
   // AD.1: credencial de IA própria do dono (ou null → credencial da instalação)
   credencialIaPropria: (username) => require('./rotas/ia-propria.js')
     .credencialPara(username, { loadNasceraConfig, loadUsers, segredos }),
@@ -2565,7 +2570,7 @@ require('./servicos/motor-ws.js').registrar(wss, {
   sessions, verifyToken, loadProjects, podeAcessarProjeto, trackEvent,
   loadChatHistory, ensureChannel, loadUsers, billing, appendChatMessage,
   switchAgentForProject, agentInlinePrefix, memoriaProjeto, getIntegrationsContext,
-  getBuildScopeContext, BUILD_LEVELS,
+  getBuildScopeContext, BUILD_LEVELS, planejamentoAutomatico,
 });
 
 // ─── Terminal WebSocket (real PTY shell) ──────────────────────────────
