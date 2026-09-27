@@ -1,2 +1,9 @@
 .DS_Store
 .claude/scheduled_tasks.lock
+node_modules/
+package-lock.json
+.jwt-secret
+.setup-token
+.nascera-install.json
+.nascera-activation-pending.json
+themes/catalog.json
