@@ -21,7 +21,7 @@ function criar(deps) {
     autoCommitAsync, atualizarProjeto, getCurrentVersion, generateProjectScreenshot,
     getEngine, sessionKeyFor, isDesktopLocal, escreverFerramentaDeImagem, memoriaProjeto,
     PROJECTS_BASE, normalizeBuildLevel, loadNasceraConfig, modelosLocais, motores, vpsSpawnWrapper, BUILD_LEVELS,
-    credencialIaPropria, email, loadUsers, segredos, writeCavemanSkill,
+    credencialIaPropria, email, loadUsers, segredos, writeCavemanSkill, planejamentoAutomatico,
   } = deps;
 
   function bindChannel(ch) {
@@ -307,6 +307,19 @@ function criar(deps) {
       if (p && motores.ehValido(p.motor)) motorEscolhido = p.motor;
     }
 
+    // Pipeline de planejamento automático: enquanto o projeto está na fase de
+    // planejamento (servicos/planejamento-automatico.js), o motor da vez é
+    // sempre o OpenCode gratuito, por cima de qualquer escolha acima — nunca
+    // herda o modelo pago configurado para o build, e nunca retoma uma
+    // sessão do Claude (o `resumeSessionId` seria de outro motor).
+    let promptPrefixoDoMotor = null;
+    if (projectId && planejamentoAutomatico && planejamentoAutomatico.motorTemporario(projectId)) {
+      motorEscolhido = planejamentoAutomatico.motorTemporario(projectId);
+      model = planejamentoAutomatico.modeloTemporario(projectId);
+      promptPrefixoDoMotor = planejamentoAutomatico.promptPrefixoTemporario(projectId);
+      resumeSessionId = null;
+    }
+
     // O dono da sessão alimenta o teto por usuário no controle de admissão.
     const donoDaSessao = (() => {
       try {
@@ -359,6 +372,7 @@ function criar(deps) {
       motor: motorEscolhido,
       dono: donoDaSessao,
       env: envDoMotor,
+      promptPrefixo: promptPrefixoDoMotor,
       spawnClaudeCodeProcess: vpsSpawnWrapper(cwd),
       log: (m) => logger.info('[engine ' + key.slice(0, 12) + '] ' + m),
     });
