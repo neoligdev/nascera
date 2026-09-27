@@ -103,6 +103,11 @@ export class OpenCodeSession extends EventEmitter {
     this.comando = opts.opencodePath || 'opencode';
     this.log = opts.log || (() => {});
     this._spawnWrapper = opts.spawnClaudeCodeProcess || null;
+    // Instrução extra só do PRIMEIRO turno da sessão (ex.: prompt da fase de
+    // planejamento automático — ver servicos/planejamento-automatico.js). Não
+    // existe flag de system-prompt no `opencode run`; é assim que chega.
+    this.promptPrefixo = opts.promptPrefixo || null;
+    this._prefixoEnviado = false;
 
     this.closed = false;
     this.running = false;
@@ -177,11 +182,16 @@ export class OpenCodeSession extends EventEmitter {
   _rodarTurno(content) {
     this.running = true;
     this._turnos++;
-    const texto = typeof content === 'string'
+    let texto = typeof content === 'string'
       ? content
       : (Array.isArray(content)
           ? content.map(b => (b && b.type === 'text' ? b.text : '')).join('\n')
           : String(content || ''));
+
+    if (this.promptPrefixo && !this._prefixoEnviado) {
+      texto = this.promptPrefixo + '\n\n---\n\n' + texto;
+      this._prefixoEnviado = true;
+    }
 
     const args = this._argumentos(texto);
     this.log('opencode ' + args.slice(0, -1).join(' ') + ' <prompt>');
