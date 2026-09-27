@@ -3639,7 +3639,6 @@ function abrirPainelUso() {
   if (!p) return;
   p.style.display = 'flex';
   renderPainelUso();
-  carregarMotorDoProjeto();
 }
 function fecharPainelUso() {
   var p = document.getElementById('painel-uso');
@@ -3666,42 +3665,6 @@ function renderPainelUso() {
   if (s.session) html += barra('Sessão (5h)', Math.round(s.session.usedPct || 0), s.session.resetsAt ? 'Renova em ' + new Date(s.session.resetsAt).toLocaleString('pt-BR') : '');
   if (s.week) html += barra('Semana', Math.round(s.week.usedPct || 0), s.week.resetsAt ? 'Renova em ' + new Date(s.week.resetsAt).toLocaleDateString('pt-BR') : '');
   el.innerHTML = html || '<div style="font-size:12.5px;color:rgba(255,255,255,.35)">Sem limites configurados.</div>';
-}
-
-function carregarMotorDoProjeto() {
-  var el = document.getElementById('pu-motor');
-  if (!el || !projectId) { if (el) el.innerHTML = '<div style="font-size:12.5px;color:rgba(255,255,255,.35)">Abra um projeto para trocar o motor.</div>'; return; }
-  fetch('/api/projects/' + projectId + '/motor', { headers: { 'Authorization': 'Bearer ' + token } }).then(function(r) { return r.json(); }).then(function(d) {
-    if (d.error) { el.innerHTML = '<div style="font-size:12.5px;color:rgba(248,113,113,.8)">' + d.error + '</div>'; return; }
-    var mem = d.memoria || {};
-    var qtd = (mem.marcos || []).length;
-    el.innerHTML = (d.motores || []).filter(Boolean).map(function(m) {
-      var ativo = d.emUso === m.id;
-      var pronto = m.instalado && m.conectado;
-      return '<div style="display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:11px;margin-bottom:8px;background:rgba(255,255,255,.02);border:1px solid '
-        + (ativo ? 'rgba(var(--zh-accent-rgb),.35)' : 'rgba(255,255,255,.06)') + '">'
-        + '<div style="flex:1;min-width:0">'
-          + '<div style="font-size:13px;font-weight:600">' + m.nome + (ativo ? ' <span style="font-size:10px;color:rgba(var(--zh-accent2-rgb),.9)">— em uso</span>' : '') + '</div>'
-          + '<div style="font-size:11px;color:rgba(255,255,255,.35);margin-top:2px">' + (pronto ? m.resumo : (m.instalado ? 'Não conectado' : 'CLI não instalado')) + '</div>'
-        + '</div>'
-        + (ativo || !pronto ? '' : '<button onclick="trocarMotorDoProjeto(\'' + m.id + '\')" style="padding:6px 12px;border-radius:8px;border:0;cursor:pointer;font-size:11.5px;font-weight:600;background:var(--zh-accent);color:#fff">Usar</button>')
-      + '</div>';
-    }).join('')
-    + '<div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:10px;line-height:1.5">'
-      + (qtd ? 'A memória do projeto tem ' + qtd + ' registro(s). O motor novo continua de onde o anterior parou.' : 'A memória do projeto é montada conforme você trabalha — ela é o que mantém a continuidade na troca.')
-    + '</div>';
-  });
-}
-
-function trocarMotorDoProjeto(id) {
-  if (!confirm('Trocar o motor deste projeto?\n\nA conversa atual é reiniciada, mas a memória do projeto é preservada — o novo motor continua de onde o anterior parou.')) return;
-  fetch('/api/projects/' + projectId + '/motor', {
-    method: 'PUT', headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }, body: JSON.stringify({ id: id }),
-  }).then(function(r) { return r.json(); }).then(function(d) {
-    if (d.error) { alert(d.error); return; }
-    fecharPainelUso();
-    location.reload();   // reconecta o WebSocket no motor novo
-  });
 }
 
 
@@ -3764,9 +3727,6 @@ function trocarMotorDoProjeto(id) {
       <button onclick="fecharPainelUso()" style="background:none;border:0;color:rgba(255,255,255,.4);font-size:20px;cursor:pointer;line-height:1">×</button>
     </div>
     <div id="pu-uso"></div>
-    <div style="height:1px;background:rgba(255,255,255,.06);margin:18px 0"></div>
-    <div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:rgba(255,255,255,.35);margin-bottom:10px">Motor deste projeto</div>
-    <div id="pu-motor"><div style="font-size:12.5px;color:rgba(255,255,255,.35)">Carregando…</div></div>
   </div>
 </div>
 </body>
