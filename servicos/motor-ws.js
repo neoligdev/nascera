@@ -233,12 +233,16 @@ function registrar(wss, deps) {
     // estourado) — grava o PRD, fecha o canal OpenCode e reabre no motor
     // normal (a escolha de proj.motor/instalação volta a valer sozinha,
     // porque o estado de planejamento já não existe mais nesse momento).
-    async function concluirPlanejamentoEHandoff({ projectId, proj, textoResultado, ws: wsAtual, turnoDeQuem, turnoIsento }) {
+    async function concluirPlanejamentoEHandoff({ projectId, proj, textoResultado, ws: wsAtual, turnoDeQuem, turnoIsento, canalAntigo }) {
       planejamentoAutomatico.finalizarPlanejamento(projectId);
       const prd = planejamentoAutomatico.extrairPRD(textoResultado);
       if (proj && proj.path && prd) {
         try { memoriaProjeto.registrarPRD(proj.path, prd); } catch {}
       }
+      // Sem fechar aqui, ensureChannel encontraria o MESMO canal OpenCode
+      // ainda em cache (session.closed nunca vira true só por ter terminado
+      // um turno) e devolveria ele de novo, em vez de abrir o Claude.
+      try { canalAntigo.session.close('planejamento concluído'); } catch {}
       let novoCh;
       try {
         novoCh = await ensureChannel(projectId, turnoDeQuem);
@@ -257,9 +261,13 @@ function registrar(wss, deps) {
     // morreu, etc.) — nunca deixa o usuário esperando um modelo grátis
     // quebrado: cai direto pro motor normal com a mensagem ORIGINAL dele,
     // como se o classificador tivesse mandado "build" desde o início.
-    async function planejamentoFalhouEFallback({ projectId, ws: wsAtual, turnoDeQuem, turnoIsento }) {
+    async function planejamentoFalhouEFallback({ projectId, ws: wsAtual, turnoDeQuem, turnoIsento, canalAntigo }) {
       const mensagemOriginal = planejamentoAutomatico.mensagemParaRetomar(projectId);
       planejamentoAutomatico.finalizarPlanejamento(projectId);
+      // Mesmo motivo do handoff de sucesso: sem fechar, ensureChannel
+      // devolveria a mesma sessão OpenCode quebrada em vez de abrir o Claude
+      // — e reenviar a mensagem original pra ela reproduziria o mesmo erro.
+      try { canalAntigo.session.close('planejamento falhou'); } catch {}
       let novoCh;
       try {
         novoCh = await ensureChannel(projectId, turnoDeQuem);
@@ -405,6 +413,7 @@ function registrar(wss, deps) {
                   concluirPlanejamentoEHandoff({
                     projectId, proj, textoResultado: texto, ws,
                     turnoDeQuem: decoded.user, turnoIsento: _isento,
+                    canalAntigo: canalDePlanejamento,
                   }).catch(err => logger.error('[planejamento] handoff falhou:', err.message));
                 }
               });
@@ -412,6 +421,7 @@ function registrar(wss, deps) {
                 if (!planejamentoAutomatico.estaPlanejando(projectId)) return;
                 planejamentoFalhouEFallback({
                   projectId, ws, turnoDeQuem: decoded.user, turnoIsento: _isento,
+                  canalAntigo: canalDePlanejamento,
                 }).catch(err => logger.error('[planejamento] fallback falhou:', err.message));
               });
             }
