@@ -21,7 +21,7 @@ function criar(deps) {
     autoCommitAsync, atualizarProjeto, getCurrentVersion, generateProjectScreenshot,
     getEngine, sessionKeyFor, isDesktopLocal, escreverFerramentaDeImagem, memoriaProjeto,
     PROJECTS_BASE, normalizeBuildLevel, loadNasceraConfig, modelosLocais, motores, vpsSpawnWrapper, BUILD_LEVELS,
-    credencialIaPropria, email, loadUsers, segredos,
+    credencialIaPropria, email, loadUsers, segredos, writeCavemanSkill,
   } = deps;
 
   function bindChannel(ch) {
@@ -256,6 +256,8 @@ function criar(deps) {
         try { escreverFerramentaDeImagem(proj); } catch {}
         // Instrução de imagens vai junto: sem ela o agente ignora a ferramenta.
         try { if (proj.path) memoriaProjeto.escreverArquivos(proj.path); } catch {}
+        // Skill Caveman: idempotente, também cura projetos já existentes sem migração.
+        try { if (proj.path && writeCavemanSkill) writeCavemanSkill(proj.path); } catch {}
         // Projeto sem pasta (ex.: criado sem createNew): cria agora — o Claude
         // NUNCA deve trabalhar solto no HOME por engano.
         if (!proj.path && proj.slug) {

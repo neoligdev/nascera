@@ -569,6 +569,21 @@ function writeProjectSkill(projectPath) {
   } catch (e) { logger.error('[SKILL] Falha ao escrever skill de templates:', e.message); }
 }
 
+// Escreve a skill Caveman no projeto (.claude/skills/caveman/SKILL.md) —
+// respostas mais diretas, menos tokens de saída. Vendorizada em
+// templates/caveman-SKILL.md (ver templates/CAVEMAN-SKILL.LICENSE.md para
+// origem/licença), sem dependência de rede em produção. Idempotente: chamada
+// de novo a cada abertura de canal também cura projetos já existentes.
+function writeCavemanSkill(projectPath) {
+  try {
+    const src = path.join(TEMPLATES_DIR, 'caveman-SKILL.md');
+    if (!fs.existsSync(src) || !projectPath) return;
+    const skillDir = path.join(projectPath, '.claude', 'skills', 'caveman');
+    fs.mkdirSync(skillDir, { recursive: true });
+    fs.copyFileSync(src, path.join(skillDir, 'SKILL.md'));
+  } catch (e) { logger.error('[SKILL] Falha ao escrever skill caveman:', e.message); }
+}
+
 // Gera themes/catalog.json — índice que a skill nascera-templates lê (UM arquivo pequeno
 // em vez de varrer pastas). Regenerado a cada boot para refletir temas novos.
 function ensureThemesCatalog() {
@@ -830,7 +845,7 @@ app.use(IDE_BASE, (req, res) => {
 const THEMES_BASE = path.join(__dirname, 'themes');
 // ─── Scaffold + CLAUDE.md (S4-2: servicos/scaffold.js) ───
 const { findThemePath, scaffoldFromTheme, resolveThemeContent, composeClaudeMd, initGit } =
-  require('./servicos/scaffold.js').criar({ RAIZ: __dirname, AGENTS_DIR, THEMES_BASE, git, writeProjectSkill });
+  require('./servicos/scaffold.js').criar({ RAIZ: __dirname, AGENTS_DIR, THEMES_BASE, git, writeProjectSkill, writeCavemanSkill });
 
 // Serve theme preview files (index.html, design-system.html, assets)
 app.use('/themes', express.static(THEMES_BASE, { maxAge: '7d', etag: true, lastModified: true, immutable: true }));
@@ -2510,7 +2525,7 @@ const { bindChannel, ensureChannel } = require('./servicos/motor-canal.js').cria
   autoCommitAsync, atualizarProjeto, getCurrentVersion, generateProjectScreenshot,
   getEngine, sessionKeyFor, isDesktopLocal, escreverFerramentaDeImagem, memoriaProjeto,
   PROJECTS_BASE, normalizeBuildLevel, loadNasceraConfig, modelosLocais, motores, vpsSpawnWrapper, BUILD_LEVELS,
-  segredos,
+  segredos, writeCavemanSkill,
   // AD.1: credencial de IA própria do dono (ou null → credencial da instalação)
   credencialIaPropria: (username) => require('./rotas/ia-propria.js')
     .credencialPara(username, { loadNasceraConfig, loadUsers, segredos }),

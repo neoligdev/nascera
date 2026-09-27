@@ -12,7 +12,7 @@ const logger = require('../log.js');
 const path = require('path');
 
 function criar(deps) {
-  const { RAIZ, AGENTS_DIR, THEMES_BASE, git, writeProjectSkill } = deps;
+  const { RAIZ, AGENTS_DIR, THEMES_BASE, git, writeProjectSkill, writeCavemanSkill } = deps;
 
   function findThemePath(themeId) {
     const THEMES_BASE = path.join(RAIZ, 'themes');
@@ -251,6 +251,8 @@ function criar(deps) {
     }
     // Skill de templates disponível em todo projeto (buscar/aplicar/trocar tema sob demanda)
     writeProjectSkill(projectPath);
+    // Skill Caveman (respostas mais diretas, menos tokens de saída)
+    if (writeCavemanSkill) writeCavemanSkill(projectPath);
 
     if (!fs.existsSync(path.join(projectPath, '.git'))) {
       git(['init'], projectPath);
