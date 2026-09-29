@@ -18,7 +18,8 @@ const webhooksRotas = require('../rotas/webhooks.js');
 
 const HOTTOK = 'segredo-de-teste';
 
-function novaApp() {
+function novaApp(opts) {
+  opts = opts || {};
   const app = express();
   app.use(express.json({
     limit: '1mb',
@@ -26,6 +27,7 @@ function novaApp() {
   }));
   const cofre = new Map([['gateway:hotmart:hottok', HOTTOK]]);
   const usersStore = {};
+  const atividades = opts.atividades || [];
   let nasceraConfig = {
     billing: { mode: 'credits', pacotes: [{ id: 'pacote-300', creditos: 300, precoBrl: 37.90 }] },
     gateways: { hotmart: { planoPadrao: null, planoPorOferta: {}, pacotePorOferta: { 'oferta-pacote-300': 'pacote-300' } } },
@@ -34,7 +36,7 @@ function novaApp() {
     adminMiddleware: (req, _res, next) => { req.user = { user: 'admin-teste' }; next(); },
     loadUsers: () => usersStore,
     saveUsers: (u) => Object.assign(usersStore, u),
-    senhas, billing, vendas,
+    senhas, billing: opts.billing || billing, vendas,
     segredos: {
       guardar: (id, v) => cofre.set(id, v),
       obter: (id) => cofre.get(id) || null,
@@ -42,7 +44,7 @@ function novaApp() {
     },
     loadNasceraConfig: () => nasceraConfig,
     saveNasceraConfig: (c) => { nasceraConfig = c; },
-    appendActivity: () => {}, trackEvent: () => {}, USERS: {},
+    appendActivity: (evt) => atividades.push(evt), trackEvent: () => {}, USERS: {},
     email: null,
   });
   return app;
@@ -116,4 +118,57 @@ test('PUT /api/admin/gateways/:id rejeita oferta mapeada pra plano E pacote ao m
     body: JSON.stringify({ planoPorOferta: { 'oferta-x': 'pro' }, pacotePorOferta: { 'oferta-x': 'pacote-300' } }),
   }).then(r => r.json());
   assert.match(r.error, /plano E pacote/);
+});
+
+// Achado da revisão (Important #2): venda de pacote sem e-mail no payload
+// (sem como resolver username) precisa registrar O QUE FOI VENDIDO mesmo
+// pendente — senão o admin não tem como aplicar manualmente depois.
+test('pacote sem e-mail no payload: venda registra pacoteCreditos mesmo pendente (status sem_plano)', async (t) => {
+  const app = novaApp();
+  const server = app.listen(0);
+  t.after(() => server.close());
+  const base = 'http://127.0.0.1:' + server.address().port;
+  const r = await postWebhook(base, {
+    event: 'PURCHASE_APPROVED', id: 'tx-sememail',
+    data: {
+      purchase: { transaction: 'tx-sememail', price: { value: 37.90 }, offer: { code: 'oferta-pacote-300' } },
+      buyer: { name: 'Sem Email' },
+      product: { id: 'produto-1' },
+    },
+  });
+  assert.equal(r.pendente, true);
+  assert.equal(r.pacote, null);   // não aplicado (sem username pra creditar)
+  const vendasList = await vendas.listar({ gateway: 'hotmart' });
+  const venda = vendasList.find(v => v.transactionId === 'tx-sememail');
+  assert.equal(venda.pacoteCreditos, 300);   // o que foi VENDIDO fica registrado mesmo pendente
+  assert.equal(venda.status, 'sem_plano');
+});
+
+// Achado da revisão (Important #1): addBalance pode falhar (I/O de disco) —
+// sem guarda, o cliente pagou e nunca recebe o crédito, silenciosamente,
+// porque a reentrega do gateway vira no-op via jaExiste().
+test('addBalance falhando não vira 500 nem perde o registro — fica logado como atividade pra aplicação manual', async (t) => {
+  const billingComFalha = new Proxy(billing, {
+    get(target, prop) {
+      if (prop === 'addBalance') return () => { throw new Error('disco cheio (simulado)'); };
+      return target[prop];
+    },
+  });
+  const atividades = [];
+  const app = novaApp({ billing: billingComFalha, atividades });
+  const server = app.listen(0);
+  t.after(() => server.close());
+  const base = 'http://127.0.0.1:' + server.address().port;
+  const email = 'falha-credito-' + Date.now() + '@teste.com';
+  const r = await postWebhook(base, eventoHotmart('tx-falha', 'oferta-pacote-300', email));
+  assert.equal(r.ok, true);            // nunca 500 por causa disso
+  assert.equal(r.pendente, false);     // a venda em si foi processada (o crédito é que falhou)
+  const vendasList = await vendas.listar({ gateway: 'hotmart' });
+  const venda = vendasList.find(v => v.transactionId === 'tx-falha');
+  assert.equal(venda.pacoteCreditos, 300);   // registrado o que foi vendido
+  const s = billing.summaryFor(r.username);
+  assert.equal(s.saldosPorOrigem.compradoMilli, 0);   // NÃO creditado de verdade (addBalance falhou)
+  const alarme = atividades.find(a => a.type === 'pacote_credito_falhou');
+  assert.ok(alarme, 'deveria ter registrado uma atividade de alarme');
+  assert.equal(alarme.data.pacote, 'pacote-300');
 });

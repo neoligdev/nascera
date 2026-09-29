@@ -26,6 +26,7 @@
 // ═══════════════════════════════════════════════════════════════════════
 const crypto = require('crypto');
 const gateways = require('../servicos/gateways.js');
+const logger = require('../log.js');
 
 // Chave onde o hottok da Hotmart morava antes dos 4 gateways — lida uma
 // última vez em segredosDe() e promovida para a chave nova.
@@ -169,10 +170,16 @@ function registrar(app, deps) {
         const emailComprador = ev.email || null;
         // Asaas/Mercado Pago podem mandar o e-mail (ou o username) na
         // referência externa — é o caminho de achar a conta quando o payload
-        // não traz e-mail nenhum.
+        // não traz e-mail nenhum. Pra PACOTE (crédito avulso, silencioso e sem
+        // aviso ao "dono" da conta), esse último recurso — tratar a referência
+        // como username direto, sem checar e-mail — fica de fora: um
+        // referenciaExterna reaproveitado por engano (link de pagamento
+        // copiado, template mal configurado no gateway) creditaria a conta de
+        // um terceiro real sem chance de reclamar. Pra PLANO isso já existia
+        // e continua (achado da revisão: risco de config, não de código).
         let username = acharPorEmail(emailComprador) ||
                        (ev.referenciaExterna ? acharPorEmail(ev.referenciaExterna) : null) ||
-                       (ev.referenciaExterna && loadUsers()[ev.referenciaExterna] ? ev.referenciaExterna : null);
+                       (!pacoteId && ev.referenciaExterna && loadUsers()[ev.referenciaExterna] ? ev.referenciaExterna : null);
         let criado = false, tokenAcesso = null;
         if (!username && emailComprador) {
           const novo = await criarComprador(emailComprador, ev.nome, gid);
@@ -196,7 +203,13 @@ function registrar(app, deps) {
           gateway: gid, transactionId: ev.txId, username, email: emailComprador,
           valorBrl: ev.valorBrl || 0, meio: gid, referencia: ev.txId,
           plano: status === 'aprovada' && plano ? plano : null,
-          pacoteCreditos: status === 'aprovada' && pacote ? pacote.creditos : null,
+          // Grava o que foi COMPRADO mesmo quando `status` não é 'aprovada'
+          // (sem e-mail ainda, pacote apagado do catálogo depois de mapeado
+          // etc.) — senão a venda pendente fica sem nenhum registro do que
+          // era, e o admin não tem como aplicar manualmente depois
+          // (achado da revisão: `status` já diz se foi APLICADO; este campo
+          // diz o que foi VENDIDO — os dois puderam divergir sempre).
+          pacoteCreditos: pacote ? pacote.creditos : null,
           origem: 'webhook', status, evento: ev.evento,
         });
         // Corrida entre duas entregas simultâneas: o UNIQUE decide — quem
@@ -204,8 +217,27 @@ function registrar(app, deps) {
         // credita o pacote.
         if (reg.duplicada) return res.json({ ok: true, duplicada: true });
 
+        let pacoteAplicado = false;
         if (status === 'aprovada' && pacote) {
-          billing.addBalance(username, pacote.creditos, 'Pacote ' + pacote.id);
+          // addBalance é síncrono e pode falhar (I/O de disco) — sem guarda,
+          // uma falha aqui vira 500, o gateway reentrega, jaExiste() já acha
+          // a venda (linha 158) e a reentrega vira no-op silencioso: o
+          // cliente pagou e nunca mais recebe o crédito (achado da revisão).
+          // A venda já ficou registrada (linha acima) com o que foi
+          // comprado — um admin pode aplicar manualmente pelo botão "+
+          // Saldo" já existente, então logar alto aqui é a rede de segurança,
+          // não silenciar o erro nem arriscar cobrar 2× n dando retry aqui.
+          try {
+            billing.addBalance(username, pacote.creditos, 'Pacote ' + pacote.id);
+            pacoteAplicado = true;
+          } catch (err) {
+            logger.error('[webhooks] addBalance falhou pro pacote ' + pacote.id + ' de ' + username + ' (venda ' + reg.venda.id + '): ' + err.message);
+            appendActivity({
+              type: 'pacote_credito_falhou', user: username,
+              data: { gateway: gid, txId: ev.txId, pacote: pacote.id, creditos: pacote.creditos, vendaId: reg.venda.id, erro: err.message },
+              at: new Date().toISOString(),
+            });
+          }
         }
 
         // A1: o onboarding fecha SOZINHO — comprador novo recebe o link para
