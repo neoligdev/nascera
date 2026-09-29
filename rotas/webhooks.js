@@ -112,6 +112,17 @@ function registrar(app, deps) {
     return (ofertaId && mapa[String(ofertaId)]) || (produtoId && mapa[String(produtoId)]) ||
            (conf && conf.planoPadrao) || null;
   }
+  // Irmã de resolverPlano, mas SEM padrão pega-tudo: pacote é avulso, não
+  // mensalidade — não existe "pacote padrão pra toda oferta sem mapeamento".
+  // Só resolve com mapeamento EXPLÍCITO em conf.pacotePorOferta.
+  function resolverPacote(conf, ofertaId, produtoId) {
+    const mapa = (conf && conf.pacotePorOferta) || {};
+    return (ofertaId && mapa[String(ofertaId)]) || (produtoId && mapa[String(produtoId)]) || null;
+  }
+  function pacoteDoCatalogo(pacoteId) {
+    if (!pacoteId) return null;
+    return (billing.getConfig().pacotes || []).find(p => p.id === pacoteId) || null;
+  }
 
   // ═══ O NÚCLEO DO DINHEIRO — um só para os quatro gateways ═══
   // Cada adaptador só diz "veio mesmo do gateway?" e "o que aconteceu?".
@@ -147,7 +158,14 @@ function registrar(app, deps) {
         if (await vendas.jaExiste(gid, ev.txId)) return res.json({ ok: true, duplicada: true });
 
         const conf = cfgDe(gid);
-        const plano = resolverPlano(conf, ev.ofertaId, ev.produtoId);
+        // Pacote resolve PRIMEIRO: resolverPlano tem um padrão pega-tudo
+        // (conf.planoPadrao) — se rodasse antes, uma oferta pensada pra pacote
+        // mas ainda sem mapeamento cairia no plano padrão do gateway por engano.
+        // Pacote nunca tem padrão, então checá-lo primeiro nunca desvia uma
+        // venda de plano de verdade.
+        const pacoteId = resolverPacote(conf, ev.ofertaId, ev.produtoId);
+        const pacote = pacoteId ? pacoteDoCatalogo(pacoteId) : null;
+        const plano = pacoteId ? null : resolverPlano(conf, ev.ofertaId, ev.produtoId);
         const emailComprador = ev.email || null;
         // Asaas/Mercado Pago podem mandar o e-mail (ou o username) na
         // referência externa — é o caminho de achar a conta quando o payload
@@ -165,19 +183,30 @@ function registrar(app, deps) {
         if (username && plano) {
           try { billing.setUserPlan(username, plano); }
           catch (e) { status = 'sem_plano'; }   // plano do mapa não existe mais
-        } else {
+        } else if (!(username && pacote)) {
           status = 'sem_plano';                  // sem mapeamento ou sem e-mail
         }
+        // pacote (se houver) NÃO é aplicado aqui ainda — só depois que o registro
+        // abaixo vencer a corrida contra uma reentrega simultânea. setUserPlan
+        // pode rodar antes porque aplicar o MESMO plano 2× é inofensivo;
+        // addBalance não é — duas entregas quase simultâneas passariam pelo
+        // jaExiste() dos dois lados antes de qualquer uma vencer o ledger.
 
         const reg = await vendas.registrar({
           gateway: gid, transactionId: ev.txId, username, email: emailComprador,
           valorBrl: ev.valorBrl || 0, meio: gid, referencia: ev.txId,
-          plano: status === 'aprovada' ? plano : null,
+          plano: status === 'aprovada' && plano ? plano : null,
+          pacoteCreditos: status === 'aprovada' && pacote ? pacote.creditos : null,
           origem: 'webhook', status, evento: ev.evento,
         });
         // Corrida entre duas entregas simultâneas: o UNIQUE decide — quem
-        // perdeu NÃO manda e-mail nem conta como criado.
+        // perdeu NÃO manda e-mail, NÃO conta como criado, e (novo) NÃO
+        // credita o pacote.
         if (reg.duplicada) return res.json({ ok: true, duplicada: true });
+
+        if (status === 'aprovada' && pacote) {
+          billing.addBalance(username, pacote.creditos, 'Pacote ' + pacote.id);
+        }
 
         // A1: o onboarding fecha SOZINHO — comprador novo recebe o link para
         // definir a senha; cliente existente recebe a confirmação do plano.
@@ -189,18 +218,24 @@ function registrar(app, deps) {
             });
           } else if (status === 'aprovada') {
             email.enviarEvento('compra-confirmada', emailComprador, {
-              nome, plano, valor: (ev.valorBrl || 0).toFixed(2).replace('.', ','),
+              nome, plano: pacote ? ('Pacote de ' + pacote.creditos + ' créditos') : plano,
+              valor: (ev.valorBrl || 0).toFixed(2).replace('.', ','),
             });
           }
         }
         appendActivity({
           type: status === 'aprovada' ? 'venda_gateway' : 'venda_gateway_pendente',
           user: username || emailComprador || '?',
-          data: { gateway: gid, txId: ev.txId, plano, valor: ev.valorBrl, criado,
-                  motivo: status === 'aprovada' ? null : 'sem mapeamento de plano ou sem e-mail' },
+          data: { gateway: gid, txId: ev.txId, plano, pacote: pacote ? pacote.id : null, valor: ev.valorBrl, criado,
+                  motivo: status === 'aprovada' ? null : 'sem mapeamento de plano/pacote ou sem e-mail' },
           at: new Date().toISOString(),
         });
-        return res.json({ ok: true, gateway: gid, username, plano: status === 'aprovada' ? plano : null, criado, pendente: status !== 'aprovada' });
+        return res.json({
+          ok: true, gateway: gid, username,
+          plano: status === 'aprovada' && plano ? plano : null,
+          pacote: status === 'aprovada' && pacote ? pacote.id : null,
+          criado, pendente: status !== 'aprovada',
+        });
       }
 
       // ── reembolso/chargeback → suspender (NUNCA excluir) ──
@@ -261,6 +296,7 @@ function registrar(app, deps) {
           }, {}),
           planoPadrao: conf.planoPadrao || null,
           planoPorOferta: conf.planoPorOferta || {},
+          pacotePorOferta: conf.pacotePorOferta || {},
           url: '/api/webhooks/' + g.id,
         });
       }),
@@ -283,12 +319,18 @@ function registrar(app, deps) {
       }
     });
 
+    const planoPorOferta = (corpo.planoPorOferta && typeof corpo.planoPorOferta === 'object') ? corpo.planoPorOferta : {};
+    const pacotePorOferta = (corpo.pacotePorOferta && typeof corpo.pacotePorOferta === 'object') ? corpo.pacotePorOferta : {};
+    // A mesma oferta nunca pode significar plano E pacote — rejeitado AQUI
+    // (config), nunca em runtime: em runtime resolverPacote()/resolverPlano()
+    // resolveriam pra um dos dois silenciosamente.
+    const conflitos = Object.keys(planoPorOferta).filter(k => pacotePorOferta[k] !== undefined);
+    if (conflitos.length) {
+      return res.status(400).json({ error: 'Oferta mapeada para plano E pacote ao mesmo tempo: ' + conflitos.join(', ') });
+    }
     const cfg = loadNasceraConfig();
     cfg.gateways = cfg.gateways || {};
-    cfg.gateways[gid] = {
-      planoPadrao: corpo.planoPadrao || null,
-      planoPorOferta: (corpo.planoPorOferta && typeof corpo.planoPorOferta === 'object') ? corpo.planoPorOferta : {},
-    };
+    cfg.gateways[gid] = { planoPadrao: corpo.planoPadrao || null, planoPorOferta, pacotePorOferta };
     saveNasceraConfig(cfg);
     appendActivity({ type: 'admin_gateway_config', user: req.user.user,
                      data: { gateway: gid, planoPadrao: cfg.gateways[gid].planoPadrao }, at: new Date().toISOString() });
