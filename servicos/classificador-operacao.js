@@ -39,12 +39,28 @@ const RE_API_PATH = /(^|[\\/])(rotas|routes|api)[\\/]/i;
 
 function normCaminho(c) { return String(c || '').replace(/\\/g, '/'); }
 
+// Limiares da heurística v1 (arbitrários — Risco #2 do doc: "página simples"
+// vs. "landing" vs. "módulo complexo" têm fronteira nebulosa por natureza;
+// estes valores são o ponto de partida, ajustável depois de medir telemetria
+// real, sem precisar reabrir o classificador).
+const LIMIAR_DIFF_PEQUENO = 200;    // chars: acima disso não é mais "ajuste de texto"
+const LIMIAR_REMOCAO_MIN = 80;      // chars removidos p/ contar como "remoção de bloco"
+const LIMIAR_REMOCAO_RATIO = 0.5;   // tamanhoDepois precisa ser <= 50% do tamanhoAntes
+
+const RE_CSS_PATH = /\.(css|scss|less)$/i;
+const RE_CSS_INLINE = /style=\{|<style[\s>]/i;
+const RE_COMPONENTE_PATH = /(^|[\\/])(componentes|components)[\\/]/i;
+const RE_PAGINA_PATH = /(^|[\\/])(paginas|pages)[\\/]|\.html$/i;
+
 // Classifica UM arquivo (fora de qualquer agrupamento cross-file — ver
 // Task 3 para CRUD). Ordem = mais específico primeiro; um arquivo que bate
 // em mais de um padrão fica com o PRIMEIRO que casar.
 function classificarArquivo(arquivo, contexto) {
   const caminho = normCaminho(arquivo.caminho);
   const conteudo = String(arquivo.conteudo || '');
+  const criado = arquivo.tool === 'Write';
+  const antes = arquivo.tamanhoAntes || 0;
+  const depois = arquivo.tamanhoDepois || 0;
 
   if (RE_PAGAMENTO.test(caminho) || RE_PAGAMENTO.test(conteudo)) return 'PAGAMENTO_CHECKOUT';
   if (RE_AUTH.test(caminho) || RE_AUTH.test(conteudo)) return 'LOGIN_CADASTRO';
@@ -52,7 +68,26 @@ function classificarArquivo(arquivo, contexto) {
   if (RE_DASHBOARD.test(conteudo)) return 'DASHBOARD';
   if (RE_FORMULARIO.test(conteudo)) return 'FORMULARIO_VALIDACAO';
   if (RE_API_PATH.test(caminho)) return 'API';
-  return null;   // Task 2 adiciona os padrões de tamanho/estilo/correção aqui
+
+  // Daqui pra baixo só se aplica a EDIT (arquivo já existia) — Write cai nas
+  // categorias de criação mais abaixo.
+  if (!criado) {
+    if (RE_CSS_PATH.test(caminho) || RE_CSS_INLINE.test(conteudo)) return 'ALTERAR_ESTILO';
+    if (antes >= LIMIAR_REMOCAO_MIN && depois <= antes * LIMIAR_REMOCAO_RATIO) return 'REMOVER_COMPONENTE';
+  }
+
+  if (criado && RE_COMPONENTE_PATH.test(caminho)) return 'CRIAR_COMPONENTE';
+  if (criado && RE_PAGINA_PATH.test(caminho)) return 'PAGINA_SIMPLES';
+
+  // "Correção média" reaproveita o sinal do classificador de planejamento
+  // (contexto.pedidoDeCorrecao) — só depois de estilo/remoção/criação/página,
+  // porque essas são sinais mais específicos sobre O QUE mudou; correção é
+  // o "catch-all" de um pedido de fix que não é nenhuma delas.
+  if (!criado && contexto && contexto.pedidoDeCorrecao) return 'CORRECAO_MEDIA';
+
+  if (!criado && depois <= LIMIAR_DIFF_PEQUENO) return 'ALTERAR_TEXTO';
+
+  return null;   // nenhum padrão bate — cai no fallback de custo real
 }
 
 module.exports = { CREDITOS, _classificarArquivo: classificarArquivo };

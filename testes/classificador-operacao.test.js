@@ -38,3 +38,34 @@ test('sem padrão nenhum: devolve null (cai no custo real)', () => {
   const arquivo = { caminho: 'notas/rascunho.md', tool: 'Edit', conteudo: 'anotação qualquer sem nenhum sinal reconhecível', tamanhoAntes: 5000, tamanhoDepois: 5000 };
   assert.equal(_classificarArquivo(arquivo, {}), null);
 });
+
+test('estilo: Edit em arquivo .css vira ALTERAR_ESTILO (3)', () => {
+  const arquivo = { caminho: 'public/estilos/tema.css', tool: 'Edit', conteudo: '.botao{color:red}', tamanhoAntes: 20, tamanhoDepois: 22 };
+  assert.equal(_classificarArquivo(arquivo, {}), 'ALTERAR_ESTILO');
+});
+
+test('remover componente: Edit que encolhe MUITO o conteúdo vira REMOVER_COMPONENTE (3)', () => {
+  const arquivo = { caminho: 'componentes/Banner.jsx', tool: 'Edit', conteudo: '', tamanhoAntes: 500, tamanhoDepois: 40 };
+  assert.equal(_classificarArquivo(arquivo, {}), 'REMOVER_COMPONENTE');
+});
+
+test('criar componente: Write dentro de componentes/ vira CRIAR_COMPONENTE (5)', () => {
+  const arquivo = { caminho: 'componentes/Novo.jsx', tool: 'Write', conteudo: 'export default function Novo(){return null}', tamanhoAntes: 0, tamanhoDepois: 45 };
+  assert.equal(_classificarArquivo(arquivo, {}), 'CRIAR_COMPONENTE');
+});
+
+test('página simples: Write dentro de paginas/ sem form/dashboard vira PAGINA_SIMPLES (8)', () => {
+  const arquivo = { caminho: 'paginas/sobre.html', tool: 'Write', conteudo: '<h1>Sobre nós</h1><p>texto</p>', tamanhoAntes: 0, tamanhoDepois: 30 };
+  assert.equal(_classificarArquivo(arquivo, {}), 'PAGINA_SIMPLES');
+});
+
+test('correção média: Edit com contexto.pedidoDeCorrecao e sem sinal mais específico vira CORRECAO_MEDIA (14)', () => {
+  const conteudo = 'ajuste de lógica no cálculo de frete '.repeat(6);   // > 200 chars, não cai em "texto pequeno"
+  const arquivo = { caminho: 'servicos/frete.js', tool: 'Edit', conteudo, tamanhoAntes: 300, tamanhoDepois: 300 };
+  assert.equal(_classificarArquivo(arquivo, { pedidoDeCorrecao: true }), 'CORRECAO_MEDIA');
+});
+
+test('alterar texto/botão: Edit pequeno, sem contexto de correção, vira ALTERAR_TEXTO (2)', () => {
+  const arquivo = { caminho: 'paginas/sobre.html', tool: 'Edit', conteudo: 'Fale com a gente', tamanhoAntes: 12, tamanhoDepois: 16 };
+  assert.equal(_classificarArquivo(arquivo, {}), 'ALTERAR_TEXTO');
+});
