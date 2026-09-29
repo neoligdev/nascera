@@ -260,23 +260,11 @@
       <h1 class="page-title">Receita & Planos</h1>
       <p class="page-sub">O dinheiro que entra (vendas e webhook da Hotmart) e como os clientes pagam: planos, créditos e custo por modelo.</p>
 
-      <!-- Vendas & Hotmart (A0.1/A0.3): a venda credita sozinha, o ledger enxerga tudo -->
+      <!-- Vendas & Pix (A0.1/A0.3): a venda credita sozinha, o ledger enxerga tudo -->
       <div class="card" style="margin-bottom:14px">
-        <div class="stat-label" style="margin-bottom:10px">Vendas & Hotmart</div>
+        <div class="stat-label" style="margin-bottom:10px">Vendas & Pix manual</div>
         <div id="vendas-resumo" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:14px"></div>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;padding:12px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:10px;margin-bottom:14px">
-          <div>
-            <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:4px">URL do webhook (cole na Hotmart, em Ferramentas → Webhook)</div>
-            <input id="hm-url" readonly onclick="this.select()" style="width:100%;padding:7px 10px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08);border-radius:7px;color:rgba(255,255,255,.6);font-size:11.5px;font-family:ui-monospace,monospace">
-          </div>
-          <div>
-            <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:4px">Hottok (token de verificação da Hotmart) <span id="hm-hottok-estado" style="color:#4ade80"></span></div>
-            <input id="hm-hottok" type="password" placeholder="Cole o hottok da sua conta Hotmart" autocomplete="off" style="width:100%;padding:7px 10px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08);border-radius:7px;color:#fff;font-size:11.5px">
-          </div>
-          <div>
-            <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:4px">Plano aplicado na compra aprovada</div>
-            <select id="hm-plano" style="width:100%;padding:7px 10px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08);border-radius:7px;color:#fff;font-size:11.5px"></select>
-          </div>
           <div>
             <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:4px">Chave Pix (aparece na tela de compra do cliente)</div>
             <input id="px-chave" placeholder="CPF, e-mail, telefone ou aleatória" autocomplete="off" style="width:100%;padding:7px 10px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08);border-radius:7px;color:#fff;font-size:11.5px">
@@ -286,7 +274,7 @@
             <input id="px-titular" placeholder="Nome que o cliente vê" autocomplete="off" style="width:100%;padding:7px 10px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08);border-radius:7px;color:#fff;font-size:11.5px">
           </div>
           <div style="display:flex;align-items:flex-end">
-            <button class="btn btn-primary" style="width:100%" onclick="salvarHotmart()">Salvar configurações</button>
+            <button class="btn btn-primary" style="width:100%" onclick="salvarPix()">Salvar Pix</button>
           </div>
         </div>
         <div class="tbl-wrap"><table>
@@ -294,6 +282,12 @@
           <tbody id="vendas-tbody"></tbody>
         </table></div>
         <p id="vendas-vazio" style="display:none;font-size:12px;color:rgba(255,255,255,.3);text-align:center;padding:16px 0">Nenhuma venda registrada ainda. Elas entram sozinhas pelo webhook — ou quando você registra um pagamento ao conceder créditos.</p>
+      </div>
+
+      <!-- Gateways automáticos (Hotmart/Kiwify/Asaas/Mercado Pago): mapeamento oferta→plano/pacote -->
+      <div class="card" style="margin-bottom:14px" id="gw-card">
+        <div class="stat-label" style="margin-bottom:10px">Gateways de pagamento (automáticos)</div>
+        <div id="gw-list"></div>
       </div>
 
       <!-- Modo -->
@@ -400,6 +394,16 @@
           <button class="btn btn-primary" onclick="saveBillingConfig()">Salvar configurações</button>
           <span id="bill-save-status" style="font-size:11px;color:rgba(74,222,128,.7);display:none">Salvo!</span>
         </div>
+      </div>
+
+      <!-- Pacotes avulsos de créditos (Fase 2) -->
+      <div class="card" style="margin-bottom:14px" id="bill-pacotes-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div class="stat-label" style="margin:0">Pacotes avulsos de créditos</div>
+          <button class="btn btn-ghost btn-xs" onclick="billAddPacote()">+ Pacote</button>
+        </div>
+        <div id="bill-pacotes-tbody"></div>
+        <p style="font-size:10.5px;color:rgba(255,255,255,.25);margin:10px 0 0">Origem "comprado", validade em creditoCompradoValidadeDias (mesma regra do saldo avulso). O id de cada pacote é usado no mapeamento oferta→pacote de cada gateway, acima.</p>
       </div>
 
       <!-- Usuários -->
@@ -1356,20 +1360,10 @@ var MODE_HINTS = {
 
 // ── Vendas & Hotmart (A0.1/A0.3) ──────────────────────────────────────
 function loadVendas() {
-  document.getElementById('hm-url').value = location.origin + '/api/webhooks/hotmart';
-  api('/api/admin/webhooks/hotmart').then(function(h) {
-    if (h.error) return;
-    document.getElementById('hm-hottok-estado').textContent = h.configurado ? '· configurado (' + (h.hottokMascarado || '') + ')' : '';
-    document.getElementById('hm-hottok').placeholder = h.configurado ? 'Configurado — cole outro para trocar' : 'Cole o hottok da sua conta Hotmart';
-    if (h.pix) {
-      document.getElementById('px-chave').value = h.pix.chave || '';
-      document.getElementById('px-titular').value = h.pix.titular || '';
-    }
-    var sel = document.getElementById('hm-plano');
-    var planos = (_billCfg && _billCfg.plans) || [];
-    sel.innerHTML = '<option value="">— escolher plano —</option>' + planos.map(function(p) {
-      return '<option value="' + esc(p.slug) + '"' + (h.planoPadrao === p.slug ? ' selected' : '') + '>' + esc(p.name) + ' (R$ ' + p.priceBrl + ')</option>';
-    }).join('');
+  api('/api/billing/planos').then(function(h) {
+    if (h.error || !h.pix) return;
+    document.getElementById('px-chave').value = h.pix.chave || '';
+    document.getElementById('px-titular').value = h.pix.titular || '';
   });
   api('/api/admin/vendas').then(function(d) {
     if (d.error) return;
@@ -1398,24 +1392,13 @@ function loadVendas() {
     }).join('');
   });
 }
-function salvarHotmart() {
-  var body = {
-    planoPadrao: document.getElementById('hm-plano').value || null,
-    planoPorOferta: {},
-  };
-  var tok = document.getElementById('hm-hottok').value.trim();
-  if (tok) body.hottok = tok;
+function salvarPix() {
   var pix = {
     chave: document.getElementById('px-chave').value.trim(),
     titular: document.getElementById('px-titular').value.trim(),
   };
-  Promise.all([
-    api('/api/admin/webhooks/hotmart', { method: 'PUT', body: JSON.stringify(body) }),
-    api('/api/admin/pagamentos/pix', { method: 'PUT', body: JSON.stringify(pix) }),
-  ]).then(function(rs) {
-    var erro = rs.find(function(r) { return r.error; });
-    if (erro) return alert(erro.error);
-    document.getElementById('hm-hottok').value = '';
+  api('/api/admin/pagamentos/pix', { method: 'PUT', body: JSON.stringify(pix) }).then(function(r) {
+    if (r.error) return alert(r.error);
     loadVendas();
   });
 }
@@ -1443,6 +1426,8 @@ function loadBilling() {
     document.getElementById('bill-preco-fixo').checked = !!d.config.precoFixoAtivo;
     renderBillModels();
     renderBillPlans();
+    renderBillPacotes();
+    loadGateways();
     renderBillUsers(d.users);
     renderBillSim();
   });
@@ -1634,6 +1619,94 @@ function billAddPlan() {
   renderBillSim();
 }
 
+// ── Pacotes avulsos de créditos (Fase 2) ────────────────────────────────
+function renderBillPacotes() {
+  document.getElementById('bill-pacotes-tbody').innerHTML = (_billCfg.pacotes || []).map(function(p, i) {
+    return '<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;padding:10px 14px;border-radius:12px;margin-bottom:8px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06)">' +
+      '<div><label class="inp-label" style="font-size:10px">Id</label><input class="inp" style="width:110px;padding:6px 8px;font-size:11.5px" value="' + esc(p.id) + '" onchange="_billCfg.pacotes[' + i + '].id=this.value"/></div>' +
+      '<div><label class="inp-label" style="font-size:10px">Créditos</label><input class="inp" style="width:80px;padding:6px 8px;font-size:11.5px" type="number" min="1" step="1" value="' + p.creditos + '" onchange="_billCfg.pacotes[' + i + '].creditos=parseInt(this.value,10)||0"/></div>' +
+      '<div><label class="inp-label" style="font-size:10px">Preço (R$)</label><input class="inp" style="width:80px;padding:6px 8px;font-size:11.5px" type="number" min="0" step="0.01" value="' + p.precoBrl + '" onchange="_billCfg.pacotes[' + i + '].precoBrl=parseFloat(this.value)||0"/></div>' +
+      '<button class="btn btn-danger btn-xs" style="margin-left:auto" onclick="_billCfg.pacotes.splice(' + i + ',1);renderBillPacotes()">Remover</button>' +
+    '</div>';
+  }).join('');
+}
+function billAddPacote() {
+  _billCfg.pacotes = _billCfg.pacotes || [];
+  _billCfg.pacotes.push({ id: 'pacote-' + Date.now().toString(36), creditos: 100, precoBrl: 19.90 });
+  renderBillPacotes();
+}
+
+// ── Gateways automáticos: mapeamento oferta→plano/pacote ────────────────
+function loadGateways() {
+  api('/api/admin/gateways').then(function(d) {
+    if (d.error) return;
+    document.getElementById('gw-list').innerHTML = (d.gateways || []).map(renderGatewayCard).join('');
+  });
+}
+function gwOpcoesValor(tipo, atual) {
+  var lista = tipo === 'pacote' ? (_billCfg.pacotes || []) : (_billCfg.plans || []);
+  return lista.map(function(x) {
+    var id = tipo === 'pacote' ? x.id : x.slug;
+    var rotulo = tipo === 'pacote' ? (x.creditos + ' créditos (R$ ' + x.precoBrl + ')') : x.name;
+    return '<option value="' + esc(id) + '"' + (id === atual ? ' selected' : '') + '>' + esc(rotulo) + '</option>';
+  }).join('');
+}
+function linhaMapaHtml(l) {
+  return '<div class="gw-linha-mapa" style="display:flex;gap:6px;margin-bottom:6px">' +
+    '<input class="inp gw-mapa-chave" style="width:140px" value="' + esc(l.chave) + '" placeholder="id da oferta/produto"/>' +
+    '<select class="inp gw-mapa-tipo" style="width:90px" onchange="gwTrocaTipo(this)">' +
+      '<option value="plano"' + (l.tipo === 'plano' ? ' selected' : '') + '>Plano</option>' +
+      '<option value="pacote"' + (l.tipo === 'pacote' ? ' selected' : '') + '>Pacote</option></select>' +
+    '<select class="inp gw-mapa-valor" style="width:180px">' + gwOpcoesValor(l.tipo, l.valor) + '</select>' +
+    '<button class="btn btn-danger btn-xs" onclick="this.closest(\'.gw-linha-mapa\').remove()">×</button></div>';
+}
+function gwTrocaTipo(sel) {
+  sel.parentNode.querySelector('.gw-mapa-valor').innerHTML = gwOpcoesValor(sel.value, null);
+}
+function renderGatewayCard(g) {
+  var linhas = [];
+  Object.keys(g.planoPorOferta || {}).forEach(function(k) { linhas.push({ chave: k, tipo: 'plano', valor: g.planoPorOferta[k] }); });
+  Object.keys(g.pacotePorOferta || {}).forEach(function(k) { linhas.push({ chave: k, tipo: 'pacote', valor: g.pacotePorOferta[k] }); });
+  var planoOpts = '<option value="">— escolher plano —</option>' + (_billCfg.plans || []).map(function(p) {
+    return '<option value="' + esc(p.slug) + '"' + (g.planoPadrao === p.slug ? ' selected' : '') + '>' + esc(p.name) + '</option>';
+  }).join('');
+  return '<div class="gw-card" data-gw="' + g.id + '" style="padding:14px 16px;border-radius:12px;margin-bottom:12px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06)">' +
+    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">' +
+      '<strong>' + esc(g.nome) + '</strong>' +
+      '<span style="font-size:11px;color:' + (g.configurado ? '#4ade80' : 'rgba(255,255,255,.4)') + '">' + (g.configurado ? 'configurado' : 'faltando: ' + g.faltando.join(', ')) + '</span>' +
+    '</div>' +
+    '<input readonly value="' + location.origin + g.url + '" onclick="this.select()" style="width:100%;margin-bottom:8px;padding:7px 10px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08);border-radius:7px;color:rgba(255,255,255,.6);font-size:11px;font-family:ui-monospace,monospace"/>' +
+    g.campos.map(function(c) {
+      return '<div style="margin-bottom:8px"><label class="inp-label" style="font-size:10px">' + esc(c.rotulo) + '</label>' +
+        '<input class="inp gw-campo" data-campo="' + c.id + '" type="password" placeholder="' + (g.valores[c.id] ? 'Configurado (' + g.valores[c.id] + ') — cole outro para trocar' : c.ajuda) + '" autocomplete="off"/></div>';
+    }).join('') +
+    '<div style="margin-bottom:8px"><label class="inp-label" style="font-size:10px">Plano padrão (oferta sem mapeamento)</label><select class="inp gw-plano-padrao" style="width:220px">' + planoOpts + '</select></div>' +
+    '<div class="stat-label" style="margin:10px 0 6px;font-size:10px">Oferta/produto → plano ou pacote</div>' +
+    '<div class="gw-mapa">' + linhas.map(linhaMapaHtml).join('') + '</div>' +
+    '<button class="btn btn-ghost btn-xs" onclick="this.closest(\'.gw-card\').querySelector(\'.gw-mapa\').insertAdjacentHTML(\'beforeend\', linhaMapaHtml({chave:\'\',tipo:\'plano\',valor:null}))">+ Mapeamento</button> ' +
+    '<button class="btn btn-primary btn-xs" style="margin-left:8px" onclick="salvarGateway(\'' + g.id + '\', this)">Salvar ' + esc(g.nome) + '</button>' +
+  '</div>';
+}
+function salvarGateway(gid, btn) {
+  var card = btn.closest('.gw-card');
+  var planoPorOferta = {}, pacotePorOferta = {}, conflitos = [];
+  card.querySelectorAll('.gw-linha-mapa').forEach(function(linha) {
+    var chave = linha.querySelector('.gw-mapa-chave').value.trim();
+    var valor = linha.querySelector('.gw-mapa-valor').value;
+    if (!chave || !valor) return;
+    var tipo = linha.querySelector('.gw-mapa-tipo').value;
+    if (tipo === 'pacote') { if (planoPorOferta[chave] !== undefined) conflitos.push(chave); pacotePorOferta[chave] = valor; }
+    else { if (pacotePorOferta[chave] !== undefined) conflitos.push(chave); planoPorOferta[chave] = valor; }
+  });
+  if (conflitos.length) return alert('Oferta mapeada para plano E pacote ao mesmo tempo: ' + conflitos.join(', ') + '.');
+  var body = { planoPadrao: card.querySelector('.gw-plano-padrao').value || null, planoPorOferta: planoPorOferta, pacotePorOferta: pacotePorOferta };
+  card.querySelectorAll('.gw-campo').forEach(function(inp) { if (inp.value.trim()) body[inp.dataset.campo] = inp.value.trim(); });
+  api('/api/admin/gateways/' + gid, { method: 'PUT', body: JSON.stringify(body) }).then(function(r) {
+    if (r.error) return alert(r.error);
+    loadGateways();
+  });
+}
+
 function saveBillingConfig() {
   var mkPct = parseFloat(document.getElementById('bill-markup').value);
   if (isNaN(mkPct)) {
@@ -1658,6 +1731,7 @@ function saveBillingConfig() {
         maxProjetos: p.maxProjetos || null, maxDominios: p.maxDominios || null,
       };
     }),
+    pacotes: (_billCfg.pacotes || []).map(function(p) { return { id: p.id, creditos: p.creditos || 0, precoBrl: p.precoBrl || 0 }; }),
   };
   api('/api/admin/billing/config', { method: 'PUT', body: JSON.stringify(body) }).then(function(r) {
     if (r.error) { alert(r.error); return; }
