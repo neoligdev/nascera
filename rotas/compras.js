@@ -89,6 +89,16 @@ function registrar(app, deps) {
     });
   });
 
+  // ── cliente: catálogo de pacotes avulsos de créditos (Fase 2, doc §6) ──
+  app.get('/api/billing/pacotes', authMiddleware, (_req, res) => {
+    const cfg = loadNasceraConfig();
+    const b = cfg.billing || {};
+    res.json({
+      pacotes: (b.pacotes || []).filter(p => p.creditos > 0 && p.precoBrl > 0)
+        .map(p => ({ id: p.id, creditos: p.creditos, precoBrl: p.precoBrl })),
+    });
+  });
+
   // ── cliente: estimativa prévia de créditos (composer, deliberadamente
   // aproximada) ────────────────────────────────────────────────────────
   app.post('/api/billing/estimar', authMiddleware, (req, res) => {
