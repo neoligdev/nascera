@@ -24,6 +24,39 @@ function criar(deps) {
     credencialIaPropria, email, loadUsers, segredos, writeCavemanSkill, planejamentoAutomatico, motor2,
   } = deps;
 
+  // A.1 (Fase 2 — classificador de operação): acumula, por turno, os
+  // arquivos tocados por ferramentas de escrita/edição, no formato que
+  // servicos/classificador-operacao.js espera — sem git diff, só o que já
+  // flui nos eventos `tool_use`. Map (não Set): um mesmo caminho tocado 2x
+  // no turno fica com o registro da ÚLTIMA edição, contando 1 vez só na
+  // soma (decisão fechada da spec A.1).
+  function registrarArquivoTocado(ch, tu) {
+    const caminho = tu.input && tu.input.file_path;
+    if (!caminho) return;
+    ch._arquivosTocados = ch._arquivosTocados || new Map();
+    if (tu.tool === 'Write') {
+      const content = String((tu.input && tu.input.content) || '');
+      ch._arquivosTocados.set(caminho, { caminho, tool: 'Write', conteudo: content, tamanhoAntes: 0, tamanhoDepois: content.length });
+    } else if (tu.tool === 'Edit') {
+      const antes = String((tu.input && tu.input.old_string) || '');
+      const depois = String((tu.input && tu.input.new_string) || '');
+      ch._arquivosTocados.set(caminho, { caminho, tool: 'Edit', conteudo: depois, tamanhoAntes: antes.length, tamanhoDepois: depois.length });
+    } else if (tu.tool === 'MultiEdit') {
+      const edits = Array.isArray(tu.input && tu.input.edits) ? tu.input.edits : [];
+      let antes = 0, depois = 0, conteudo = '';
+      for (const e of edits) {
+        antes += String((e && e.old_string) || '').length;
+        const novo = String((e && e.new_string) || '');
+        depois += novo.length;
+        conteudo += novo;
+      }
+      ch._arquivosTocados.set(caminho, { caminho, tool: 'MultiEdit', conteudo, tamanhoAntes: antes, tamanhoDepois: depois });
+    } else if (tu.tool === 'NotebookEdit') {
+      const novo = String((tu.input && (tu.input.new_source || tu.input.new_string)) || '');
+      ch._arquivosTocados.set(caminho, { caminho, tool: 'NotebookEdit', conteudo: novo, tamanhoAntes: 0, tamanhoDepois: novo.length });
+    }
+  }
+
   function bindChannel(ch) {
     const { session, projectId } = ch;
 
@@ -59,7 +92,10 @@ function criar(deps) {
 
     session.on('tool_use', (tu) => {
       bcast({ type: 'tool_use', tool: tu.tool, input: tu.input, agent: tu.agent || undefined });
-      if (/^(Write|Edit|MultiEdit|NotebookEdit)$/.test(tu.tool)) schedulePreviewRefresh();
+      if (/^(Write|Edit|MultiEdit|NotebookEdit)$/.test(tu.tool)) {
+        schedulePreviewRefresh();
+        registrarArquivoTocado(ch, tu);
+      }
       if (projectId && !tu.parentId) {
         appendChatMessage(projectId, { role: 'tool', tool: tu.tool, input: tu.input, timestamp: Date.now() });
       }
@@ -117,6 +153,13 @@ function criar(deps) {
 
     // Fim de turno: commit, screenshot, e 'done' para a UI carregar a prévia
     session.on('result', (r) => {
+      // A.2/A.3 (Fase 2): consome a lista do turno que está terminando e já
+      // deixa o mapa vazio pro próximo — turnos são serializados por sessão
+      // (a fila em ch._turnQueue garante um `result` por vez), então zerar
+      // aqui É "zerar a cada novo turno iniciado" sem precisar de outro gancho.
+      const arquivosTocadosDoTurno = Array.from((ch._arquivosTocados || new Map()).values());
+      ch._arquivosTocados = new Map();
+
       // Delta de custo do turno (o total_cost_usd do SDK é cumulativo por sessão)
       let turnCostUsd = 0;
       if (typeof r.cost === 'number') {
