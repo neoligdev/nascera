@@ -73,6 +73,7 @@
   function selecionar(el) { var r = document.createRange(); r.selectNodeContents(el); var s = getSelection(); s.removeAllRanges(); s.addRange(r); try { document.execCommand('copy'); } catch (e) {} }
   function mostrar(texto, tipo) { var m = document.getElementById('msg'); m.textContent = texto; m.className = 'msg ' + tipo; m.scrollIntoView({ behavior:'smooth', block:'center' }); }
 
+  var podeComprar = false;
   api('/api/billing/planos').then(function(d) {
     if (d.pix && d.pix.chave) {
       document.getElementById('card-pix').style.display = '';
@@ -80,29 +81,32 @@
       if (d.pix.titular) document.getElementById('pix-titular').textContent = ' (' + d.pix.titular + ')';
       if (d.pix.instrucoes) document.getElementById('pix-instrucoes').textContent = d.pix.instrucoes;
     }
-    var podeComprar = !!(d.pix && d.pix.chave);
+    podeComprar = !!(d.pix && d.pix.chave);
     document.getElementById('planos').innerHTML = (d.planos || []).map(function(p) {
       return '<div class="plano">' +
         '<h3>' + esc(p.name) + '</h3>' +
         '<div class="preco">R$ ' + p.priceBrl + '<small>/mês</small></div>' +
         '<button ' + (podeComprar ? '' : 'disabled title="O administrador ainda não configurou o Pix"') +
-        ' onclick="jaFizPix(\'' + esc(p.slug) + '\', this)">Já fiz o Pix deste plano</button>' +
+        ' onclick=\'jaFizPix({plano:"' + esc(p.slug) + '"}, this)\'>Já fiz o Pix deste plano</button>' +
         '</div>';
     }).join('') || '<p style="color:#67637d;font-size:13.5px">Nenhum plano disponível no momento — fale com o administrador.</p>';
-  });
-
-  api('/api/billing/pacotes').then(function(d) {
+    // Créditos avulsos (Fase 2) dependem do mesmo Pix — encadeado aqui pra
+    // `podeComprar` já estar resolvido quando os cards forem montados.
+    return api('/api/billing/pacotes');
+  }).then(function(d) {
     document.getElementById('pacotes').innerHTML = (d.pacotes || []).map(function(p) {
       return '<div class="plano">' +
         '<h3>' + p.creditos + ' créditos</h3>' +
         '<div class="preco">R$ ' + p.precoBrl.toFixed(2).replace('.', ',') + '</div>' +
+        '<button ' + (podeComprar ? '' : 'disabled title="O administrador ainda não configurou o Pix"') +
+        ' onclick=\'jaFizPix({pacote:"' + esc(p.id) + '"}, this)\'>Já fiz o Pix deste pacote</button>' +
         '</div>';
     }).join('') || '<p style="color:#67637d;font-size:13.5px">Nenhum pacote disponível no momento.</p>';
   });
 
-  function jaFizPix(slug, btn) {
+  function jaFizPix(corpo, btn) {
     btn.disabled = true;
-    api('/api/me/intencao-pix', { method: 'POST', body: JSON.stringify({ plano: slug }) }).then(function(r) {
+    api('/api/me/intencao-pix', { method: 'POST', body: JSON.stringify(corpo) }).then(function(r) {
       if (r.error) { mostrar(r.error, 'erro'); btn.disabled = false; return; }
       mostrar(r.mensagem, 'ok');
     });

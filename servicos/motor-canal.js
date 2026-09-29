@@ -62,12 +62,17 @@ function criar(deps) {
   // terminando. undefined = "não aplica" (billing.debitTurn cai no custo
   // real automaticamente, seja porque o toggle está desligado, seja porque
   // nenhum arquivo bateu com nenhum padrão).
-  function montarCreditosFixos(cfg, arquivosTocadosDoTurno, mensagemDoTurno) {
+  function montarCreditosFixos(cfg, arquivosTocadosDoTurno, mensagemDoTurno, raizProjeto) {
     if (!cfg || !cfg.precoFixoAtivo) return undefined;
     if (!arquivosTocadosDoTurno || !arquivosTocadosDoTurno.length) return undefined;
     const pedidoDeCorrecao = !!(planejamentoAutomatico && planejamentoAutomatico.pareceCorrecao
       && planejamentoAutomatico.pareceCorrecao(mensagemDoTurno));
-    const resultado = classificadorOperacao.classificar(arquivosTocadosDoTurno, { pedidoDeCorrecao });
+    // Achado da revisão (Important #6): sem a raiz, o nome do PROJETO entra
+    // na comparação de padrão junto com o caminho de verdade do arquivo.
+    const resultado = classificadorOperacao.classificar(arquivosTocadosDoTurno, { pedidoDeCorrecao, raiz: raizProjeto });
+    if (resultado.totalCreditosBruto > resultado.totalCreditos) {
+      logger.info('[classificador] teto de créditos por turno atingido: ' + resultado.totalCreditosBruto + ' → ' + resultado.totalCreditos + ' (calibrar categorias de agregado)');
+    }
     return resultado.totalCreditos > 0 ? resultado.totalCreditos : undefined;
   }
 
@@ -218,7 +223,13 @@ function criar(deps) {
         catch (err) { logger.error('[motor2] registrar uso falhou:', err.message); }
       } else if ((turnCostUsd > 0 || modelDeltas) && stamp.user && !stamp.exempt) {
         try {
-          const creditosFixos = montarCreditosFixos(billing.getConfig(), arquivosTocadosDoTurno, stamp.mensagem);
+          // raizProjeto: só pra relativizar caminho no classificador de
+          // operação (Important #6) — nome do projeto não pode virar sinal
+          // de categoria. `undefined` (sem projectId) é um `raiz` válido
+          // (classificador usa o caminho como veio, mesmo comportamento
+          // de antes desta correção).
+          const raizProjeto = projectId ? (loadProjects().find(p => p.id === projectId) || {}).path : undefined;
+          const creditosFixos = montarCreditosFixos(billing.getConfig(), arquivosTocadosDoTurno, stamp.mensagem, raizProjeto);
           const deb = billing.debitTurn(stamp.user, { costUsd: turnCostUsd, modelDeltas, creditosFixos }, stamp.id || null);
           if (deb && deb.applicable && !deb.duplicate) {
             creditEvent = {

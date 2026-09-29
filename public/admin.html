@@ -1645,11 +1645,20 @@ function loadGateways() {
 }
 function gwOpcoesValor(tipo, atual) {
   var lista = tipo === 'pacote' ? (_billCfg.pacotes || []) : (_billCfg.plans || []);
-  return lista.map(function(x) {
+  var ids = lista.map(function(x) { return tipo === 'pacote' ? x.id : x.slug; });
+  var opts = '<option value="">— escolher —</option>' + lista.map(function(x) {
     var id = tipo === 'pacote' ? x.id : x.slug;
     var rotulo = tipo === 'pacote' ? (x.creditos + ' créditos (R$ ' + x.precoBrl + ')') : x.name;
     return '<option value="' + esc(id) + '"' + (id === atual ? ' selected' : '') + '>' + esc(rotulo) + '</option>';
   }).join('');
+  // Mapeamento aponta pra um id que não existe mais no catálogo (renomeado/
+  // removido) — sem isto, o <select> preselecionaria o PRIMEIRO item da
+  // lista, e o próximo "Salvar" reescreveria a mapeamento silenciosamente
+  // pra um plano/pacote errado (achado da revisão, Important #3).
+  if (atual && ids.indexOf(atual) === -1) {
+    opts += '<option value="' + esc(atual) + '" selected>' + esc(atual) + ' (não existe mais — escolha outro)</option>';
+  }
+  return opts;
 }
 function linhaMapaHtml(l) {
   return '<div class="gw-linha-mapa" style="display:flex;gap:6px;margin-bottom:6px">' +

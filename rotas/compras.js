@@ -108,25 +108,35 @@ function registrar(app, deps) {
   });
 
   // ── cliente: "já fiz o Pix" → fila de confirmação do admin ──────────
+  // Aceita OU um plano (assinatura) OU um pacote (crédito avulso, Fase 2) —
+  // nunca os dois na mesma intenção. `username` aqui é sempre o usuário
+  // autenticado (nunca null), diferente do caminho de webhook — por isso
+  // esta rota não tem o risco de "creditar a conta errada" que existe lá.
   app.post('/api/me/intencao-pix', authMiddleware, async (req, res) => {
     const slug = String((req.body || {}).plano || '');
+    const pacoteId = String((req.body || {}).pacote || '');
     const cfg = loadNasceraConfig();
-    const plano = ((cfg.billing || {}).plans || []).find(p => p.slug === slug && p.priceBrl > 0);
-    if (!plano) return res.status(400).json({ error: 'Plano inválido' });
+    const b = cfg.billing || {};
+    const plano = slug ? (b.plans || []).find(p => p.slug === slug && p.priceBrl > 0) : null;
+    const pacote = !plano && pacoteId ? (b.pacotes || []).find(p => p.id === pacoteId && p.precoBrl > 0) : null;
+    if (!plano && !pacote) return res.status(400).json({ error: 'Plano ou pacote inválido' });
     // Uma intenção pendente por vez: evita a fila virar spam de cliques.
     const pendente = (await vendas.listar({ username: req.user.user }))
       .find(v => v.status === 'aguardando_confirmacao');
     if (pendente) {
       return res.json({ ok: true, jaPendente: true, mensagem: 'Você já tem um pagamento aguardando confirmação. Assim que o admin conferir, seu plano é ativado.' });
     }
+    const valorBrl = plano ? plano.priceBrl : pacote.precoBrl;
     const { venda } = await vendas.registrar({
       gateway: 'pix-manual', username: req.user.user,
       email: (loadUsers()[req.user.user] || {}).email || null,
-      valorBrl: plano.priceBrl, meio: 'pix', referencia: 'aguardando comprovante',
-      plano: plano.slug, origem: 'manual', status: 'aguardando_confirmacao',
+      valorBrl, meio: 'pix', referencia: 'aguardando comprovante',
+      plano: plano ? plano.slug : null,
+      pacoteCreditos: pacote ? pacote.creditos : null,
+      origem: 'manual', status: 'aguardando_confirmacao',
     });
-    appendActivity({ type: 'intencao_pix', user: req.user.user, data: { plano: plano.slug, valor: plano.priceBrl, vendaId: venda.id }, at: new Date().toISOString() });
-    res.json({ ok: true, mensagem: 'Recebido! Assim que o pagamento for conferido, seu plano é ativado — você não precisa fazer mais nada.' });
+    appendActivity({ type: 'intencao_pix', user: req.user.user, data: { plano: plano ? plano.slug : null, pacote: pacote ? pacote.id : null, valor: valorBrl, vendaId: venda.id }, at: new Date().toISOString() });
+    res.json({ ok: true, mensagem: 'Recebido! Assim que o pagamento for conferido, seu ' + (plano ? 'plano é ativado' : 'saldo é creditado') + ' — você não precisa fazer mais nada.' });
   });
 
   // ── cliente: meu extrato (consumo turno a turno + minhas compras) ───
@@ -175,6 +185,22 @@ function registrar(app, deps) {
         if (u && u.email) {
           email.enviarEvento('compra-confirmada', u.email, {
             nome: u.name || v.username, plano: v.plano,
+            valor: Number(v.valorBrl || 0).toFixed(2).replace('.', ','),
+          });
+        }
+      }
+    }
+    // Fase 2 (achado da revisão, Important #2/#4): mesmo ramo, agora também
+    // pra pacote — sem isso, uma venda de pacote confirmada pelo admin nunca
+    // credita nada (o "+ Saldo" manual era o único jeito de corrigir).
+    if (!jaAprovada && v.username && v.pacoteCreditos) {
+      try { billing.addBalance(v.username, v.pacoteCreditos, 'Pacote (Pix confirmado)'); }
+      catch (e) { return res.status(400).json({ error: 'Venda aprovada, mas o crédito do pacote falhou: ' + e.message }); }
+      if (email) {
+        const u = loadUsers()[v.username];
+        if (u && u.email) {
+          email.enviarEvento('compra-confirmada', u.email, {
+            nome: u.name || v.username, plano: 'Pacote de ' + v.pacoteCreditos + ' créditos',
             valor: Number(v.valorBrl || 0).toFixed(2).replace('.', ','),
           });
         }

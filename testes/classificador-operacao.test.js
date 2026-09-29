@@ -74,7 +74,7 @@ const { classificar } = require('../servicos/classificador-operacao.js');
 
 test('classificar: turno sem arquivo nenhum devolve soma zero', () => {
   const r = classificar([], {});
-  assert.deepEqual(r, { categorias: [], totalCreditos: 0, arquivosSemCategoria: [] });
+  assert.deepEqual(r, { categorias: [], totalCreditos: 0, totalCreditosBruto: 0, arquivosSemCategoria: [] });
 });
 
 test('classificar: soma de categorias diferentes em arquivos diferentes', () => {
@@ -120,4 +120,44 @@ test('classificar: CRUD detecta rota + página do MESMO recurso e credita os doi
   const r = classificar(arquivos, {});
   assert.equal(r.totalCreditos, 44);
   assert.ok(r.categorias.every(c => c.categoria === 'CRUD'));
+});
+
+// ── Achados da revisão final (fix pass) ─────────────────────────────────
+
+test('Important #6: o nome do projeto no caminho ABSOLUTO não pode poluir a categoria — usa caminho relativo à raiz quando informada', () => {
+  const arquivo = {
+    caminho: '/home/user/Nascera AI Projects/loja-checkout/paginas/sobre.html',
+    tool: 'Write', conteudo: '<h1>Sobre</h1>', tamanhoAntes: 0, tamanhoDepois: 30,
+  };
+  // Sem raiz: o "checkout" no nome do projeto ainda pesa (comportamento antigo).
+  assert.equal(_classificarArquivo(arquivo, {}), 'PAGAMENTO_CHECKOUT');
+  // Com raiz: só o caminho RELATIVO ao projeto entra na regra.
+  assert.equal(
+    _classificarArquivo(arquivo, { raiz: '/home/user/Nascera AI Projects/loja-checkout' }),
+    'PAGINA_SIMPLES'
+  );
+});
+
+test('Important #7: slug genérico (index/app/main/home/server) nunca vira grupo CRUD', () => {
+  const arquivos = [
+    { caminho: 'rotas/index.js', tool: 'Write', conteudo: 'app.get(...)', tamanhoAntes: 0, tamanhoDepois: 100 },
+    { caminho: 'public/index.html', tool: 'Write', conteudo: '<h1>Início</h1>', tamanhoAntes: 0, tamanhoDepois: 100 },
+  ];
+  const r = classificar(arquivos, {});
+  assert.ok(!r.categorias.some(c => c.categoria === 'CRUD'), 'index.js + index.html não deveria virar CRUD');
+});
+
+test('Important #8: diff pequeno vira ALTERAR_TEXTO (2) mesmo com palavra de correção — não CORRECAO_MEDIA (14)', () => {
+  const arquivo = { caminho: 'paginas/sobre.html', tool: 'Edit', conteudo: 'Fale com a gente (corrigido)', tamanhoAntes: 12, tamanhoDepois: 28 };
+  assert.equal(_classificarArquivo(arquivo, { pedidoDeCorrecao: true }), 'ALTERAR_TEXTO');
+});
+
+test('Important #9: soma nunca ultrapassa o teto por turno (a categoria mais cara da tabela, 54)', () => {
+  const arquivos = [];
+  for (let i = 0; i < 5; i++) {
+    arquivos.push({ caminho: 'rotas/recurso' + i + '.js', tool: 'Write', conteudo: 'x', tamanhoAntes: 0, tamanhoDepois: 5 });
+  }
+  const r = classificar(arquivos, {});
+  assert.ok(r.totalCreditosBruto > r.totalCreditos, 'deveria ter clampado');
+  assert.equal(r.totalCreditos, 54);
 });

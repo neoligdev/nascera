@@ -39,3 +39,16 @@ test('montarCreditosFixos: nenhum arquivo reconhecido cai no fallback (undefined
   const cfg = { precoFixoAtivo: true };
   assert.equal(_montarCreditosFixos(cfg, arquivos, ''), undefined);
 });
+
+// Achado da revisão (Important #6): o nome do PROJETO (pasta) não pode
+// poluir a categoria — montarCreditosFixos precisa repassar a raiz do
+// projeto pro classificador relativizar o caminho antes de comparar.
+test('montarCreditosFixos: repassa raizProjeto pro classificador (nome do projeto não conta como sinal de categoria)', () => {
+  const { _montarCreditosFixos } = criar(deps());
+  const arquivos = [{ caminho: '/projetos/loja-checkout/paginas/sobre.html', tool: 'Write', conteudo: '<h1>Sobre</h1>', tamanhoAntes: 0, tamanhoDepois: 30 }];
+  const cfg = { precoFixoAtivo: true };
+  // Sem raiz: "checkout" no caminho pesa, PAGAMENTO_CHECKOUT = 27.
+  assert.equal(_montarCreditosFixos(cfg, arquivos, ''), 27);
+  // Com raiz: só o caminho relativo entra, PAGINA_SIMPLES = 8.
+  assert.equal(_montarCreditosFixos(cfg, arquivos, '', '/projetos/loja-checkout'), 8);
+});
