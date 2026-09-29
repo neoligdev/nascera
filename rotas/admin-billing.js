@@ -28,7 +28,7 @@ app.get('/api/admin/billing', adminMiddleware, (_req, res) => {
 });
 
 app.put('/api/admin/billing/config', adminMiddleware, (req, res) => {
-  const { mode, usdPerCredit, defaultDailyLimitUsd, timezone, plans, models, defaultMarkup, usdToBrl, sessionsPerWeek, precoFixoAtivo } = req.body;
+  const { mode, usdPerCredit, defaultDailyLimitUsd, timezone, plans, models, defaultMarkup, usdToBrl, sessionsPerWeek, precoFixoAtivo, pacotes } = req.body;
   const cfg = loadNasceraConfig();
   const b = { ...(cfg.billing || {}) };
   if (mode !== undefined) {
@@ -127,6 +127,18 @@ app.put('/api/admin/billing/config', adminMiddleware, (req, res) => {
       warnings = warnings.concat(billing.validatePlans(clean));
     } catch (err) { return res.status(400).json({ error: err.message }); }
     b.plans = clean;
+  }
+  if (pacotes !== undefined) {
+    if (!Array.isArray(pacotes)) return res.status(400).json({ error: 'Lista de pacotes inválida' });
+    const cleanPacotes = pacotes.map(p => ({
+      id: String(p.id || '').trim(),
+      creditos: Math.max(0, Math.round(parseFloat(p.creditos) || 0)),
+      precoBrl: Math.max(0, parseFloat(p.precoBrl) || 0),
+    }));
+    try {
+      warnings = warnings.concat(billing.validatePacotes(cleanPacotes));
+    } catch (err) { return res.status(400).json({ error: err.message }); }
+    b.pacotes = cleanPacotes;
   }
   cfg.billing = b;
   saveNasceraConfig(cfg);
