@@ -49,6 +49,7 @@ function paraApp(r) {
     id: r.id, gateway: r.gateway, transactionId: r.transaction_id,
     username: r.username, email: r.email, valorBrl: Number(r.valor_brl) || 0,
     meio: r.meio, referencia: r.referencia, plano: r.plano,
+    pacoteCreditos: r.pacote_creditos != null ? Number(r.pacote_creditos) : null,
     origem: r.origem, status: r.status, evento: r.evento,
     registradaPor: r.registrada_por, confirmadaPor: r.confirmada_por,
     confirmadaEm: r.confirmada_em, reembolsoEvento: r.reembolso_evento,
@@ -87,6 +88,7 @@ async function registrar(venda) {
     meio: venda.meio || gateway,
     referencia: venda.referencia || transactionId,
     plano: venda.plano || null,
+    pacoteCreditos: venda.pacoteCreditos != null ? (Math.round(Number(venda.pacoteCreditos)) || null) : null,
     origem: venda.origem || 'manual',
     status: venda.status || 'aprovada',
     evento: venda.evento || null,
@@ -95,14 +97,15 @@ async function registrar(venda) {
   };
 
   if (PG()) {
+    // PG: não testável neste ambiente — validar junto da migração 008 em staging.
     const ins = await db.comSistema(cli => cli.query(
       `INSERT INTO vendas (id, gateway, transaction_id, username, email, valor_brl, meio,
-         referencia, plano, origem, status, evento, registrada_por, criada_em)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
+         referencia, plano, pacote_creditos, origem, status, evento, registrada_por, criada_em)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
        ON CONFLICT (gateway, transaction_id) DO NOTHING
        RETURNING *`,
       [registro.id, gateway, transactionId, registro.username, registro.email,
-       registro.valorBrl, registro.meio, registro.referencia, registro.plano,
+       registro.valorBrl, registro.meio, registro.referencia, registro.plano, registro.pacoteCreditos,
        registro.origem, registro.status, registro.evento, registro.registradaPor, registro.criadaEm]));
     if (ins.rowCount === 0) {
       // Conflito = a transação JÁ entrou (reentrega). Devolve a original.
