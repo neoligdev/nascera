@@ -104,16 +104,20 @@ function enfileirar(chave, tarefa) {
   return atual;
 }
 
-// Débito atômico. Recebe o preço JÁ CALCULADO pelo billing.js — a regra de
-// negócio (quanto custa) continua lá; aqui só se move valor.
-async function debitar({ username, turnId, costMilli, baseUsd, chargedUsd, perModel,
+// Débito atômico. Recebe o preço E A ORDEM DE CONSUMO já decididos pelo
+// billing.js (fromBonusMilli/fromPremiumMilli/fromCompradoMilli) — a regra de
+// negócio (quanto custa, de qual origem sai) continua lá; aqui só se move
+// valor, aplicando a MESMA fatia nas cortesias por origem e nas janelas.
+async function debitar({ username, turnId, costMilli, fromBonusMilli, fromPremiumMilli, fromCompradoMilli,
+                         baseUsd, chargedUsd, perModel,
                          usdPerCredit, chaveDia, chaveSemana, chaveMes, sessaoMs }) {
   return enfileirar('deb:' + username, () => db.comSistema(async (cli) => {
     const r = await cli.query(
-      'SELECT debitar_turno($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) AS r',
+      'SELECT debitar_turno($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) AS r',
       [username, turnId, costMilli, baseUsd, chargedUsd,
        JSON.stringify(perModel || {}), usdPerCredit,
-       chaveDia || null, chaveSemana || null, chaveMes || null, sessaoMs || 18000000]
+       chaveDia || null, chaveSemana || null, chaveMes || null, sessaoMs || 18000000,
+       fromBonusMilli || 0, fromPremiumMilli || 0, fromCompradoMilli || 0]
     );
     return r.rows[0].r;
   }));
@@ -147,34 +151,20 @@ async function definirPlano(username, plano) {
   return garantirConta(username, plano);
 }
 
-// Saldo avulso: soma (ou subtrai) crédito da conta. Nunca deixa negativo —
-// o CHECK da tabela é a última linha de defesa, mas travamos antes para dar
-// erro claro em vez de exceção de constraint.
-async function somarSaldo(username, deltaMilli) {
+// Cortesia/bônus/comprado: crédito com prazo, em lote marcado por origem
+// (migração 007). O saldo avulso sem origem (`saldo_milli`) fica só como
+// fallback legado — desde a Fase 1, toda concessão nova passa por aqui.
+async function darCortesia(username, milli, label, expiraEm, id, origem) {
   await garantirConta(username);
-  return db.comSistema(async (cli) => {
-    const r = await cli.query(
-      `UPDATE contas_credito
-          SET saldo_milli = GREATEST(0, saldo_milli + $2)
-        WHERE username = $1
-        RETURNING saldo_milli`,
-      [username, deltaMilli]
-    );
-    return r.rows[0] ? Number(r.rows[0].saldo_milli) : 0;
-  });
-}
-
-// Cortesia: crédito com prazo, consumido antes do saldo.
-async function darCortesia(username, milli, label, expiraEm, id) {
-  await garantirConta(username);
+  const org = ['bonus', 'comprado'].includes(origem) ? origem : 'cortesia';
   return db.comSistema(async (cli) => {
     // O id vem do JSON quando existe: os dois lados guardam a MESMA cortesia,
     // então reimportar o arquivo não cria uma segunda (ON CONFLICT).
     const r = await cli.query(
-      `INSERT INTO cortesias (id, username, label, restante_milli, expira_em)
-       VALUES (COALESCE($5::uuid, gen_random_uuid()),$1,$2,$3,$4)
+      `INSERT INTO cortesias (id, username, label, restante_milli, expira_em, origem)
+       VALUES (COALESCE($5::uuid, gen_random_uuid()),$1,$2,$3,$4,$6)
        ON CONFLICT (id) DO NOTHING RETURNING id`,
-      [username, label || null, milli, expiraEm || null, id || null]
+      [username, label || null, milli, expiraEm || null, id || null, org]
     );
     return r.rows[0] ? r.rows[0].id : id;
   });
@@ -238,6 +228,6 @@ async function conferir(contasJson) {
 
 module.exports = {
   ATIVO, debitar, estado, garantirConta, definirPlano,
-  somarSaldo, darCortesia, zerarJanelas, panorama, conferir,
+  darCortesia, zerarJanelas, panorama, conferir,
   pendurar, drenar,
 };

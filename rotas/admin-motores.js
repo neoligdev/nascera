@@ -65,7 +65,7 @@ function garantirProvedorDeepSeek() {
 }
 
 function registrar(app, deps) {
-  const { adminMiddleware, loadNasceraConfig, saveNasceraConfig, invalidarCmdDoMotor, getChannels, appendActivity, segredos } = deps;
+  const { adminMiddleware, loadNasceraConfig, saveNasceraConfig, invalidarCmdDoMotor, getChannels, appendActivity, segredos, motor2 } = deps;
 
 app.get('/api/admin/motores', adminMiddleware, async (_req, res) => {
   try {
@@ -75,8 +75,43 @@ app.get('/api/admin/motores', adminMiddleware, async (_req, res) => {
       ...e,
       emUso: motores.ehValido(cfg.motor) ? cfg.motor : 'claude',
       pipelineAutomatico: cfg.pipelineAutomatico !== false,
+      motor2: {
+        ligado: !(cfg.motor2 && cfg.motor2.ligado === false),
+        limiteDiarioPorPlano: (cfg.motor2 && cfg.motor2.limiteDiarioPorPlano) || {},
+      },
     });
   } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// Liga/desliga o Motor 2 (capacidade adicional Pro/Business, doc §8) pra
+// instalação toda — mesmo padrão do toggle do pipeline automático acima.
+app.put('/api/admin/motores/motor2', adminMiddleware, (req, res) => {
+  const ligado = !!(req.body && req.body.ligado);
+  const cfg = loadNasceraConfig();
+  cfg.motor2 = { ...(cfg.motor2 || {}), ligado };
+  saveNasceraConfig(cfg);
+  appendActivity({ type: 'motor2_alterado', user: req.user.user, data: { ligado }, at: new Date().toISOString() });
+  res.json({ ok: true, ligado });
+});
+
+// Franquia diária do Motor 2 por plano (doc §8/§13) — quantos usos por dia
+// cada usuário daquele plano pode tirar da capacidade adicional.
+app.put('/api/admin/motores/motor2/franquia', adminMiddleware, (req, res) => {
+  const plano = String((req.body && req.body.plano) || '').trim();
+  const limite = parseInt(req.body && req.body.limiteDiario, 10);
+  if (!plano) return res.status(400).json({ error: 'Informe o plano' });
+  if (!(Number.isFinite(limite) && limite >= 0)) return res.status(400).json({ error: 'Limite diário inválido' });
+  const cfg = loadNasceraConfig();
+  cfg.motor2 = { ...(cfg.motor2 || {}) };
+  cfg.motor2.limiteDiarioPorPlano = { ...(cfg.motor2.limiteDiarioPorPlano || {}), [plano]: limite };
+  saveNasceraConfig(cfg);
+  appendActivity({ type: 'motor2_franquia_alterada', user: req.user.user, data: { plano, limite }, at: new Date().toISOString() });
+  res.json({ ok: true, limiteDiarioPorPlano: cfg.motor2.limiteDiarioPorPlano });
+});
+
+// Dashboard de consumo do Motor 2 (doc §13) — quem já usou hoje e quanto.
+app.get('/api/admin/motor2/uso', adminMiddleware, (_req, res) => {
+  res.json(motor2 ? motor2.resumoDoDia() : { dia: null, usuarios: [] });
 });
 
 // Liga/desliga o pipeline de planejamento automático (OpenCode -> Claude)

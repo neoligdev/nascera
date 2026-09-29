@@ -52,7 +52,7 @@ function registrar(app, deps) {
     authMiddleware, projectOr404, projetosDoUsuario, semSegredos, makeSlug,
     loadProjects, saveProjects, scaffoldFromTheme, initGit, normalizeBuildLevel,
     trackEvent, seguranca, domains, loadTrash, saveTrash, loadNasceraConfig,
-    PROJECTS_BASE, PUBLISHED_BASE, TRASH_DIR, THUMB_DIR, THEMES_BASE,
+    PROJECTS_BASE, PUBLISHED_BASE, TRASH_DIR, THUMB_DIR, THEMES_BASE, billing,
   } = deps;
 
   app.get('/api/projects', authMiddleware, (req, res) => {
@@ -65,6 +65,15 @@ function registrar(app, deps) {
   app.post('/api/projects', authMiddleware, (req, res) => {
     const { name, folderPath, createNew, themeId, paletteId, customPalette, paletteUrl } = req.body;
     if (!name) return res.status(400).json({ error: 'nome é obrigatório' });
+
+    // Limite de projetos por plano (doc de Planos, Créditos e Motor 2) — admin
+    // é isento, mesmo padrão de isenção usado no billing de créditos.
+    if (req.user.role !== 'admin' && billing) {
+      const max = billing.planLimitFor(req.user.user, 'maxProjetos');
+      if (max != null && projetosDoUsuario(req.user.user).length >= max) {
+        return res.status(403).json({ error: `Seu plano permite até ${max} projeto(s). Faça upgrade para criar mais.` });
+      }
+    }
 
     const slug = makeSlug(name);
     let projectPath = folderPath || null;

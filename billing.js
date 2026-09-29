@@ -33,13 +33,16 @@ const crypto = require('crypto');
 const { gravaEstado, leEstado } = require('./estado-seguro.js');
 const billingDb = require('./billing-db.js');
 
-const CONFIG_FILE = path.join(__dirname, 'nascera-config.json');
-const BILLING_FILE = path.join(__dirname, 'billing.json');
-const EVENTS_FILE = path.join(__dirname, 'usage-events.jsonl');
+// Overrides por env var (mesmo padrão de servicos/vendas.js `NASCERA_VENDAS_FILE`)
+// — usado pelos testes pra isolar o arquivo do dinheiro do repo real.
+const CONFIG_FILE = process.env.NASCERA_CONFIG_FILE || path.join(__dirname, 'nascera-config.json');
+const BILLING_FILE = process.env.NASCERA_BILLING_FILE || path.join(__dirname, 'billing.json');
+const EVENTS_FILE = process.env.NASCERA_USAGE_EVENTS_FILE || path.join(__dirname, 'usage-events.jsonl');
 
 // Enum fechado do portão — valor fora da lista invalida a decisão (doc §2.1)
 const REASONS = ['ok', 'session', 'daily', 'weekly', 'monthly', 'trial_expired', 'access_expired',
-  'user_limit', 'company_pool', 'grant_expired', 'no_active_credits', 'credit_check_unavailable'];
+  'user_limit', 'company_pool', 'grant_expired', 'no_active_credits', 'credit_check_unavailable',
+  'motor2_limit'];
 
 // Janela de sessão no modelo Claude: 5 horas rolantes a partir do 1º uso
 const SESSION_MS = 5 * 60 * 60 * 1000;
@@ -48,12 +51,16 @@ const SESSION_MS = 5 * 60 * 60 * 1000;
 // atualizar quem a reconhece.
 const BLOCK_MESSAGE = 'Você ultrapassou seu limite de créditos. Fale com o administrador ou aguarde a virada do ciclo.';
 
+// Planos vigentes (doc "NASCERA — Planos, Créditos e Motor 2"). creditsPerMonth
+// é a fonte de verdade do orçamento premium (ver planMonthCapUsd). dailyBonusCap/
+// monthlyBonusCap regem o bônus diário (§3 do doc: não acumula, teto mensal de
+// CONCEDIDO). motor2 marca elegibilidade pra "zona protegida" (§7/§8). maxProjetos/
+// maxDominios são `null` = ilimitado.
 const DEFAULT_PLANS = [
-  { slug: 'free',    name: 'Free',              priceBrl: 0,    creditsPerMonth: 10 },
-  { slug: 'pro',     name: 'Pro / Individual',  priceBrl: 600,  creditsPerMonth: 250 },
-  { slug: 'max',     name: 'Max',               priceBrl: 1200, creditsPerMonth: 550 },
-  { slug: 'piloto',  name: 'Piloto (até 5)',    priceBrl: 1500, creditsPerMonth: 750 },
-  { slug: 'empresa', name: 'Empresa (5–10)',    priceBrl: 3000, creditsPerMonth: 1500 },
+  { slug: 'free',     name: 'Free',     priceBrl: 0,   creditsPerMonth: 0,    dailyBonusCap: 10, monthlyBonusCap: 60, maxProjetos: 1,    maxDominios: 5,    motor2: false },
+  { slug: 'start',    name: 'Start',    priceBrl: 35,  creditsPerMonth: 240,  dailyBonusCap: 60, monthlyBonusCap: 60, maxProjetos: null, maxDominios: 20,   motor2: false },
+  { slug: 'pro',      name: 'Pro',      priceBrl: 95,  creditsPerMonth: 540,  dailyBonusCap: 60, monthlyBonusCap: 60, maxProjetos: null, maxDominios: null, motor2: true },
+  { slug: 'business', name: 'Business', priceBrl: 155, creditsPerMonth: 1240, dailyBonusCap: 60, monthlyBonusCap: 60, maxProjetos: null, maxDominios: null, motor2: true },
 ];
 
 // Custo BASE por milhão de tokens (US$) — preços da Anthropic (ago/2026).
@@ -83,6 +90,7 @@ function defaultConfig() {
     sessionsPerWeek: 5,               // quantas janelas de 5h cheias cabem numa semana
     models: DEFAULT_MODELS,           // custo base + markup por modelo
     plans: DEFAULT_PLANS,
+    creditoCompradoValidadeDias: 365, // ~12 meses (doc §6): validade do lote origem='comprado'
   };
 }
 
@@ -96,6 +104,7 @@ function getConfig() {
   if (!(cfg.defaultMarkup >= 1)) cfg.defaultMarkup = 1;
   if (!(cfg.usdToBrl > 0)) cfg.usdToBrl = 5.5;
   if (!(cfg.sessionsPerWeek >= 1)) cfg.sessionsPerWeek = 5;
+  if (!(cfg.creditoCompradoValidadeDias > 0)) cfg.creditoCompradoValidadeDias = 365;
   // fuso inválido derrubaria TODO gate/débito/summary — valida e cai no padrão
   try { new Intl.DateTimeFormat('en', { timeZone: cfg.timezone }); }
   catch { cfg.timezone = 'America/Sao_Paulo'; }
@@ -173,12 +182,16 @@ function r6(v) { return Math.round(v * 1e6) / 1e6; }
 // O preço do plano convertido em US$ É o orçamento de uso cobrado do mês.
 // Como cobrado = base × markup e markup ≥ 1, o custo real no consumo total
 // nunca passa da receita: NUNCA fica negativo — no mínimo repassa o custo.
-// bonusUsd é subsídio deliberado (free/trial); plano zerado herda os
-// créditos legados (free 10cr × taxa) como cortesia de entrada.
+// bonusUsd é subsídio deliberado (free/trial), somado por cima quando existe.
+// creditsPerMonth é a FONTE DE VERDADE do teto quando definido (>0): é o que
+// o plano vende ("540 créditos premium/mês"), e priceBrl é só o preço comercial
+// — sem isso, um plano pago SEMPRE caía no câmbio (priceBrl/usdToBrl), que
+// nunca bate com os créditos anunciados (ex.: Pro R$95 → US$17 ≈ 86 créditos
+// a 0,20, não os 540 prometidos). priceBrl só vira teto quando o plano não
+// declara creditsPerMonth (compat com planos antigos definidos só por preço).
 function planMonthCapUsd(cfg, plan) {
-  const cap = (plan.priceBrl || 0) / cfg.usdToBrl + (plan.bonusUsd || 0);
-  if (cap > 0) return r6(cap);
-  return r6((plan.creditsPerMonth || 0) * cfg.usdPerCredit);
+  if (plan.creditsPerMonth > 0) return r6(plan.creditsPerMonth * cfg.usdPerCredit + (plan.bonusUsd || 0));
+  return r6((plan.priceBrl || 0) / cfg.usdToBrl + (plan.bonusUsd || 0));
 }
 function planWeekCapUsd(cfg, plan) {
   return r6(planMonthCapUsd(cfg, plan) / 4);
@@ -223,8 +236,9 @@ function account(username) {
   if (!st.accounts[username]) {
     st.accounts[username] = {
       plan: 'free',
-      balanceMilli: 0,                 // créditos avulsos (inteiro)
-      grants: [],                      // [{id,label,remainingMilli,expiresAt|null}]
+      balanceMilli: 0,                 // créditos avulsos legado (pré-origem; ver grants 'comprado')
+      grants: [],                      // [{id,label,remainingMilli,expiresAt|null,origem:'cortesia'|'bonus'|'comprado'}]
+      bonusGrant: { monthKey: null, grantedMilli: 0 },  // teto cumulativo mensal do bônus CONCEDIDO
       spend: {
         session: { startTs: null, usd: 0, baseUsd: 0, chargedUsd: 0 },
         day: { key: null, usd: 0, baseUsd: 0, chargedUsd: 0 },
@@ -324,8 +338,60 @@ function activeGrants(acct) {
   return acct.grants.filter(g => g.remainingMilli > 0 && (!g.expiresAt || Date.parse(g.expiresAt) > now));
 }
 
+// Consome até `toCover` milli dos grants ativos cuja origem está em `origens`,
+// na ordem de criação (array order == criada_em) — mesmo critério que o SQL
+// espelha (migração 005, achado (3)).
+function takeFromGrants(acct, toCover, origens) {
+  let taken = 0;
+  for (const g of activeGrants(acct)) {
+    if (toCover <= 0) break;
+    if (!origens.includes(g.origem || 'cortesia')) continue;
+    const take = Math.min(g.remainingMilli, toCover);
+    g.remainingMilli -= take;
+    toCover -= take;
+    taken += take;
+  }
+  return { toCover, taken };
+}
+
 function planOf(cfg, acct) {
   return cfg.plans.find(p => p.slug === acct.plan) || cfg.plans[0] || DEFAULT_PLANS[0];
+}
+
+// ── bônus diário (doc §3/§4): concede uma vez por dia, até o teto MENSAL do
+// que já foi concedido (não do que resta — o contador só cresce, nunca
+// decresce por expiração, senão um bônus não usado "devolveria" cota pro
+// mês). O grant em si expira sozinho pelo mecanismo de `activeGrants()` —
+// "não acumula de um dia pro outro" não precisa de código extra nenhum.
+function garantirBonusDoDia(acct, cfg, plan) {
+  if (!acct.bonusGrant || typeof acct.bonusGrant !== 'object') {
+    acct.bonusGrant = { monthKey: null, grantedMilli: 0 };
+  }
+  const dailyCap = Number(plan.dailyBonusCap) || 0;
+  const monthlyCap = Number(plan.monthlyBonusCap) || 0;
+  if (dailyCap <= 0 || monthlyCap <= 0) return;
+
+  const mk = monthKey(cfg.timezone);
+  if (acct.bonusGrant.monthKey !== mk) acct.bonusGrant = { monthKey: mk, grantedMilli: 0 };
+
+  const hojeExpira = dayEndIso(cfg.timezone);
+  const jaConcedidoHoje = acct.grants.some(g => g.origem === 'bonus' && g.expiresAt === hojeExpira);
+  if (jaConcedidoHoje) return;
+
+  const dailyCapMilli = Math.round(dailyCap * 1000);
+  const monthlyCapMilli = Math.round(monthlyCap * 1000);
+  const restanteMilli = monthlyCapMilli - acct.bonusGrant.grantedMilli;
+  if (restanteMilli <= 0) return;   // teto do mês de bônus CONCEDIDO já batido
+
+  const concederMilli = Math.min(dailyCapMilli, restanteMilli);
+  if (concederMilli <= 0) return;
+
+  acct.grants.push({
+    id: crypto.randomUUID(), label: 'Bônus diário', origem: 'bonus',
+    remainingMilli: concederMilli, expiresAt: hojeExpira,
+    grantedAt: new Date().toISOString(),
+  });
+  acct.bonusGrant.grantedMilli += concederMilli;
 }
 
 
@@ -337,9 +403,10 @@ function gateDecision(username) {
   }
   const acct = account(username);
   lazyReset(acct, cfg);
+  const plan = planOf(cfg, acct);
+  garantirBonusDoDia(acct, cfg, plan);
   saveState();
 
-  const plan = planOf(cfg, acct);
   // Na prática os créditos SÃO dólares: o plano tem X US$ de uso (cobrado),
   // e cada modelo consome desse orçamento pelo seu preço com markup.
   const monthCapUsd = planMonthCapUsd(cfg, plan);
@@ -419,6 +486,8 @@ function debitTurn(username, turn, turnId) {
 
   const acct = account(username);
   lazyReset(acct, cfg);
+  const plan = planOf(cfg, acct);
+  garantirBonusDoDia(acct, cfg, plan);
 
   // Idempotência: um retry não pode cobrar duas vezes.
   //
@@ -432,30 +501,47 @@ function debitTurn(username, turn, turnId) {
   }
 
   const chargedUsd = priced.chargedUsd;
-  // FLOOR (não round): a cortesia nunca paga MAIS que o turno custou —
+  // FLOOR (não round): nenhuma origem paga MAIS que o turno custou —
   // a fração que sobra vai para as janelas como remainder, com precisão total
   const costMilli = Math.floor((chargedUsd / cfg.usdPerCredit) * 1000);
-  let toCover = costMilli;
-  let fromGrants = 0, fromBalance = 0;
+  let restante = costMilli;
+  let fromBonus = 0, fromPremium = 0, fromComprado = 0;
 
-  // 1. cortesia primeiro (inteiro, pulando expiradas)
-  for (const g of activeGrants(acct)) {
-    if (toCover <= 0) break;
-    const take = Math.min(g.remainingMilli, toCover);
-    g.remainingMilli -= take;
-    toCover -= take;
-    fromGrants += take;
+  // 1. bônus diário primeiro — é o que expira mais cedo (hoje), então é o
+  //    primeiro a ser gasto (o que expira antes é gasto antes).
+  { const r = takeFromGrants(acct, restante, ['bonus']); restante = r.toCover; fromBonus = r.taken; }
+
+  // 2. premium mensal — travado a 90% do teto pra planos com Motor 2 (os
+  //    últimos 10% são a "zona protegida": preservados pra dar lugar ao
+  //    Motor 2 assumir, doc §7/§8). Planos sem Motor 2 (Free/Start) não têm
+  //    reserva — não há pra onde a "zona protegida" faria handoff — e
+  //    consomem até 100%, como sempre. O que exceder o teto tenta a origem
+  //    seguinte (comprado) antes de virar overage.
+  if (restante > 0) {
+    const monthCapUsd = planMonthCapUsd(cfg, plan);
+    const limiteUsd = plan.motor2 ? monthCapUsd * 0.9 : monthCapUsd;
+    const premiumDisponivelMilli = Math.max(0, usdToMilli(limiteUsd, cfg) - usdToMilli(acct.spend.month.usd, cfg));
+    fromPremium = Math.min(restante, premiumDisponivelMilli);
+    restante -= fromPremium;
   }
-  // 2. saldo avulso
-  if (toCover > 0 && acct.balanceMilli > 0) {
-    const take = Math.min(acct.balanceMilli, toCover);
+
+  // 3. comprado + cortesia (legado, sem marca de origem) — o que excedeu o
+  //    teto premium tenta esses lotes antes de virar overage de verdade.
+  { const r = takeFromGrants(acct, restante, ['comprado', 'cortesia']); restante = r.toCover; fromComprado = r.taken; }
+  // 4. saldo avulso legado (addBalance hoje cria grant 'comprado'; isto é
+  //    só o fallback pra saldo somado antes desta mudança).
+  if (restante > 0 && acct.balanceMilli > 0) {
+    const take = Math.min(acct.balanceMilli, restante);
     acct.balanceMilli -= take;
-    toCover -= take;
-    fromBalance += take;
+    restante -= take;
+    fromComprado += take;
   }
-  // 3. o que sobrou vira gasto em USD COBRADO — derivado do valor real, não
-  //    do milli arredondado (turno de US$0,000041 não pode sair de graça)
-  const coveredUsd = milliToUsd(fromGrants + fromBalance, cfg);
+
+  // 5. o que sobrar (fromPremium + overage real além de tudo) vira gasto em
+  //    USD COBRADO nas janelas — derivado do valor real, não do milli
+  //    arredondado (turno de US$0,000041 não pode sair de graça), e NUNCA
+  //    bloqueia o turno em andamento (só o gate do PRÓXIMO turno).
+  const coveredUsd = milliToUsd(fromBonus + fromComprado, cfg);
   const remainderUsd = Math.max(0, chargedUsd - coveredUsd);
   for (const w of [acct.spend.day, acct.spend.week, acct.spend.month]) {
     w.usd = r6(w.usd + remainderUsd);
@@ -487,6 +573,10 @@ function debitTurn(username, turn, turnId) {
   if (billingDb.ATIVO && turnId) {
     const _payload = {
       username: normU(username), turnId, costMilli,
+      // Fatias JÁ decididas aqui (bônus/premium/comprado) — o Postgres só
+      // aplica o valor, não re-decide a regra de negócio (mesmo princípio
+      // do resto do arquivo: "aqui só se move valor").
+      fromBonusMilli: fromBonus, fromPremiumMilli: fromPremium, fromCompradoMilli: fromComprado,
       baseUsd: priced.baseUsd, chargedUsd, perModel: priced.perModel,
       usdPerCredit: cfg.usdPerCredit,
       chaveDia: dayKey(cfg.timezone),
@@ -511,7 +601,7 @@ function debitTurn(username, turn, turnId) {
     const linha = JSON.stringify({
       ts: new Date().toISOString(), user: username,
       baseUsd: priced.baseUsd, chargedUsd, perModel: priced.perModel,
-      costMilli, fromGrants, fromBalance, remainderUsd: r6(remainderUsd), turnId,
+      costMilli, fromBonus, fromPremium, fromComprado, remainderUsd: r6(remainderUsd), turnId,
     }) + '\n';
     const fd = fs.openSync(EVENTS_FILE, 'a');
     try { fs.writeSync(fd, linha); fs.fsyncSync(fd); } finally { fs.closeSync(fd); }
@@ -521,7 +611,7 @@ function debitTurn(username, turn, turnId) {
 
   return {
     applicable: true, baseUsd: priced.baseUsd, chargedUsd, perModel: priced.perModel,
-    costMilli, fromGrants, fromBalance, remainderUsd, summary: summaryFor(username),
+    costMilli, fromBonus, fromPremium, fromComprado, remainderUsd, summary: summaryFor(username),
   };
 }
 
@@ -531,6 +621,7 @@ function summaryFor(username) {
   const acct = account(username);
   lazyReset(acct, cfg);
   const plan = planOf(cfg, acct);
+  garantirBonusDoDia(acct, cfg, plan);
   // Orçamento em US$ COBRADO — "na prática os créditos são dólares"
   const monthCapUsd = planMonthCapUsd(cfg, plan);
   const monthRemainingUsd = Math.max(0, monthCapUsd - acct.spend.month.usd);
@@ -539,6 +630,16 @@ function summaryFor(username) {
   const remainingMilli = usdToMilli(monthRemainingUsd, cfg);
   const grants = activeGrants(acct);
   const grantTotal = grants.reduce((a, g) => a + g.remainingMilli, 0);
+  // Zona protegida (doc §7/§8): % do teto premium do ciclo ainda não gasto,
+  // fixo sobre o TOTAL do ciclo (nunca recalculado só sobre o restante —
+  // isso encolheria pra sempre sem nunca zerar de verdade).
+  const premiumRemainingPct = monthCapUsd > 0
+    ? r6(Math.max(0, (monthCapUsd - acct.spend.month.usd) / monthCapUsd) * 100) : 0;
+  // Saldos separados por origem (doc §11: "mostrar saldo premium separado
+  // do bônus diário"). balanceMilli legado conta como 'comprado' pra exibição.
+  const bonusMilli = grants.filter(g => g.origem === 'bonus').reduce((a, g) => a + g.remainingMilli, 0);
+  const compradoMilli = grants.filter(g => g.origem === 'comprado').reduce((a, g) => a + g.remainingMilli, 0) + acct.balanceMilli;
+  const cortesiaMilli = grants.filter(g => (g.origem || 'cortesia') === 'cortesia').reduce((a, g) => a + g.remainingMilli, 0);
 
   // "Disponível" NÃO é soma: remaining do ciclo (regra §3.1)
   const availableMilli = remainingMilli;
@@ -596,6 +697,9 @@ function summaryFor(username) {
     balanceMilli: acct.balanceMilli,
     activeGrantBalanceMilli: grantTotal,
     availableMilli,
+    premiumRemainingPct,
+    motor2Elegivel: !!plan.motor2,
+    saldosPorOrigem: { premiumMilli: remainingMilli, bonusMilli, compradoMilli, cortesiaMilli },
     spend: {
       dailyUsd: acct.spend.day.usd,
       monthlyUsd: acct.spend.month.usd,
@@ -607,6 +711,17 @@ function summaryFor(username) {
       dayEnd: dayEndIso(cfg.timezone), monthEnd: monthEndIso(cfg.timezone),
     },
   };
+}
+
+// Limite do plano do usuário pra um campo (maxProjetos/maxDominios, doc
+// tabela de planos). `null` = ilimitado OU billing desligado (mode !==
+// 'credits') — sem cobrança ativa, não faz sentido travar por plano.
+function planLimitFor(username, campo) {
+  const cfg = getConfig();
+  if (cfg.mode !== 'credits') return null;
+  const plan = planOf(cfg, account(username));
+  const v = plan[campo];
+  return (typeof v === 'number' && v > 0) ? v : null;
 }
 
 // ── administração ──
@@ -640,6 +755,9 @@ function adminOverview(usernames) {
         monthCapUsd: s.month.capUsd,
         monthBaseUsd: s.month.baseUsd,       // custo real p/ nós no mês
         monthChargedUsd: s.month.chargedUsd, // cobrado no mês
+        premiumRemainingPct: s.premiumRemainingPct,
+        motor2Elegivel: s.motor2Elegivel,
+        saldosPorOrigem: s.saldosPorOrigem,  // { premiumMilli, bonusMilli, compradoMilli, cortesiaMilli }
       };
     }),
   };
@@ -672,26 +790,31 @@ function setUserPlan(username, planSlug) {
   espelhar('plano', () => billingDb.definirPlano(username, planSlug));
 }
 
-function grantCredits(username, credits, label, expiresAt) {
+// origem: 'cortesia' (padrão — concessão manual do admin) | 'bonus' | 'comprado'.
+function grantCredits(username, credits, label, expiresAt, origem) {
   const milli = Math.round(credits * 1000);
   if (!(milli > 0)) throw new Error('Quantidade inválida');
   const id = crypto.randomUUID();
+  const org = ['bonus', 'comprado'].includes(origem) ? origem : 'cortesia';
   account(username).grants.push({
-    id, label: label || 'Cortesia',
+    id, label: label || 'Cortesia', origem: org,
     remainingMilli: milli, expiresAt: expiresAt || null,
     grantedAt: new Date().toISOString(),
   });
   saveState();
   // Mesmo id dos dois lados: sem isso, reimportar o JSON duplicaria a cortesia.
-  espelhar('cortesia', () => billingDb.darCortesia(username, milli, label || 'Cortesia', expiresAt || null, id));
+  espelhar('cortesia', () => billingDb.darCortesia(username, milli, label || 'Cortesia', expiresAt || null, id, org));
 }
 
-function addBalance(username, credits) {
-  const milli = Math.round(credits * 1000);
-  const acct = account(username);
-  acct.balanceMilli = Math.max(0, acct.balanceMilli + milli);
-  saveState();
-  espelhar('saldo', () => billingDb.somarSaldo(username, milli));
+// Créditos comprados (doc §6): agora um lote com validade própria (origem
+// 'comprado'), não mais uma soma cega em balanceMilli — assim entram no
+// ledger por origem e no `saldosPorOrigem` da tela, sem esperar o checkout
+// avulso da Fase 2 (que só vai chamar esta mesma função).
+function addBalance(username, credits, label) {
+  const cfg = getConfig();
+  const validadeMs = cfg.creditoCompradoValidadeDias * 24 * 60 * 60 * 1000;
+  const expiresAt = new Date(Date.now() + validadeMs).toISOString();
+  grantCredits(username, credits, label || 'Créditos comprados', expiresAt, 'comprado');
 }
 
 function resetSpend(username) {
@@ -715,8 +838,8 @@ function validatePlans(plans) {
     if (p.priceBrl > 0 && p.bonusUsd > 0) {
       warnings.push(`Plano "${p.name}": pago com bônus de US$ ${p.bonusUsd} — o bônus é subsídio (sai do seu bolso além do preço).`);
     }
-    if (p.priceBrl === 0 && !(p.bonusUsd > 0) && !(p.creditsPerMonth > 0)) {
-      warnings.push(`Plano "${p.name}": gratuito sem bônus nem créditos — usuários deste plano ficam bloqueados.`);
+    if (p.priceBrl === 0 && !(p.bonusUsd > 0) && !(p.creditsPerMonth > 0) && !(p.dailyBonusCap > 0)) {
+      warnings.push(`Plano "${p.name}": gratuito sem bônus, créditos nem bônus diário — usuários deste plano ficam bloqueados.`);
     }
   }
   return warnings;
@@ -726,7 +849,8 @@ module.exports = {
   REASONS, BLOCK_MESSAGE, DEFAULT_PLANS, DEFAULT_MODELS,
   getConfig, usdToMilli, milliToUsd,
   priceTurn, modelRowFor, planMonthCapUsd, planWeekCapUsd, planSessionCapUsd,
-  gateDecision, debitTurn, summaryFor,
+  gateDecision, debitTurn, summaryFor, planLimitFor,
   adminOverview, setUserPlan, grantCredits, addBalance, resetSpend, validatePlans,
   _reloadState: () => { _state = null; },
+  _garantirBonusDoDia: garantirBonusDoDia,   // hook de teste (mesmo espírito de _reloadState)
 };

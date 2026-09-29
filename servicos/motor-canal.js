@@ -21,7 +21,7 @@ function criar(deps) {
     autoCommitAsync, atualizarProjeto, getCurrentVersion, generateProjectScreenshot,
     getEngine, sessionKeyFor, isDesktopLocal, escreverFerramentaDeImagem, memoriaProjeto,
     PROJECTS_BASE, normalizeBuildLevel, loadNasceraConfig, modelosLocais, motores, vpsSpawnWrapper, BUILD_LEVELS,
-    credencialIaPropria, email, loadUsers, segredos, writeCavemanSkill, planejamentoAutomatico,
+    credencialIaPropria, email, loadUsers, segredos, writeCavemanSkill, planejamentoAutomatico, motor2,
   } = deps;
 
   function bindChannel(ch) {
@@ -151,7 +151,15 @@ function criar(deps) {
       const stamp = (ch._turnQueue && ch._turnQueue.shift())
         || { id: crypto.randomUUID(), user: ch._turnUser, exempt: !!ch._turnExempt };
       let creditEvent = null;
-      if ((turnCostUsd > 0 || modelDeltas) && stamp.user && !stamp.exempt) {
+      if (ch.motor2Ativo && stamp.user) {
+        // Motor 2 nunca debita crédito (doc §7/§8) — registra o uso pra
+        // franquia diária e auditoria em vez de chamar billing.debitTurn.
+        // Isto NÃO depende do motor por baixo omitir custo/tokens no evento
+        // 'result' (hoje o OpenCode omite; amanhã pode não omitir mais) —
+        // a isenção é uma decisão explícita daqui, não um acaso de telemetria.
+        try { motor2 && motor2.registrarUso(stamp.user, projectId, stamp.id || null); }
+        catch (err) { logger.error('[motor2] registrar uso falhou:', err.message); }
+      } else if ((turnCostUsd > 0 || modelDeltas) && stamp.user && !stamp.exempt) {
         try {
           const deb = billing.debitTurn(stamp.user, { costUsd: turnCostUsd, modelDeltas }, stamp.id || null);
           if (deb && deb.applicable && !deb.duplicate) {
@@ -329,6 +337,24 @@ function criar(deps) {
       } catch { return null; }
     })();
 
+    // Motor 2 (doc §7/§8): por cima da escolha normal quando `user` (quem
+    // paga o turno — mesmo alvo que motor-ws.js usa pra debitar, não
+    // necessariamente o dono do projeto) está na zona protegida e ainda tem
+    // franquia diária. NUNCA por cima do pipeline de planejamento (bloco
+    // acima já teria assumido `motorEscolhido` se fosse o caso — a guarda
+    // `motorEscolhido === 'claude'` também respeita motor forçado por
+    // admin/projeto, mesma lógica do pipeline). Sigilo (doc §10): o motor
+    // real nunca aparece pro cliente, só o rótulo "Motor 2" na UI.
+    let motor2Ativo = false;
+    if (motorEscolhido === 'claude' && motor2 && user) {
+      try { motor2Ativo = motor2.deveAssumir(user); } catch { motor2Ativo = false; }
+      if (motor2Ativo) {
+        motorEscolhido = motor2.MOTOR_INTERNO;
+        model = motor2.MODELO_INTERNO;
+        resumeSessionId = null;
+      }
+    }
+
     // AD.1 (IA própria): se o admin liberou E o dono conectou a própria chave,
     // a sessão nasce com a credencial DELE no env — o token sai da conta do
     // usuário, não do admin. Só no motor claude (o codex não fala essa chave).
@@ -384,7 +410,7 @@ function criar(deps) {
     };
     if (session.initInfo) applyEffort(); else session.once('init', applyEffort);
 
-    ch = { key, projectId, session, sockets: new Set(), buildLevel, iaPropria: iaPropriaAtiva, motor: motorEscolhido };
+    ch = { key, projectId, session, sockets: new Set(), buildLevel, iaPropria: iaPropriaAtiva, motor: motorEscolhido, motor2Ativo };
     channels.set(key, ch);
     bindChannel(ch);
     return ch;

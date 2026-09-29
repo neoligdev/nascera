@@ -19,7 +19,7 @@ function registrar(wss, deps) {
     sessions, verifyToken, loadProjects, podeAcessarProjeto, trackEvent,
     loadChatHistory, ensureChannel, loadUsers, billing, appendChatMessage,
     switchAgentForProject, agentInlinePrefix, memoriaProjeto, getIntegrationsContext,
-    getBuildScopeContext, BUILD_LEVELS, planejamentoAutomatico,
+    getBuildScopeContext, BUILD_LEVELS, planejamentoAutomatico, motor2,
   } = deps;
 
   wss.on('connection', (ws, req) => {
@@ -317,6 +317,48 @@ function registrar(wss, deps) {
           return;
         }
       }
+
+      // ── Motor 2 (doc §7/§8): sessão JÁ aberta no Claude que cruzou pra
+      // zona protegida NO MEIO da conversa — `ensureChannel` só decide o
+      // motor quando o canal nasce, então uma sessão comprida não migraria
+      // sozinha sem este handoff explícito (mesma mecânica do handoff de
+      // planejamento: fecha e reabre, agora na direção Claude→Motor 2).
+      // Isento: admin e sessão com IA própria (a zona protegida nem existe
+      // pra quem não gasta crédito do NASCERA — `zonaProtegidaAtiva` já
+      // devolveria falso, mas pular aqui evita o custo de checar à toa).
+      if (projectId && motor2 && !_isento && ch && ch.motor === 'claude' && !ch.motor2Ativo) {
+        let zonaAtiva = false;
+        try { zonaAtiva = motor2.zonaProtegidaAtiva(decoded.user); } catch {}
+        if (zonaAtiva) {
+          let franquiaOk = false;
+          try { franquiaOk = motor2.franquiaDisponivelHoje(decoded.user); } catch {}
+          if (!franquiaOk) {
+            // Franquia do dia esgotada e sem Motor 2 pra assumir: bloqueia
+            // com o texto de marca (doc §9), nunca o BLOCK_MESSAGE genérico.
+            ch.bcast({ type: 'credit_blocked', user: decoded.user, reason: 'motor2_limit', message: motor2.MENSAGEM_FRANQUIA_ESGOTADA });
+            ch.bcast({ type: 'error', data: motor2.MENSAGEM_FRANQUIA_ESGOTADA });
+            ch.bcast({ type: 'done', code: 1 });
+            return;
+          }
+          try {
+            const proj2 = loadProjects().find(p => p.id === projectId);
+            try { ch.session.close('motor2: zona protegida'); } catch {}
+            const novoCh = await ensureChannel(projectId, decoded.user);
+            channel = novoCh; ch = novoCh;
+            if (!ch.sockets.has(ws)) ch.sockets.add(ws);
+            if (!ch._continuidadeEnviada) {
+              const cont = (proj2 && proj2.path && memoriaProjeto.textoDeContinuidade(proj2.path)) || '';
+              if (cont) finalMessage = cont + finalMessage;
+              ch._continuidadeEnviada = true;
+            }
+          } catch (err) {
+            logger.error('[motor2] falha ao trocar de motor:', err.message);
+            // segue no canal Claude atual — uma troca que falhou não pode
+            // travar o usuário no meio da conversa.
+          }
+        }
+      }
+
       // Mesmo portão, agora também na FILA. O bloco acima só decide sobre a
       // mensagem que ACABOU de chegar; as que ficam enfileiradas durante um
       // turno em voo eram despachadas depois sem ninguém perguntar de novo —
@@ -369,7 +411,11 @@ function registrar(wss, deps) {
         const proj = loadProjects().find(p => p.id === projectId);
         const jaPlanejando = planejamentoAutomatico.estaPlanejando(projectId);
         let vaiPlanejar = jaPlanejando;
-        if (!jaPlanejando && planejamentoAutomatico.elegivelParaPipeline(proj)) {
+        // Nunca entra em planejamento por cima de um canal que o Motor 2 já
+        // assumiu (mesmo motor OpenCode por baixo, propósito e config
+        // diferentes — evitar abrir uma segunda sessão OpenCode em cima da
+        // primeira).
+        if (!jaPlanejando && !ch.motor2Ativo && planejamentoAutomatico.elegivelParaPipeline(proj)) {
           vaiPlanejar = planejamentoAutomatico.classificar(userMessage, { primeiraMensagem: isFirstMessage }) === 'planejar';
         }
 

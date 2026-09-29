@@ -34,7 +34,9 @@ function extratoDe(username, limite) {
       eventos.push({
         ts: e.ts, chargedUsd: e.chargedUsd, baseUsd: e.baseUsd,
         creditos: (e.costMilli || 0) / 1000,
-        daCortesia: (e.fromGrants || 0) / 1000, doSaldo: (e.fromBalance || 0) / 1000,
+        doBonus: (e.fromBonus || 0) / 1000,
+        doPremium: (e.fromPremium || 0) / 1000,
+        doComprado: (e.fromComprado || 0) / 1000,
         turnId: e.turnId || null,
       });
     } catch {}

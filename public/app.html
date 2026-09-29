@@ -3661,9 +3661,34 @@ function renderPainelUso() {
       + (detalhe ? '<div style="font-size:10.5px;color:rgba(255,255,255,.28);margin-top:4px">' + detalhe + '</div>' : '')
     + '</div>';
   }
+  function linhaSaldo(rotulo, creditos) {
+    return '<div style="display:flex;justify-content:space-between;font-size:12px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04)">'
+      + '<span style="color:rgba(255,255,255,.55)">' + rotulo + '</span>'
+      + '<span style="font-family:ui-monospace,monospace;color:rgba(255,255,255,.85)">' + Math.round(creditos) + '</span></div>';
+  }
   var html = '';
+  // Saldos separados por origem (nunca soma: cada um é uma fonte distinta,
+  // com regra de validade própria).
+  if (s.saldosPorOrigem) {
+    var o = s.saldosPorOrigem;
+    html += '<div style="margin-bottom:14px">'
+      + linhaSaldo('Créditos do plano (mês atual)', (o.premiumMilli || 0) / 1000)
+      + linhaSaldo('Bônus diário disponível', (o.bonusMilli || 0) / 1000)
+      + linhaSaldo('Créditos comprados/cortesia', (o.compradoMilli || 0) / 1000)
+      + '</div>';
+  }
+  if (s.windows && s.windows.monthEnd) {
+    html += '<div style="font-size:10.5px;color:rgba(255,255,255,.28);margin-bottom:14px">Renova em ' + new Date(s.windows.monthEnd).toLocaleDateString('pt-BR') + '</div>';
+  }
   if (s.session) html += barra('Sessão (5h)', Math.round(s.session.usedPct || 0), s.session.resetsAt ? 'Renova em ' + new Date(s.session.resetsAt).toLocaleString('pt-BR') : '');
   if (s.week) html += barra('Semana', Math.round(s.week.usedPct || 0), s.week.resetsAt ? 'Renova em ' + new Date(s.week.resetsAt).toLocaleDateString('pt-BR') : '');
+  // Motor 2: nunca menciona o motor real por trás — só o rótulo comercial.
+  if (s.motor2Elegivel) {
+    var ativo = typeof s.premiumRemainingPct === 'number' && s.premiumRemainingPct <= 10;
+    html += '<div style="margin-top:6px;font-size:11px;color:' + (ativo ? 'var(--zh-accent)' : 'rgba(255,255,255,.35)') + '">'
+      + (ativo ? '⚡ Motor 2 ativo — capacidade adicional disponível.' : 'Motor 2 disponível quando os créditos do plano estiverem no fim.')
+      + '</div>';
+  }
   el.innerHTML = html || '<div style="font-size:12.5px;color:rgba(255,255,255,.35)">Sem limites configurados.</div>';
 }
 

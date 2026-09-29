@@ -384,11 +384,8 @@
           <div class="stat-label" style="margin:0">Mensalidade — planos</div>
           <button class="btn btn-ghost btn-xs" onclick="billAddPlan()">+ Plano</button>
         </div>
-        <div class="tbl-wrap"><table>
-          <thead><tr><th>Slug</th><th>Nome</th><th>Preço (R$)</th><th>Consumo liberado<br/>US$/mês (seu preço)</th><th>Semana<br/>US$</th><th>Sessão 5h<br/>US$</th><th>Bônus (US$)</th><th>Sua margem</th><th></th></tr></thead>
-          <tbody id="bill-plans-tbody"></tbody>
-        </table></div>
-        <p style="font-size:10.5px;color:rgba(255,255,255,.25);margin:10px 0 0">O consumo liberado É o preço convertido em US$ — o cliente recebe exatamente o que pagou, medido no <b>SEU preço de venda</b> (custo Anthropic × markup), igual a Anthropic mede o uso de vocês pelo preço de tabela dela. Consumir US$ 218 "de uso" custa US$ 109 de verdade com markup +100% — a diferença é sua margem: <b>nunca fica negativo, no mínimo repassa o custo</b>. Bônus é subsídio deliberado (free/trial).</p>
+        <div id="bill-plans-tbody"></div>
+        <p style="font-size:10.5px;color:rgba(255,255,255,.25);margin:10px 0 0">"Créditos premium/mês" é a fonte de verdade do consumo liberado (o preço em R$ é só o valor cobrado do cliente). Bônus diário concede todo dia até o teto, mas nunca ultrapassa o teto MENSAL de bônus concedido, e não acumula de um dia pro outro. Motor 2 é a capacidade adicional exclusiva de planos marcados abaixo — configure a franquia diária dele na aba "IA &amp; Motor". Projetos/domínios em branco = ilimitado.</p>
         <div id="bill-warnings" style="margin-top:10px"></div>
         <div style="display:flex;gap:10px;margin-top:14px;align-items:center">
           <button class="btn btn-primary" onclick="saveBillingConfig()">Salvar configurações</button>
@@ -400,7 +397,7 @@
       <div class="card">
         <div class="stat-label" style="margin-bottom:12px">Contas dos usuários</div>
         <div class="tbl-wrap"><table>
-          <thead><tr><th>Usuário</th><th>Plano</th><th>Sessão · Semana</th><th>Disponível</th><th>Gasto no mês</th><th>Custo real / lucro</th><th>Cortesias</th><th>Saldo avulso</th><th style="text-align:right">Ações</th></tr></thead>
+          <thead><tr><th>Usuário</th><th>Plano</th><th>Sessão · Semana</th><th>Disponível</th><th>Gasto no mês</th><th>Custo real / lucro</th><th>Bônus · Comprado/cortesia</th><th>Saldo avulso</th><th style="text-align:right">Ações</th></tr></thead>
           <tbody id="bill-users-tbody"></tbody>
         </table></div>
         <p style="font-size:10.5px;color:rgba(255,255,255,.25);margin:10px 0 0">Disponível = restante do ciclo do plano (a cortesia e o saldo avulso são consumidos primeiro no débito, mas não somam na exibição — regra do cliente X8).</p>
@@ -675,6 +672,16 @@
             <input type="checkbox" id="pa-toggle" onchange="salvarPipelineAutomatico()" style="width:16px;height:16px;accent-color:var(--zh-accent)">
           </label>
         </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);margin-bottom:12px">
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12.5px;color:rgba(255,255,255,.7)">Motor 2 (capacidade adicional Pro/Business)</div>
+            <p style="font-size:11px;color:rgba(255,255,255,.35);margin:2px 0 0;line-height:1.5">Quando os créditos premium de um cliente Pro/Business chegam perto do fim, o Motor 2 assume automaticamente, dentro da franquia diária configurada em cada plano (aba Créditos). Desligar aqui desativa para a instalação inteira.</p>
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;white-space:nowrap;flex-shrink:0">
+            <input type="checkbox" id="motor2-toggle" onchange="salvarMotor2Ligado()" style="width:16px;height:16px;accent-color:var(--zh-accent)">
+          </label>
+        </div>
+        <div id="motor2-franquias" style="margin-bottom:12px"></div>
         <div id="mt-caixa"><div style="color:rgba(255,255,255,.35);font-size:13px">Verificando…</div></div>
       </div>
       <div class="card" style="max-width:520px;margin-bottom:14px">
@@ -1435,10 +1442,12 @@ function loadBilling() {
 // Plano zerado herda os créditos legados como cortesia de entrada.
 function billFx() { return parseFloat(document.getElementById('bill-fx').value) || _billCfg.usdToBrl || 5.5; }
 function billSessions() { return parseInt(document.getElementById('bill-sessions').value, 10) || _billCfg.sessionsPerWeek || 5; }
+// Espelha billing.js planMonthCapUsd(): creditsPerMonth é a fonte de verdade
+// quando definido — priceBrl só vira teto (câmbio) pra plano sem créditos
+// declarados (compat com planos antigos definidos só por preço).
 function planCapUsd(p) {
-  var cap = (p.priceBrl || 0) / billFx() + (p.bonusUsd || 0);
-  if (cap > 0) return cap;
-  return (p.creditsPerMonth || 0) * _billCfg.usdPerCredit;
+  if (p.creditsPerMonth > 0) return p.creditsPerMonth * _billCfg.usdPerCredit + (p.bonusUsd || 0);
+  return (p.priceBrl || 0) / billFx() + (p.bonusUsd || 0);
 }
 function planWeekCapUsd(p) { return planCapUsd(p) / 4; }
 function planSessionCapUsd(p) { return planWeekCapUsd(p) / billSessions(); }
@@ -1562,37 +1571,55 @@ function setBillMode(m) {
 }
 
 function renderBillPlans() {
-  var tb = document.getElementById('bill-plans-tbody');
-  var fx = billFx();
+  var wrap = document.getElementById('bill-plans-tbody');
   var mk = effMarkup(null);
   var margemPct = Math.round((1 - 1 / mk) * 100);
-  tb.innerHTML = _billCfg.plans.map(function(p, i) {
+  var num = function(p, i, field, w, step, placeholder) {
+    var v = p[field];
+    return '<input class="inp" style="width:' + w + 'px;padding:6px 8px;font-size:11.5px" type="number" step="' + (step || '1') + '" min="0" value="' + (v || v === 0 ? v : '') + '" placeholder="' + (placeholder || '0') + '" onchange="_billCfg.plans[' + i + '].' + field + '=parseFloat(this.value)||0;renderBillPlans();renderBillSim()"/>';
+  };
+  var numOuIlimitado = function(p, i, field) {
+    return '<input class="inp" style="width:60px;padding:6px 8px;font-size:11.5px" type="number" min="0" step="1" value="' + (p[field] || '') + '" placeholder="∞" onchange="_billCfg.plans[' + i + '].' + field + '=parseInt(this.value,10)||null;renderBillPlans()"/>';
+  };
+  wrap.innerHTML = _billCfg.plans.map(function(p, i) {
     var cap = planCapUsd(p);
-    var isBonus = p.priceBrl === 0 && cap > 0;
-    return '<tr>' +
-      '<td><input class="inp" style="width:90px;padding:6px 8px;font-size:11.5px" value="' + esc(p.slug) + '" onchange="_billCfg.plans[' + i + '].slug=this.value"/></td>' +
-      '<td><input class="inp" style="width:150px;padding:6px 8px;font-size:11.5px" value="' + esc(p.name) + '" onchange="_billCfg.plans[' + i + '].name=this.value"/></td>' +
-      '<td><input class="inp" style="width:85px;padding:6px 8px;font-size:11.5px" type="number" min="0" value="' + p.priceBrl + '" onchange="_billCfg.plans[' + i + '].priceBrl=parseFloat(this.value)||0;renderBillPlans();renderBillSim()"/></td>' +
-      '<td style="font-family:ui-monospace,monospace;font-size:11.5px;color:rgba(255,255,255,.8)" title="DERIVADO do preço: R$ ' + (p.priceBrl || 0) + ' ÷ ' + fx.toFixed(2) + (p.bonusUsd > 0 ? ' + bônus US$ ' + p.bonusUsd : '') + (isBonus ? ' (só bônus/cortesia)' : '') + '">US$ ' + cap.toFixed(2) + '</td>' +
-      '<td style="font-family:ui-monospace,monospace;font-size:11px;color:rgba(255,255,255,.5)" title="Mensal ÷ 4">US$ ' + planWeekCapUsd(p).toFixed(2) + '</td>' +
-      '<td style="font-family:ui-monospace,monospace;font-size:11px;color:rgba(255,255,255,.5)" title="Semana ÷ ' + billSessions() + ' sessões">US$ ' + planSessionCapUsd(p).toFixed(2) + '</td>' +
-      '<td><input class="inp" style="width:70px;padding:6px 8px;font-size:11.5px" type="number" step="0.5" min="0" value="' + (p.bonusUsd > 0 ? p.bonusUsd : '') + '" placeholder="0" onchange="_billCfg.plans[' + i + '].bonusUsd=parseFloat(this.value)||0;renderBillPlans();renderBillSim()" title="Subsídio deliberado (free/trial): consumo extra além do que o preço cobre — sai do seu bolso."/></td>' +
-      '<td style="font-family:ui-monospace,monospace;font-size:11px;color:' + (p.bonusUsd > 0 ? '#fbbf24' : 'rgba(74,222,128,.8)') + '" title="' + (p.bonusUsd > 0 ? 'Bônus reduz a margem (subsídio)' : 'Margem = o markup: no consumo total sobra isso da receita') + '">' + (p.priceBrl > 0 ? '≥ ' + margemPct + '%' : (cap > 0 ? 'subsídio' : '—')) + '</td>' +
-      '<td style="text-align:right"><button class="btn btn-danger btn-xs" onclick="_billCfg.plans.splice(' + i + ',1);renderBillPlans();renderBillSim()">×</button></td>' +
-    '</tr>';
+    return '<div style="padding:14px 16px;border-radius:12px;margin-bottom:10px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06)">' +
+      '<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-bottom:10px">' +
+        '<div><label class="inp-label" style="font-size:10px">Slug</label><input class="inp" style="width:90px;padding:6px 8px;font-size:11.5px" value="' + esc(p.slug) + '" onchange="_billCfg.plans[' + i + '].slug=this.value"/></div>' +
+        '<div><label class="inp-label" style="font-size:10px">Nome</label><input class="inp" style="width:130px;padding:6px 8px;font-size:11.5px" value="' + esc(p.name) + '" onchange="_billCfg.plans[' + i + '].name=this.value"/></div>' +
+        '<div><label class="inp-label" style="font-size:10px">Preço (R$/mês)</label><input class="inp" style="width:75px;padding:6px 8px;font-size:11.5px" type="number" min="0" value="' + p.priceBrl + '" onchange="_billCfg.plans[' + i + '].priceBrl=parseFloat(this.value)||0;renderBillPlans();renderBillSim()"/></div>' +
+        '<div><label class="inp-label" style="font-size:10px">Créditos premium/mês</label>' + num(p, i, 'creditsPerMonth', 85, '10') + '</div>' +
+        '<label style="display:flex;align-items:center;gap:6px;cursor:pointer;padding-bottom:8px"><input type="checkbox" ' + (p.motor2 ? 'checked' : '') + ' onchange="_billCfg.plans[' + i + '].motor2=this.checked" style="width:14px;height:14px;accent-color:var(--zh-accent)"/><span style="font-size:11.5px;color:rgba(255,255,255,.6)">Motor 2</span></label>' +
+        '<button class="btn btn-danger btn-xs" style="margin-left:auto" onclick="_billCfg.plans.splice(' + i + ',1);renderBillPlans();renderBillSim()">Remover</button>' +
+      '</div>' +
+      '<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-bottom:8px">' +
+        '<div><label class="inp-label" style="font-size:10px">Bônus diário (créditos)</label>' + num(p, i, 'dailyBonusCap', 75, '1') + '</div>' +
+        '<div><label class="inp-label" style="font-size:10px">Teto de bônus/mês</label>' + num(p, i, 'monthlyBonusCap', 75, '1') + '</div>' +
+        '<div><label class="inp-label" style="font-size:10px">Projetos máx.</label>' + numOuIlimitado(p, i, 'maxProjetos') + '</div>' +
+        '<div><label class="inp-label" style="font-size:10px">Domínios máx.</label>' + numOuIlimitado(p, i, 'maxDominios') + '</div>' +
+        '<div><label class="inp-label" style="font-size:10px">Bônus extra (US$)</label><input class="inp" style="width:65px;padding:6px 8px;font-size:11.5px" type="number" step="0.5" min="0" value="' + (p.bonusUsd > 0 ? p.bonusUsd : '') + '" placeholder="0" onchange="_billCfg.plans[' + i + '].bonusUsd=parseFloat(this.value)||0;renderBillPlans();renderBillSim()" title="Subsídio deliberado (free/trial) somado ao teto — sai do seu bolso."/></div>' +
+      '</div>' +
+      '<div style="font-size:10.5px;color:rgba(255,255,255,.35);font-family:ui-monospace,monospace">' +
+        'Consumo liberado: US$ ' + cap.toFixed(2) + '/mês · semana US$ ' + planWeekCapUsd(p).toFixed(2) + ' · sessão 5h US$ ' + planSessionCapUsd(p).toFixed(2) +
+        ' · margem ' + (p.priceBrl > 0 ? '≥ ' + margemPct + '%' : (cap > 0 ? 'subsídio' : '—')) +
+      '</div>' +
+    '</div>';
   }).join('');
-  // Avisos: subsídio em plano pago e plano free sem nada
+  // Avisos: subsídio em plano pago, Motor 2 sem franquia visível, e plano sem nada
   var html = _billCfg.plans.filter(function(p) { return p.priceBrl > 0 && p.bonusUsd > 0; }).map(function(p) {
     return '<p style="font-size:11px;color:#fbbf24;margin:2px 0">⚠ "' + esc(p.name) + '" tem bônus de US$ ' + p.bonusUsd + ' além do preço — esse pedaço é subsídio seu.</p>';
   }).join('');
-  html += _billCfg.plans.filter(function(p) { return planCapUsd(p) <= 0; }).map(function(p) {
-    return '<p style="font-size:11px;color:#f87171;margin:2px 0">🔴 "' + esc(p.name) + '" não libera consumo nenhum (sem preço, bônus ou créditos) — usuários deste plano ficam bloqueados.</p>';
+  html += _billCfg.plans.filter(function(p) { return planCapUsd(p) <= 0 && !(p.dailyBonusCap > 0); }).map(function(p) {
+    return '<p style="font-size:11px;color:#f87171;margin:2px 0">🔴 "' + esc(p.name) + '" não libera consumo nenhum (sem preço, créditos ou bônus diário) — usuários deste plano ficam bloqueados.</p>';
   }).join('');
   document.getElementById('bill-warnings').innerHTML = html;
 }
 
 function billAddPlan() {
-  _billCfg.plans.push({ slug: 'novo-' + Date.now().toString(36), name: 'Novo plano', priceBrl: 100, bonusUsd: 0, creditsPerMonth: 0 });
+  _billCfg.plans.push({
+    slug: 'novo-' + Date.now().toString(36), name: 'Novo plano', priceBrl: 100, bonusUsd: 0,
+    creditsPerMonth: 100, dailyBonusCap: 10, monthlyBonusCap: 60, motor2: false, maxProjetos: null, maxDominios: null,
+  });
   renderBillPlans();
   renderBillSim();
 }
@@ -1613,7 +1640,12 @@ function saveBillingConfig() {
     sessionsPerWeek: parseInt(document.getElementById('bill-sessions').value, 10) || 5,
     models: _billCfg.models,
     plans: _billCfg.plans.map(function(p) {
-      return { slug: p.slug, name: p.name, priceBrl: p.priceBrl, bonusUsd: p.bonusUsd || 0, creditsPerMonth: p.creditsPerMonth || 0 };
+      return {
+        slug: p.slug, name: p.name, priceBrl: p.priceBrl, bonusUsd: p.bonusUsd || 0,
+        creditsPerMonth: p.creditsPerMonth || 0, dailyBonusCap: p.dailyBonusCap || 0,
+        monthlyBonusCap: p.monthlyBonusCap || 0, motor2: !!p.motor2,
+        maxProjetos: p.maxProjetos || null, maxDominios: p.maxDominios || null,
+      };
     }),
   };
   api('/api/admin/billing/config', { method: 'PUT', body: JSON.stringify(body) }).then(function(r) {
@@ -1636,6 +1668,7 @@ function renderBillUsers(users) {
     var wp = typeof u.weekUsedPct === 'number' ? Math.min(100, u.weekUsedPct) : 0;
     var sp = typeof u.sessionUsedPct === 'number' ? Math.min(100, u.sessionUsedPct) : 0;
     var pcolor = function(v) { return v >= 100 ? '#f87171' : v >= 80 ? '#60a5fa' : 'rgba(255,255,255,.55)'; };
+    var o = u.saldosPorOrigem || {};
     return '<tr>' +
       '<td style="color:rgba(255,255,255,.85);font-weight:500">' + esc(u.username) + '</td>' +
       '<td>' + planSel + '</td>' +
@@ -1644,7 +1677,12 @@ function renderBillUsers(users) {
       '<td>US$ ' + u.monthlySpendUsd.toFixed(2) + ' <span style="color:rgba(255,255,255,.25);font-size:10px">de US$ ' + (u.monthCapUsd || 0).toFixed(2) + '</span></td>' +
       '<td style="font-family:ui-monospace,monospace;font-size:11px" title="Custo base (Anthropic) no mês / margem: cobrado − custo">US$ ' + (u.monthBaseUsd || 0).toFixed(4) +
         ' <span style="color:rgba(74,222,128,.6);font-size:10px">+US$ ' + Math.max(0, (u.monthChargedUsd || 0) - (u.monthBaseUsd || 0)).toFixed(4) + '</span></td>' +
-      '<td>' + (u.grantMilli > 0 ? fmtCr(u.grantMilli) + ' cr' : '—') + '</td>' +
+      '<td style="font-family:ui-monospace,monospace;font-size:11px" title="Bônus diário disponível · Comprado + cortesia (admin)">' +
+        (o.bonusMilli > 0 ? fmtCr(o.bonusMilli) + ' cr' : '—') +
+        ' <span style="color:rgba(255,255,255,.2)">·</span> ' +
+        (o.compradoMilli > 0 ? fmtCr(o.compradoMilli) + ' cr' : '—') +
+        (u.motor2Elegivel ? ' <span class="chip ' + (u.premiumRemainingPct <= 10 ? 'chip-purple' : 'chip-amber') + '" style="font-size:9px;padding:1px 5px" title="Motor 2">' + (u.premiumRemainingPct <= 10 ? 'M2 ativo' : Math.round(u.premiumRemainingPct) + '%') + '</span>' : '') +
+      '</td>' +
       '<td>' + (u.balanceMilli > 0 ? fmtCr(u.balanceMilli) + ' cr' : '—') + '</td>' +
       '<td style="text-align:right;white-space:nowrap">' +
         '<button class="btn btn-ghost btn-xs" onclick="billGrant(\'' + esc(u.username) + '\')">+ Cortesia</button> ' +
@@ -2165,6 +2203,9 @@ function loadMotores() {
     if (d.error) { cx.innerHTML = '<p style="color:rgba(248,113,113,.8);font-size:12.5px">' + esc(d.error) + '</p>'; return; }
     var paToggle = document.getElementById('pa-toggle');
     if (paToggle) paToggle.checked = d.pipelineAutomatico !== false;
+    var m2Toggle = document.getElementById('motor2-toggle');
+    if (m2Toggle) m2Toggle.checked = !!(d.motor2 && d.motor2.ligado !== false);
+    renderMotor2Franquias((d.motor2 && d.motor2.limiteDiarioPorPlano) || {});
     cx.innerHTML = (d.motores || []).filter(Boolean).map(function(m) {
       var ativo = d.emUso === m.id;
       var pronto = m.instalado && m.conectado;
@@ -2220,6 +2261,41 @@ function salvarPipelineAutomatico() {
   var ligado = !!(chk && chk.checked);
   api('/api/admin/motores/pipeline-automatico', { method: 'PUT', body: JSON.stringify({ ligado: ligado }) }).then(function(r) {
     if (r.error) { alert(r.error); if (chk) chk.checked = !ligado; }
+  });
+}
+
+function salvarMotor2Ligado() {
+  var chk = document.getElementById('motor2-toggle');
+  var ligado = !!(chk && chk.checked);
+  api('/api/admin/motores/motor2', { method: 'PUT', body: JSON.stringify({ ligado: ligado }) }).then(function(r) {
+    if (r.error) { alert(r.error); if (chk) chk.checked = !ligado; }
+  });
+}
+
+// Franquia diária do Motor 2, um número por plano elegível (Pro/Business por
+// padrão) — busca os planos direto da API de billing pra não depender da
+// aba Créditos já ter sido aberta nesta sessão.
+function renderMotor2Franquias(limites) {
+  var el = document.getElementById('motor2-franquias');
+  if (!el) return;
+  api('/api/admin/billing').then(function(d) {
+    var planos = ((d.config || {}).plans || []).filter(function(p) { return p.motor2; });
+    if (!planos.length) { el.innerHTML = ''; return; }
+    el.innerHTML = '<div style="font-size:11.5px;color:rgba(255,255,255,.5);margin-bottom:8px">Franquia diária do Motor 2 (usos por dia, por usuário):</div>'
+      + '<div style="display:flex;flex-wrap:wrap;gap:12px">' + planos.map(function(p) {
+        var v = limites[p.slug];
+        return '<label style="display:flex;align-items:center;gap:6px;font-size:11.5px;color:rgba(255,255,255,.6)">' + esc(p.name)
+          + '<input class="inp" style="width:60px;padding:5px 8px;font-size:11.5px" type="number" min="0" value="' + (typeof v === 'number' ? v : 30)
+          + '" onchange="salvarMotor2Franquia(\'' + esc(p.slug) + '\', this.value)"/></label>';
+      }).join('') + '</div>';
+  });
+}
+
+function salvarMotor2Franquia(plano, limiteDiario) {
+  var n = parseInt(limiteDiario, 10);
+  if (!(n >= 0)) return;
+  api('/api/admin/motores/motor2/franquia', { method: 'PUT', body: JSON.stringify({ plano: plano, limiteDiario: n }) }).then(function(r) {
+    if (r.error) alert(r.error);
   });
 }
 

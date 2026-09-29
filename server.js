@@ -1288,10 +1288,17 @@ app.post('/api/projects/:id/imagem', autorizaImagem, async (req, res) => {
 // Os dois convivem. Escolher aqui vale para as sessões abertas daqui em
 // diante — as vivas são encerradas na troca, senão continuariam no motor
 // antigo sem ninguém entender por quê.
+// ─── Motor 2: capacidade adicional Pro/Business (servicos/motor2.js) ───
+// Instanciado aqui (cedo) porque as rotas admin de motores já precisam dele;
+// reaproveitado mais abaixo por motor-canal.js/motor-ws.js.
+const motor2 = require('./servicos/motor2.js').criar({
+  loadNasceraConfig, billing, db,
+});
+
 // ─── Rotas admin de motores (S4: extraídas para rotas/admin-motores.js) ───
 require('./rotas/admin-motores.js').registrar(app, {
   adminMiddleware, loadNasceraConfig, saveNasceraConfig, invalidarCmdDoMotor,
-  getChannels: () => channels, appendActivity, segredos,
+  getChannels: () => channels, appendActivity, segredos, motor2,
 });
 
 // ═══════════════ MODELOS LOCAIS (LLM open source) ═══════════════
@@ -1382,7 +1389,7 @@ require('./rotas/projetos-crud.js').registrar(app, {
   authMiddleware, projectOr404, projetosDoUsuario, semSegredos, makeSlug,
   loadProjects, saveProjects, scaffoldFromTheme, initGit, normalizeBuildLevel,
   trackEvent, seguranca, domains, loadTrash, saveTrash, loadNasceraConfig,
-  PROJECTS_BASE, PUBLISHED_BASE, TRASH_DIR, THUMB_DIR, THEMES_BASE,
+  PROJECTS_BASE, PUBLISHED_BASE, TRASH_DIR, THUMB_DIR, THEMES_BASE, billing,
 });
 
 // List VPS folders
@@ -1841,7 +1848,7 @@ function projectOr404(req, res) {
 }
 
 // ─── Domínios do projeto /api/projects/:id/domains/* (S4: rotas/projetos-dominios.js) ───
-require('./rotas/projetos-dominios.js').registrar(app, { authMiddleware, projectOr404, domains, appendActivity });
+require('./rotas/projetos-dominios.js').registrar(app, { authMiddleware, projectOr404, domains, appendActivity, billing });
 
 // ── admin: visão geral, config e o Caddyfile que entrega o HTTPS ──
 // ─── Rotas admin de domínios (S4: extraídas) ───
@@ -2530,7 +2537,7 @@ const { bindChannel, ensureChannel } = require('./servicos/motor-canal.js').cria
   autoCommitAsync, atualizarProjeto, getCurrentVersion, generateProjectScreenshot,
   getEngine, sessionKeyFor, isDesktopLocal, escreverFerramentaDeImagem, memoriaProjeto,
   PROJECTS_BASE, normalizeBuildLevel, loadNasceraConfig, modelosLocais, motores, vpsSpawnWrapper, BUILD_LEVELS,
-  segredos, writeCavemanSkill, planejamentoAutomatico,
+  segredos, writeCavemanSkill, planejamentoAutomatico, motor2,
   // AD.1: credencial de IA própria do dono (ou null → credencial da instalação)
   credencialIaPropria: (username) => require('./rotas/ia-propria.js')
     .credencialPara(username, { loadNasceraConfig, loadUsers, segredos }),
@@ -2570,7 +2577,7 @@ require('./servicos/motor-ws.js').registrar(wss, {
   sessions, verifyToken, loadProjects, podeAcessarProjeto, trackEvent,
   loadChatHistory, ensureChannel, loadUsers, billing, appendChatMessage,
   switchAgentForProject, agentInlinePrefix, memoriaProjeto, getIntegrationsContext,
-  getBuildScopeContext, BUILD_LEVELS, planejamentoAutomatico,
+  getBuildScopeContext, BUILD_LEVELS, planejamentoAutomatico, motor2,
 });
 
 // ─── Terminal WebSocket (real PTY shell) ──────────────────────────────

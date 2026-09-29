@@ -97,15 +97,25 @@ app.put('/api/admin/billing/config', adminMiddleware, (req, res) => {
   }
   if (plans !== undefined) {
     if (!Array.isArray(plans) || !plans.length) return res.status(400).json({ error: 'Lista de planos vazia' });
-    // Modelo Claude: o plano é SÓ preço (o consumo deriva dele) + bônus
-    // opcional (subsídio p/ free/trial). Nada de orçamento digitável — foi o
-    // que causou plano vendendo abaixo do custo.
+    // creditsPerMonth é a FONTE DE VERDADE do orçamento premium quando
+    // definido (planMonthCapUsd) — não mais um legado que só o Free usava.
+    // dailyBonusCap/monthlyBonusCap regem o bônus diário (doc §3/§4).
+    // motor2 marca elegibilidade pra zona protegida (doc §7/§8). maxProjetos/
+    // maxDominios em branco/≤0 = ilimitado (`null`).
+    const numOuIlimitado = (v) => {
+      const n = parseInt(v, 10);
+      return (Number.isFinite(n) && n > 0) ? n : null;
+    };
     const clean = plans.map(p => ({
       slug: String(p.slug || '').trim(), name: String(p.name || '').trim(),
       priceBrl: Math.max(0, parseFloat(p.priceBrl) || 0),
       bonusUsd: Math.max(0, parseFloat(p.bonusUsd) || 0),
-      // legado: vira a cortesia de entrada dos planos zerados (free 10cr)
       creditsPerMonth: Math.max(0, Math.round(parseFloat(p.creditsPerMonth) || 0)),
+      dailyBonusCap: Math.max(0, parseFloat(p.dailyBonusCap) || 0),
+      monthlyBonusCap: Math.max(0, parseFloat(p.monthlyBonusCap) || 0),
+      motor2: !!p.motor2,
+      maxProjetos: numOuIlimitado(p.maxProjetos),
+      maxDominios: numOuIlimitado(p.maxDominios),
     }));
     try {
       warnings = warnings.concat(billing.validatePlans(clean));

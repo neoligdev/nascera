@@ -23,7 +23,7 @@
  * @returns {void}
  */
 function registrar(app, deps) {
-  const { authMiddleware, projectOr404, domains, appendActivity } = deps;
+  const { authMiddleware, projectOr404, domains, appendActivity, billing } = deps;
 
   app.get('/api/projects/:id/domains', authMiddleware, (req, res) => {
     const proj = projectOr404(req, res); if (!proj) return;
@@ -34,6 +34,16 @@ function registrar(app, deps) {
 
   app.post('/api/projects/:id/domains', authMiddleware, (req, res) => {
     const proj = projectOr404(req, res); if (!proj) return;
+    // Limite de domínios por plano (doc de Planos, Créditos e Motor 2) — conta
+    // no total da CONTA, não por projeto (mesma leitura da tabela do doc).
+    // Admin é isento, mesmo padrão do billing de créditos.
+    if (req.user.role !== 'admin' && billing) {
+      const max = billing.planLimitFor(req.user.user, 'maxDominios');
+      if (max != null) {
+        const atual = domains.listAll().filter(d => d.user === req.user.user).length;
+        if (atual >= max) return res.status(403).json({ error: `Seu plano permite até ${max} domínio(s). Faça upgrade para adicionar mais.` });
+      }
+    }
     try {
       const rec = domains.addDomain(req.body.domain, {
         projectId: proj.id, slug: proj.slug, user: req.user.user,
