@@ -69,3 +69,55 @@ test('alterar texto/botão: Edit pequeno, sem contexto de correção, vira ALTER
   const arquivo = { caminho: 'paginas/sobre.html', tool: 'Edit', conteudo: 'Fale com a gente', tamanhoAntes: 12, tamanhoDepois: 16 };
   assert.equal(_classificarArquivo(arquivo, {}), 'ALTERAR_TEXTO');
 });
+
+const { classificar } = require('../servicos/classificador-operacao.js');
+
+test('classificar: turno sem arquivo nenhum devolve soma zero', () => {
+  const r = classificar([], {});
+  assert.deepEqual(r, { categorias: [], totalCreditos: 0, arquivosSemCategoria: [] });
+});
+
+test('classificar: soma de categorias diferentes em arquivos diferentes', () => {
+  const arquivos = [
+    { caminho: 'public/estilos/a.css', tool: 'Edit', conteudo: '.a{}', tamanhoAntes: 10, tamanhoDepois: 12 },
+    { caminho: 'componentes/Novo.jsx', tool: 'Write', conteudo: 'x', tamanhoAntes: 0, tamanhoDepois: 5 },
+  ];
+  const r = classificar(arquivos, {});
+  assert.equal(r.totalCreditos, 3 + 5);
+  assert.equal(r.categorias.length, 2);
+});
+
+test('classificar: dois arquivos .css somam a MESMA categoria duas vezes (6, não 3)', () => {
+  const arquivos = [
+    { caminho: 'public/estilos/a.css', tool: 'Edit', conteudo: '.a{}', tamanhoAntes: 10, tamanhoDepois: 12 },
+    { caminho: 'public/estilos/b.css', tool: 'Edit', conteudo: '.b{}', tamanhoAntes: 10, tamanhoDepois: 12 },
+  ];
+  const r = classificar(arquivos, {});
+  assert.equal(r.totalCreditos, 6);
+});
+
+test('classificar: mesmo caminho repetido na entrada conta 1 vez só (defesa extra)', () => {
+  const arq = { caminho: 'public/estilos/a.css', tool: 'Edit', conteudo: '.a{}', tamanhoAntes: 10, tamanhoDepois: 12 };
+  const r = classificar([arq, { ...arq }], {});
+  assert.equal(r.totalCreditos, 3);
+  assert.equal(r.categorias.length, 1);
+});
+
+test('classificar: arquivo sem padrão fica em arquivosSemCategoria e não entra na soma', () => {
+  const arquivos = [
+    { caminho: 'notas/rascunho.md', tool: 'Edit', conteudo: 'sem sinal nenhum'.repeat(50), tamanhoAntes: 5000, tamanhoDepois: 5000 },
+  ];
+  const r = classificar(arquivos, {});
+  assert.equal(r.totalCreditos, 0);
+  assert.deepEqual(r.arquivosSemCategoria, ['notas/rascunho.md']);
+});
+
+test('classificar: CRUD detecta rota + página do MESMO recurso e credita os dois (22+22)', () => {
+  const arquivos = [
+    { caminho: 'rotas/produtos.js', tool: 'Write', conteudo: 'app.get(...)', tamanhoAntes: 0, tamanhoDepois: 300 },
+    { caminho: 'public/produtos.html', tool: 'Write', conteudo: '<table>...</table>', tamanhoAntes: 0, tamanhoDepois: 300 },
+  ];
+  const r = classificar(arquivos, {});
+  assert.equal(r.totalCreditos, 44);
+  assert.ok(r.categorias.every(c => c.categoria === 'CRUD'));
+});

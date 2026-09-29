@@ -90,4 +90,81 @@ function classificarArquivo(arquivo, contexto) {
   return null;   // nenhum padrão bate — cai no fallback de custo real
 }
 
-module.exports = { CREDITOS, _classificarArquivo: classificarArquivo };
+const path = require('path');
+
+// ── CRUD (A.2): única categoria que correlaciona arquivos DIFERENTES do
+// mesmo recurso — ex.: rotas/produtos.js + public/produtos.html. As demais
+// categorias de agregado (landing/refatoração/módulo complexo) são
+// deliberadamente aproximadas pela soma das categorias finas (ver nota no
+// fim do arquivo) — CRUD ficou de fora dessa simplificação porque o doc já
+// descreve um padrão de detecção concreto pra ela (linha da tabela A.2).
+const RE_DIR_API = /(^|\/)(rotas|routes|api)\//i;
+const RE_DIR_OUTRA_CAMADA = /(^|\/)(modelos|models|servicos|services|views|paginas|pages|componentes|components|public)\//i;
+
+function slugRecurso(caminho) {
+  return path.basename(normCaminho(caminho)).replace(/\.[^.]+$/, '').toLowerCase().replace(/[-_]/g, '');
+}
+
+// Devolve o Set de caminhos que pertencem a um grupo CRUD: ≥2 arquivos com
+// o mesmo "slug de recurso" (nome de arquivo sem extensão), sendo pelo menos
+// um numa pasta de API/rota e outro numa pasta de modelo/UI.
+function detectarGruposCrud(arquivos) {
+  const porSlug = new Map();
+  for (const a of arquivos) {
+    const slug = slugRecurso(a.caminho);
+    if (!slug) continue;
+    if (!porSlug.has(slug)) porSlug.set(slug, []);
+    porSlug.get(slug).push(a);
+  }
+  const crudPaths = new Set();
+  for (const grupo of porSlug.values()) {
+    if (grupo.length < 2) continue;
+    const temApi = grupo.some(a => RE_DIR_API.test(normCaminho(a.caminho)));
+    const temOutraCamada = grupo.some(a => RE_DIR_OUTRA_CAMADA.test(normCaminho(a.caminho)));
+    if (temApi && temOutraCamada) grupo.forEach(a => crudPaths.add(a.caminho));
+  }
+  return crudPaths;
+}
+
+// Dedup por caminho (a fonte real — ch._arquivosTocados em motor-canal.js —
+// já é um Map deduplicado; isto é defesa extra pra classificar() nunca
+// contar 2x um caminho repetido na entrada, seja qual for o chamador).
+function dedupPorCaminho(arquivos) {
+  const porCaminho = new Map();
+  for (const a of arquivos) porCaminho.set(a.caminho, a);
+  return Array.from(porCaminho.values());
+}
+
+// classificar(arquivosTocados, contextoProjeto) → { categorias, totalCreditos, arquivosSemCategoria }
+function classificar(arquivosTocados, contextoProjeto) {
+  const arquivos = dedupPorCaminho(Array.isArray(arquivosTocados) ? arquivosTocados : []);
+  const contexto = contextoProjeto || {};
+  const crudPaths = detectarGruposCrud(arquivos);
+  const categorias = [];
+  const arquivosSemCategoria = [];
+  for (const a of arquivos) {
+    const nome = crudPaths.has(a.caminho) ? 'CRUD' : classificarArquivo(a, contexto);
+    if (!nome) { arquivosSemCategoria.push(a.caminho); continue; }
+    categorias.push({ caminho: a.caminho, categoria: nome, creditos: CREDITOS[nome] });
+  }
+  const totalCreditos = categorias.reduce((soma, c) => soma + c.creditos, 0);
+  return { categorias, totalCreditos, arquivosSemCategoria };
+}
+
+module.exports = {
+  classificar, CREDITOS,
+  _classificarArquivo: classificarArquivo, _detectarGruposCrud: detectarGruposCrud,
+};
+
+// NOTA (heurística v1, mesmo espírito da nota em planejamento-automatico.js):
+// "Landing page completa" (17cr), "Refatoração grande" (36cr) e "Módulo
+// complexo" (54cr) são categorias de AGREGADO/TAMANHO do turno inteiro (doc
+// §5), não de um arquivo isolado. Em vez de um classificador de agregado à
+// parte — que exigiria decidir limiares de contagem/tamanho sem nenhum dado
+// real ainda (Risco #2 do doc) —, a v1 as APROXIMA pela soma das categorias
+// finas por arquivo (3 arquivos "Página simples" somam 24, próximo do que
+// uma landing cobraria fixo). ponytail: se a telemetria mostrar divergência
+// grande entre a soma e o preço fixo do agregado, criar um passo extra em
+// classificar() que primeiro checa limiares de contagem/tamanho do TURNO e,
+// se baterem, substitui a soma pelo valor fixo — sem tocar na classificação
+// por arquivo já validada.
