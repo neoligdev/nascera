@@ -44,6 +44,30 @@ function extratoDe(username, limite) {
   return eventos;
 }
 
+// ── A.4 (Fase 2): estimativa prévia de créditos (doc §11) ──────────────
+// Heurística de INTENÇÃO — mais simples que o classificador de RESULTADO
+// (servicos/classificador-operacao.js): aqui não existe nenhum arquivo
+// tocado ainda, só o texto que o usuário está digitando. Serve só pra
+// mostrar uma faixa aproximada ANTES do envio — nunca o valor exato cobrado
+// (esse vem do classificador de resultado, pós-turno).
+const FAIXAS_INTENCAO = [
+  { min: 27, max: 27, re: /pagamento|checkout|gateway de pagamento/i },
+  { min: 22, max: 25, re: /\bcrud\b|cadastro completo|dashboard/i },
+  { min: 14, max: 20, re: /\blogin\b|autentica[çc][aã]o|\bapi\b|integra[çc][aã]o/i },
+  { min: 8, max: 17, re: /landing page|p[aá]gina (nova|completa)|site completo/i },
+  { min: 5, max: 10, re: /formul[aá]rio|componente novo|criar (um |uma )?(componente|se[çc][aã]o)/i },
+  { min: 2, max: 5, re: /muda|troca|ajust|corrig|conserta|cor do bot[aã]o|texto/i },
+];
+const FAIXA_PADRAO = { min: 2, max: 20 };
+
+function estimarCreditos(mensagem) {
+  const texto = String(mensagem || '');
+  for (const faixa of FAIXAS_INTENCAO) {
+    if (faixa.re.test(texto)) return { min: faixa.min, max: faixa.max };
+  }
+  return FAIXA_PADRAO;
+}
+
 function registrar(app, deps) {
   const {
     authMiddleware, adminMiddleware, billing, vendas, loadUsers,
@@ -63,6 +87,14 @@ function registrar(app, deps) {
       })),
       pix: pix.chave ? { chave: pix.chave, titular: pix.titular || null, instrucoes: pix.instrucoes || null } : null,
     });
+  });
+
+  // ── cliente: estimativa prévia de créditos (composer, deliberadamente
+  // aproximada) ────────────────────────────────────────────────────────
+  app.post('/api/billing/estimar', authMiddleware, (req, res) => {
+    const mensagem = String((req.body || {}).mensagem || '');
+    const faixa = estimarCreditos(mensagem);
+    res.json({ minCreditos: faixa.min, maxCreditos: faixa.max, aproximado: true });
   });
 
   // ── cliente: "já fiz o Pix" → fila de confirmação do admin ──────────
@@ -143,4 +175,4 @@ function registrar(app, deps) {
   });
 }
 
-module.exports = { registrar, extratoDe };
+module.exports = { registrar, extratoDe, estimarCreditos };
