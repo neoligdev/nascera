@@ -43,7 +43,7 @@ B.1–B.4 da spec de origem, verbatim nas decisões de produto (catálogo padrã
 
 ---
 
-## Tarefa 1 — Catálogo de pacotes em `billing.js`
+## Task 1: Catálogo de pacotes em `billing.js`
 
 **Files:**
 - `billing.js`
@@ -101,7 +101,7 @@ git commit -m "feat(billing): catálogo de pacotes avulsos de créditos (DEFAULT
 
 ---
 
-## Tarefa 2 — Migração `008-pacotes-avulsos.sql`
+## Task 2: Migração `008-pacotes-avulsos.sql`
 
 **Files:** `migracoes/008-pacotes-avulsos.sql` (novo)
 
@@ -145,7 +145,7 @@ git commit -m "feat(db): migração 008 — coluna pacote_creditos em vendas (n�
 
 ---
 
-## Tarefa 3 — `servicos/vendas.js`: campo `pacoteCreditos`
+## Task 3: `servicos/vendas.js`: campo `pacoteCreditos`
 
 **Files:**
 - `servicos/vendas.js`
@@ -232,7 +232,7 @@ git commit -m "feat(vendas): campo pacoteCreditos paralelo a plano (ledger de ve
 
 ---
 
-## Tarefa 4 — `rotas/webhooks.js`: `resolverPacote` + aplicação + correção da corrida
+## Task 4: `rotas/webhooks.js`: `resolverPacote` + aplicação + correção da corrida
 
 **Files:**
 - `rotas/webhooks.js`
@@ -488,7 +488,7 @@ git commit -m "feat(webhooks): resolverPacote + aplicação de pacote sem corrid
 
 ---
 
-## Tarefa 5 — `rotas/compras.js`: `GET /api/billing/pacotes`
+## Task 5: `rotas/compras.js`: `GET /api/billing/pacotes`
 
 **Files:** `rotas/compras.js`
 
@@ -516,7 +516,7 @@ git commit -m "feat(compras): GET /api/billing/pacotes (catálogo público de pa
 
 ---
 
-## Tarefa 6 — `public/comprar.html`: catálogo de pacotes pro cliente
+## Task 6: `public/comprar.html`: catálogo de pacotes pro cliente
 
 **Files:** `public/comprar.html`
 
@@ -549,7 +549,7 @@ git commit -m "feat(comprar): catálogo de pacotes avulsos na tela do cliente"
 
 ---
 
-## Tarefa 7 — `rotas/admin-billing.js`: aceitar `pacotes` no PUT de config
+## Task 7: `rotas/admin-billing.js`: aceitar `pacotes` no PUT de config
 
 **Files:** `rotas/admin-billing.js`
 
@@ -580,7 +580,7 @@ git commit -m "feat(admin-billing): aceitar e validar pacotes em PUT /api/admin/
 
 ---
 
-## Tarefa 8 — `public/admin.html`: editor de pacotes + reconstrução da config de gateway
+## Task 8: `public/admin.html`: editor de pacotes + reconstrução da config de gateway
 
 **Files:** `public/admin.html`
 
