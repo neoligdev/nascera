@@ -342,6 +342,15 @@
             <p style="font-size:10px;color:rgba(255,255,255,.25);margin:5px 0 0">Divide a semana em janelas de 5h (modelo Claude). Teto da sessão = semana ÷ este número.</p>
           </div>
         </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);margin-top:14px">
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12.5px;color:rgba(255,255,255,.7)">Preço fixo por operação</div>
+            <p style="font-size:11px;color:rgba(255,255,255,.35);margin:2px 0 0;line-height:1.5">Cobra uma tabela fixa de créditos por tipo de tarefa detectada (criar componente, CRUD, API...) em vez do custo real em tokens. O custo real continua calculado por baixo, só pra auditoria de margem — nunca é o que sai do saldo do cliente enquanto isto estiver ligado.</p>
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;white-space:nowrap;flex-shrink:0">
+            <input type="checkbox" id="bill-preco-fixo" style="width:16px;height:16px;accent-color:var(--zh-accent)">
+          </label>
+        </div>
       </div>
 
       <!-- Modelos & custo por token -->
@@ -1431,6 +1440,7 @@ function loadBilling() {
     document.getElementById('bill-markup').value = multToPct(d.config.defaultMarkup);
     document.getElementById('bill-fx').value = d.config.usdToBrl;
     document.getElementById('bill-sessions').value = d.config.sessionsPerWeek || 5;
+    document.getElementById('bill-preco-fixo').checked = !!d.config.precoFixoAtivo;
     renderBillModels();
     renderBillPlans();
     renderBillUsers(d.users);
@@ -1638,6 +1648,7 @@ function saveBillingConfig() {
     defaultMarkup: pctToMult(parseFloat(document.getElementById('bill-markup').value) || 0),
     usdToBrl: parseFloat(document.getElementById('bill-fx').value),
     sessionsPerWeek: parseInt(document.getElementById('bill-sessions').value, 10) || 5,
+    precoFixoAtivo: document.getElementById('bill-preco-fixo').checked,
     models: _billCfg.models,
     plans: _billCfg.plans.map(function(p) {
       return {

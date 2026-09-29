@@ -28,7 +28,7 @@ app.get('/api/admin/billing', adminMiddleware, (_req, res) => {
 });
 
 app.put('/api/admin/billing/config', adminMiddleware, (req, res) => {
-  const { mode, usdPerCredit, defaultDailyLimitUsd, timezone, plans, models, defaultMarkup, usdToBrl, sessionsPerWeek } = req.body;
+  const { mode, usdPerCredit, defaultDailyLimitUsd, timezone, plans, models, defaultMarkup, usdToBrl, sessionsPerWeek, precoFixoAtivo } = req.body;
   const cfg = loadNasceraConfig();
   const b = { ...(cfg.billing || {}) };
   if (mode !== undefined) {
@@ -66,6 +66,12 @@ app.put('/api/admin/billing/config', adminMiddleware, (req, res) => {
     const v = parseInt(sessionsPerWeek, 10);
     if (!(v >= 1 && v <= 50)) return res.status(400).json({ error: 'Sessões de 5h por semana inválido (1–50)' });
     b.sessionsPerWeek = v;
+  }
+  if (precoFixoAtivo !== undefined) {
+    // Fase 2 (A.3): cobrança por preço fixo por operação em vez do custo
+    // real em tokens. Default false — igual ao padrão de pipelineAutomatico
+    // e motor2.ligado: nenhuma mudança visível até o admin ligar.
+    b.precoFixoAtivo = !!precoFixoAtivo;
   }
   let warnings = [];
   if (models !== undefined) {
