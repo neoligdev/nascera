@@ -691,6 +691,9 @@
 
                 <div class="flex-1"></div>
 
+                <!-- Estimativa prévia de créditos (A.4, doc §11) — aproximada -->
+                <span id="estimativa-creditos" style="display:none;font-size:10.5px;color:rgba(255,255,255,.35);font-family:ui-monospace,monospace;white-space:nowrap;margin-right:6px"></span>
+
                 <!-- Créditos (discreto; só no modo de cobrança por créditos) -->
                 <div id="credits-chip" onclick="abrirPainelUso()" title="Uso e motor de IA" style="cursor:pointer;display:none;align-items:center;gap:5px;padding:0 10px;height:32px;border-radius:99px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);cursor:default;white-space:nowrap;flex-shrink:0" title="">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(var(--zh-accent2-rgb),.55)" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.5h3.75a1.75 1.75 0 010 3.5H9.5"/></svg>
@@ -3386,6 +3389,30 @@ window.acSelectCommand = function(idx) {
   closeAc();
   if (typeof cmd !== 'object') inp.dispatchEvent(new Event('input'));
 };
+
+// ── Estimativa prévia de créditos (A.4, doc §11) — debounced, aproximada.
+var _estimativaTimer = null;
+input.addEventListener('input', function() {
+  clearTimeout(_estimativaTimer);
+  var texto = input.value.trim();
+  var el = document.getElementById('estimativa-creditos');
+  if (!el) return;
+  if (texto.length < 8 || document.getElementById('credits-chip').style.display === 'none') {
+    el.style.display = 'none';
+    return;
+  }
+  _estimativaTimer = setTimeout(function() {
+    fetch('/api/billing/estimar', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mensagem: texto }),
+    }).then(function(r) { return r.json(); }).then(function(d) {
+      if (!d || d.minCreditos === undefined) { el.style.display = 'none'; return; }
+      el.textContent = '≈ ' + d.minCreditos + '–' + d.maxCreditos + ' cr';
+      el.style.display = 'inline';
+    }).catch(function() { el.style.display = 'none'; });
+  }, 500);
+});
 
 // Listen to input for @ and / triggers
 input.addEventListener('input', function(e) {
