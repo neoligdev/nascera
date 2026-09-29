@@ -63,6 +63,18 @@ const DEFAULT_PLANS = [
   { slug: 'business', name: 'Business', priceBrl: 155, creditsPerMonth: 1240, dailyBonusCap: 60, monthlyBonusCap: 60, maxProjetos: null, maxDominios: null, motor2: true },
 ];
 
+// Pacotes avulsos de créditos (doc, tabela de preço decrescente por
+// volume). Creditados via addBalance() → origem 'comprado', com a MESMA
+// validade de cfg.creditoCompradoValidadeDias — nunca recalculada aqui.
+const DEFAULT_PACOTES = [
+  { id: 'pacote-100',   creditos: 100,   precoBrl: 19.90 },
+  { id: 'pacote-300',   creditos: 300,   precoBrl: 37.90 },
+  { id: 'pacote-1000',  creditos: 1000,  precoBrl: 99.90 },
+  { id: 'pacote-2500',  creditos: 2500,  precoBrl: 189.90 },
+  { id: 'pacote-5000',  creditos: 5000,  precoBrl: 369.90 },
+  { id: 'pacote-10000', creditos: 10000, precoBrl: 695.90 },
+];
+
 // Custo BASE por milhão de tokens (US$) — preços da Anthropic (ago/2026).
 // O `id` é casado por SUBSTRING contra o model id real do SDK e o casamento
 // mais ESPECÍFICO (id mais longo) vence: 'opus-5' ganha de 'opus' para
@@ -92,6 +104,7 @@ function defaultConfig() {
     plans: DEFAULT_PLANS,
     creditoCompradoValidadeDias: 365, // ~12 meses (doc §6): validade do lote origem='comprado'
     precoFixoAtivo: false,   // Fase 2 (A.3): toggle do admin, mesmo padrão de pipelineAutomatico/motor2.ligado
+    pacotes: DEFAULT_PACOTES,
   };
 }
 
@@ -100,6 +113,7 @@ function getConfig() {
   try { raw = JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf8')); } catch {}
   const cfg = { ...defaultConfig(), ...(raw.billing || {}) };
   if (!Array.isArray(cfg.plans) || !cfg.plans.length) cfg.plans = DEFAULT_PLANS;
+  if (!Array.isArray(cfg.pacotes) || !cfg.pacotes.length) cfg.pacotes = DEFAULT_PACOTES;
   if (!Array.isArray(cfg.models) || !cfg.models.length) cfg.models = DEFAULT_MODELS;
   // INVARIANTE do produto: markup nunca abaixo de 1× — no mínimo repassa o custo
   if (!(cfg.defaultMarkup >= 1)) cfg.defaultMarkup = 1;
@@ -860,12 +874,28 @@ function validatePlans(plans) {
   return warnings;
 }
 
+// Validação dos pacotes avulsos (doc §6, Fase 2). id duplicado é erro (não dá
+// pra saber qual dos dois o admin quis dizer no mapeamento oferta→pacote);
+// créditos/preço zerados só avisam (pode ser edição em andamento).
+function validatePacotes(pacotes) {
+  const warnings = [];
+  const ids = new Set();
+  for (const p of pacotes) {
+    if (!p.id) throw new Error('Pacote sem id');
+    if (ids.has(p.id)) throw new Error(`Id de pacote duplicado: "${p.id}"`);
+    ids.add(p.id);
+    if (!(p.creditos > 0)) warnings.push(`Pacote "${p.id}": créditos zerados ou negativos — ninguém recebe nada nesta compra.`);
+    if (!(p.precoBrl > 0)) warnings.push(`Pacote "${p.id}": preço zerado ou negativo.`);
+  }
+  return warnings;
+}
+
 module.exports = {
-  REASONS, BLOCK_MESSAGE, DEFAULT_PLANS, DEFAULT_MODELS,
+  REASONS, BLOCK_MESSAGE, DEFAULT_PLANS, DEFAULT_PACOTES, DEFAULT_MODELS,
   getConfig, usdToMilli, milliToUsd,
   priceTurn, modelRowFor, planMonthCapUsd, planWeekCapUsd, planSessionCapUsd,
   gateDecision, debitTurn, summaryFor, planLimitFor,
-  adminOverview, setUserPlan, grantCredits, addBalance, resetSpend, validatePlans,
+  adminOverview, setUserPlan, grantCredits, addBalance, resetSpend, validatePlans, validatePacotes,
   _reloadState: () => { _state = null; },
   _garantirBonusDoDia: garantirBonusDoDia,   // hook de teste (mesmo espírito de _reloadState)
 };
