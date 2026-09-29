@@ -200,3 +200,74 @@ test('motor2.ligadoGlobalmente: respeita o toggle do admin', () => {
   const motorDesligado = motor2Mod.criar({ loadNasceraConfig: () => ({ motor2: { ligado: false } }), billing, db: { ATIVO: false } });
   assert.equal(motorDesligado.ligadoGlobalmente(), false);
 });
+
+// ── Fase 2 (A.3): preço fixo por operação (creditosFixos) ──────────────
+// Helper: reescreve cfg.billing no arquivo de config isolado do teste (ver
+// topo do arquivo) — getConfig() relê o arquivo a cada chamada, sem cache.
+function setBillingConfig(patch) {
+  const raw = JSON.parse(fs.readFileSync(process.env.NASCERA_CONFIG_FILE, 'utf8'));
+  raw.billing = { ...raw.billing, ...patch };
+  fs.writeFileSync(process.env.NASCERA_CONFIG_FILE, JSON.stringify(raw));
+}
+
+test('precoFixoAtivo desligado (default): creditosFixos é ignorado — comportamento idêntico à Fase 1', () => {
+  const u = novoUsuario();
+  billing.setUserPlan(u, 'pro');
+  const d = billing.debitTurn(u, { costUsd: 5, creditosFixos: 999 }, 'turno-regressao-' + u);
+  assert.equal(d.applicable, true);
+  // 999 créditos custariam 999*0,20=199,80 USD — bem mais que os 5 USD reais.
+  // Se o toggle (default false) tivesse efeito, o gasto do mês explodiria.
+  assert.equal(d.costMilli, Math.floor((5 / 0.20) * 1000));
+  const s = billing.summaryFor(u);
+  assert.ok(s.month.spentUsd < 10, 'gasto deve refletir o custo real (~5 USD), não os 999 créditos fixos');
+});
+
+test('precoFixoAtivo ligado: creditosFixos decide costMilli; realBaseUsd/realChargedUsd guardam o custo real', () => {
+  setBillingConfig({ precoFixoAtivo: true });
+  try {
+    const u = novoUsuario();
+    billing.setUserPlan(u, 'pro');
+    const d = billing.debitTurn(u, { costUsd: 0.01, creditosFixos: 22 }, 'turno-fixo-' + u);
+    assert.equal(d.applicable, true);
+    assert.equal(d.costMilli, 22000);          // 22 créditos, não o custo real de 0,01 USD
+    assert.equal(d.chargedUsd, 22 * 0.20);      // 22 créditos convertidos p/ USD (usdPerCredit=0.20)
+    assert.equal(d.realBaseUsd, 0.01);          // custo real preservado p/ auditoria de margem
+    assert.ok(d.realChargedUsd > 0 && d.realChargedUsd < 1);
+    const linhas = fs.readFileSync(process.env.NASCERA_USAGE_EVENTS_FILE, 'utf8').trim().split('\n');
+    const ultima = JSON.parse(linhas[linhas.length - 1]);
+    assert.equal(ultima.costMilli, 22000);
+    assert.equal(ultima.realBaseUsd, 0.01);
+  } finally {
+    setBillingConfig({ precoFixoAtivo: false });
+  }
+});
+
+test('precoFixoAtivo ligado sem creditosFixos: cai no custo real (fallback do classificador)', () => {
+  setBillingConfig({ precoFixoAtivo: true });
+  try {
+    const u = novoUsuario();
+    billing.setUserPlan(u, 'pro');
+    const d = billing.debitTurn(u, { costUsd: 5 }, 'turno-sem-fixo-' + u);   // sem creditosFixos
+    assert.equal(d.costMilli, Math.floor((5 / 0.20) * 1000));
+  } finally {
+    setBillingConfig({ precoFixoAtivo: false });
+  }
+});
+
+test('idempotência: turnId repetido com creditosFixos e toggle ligado não cobra duas vezes', () => {
+  setBillingConfig({ precoFixoAtivo: true });
+  try {
+    const u = novoUsuario();
+    billing.setUserPlan(u, 'pro');
+    const turnId = 'turno-fixo-idemp-' + u;
+    const d1 = billing.debitTurn(u, { costUsd: 0.01, creditosFixos: 10 }, turnId);
+    const s1 = billing.summaryFor(u);
+    const d2 = billing.debitTurn(u, { costUsd: 0.01, creditosFixos: 10 }, turnId);
+    const s2 = billing.summaryFor(u);
+    assert.equal(d1.duplicate, undefined);
+    assert.equal(d2.duplicate, true);
+    assert.deepEqual(s2.saldosPorOrigem, s1.saldosPorOrigem);
+  } finally {
+    setBillingConfig({ precoFixoAtivo: false });
+  }
+});

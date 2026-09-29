@@ -91,6 +91,7 @@ function defaultConfig() {
     models: DEFAULT_MODELS,           // custo base + markup por modelo
     plans: DEFAULT_PLANS,
     creditoCompradoValidadeDias: 365, // ~12 meses (doc §6): validade do lote origem='comprado'
+    precoFixoAtivo: false,   // Fase 2 (A.3): toggle do admin, mesmo padrão de pipelineAutomatico/motor2.ligado
   };
 }
 
@@ -482,7 +483,11 @@ function debitTurn(username, turn, turnId) {
   if (cfg.mode !== 'credits') return { applicable: false };
   const t = (typeof turn === 'number') ? { costUsd: turn, modelDeltas: null } : (turn || {});
   const priced = priceTurn(cfg, t.modelDeltas, t.costUsd);
-  if (!(priced.chargedUsd > 0)) return { applicable: false };
+  // O custo REAL sempre é calculado — alimenta o dashboard de margem/desvio
+  // (doc §12) mesmo quando o preço fixo decide o débito. Só entra no débito
+  // em si quando NÃO há preço fixo válido (mesma guarda de sempre).
+  const precoFixoValido = cfg.precoFixoAtivo && Number(t.creditosFixos) > 0;
+  if (!precoFixoValido && !(priced.chargedUsd > 0)) return { applicable: false };
 
   const acct = account(username);
   lazyReset(acct, cfg);
@@ -500,10 +505,18 @@ function debitTurn(username, turn, turnId) {
     return { applicable: true, duplicate: true, summary: summaryFor(username) };
   }
 
-  const chargedUsd = priced.chargedUsd;
-  // FLOOR (não round): nenhuma origem paga MAIS que o turno custou —
-  // a fração que sobra vai para as janelas como remainder, com precisão total
-  const costMilli = Math.floor((chargedUsd / cfg.usdPerCredit) * 1000);
+  // costMilli/chargedUsd são o que efetivamente sai do orçamento do cliente.
+  // Preço fixo (A.3, doc): creditosFixos decide direto, sem passar pelo
+  // custo real. Senão, EXATAMENTE o cálculo da Fase 1 (floor, não round —
+  // nenhuma origem paga MAIS que o turno custou de verdade).
+  let costMilli, chargedUsd;
+  if (precoFixoValido) {
+    costMilli = Math.round(Number(t.creditosFixos) * 1000);
+    chargedUsd = milliToUsd(costMilli, cfg);
+  } else {
+    chargedUsd = priced.chargedUsd;
+    costMilli = Math.floor((chargedUsd / cfg.usdPerCredit) * 1000);
+  }
   let restante = costMilli;
   let fromBonus = 0, fromPremium = 0, fromComprado = 0;
 
@@ -601,6 +614,7 @@ function debitTurn(username, turn, turnId) {
     const linha = JSON.stringify({
       ts: new Date().toISOString(), user: username,
       baseUsd: priced.baseUsd, chargedUsd, perModel: priced.perModel,
+      realBaseUsd: priced.baseUsd, realChargedUsd: priced.chargedUsd,
       costMilli, fromBonus, fromPremium, fromComprado, remainderUsd: r6(remainderUsd), turnId,
     }) + '\n';
     const fd = fs.openSync(EVENTS_FILE, 'a');
@@ -611,6 +625,7 @@ function debitTurn(username, turn, turnId) {
 
   return {
     applicable: true, baseUsd: priced.baseUsd, chargedUsd, perModel: priced.perModel,
+    realBaseUsd: priced.baseUsd, realChargedUsd: priced.chargedUsd,
     costMilli, fromBonus, fromPremium, fromComprado, remainderUsd, summary: summaryFor(username),
   };
 }
