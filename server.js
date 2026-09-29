@@ -2538,6 +2538,7 @@ const { bindChannel, ensureChannel } = require('./servicos/motor-canal.js').cria
   getEngine, sessionKeyFor, isDesktopLocal, escreverFerramentaDeImagem, memoriaProjeto,
   PROJECTS_BASE, normalizeBuildLevel, loadNasceraConfig, modelosLocais, motores, vpsSpawnWrapper, BUILD_LEVELS,
   segredos, writeCavemanSkill, planejamentoAutomatico, motor2,
+  classificadorOperacao: require('./servicos/classificador-operacao.js'),
   // AD.1: credencial de IA própria do dono (ou null → credencial da instalação)
   credencialIaPropria: (username) => require('./rotas/ia-propria.js')
     .credencialPara(username, { loadNasceraConfig, loadUsers, segredos }),

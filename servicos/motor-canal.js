@@ -22,6 +22,7 @@ function criar(deps) {
     getEngine, sessionKeyFor, isDesktopLocal, escreverFerramentaDeImagem, memoriaProjeto,
     PROJECTS_BASE, normalizeBuildLevel, loadNasceraConfig, modelosLocais, motores, vpsSpawnWrapper, BUILD_LEVELS,
     credencialIaPropria, email, loadUsers, segredos, writeCavemanSkill, planejamentoAutomatico, motor2,
+    classificadorOperacao,
   } = deps;
 
   // A.1 (Fase 2 — classificador de operação): acumula, por turno, os
@@ -55,6 +56,19 @@ function criar(deps) {
       const novo = String((tu.input && (tu.input.new_source || tu.input.new_string)) || '');
       ch._arquivosTocados.set(caminho, { caminho, tool: 'NotebookEdit', conteudo: novo, tamanhoAntes: 0, tamanhoDepois: novo.length });
     }
+  }
+
+  // A.3 (Fase 2): decide o valor de creditosFixos pro turno que está
+  // terminando. undefined = "não aplica" (billing.debitTurn cai no custo
+  // real automaticamente, seja porque o toggle está desligado, seja porque
+  // nenhum arquivo bateu com nenhum padrão).
+  function montarCreditosFixos(cfg, arquivosTocadosDoTurno, mensagemDoTurno) {
+    if (!cfg || !cfg.precoFixoAtivo) return undefined;
+    if (!arquivosTocadosDoTurno || !arquivosTocadosDoTurno.length) return undefined;
+    const pedidoDeCorrecao = !!(planejamentoAutomatico && planejamentoAutomatico.pareceCorrecao
+      && planejamentoAutomatico.pareceCorrecao(mensagemDoTurno));
+    const resultado = classificadorOperacao.classificar(arquivosTocadosDoTurno, { pedidoDeCorrecao });
+    return resultado.totalCreditos > 0 ? resultado.totalCreditos : undefined;
   }
 
   function bindChannel(ch) {
@@ -204,7 +218,8 @@ function criar(deps) {
         catch (err) { logger.error('[motor2] registrar uso falhou:', err.message); }
       } else if ((turnCostUsd > 0 || modelDeltas) && stamp.user && !stamp.exempt) {
         try {
-          const deb = billing.debitTurn(stamp.user, { costUsd: turnCostUsd, modelDeltas }, stamp.id || null);
+          const creditosFixos = montarCreditosFixos(billing.getConfig(), arquivosTocadosDoTurno, stamp.mensagem);
+          const deb = billing.debitTurn(stamp.user, { costUsd: turnCostUsd, modelDeltas, creditosFixos }, stamp.id || null);
           if (deb && deb.applicable && !deb.duplicate) {
             creditEvent = {
               type: 'credits',
@@ -459,7 +474,7 @@ function criar(deps) {
     return ch;
   }
 
-  return { bindChannel, ensureChannel };
+  return { bindChannel, ensureChannel, _montarCreditosFixos: montarCreditosFixos };
 }
 
 module.exports = { criar };

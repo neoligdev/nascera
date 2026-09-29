@@ -387,7 +387,7 @@ function registrar(wss, deps) {
       // carimbo único era sobrescrito pela mensagem enfileirada (turno de
       // graça via idempotência, pagador errado, isenção vazando).
       ch._turnQueue = ch._turnQueue || [];
-      ch._turnQueue.push({ id: crypto.randomUUID(), user: decoded.user, exempt: _isento });
+      ch._turnQueue.push({ id: crypto.randomUUID(), user: decoded.user, exempt: _isento, mensagem: userMessage });
       if (ch._turnQueue.length > 50) ch._turnQueue.shift();
       // fallback para results órfãos (ex.: custo de /compact que cai no turno seguinte)
       ch._turnUser = decoded.user;
