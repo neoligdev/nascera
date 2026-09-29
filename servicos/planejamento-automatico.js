@@ -140,7 +140,7 @@ function criar(deps) {
   }
 
   return {
-    classificar, elegivelParaPipeline, estaPlanejando,
+    classificar, elegivelParaPipeline, estaPlanejando, pareceCorrecao,
     motorTemporario, modeloTemporario, promptPrefixoTemporario,
     iniciarPlanejamento, registrarRodada, mensagemParaRetomar, finalizarPlanejamento,
     detectarMarcador, extrairPRD,
@@ -148,7 +148,13 @@ function criar(deps) {
   };
 }
 
-module.exports = { criar, classificar, MARCADOR_CONCLUSAO, PROMPT_PLANEJAMENTO, MODELO_PLANEJAMENTO };
+// Exposto pro classificador de operação (Fase 2, doc A.2): "Correção média"
+// reaproveita este MESMO sinal em vez de duplicar a lista de palavras-chave.
+function pareceCorrecao(mensagem) {
+  return PALAVRAS_TRIVIAIS.test(String(mensagem || ''));
+}
+
+module.exports = { criar, classificar, pareceCorrecao, MARCADOR_CONCLUSAO, PROMPT_PLANEJAMENTO, MODELO_PLANEJAMENTO };
 
 // NOTA (heurística v1): classificar() é deliberadamente ingênuo — palavra-
 // chave + tamanho + "projeto vazio". Vai errar em pedidos ambíguos ou mal

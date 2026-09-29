@@ -2,7 +2,7 @@
 // Rodar: node --test testes/planejamento-automatico.test.js
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { classificar, criar } = require('../servicos/planejamento-automatico.js');
+const { classificar, criar, pareceCorrecao } = require('../servicos/planejamento-automatico.js');
 
 const ehValido = (m) => ['claude', 'codex', 'opencode'].includes(m);
 
@@ -57,6 +57,14 @@ test('ciclo de estado: iniciar -> motor/modelo temporário -> finalizar', () => 
   mod.finalizarPlanejamento('p1');
   assert.equal(mod.estaPlanejando('p1'), false);
   assert.equal(mod.motorTemporario('p1'), null);
+});
+
+test('pareceCorrecao: pedido de conserto/ajuste é reconhecido como correção', () => {
+  assert.equal(pareceCorrecao('conserta a cor do botão'), true);
+});
+
+test('pareceCorrecao: pedido de algo novo não é correção', () => {
+  assert.equal(pareceCorrecao('crie um site para minha padaria'), false);
 });
 
 test('registrarRodada: estoura o teto depois de MAX_RODADAS', () => {
