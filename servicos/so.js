@@ -110,4 +110,81 @@ async function primeiraPortaEmUso(portas, opcoes = {}) {
   return i === -1 ? null : portas[i];
 }
 
-module.exports = { ultimasLinhas, portaEmUso, primeiraPortaEmUso };
+// ─── ambiente de processo filho ──────────────────────────────────────
+// O servidor carrega o `.env` no próprio `process.env` (dotenv). Todo filho
+// que herda o ambiente inteiro leva junto o JWT_SECRET — e o filho, aqui, é o
+// motor de IA de um cliente: bastava pedir "rode `env`" para ler o segredo que
+// assina o token de admin.
+//
+// Lista EXATA, não padrão por nome: instalação que autentica o motor por
+// ANTHROPIC_API_KEY no ambiente precisa que ela chegue lá.
+const SEGREDOS_DO_SERVIDOR = /^(JWT_SECRET|AUTH_USER|AUTH_PASS|DATABASE_URL|NASCERA_.*|pm_.*|PM2_.*|pm2_.*)$/;
+
+/**
+ * Ambiente para o processo do MOTOR: o do servidor menos os segredos dele.
+ * @param {NodeJS.ProcessEnv} [env]
+ * @returns {Record<string, string>}
+ */
+function ambienteDoMotor(env = process.env) {
+  const limpo = {};
+  for (const [k, v] of Object.entries(env)) {
+    if (v == null || SEGREDOS_DO_SERVIDOR.test(k)) continue;
+    limpo[k] = v;
+  }
+  return limpo;
+}
+
+// Código do CLIENTE (o `npm run dev` do projeto dele) é outra conversa: não
+// recebe credencial NENHUMA da instalação — nem a chave da Anthropic, nem
+// token de integração. Aqui o filtro é por padrão de nome, de propósito largo.
+const PARECE_SEGREDO = /SECRET|PASS|TOKEN|KEY|CREDENTIAL|DATABASE_URL|^AUTH_/i;
+
+/**
+ * Ambiente para código de projeto de cliente.
+ * @param {NodeJS.ProcessEnv} [env]
+ * @returns {Record<string, string>}
+ */
+function ambienteDeCliente(env = process.env) {
+  const limpo = {};
+  for (const [k, v] of Object.entries(ambienteDoMotor(env))) {
+    if (!PARECE_SEGREDO.test(k)) limpo[k] = v;
+  }
+  return limpo;
+}
+
+// ─── alvo de proxy do preview ────────────────────────────────────────
+// `proxyTarget` e `previewUrl` vêm do usuário (e de arquivos do projeto dele).
+// Sem conferência, o preview encaminhava requisição para onde ele mandasse: a
+// API administrativa do Caddy (127.0.0.1:2019), o próprio painel, outra
+// máquina da rede. E o teste antigo — `startsWith('http://localhost')` —
+// aprovava `http://localhost.evil.com`.
+//
+// Só vale dev server local: http, localhost, porta alta que não seja de um
+// serviço desta máquina. Devolve a forma normalizada ou null.
+function portasDeServico() {
+  return new Set([
+    2019, 5432,
+    Number(process.env.PORT) || 3333,
+    Number(process.env.PREVIEW_PORT) || 4001,
+    Number(process.env.PUBLISH_PORT) || 4102, 4002,
+  ]);
+}
+
+/**
+ * @param {unknown} alvo
+ * @returns {string|null} `http://localhost:<porta>` ou null se não for seguro.
+ */
+function alvoDeProxySeguro(alvo) {
+  let u;
+  try { u = new URL(String(alvo)); } catch { return null; }
+  if (u.protocol !== 'http:' || u.username || u.password) return null;
+  if (u.hostname !== 'localhost' && u.hostname !== '127.0.0.1') return null;
+  const porta = Number(u.port);
+  if (!(porta >= 1024 && porta <= 65535) || portasDeServico().has(porta)) return null;
+  return 'http://localhost:' + porta;
+}
+
+module.exports = {
+  ultimasLinhas, portaEmUso, primeiraPortaEmUso,
+  ambienteDoMotor, ambienteDeCliente, alvoDeProxySeguro,
+};

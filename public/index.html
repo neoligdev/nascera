@@ -131,7 +131,7 @@
         </div>
         <div class="form-group">
           <label class="form-label">Senha</label>
-          <input type="password" class="form-input" id="create-pass" placeholder="Mínimo 6 caracteres" oninput="validateCreate()"/>
+          <input type="password" class="form-input" id="create-pass" placeholder="Mínimo 10 caracteres" oninput="validateCreate()"/>
         </div>
         <div class="form-group">
           <label class="form-label">Confirmar senha</label>
@@ -261,7 +261,7 @@
       var err = document.getElementById("create-error");
       err.style.display = "none";
       if (pass && pass2 && pass !== pass2) { err.textContent = "As senhas não coincidem"; err.style.display = "block"; }
-      if (pass && pass.length > 0 && pass.length < 6) { err.textContent = "Senha deve ter no mínimo 6 caracteres"; err.style.display = "block"; }
+      if (pass && pass.length > 0 && pass.length < 10) { err.textContent = "Senha deve ter no mínimo 10 caracteres"; err.style.display = "block"; }
       var tok = document.getElementById("create-token").value.trim();
       var valid = name.length >= 2 && email.includes("@") && user.length >= 3 && pass.length >= 6 && pass === pass2 && tok.length >= 4;
       document.getElementById("btn-create").disabled = !valid;

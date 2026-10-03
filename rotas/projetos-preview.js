@@ -13,6 +13,7 @@
 // ═══════════════════════════════════════════════════════════════════════
 const fs = require('fs');
 const path = require('path');
+const so = require('../servicos/so.js');
 
 /**
  * Monta as rotas de preview de um projeto (`/api/projects/:id/*`): thumbnail e
@@ -146,8 +147,11 @@ function registrar(app, deps) {
     const proj = projectOr404(req, res); if (!proj) return;
 
     if (req.body.proxyTarget) {
+      // Só dev server local (ver `alvoDeProxySeguro`): o valor vem do usuário.
+      const seguro = so.alvoDeProxySeguro(req.body.proxyTarget);
+      if (!seguro) return res.status(400).json({ error: 'Alvo de proxy inválido. Use http://localhost:<porta> de um servidor de desenvolvimento.' });
       // Manual set (S1-2: era proj órfão + saveProjects, não persistia)
-      proj.proxyTarget = req.body.proxyTarget;
+      proj.proxyTarget = seguro;
       atualizarProjeto(proj.id, { proxyTarget: proj.proxyTarget });
       return res.json({ ok: true, proxyTarget: proj.proxyTarget });
     }
@@ -160,7 +164,7 @@ function registrar(app, deps) {
         if (fs.existsSync(nginxPath)) {
           const content = fs.readFileSync(nginxPath, 'utf8');
           const m = content.match(/proxy_pass\s+http:\/\/([^;\s]+)/);
-          if (m) detected = 'http://' + m[1];
+          if (m) detected = so.alvoDeProxySeguro('http://' + m[1]);   // o arquivo é do cliente
         }
         if (!detected) {
           const dcPaths = ['docker-compose.yaml', 'docker-compose.yml'].map(f => path.join(proj.path, f));
@@ -168,7 +172,7 @@ function registrar(app, deps) {
             if (fs.existsSync(p)) {
               const content = fs.readFileSync(p, 'utf8');
               const pm = content.match(/(\d{4,5}):(?:80|443|3000|8080)/);
-              if (pm) { detected = 'http://localhost:' + pm[1]; break; }
+              if (pm) { detected = so.alvoDeProxySeguro('http://localhost:' + pm[1]); if (detected) break; }
             }
           }
         }
@@ -211,6 +215,11 @@ function registrar(app, deps) {
     const proj = projects.find(p => (p.id === req.params.id || p.slug === req.params.id)
                                    && podeAcessarProjeto(p, req.user && req.user.user));
     if (!proj) return res.status(404).json({ error: 'Projeto nao encontrado' });
+    // Endereço local só se for dev server (o painel encaminha requisição para
+    // ele); site externo https continua valendo — esse o navegador abre sozinho.
+    if (/^http:\/\//i.test(previewUrl) && !so.alvoDeProxySeguro(previewUrl)) {
+      return res.status(400).json({ error: 'Endereço de preview inválido. Use http://localhost:<porta> de um servidor de desenvolvimento ou um endereço https.' });
+    }
     proj.previewUrl = previewUrl;
     proj.previewType = 'manual';
     saveProjects(projects);

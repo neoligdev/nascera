@@ -21,10 +21,25 @@ const os = require('os');
 const path = require('path');
 
 let BASE = null;   // raiz da área de projetos, definida pelo server no boot
+// Pasta onde o PRODUTO está instalado (server.js, .env, users.json). Nenhum
+// projeto pode apontar para ela: o motor de IA, o editor e o dev server
+// trabalham na pasta do projeto, e aqui isso é editar o próprio Nascera.
+let INSTALACAO = null;
+// Servidor (VPS, vários clientes na mesma máquina): só se conecta pasta de
+// dentro da área de projetos. No desktop a máquina é do dono e ele conecta o
+// que quiser — menos sistema, credenciais e a instalação.
+let RESTRITO = false;
 
-function configurar(raizDeProjetos) {
+// `opcoes` é opcional de propósito: scripts/limpar.js e os testes antigos
+// chamam com um argumento só e continuam valendo como antes.
+function configurar(raizDeProjetos, opcoes) {
+  const o = opcoes || {};
   BASE = path.resolve(raizDeProjetos);
+  INSTALACAO = o.instalacao ? path.resolve(o.instalacao) : null;
+  RESTRITO = !!o.restrito;
 }
+
+function restrito() { return RESTRITO; }
 
 function base() {
   if (!BASE) throw new Error('caminhos-seguros: configurar() não foi chamado');
@@ -53,7 +68,12 @@ function dentroDaAreaDeProjetos(p) {
 }
 
 // ─── camada 4: pastas que ninguém conecta por querer ─────────────────
+// Memorizada: são ~25 `realpathSync`, e desde que `motivoParaOperar` entrou no
+// caminho de toda requisição de projeto isso rodava a cada chamada. A lista
+// só depende da home e do disco, que não mudam com o processo no ar.
+let _proibidas = null;
 function pastasProibidas() {
+  if (_proibidas) return _proibidas;
   const casa = os.homedir();
   const lista = [
     '/', casa, path.join(casa, 'Desktop'), path.join(casa, 'Documents'),
@@ -63,14 +83,62 @@ function pastasProibidas() {
     '/usr', '/bin', '/sbin', '/etc', '/var', '/opt', '/root', '/home',
     'C:\\', 'C:\\Windows', 'C:\\Program Files', 'C:\\Program Files (x86)',
   ];
-  return lista.map(normalizar).filter(Boolean);
+  _proibidas = lista.map(normalizar).filter(Boolean);
+  return _proibidas;
 }
+
+// `dentro` É `pai` ou está abaixo dele. Por SEGMENTO, pelo mesmo motivo da
+// camada 1: prefixo cru aprovaria "/root/nascera-antigo" como "/root/nascera".
+function contem(pai, dentro) {
+  return dentro === pai || dentro.startsWith(pai + path.sep);
+}
+
+// ─── camada 4b: a instalação do próprio Nascera ──────────────────────
+// Escrito depois de outro acidente real: no servidor, a pasta da instalação
+// foi conectada como projeto. A lista de `pastasProibidas` recusava `/root`
+// por IGUALDADE e deixava `/root/nascera` passar. Aqui a pergunta é de
+// sobreposição: o alvo é a instalação, está dentro dela ou a contém?
+//
+// Uma exceção, e só ela: instalação que guarda os projetos numa subpasta
+// própria (`projetos/`, que o atualizador preserva). Ali a ÁREA fica dentro da
+// instalação e o que está dentro da área é projeto legítimo.
+function sobrepoeInstalacao(alvo) {
+  const inst = INSTALACAO && normalizar(INSTALACAO);
+  if (!inst) return false;
+  if (contem(alvo, inst)) return true;              // é a instalação, ou a contém
+  if (!contem(inst, alvo)) return false;            // não tem nada a ver com ela
+  const raiz = BASE && normalizar(BASE);
+  return !(raiz && contem(inst, raiz) && dentroDaAreaDeProjetos(alvo));
+}
+
+// Sistema e credenciais, por PREFIXO: `/etc/caddy` e `~/.ssh/qualquer-coisa`
+// são tão proibidos quanto `/etc` e `~/.ssh`. As duas formas de cada raiz
+// (crua e resolvida) porque no macOS `/etc` é link para `/private/etc`, e um
+// alvo que ainda não existe não é resolvido por `normalizar`.
+const RAIZES_DE_SISTEMA = ['/etc', '/usr', '/bin', '/sbin', '/boot', '/proc', '/sys', '/dev', 'C:\\Windows'];
+// Em qualquer home, não só na de quem roda o servidor.
+const PASTAS_DE_CREDENCIAL = new Set(['.ssh', '.gnupg', '.aws', '.pm2', '.claude', '.config']);
+
+let _raizesDeSistema = null;
+function ehSistemaOuCredencial(alvo) {
+  if (!_raizesDeSistema) {
+    _raizesDeSistema = [...new Set(RAIZES_DE_SISTEMA.flatMap((r) => [path.resolve(r), normalizar(r)]))];
+  }
+  if (_raizesDeSistema.some((r) => contem(r, alvo))) return true;
+  return alvo.split(path.sep).some((seg) => PASTAS_DE_CREDENCIAL.has(seg));
+}
+
+const MOTIVO_INSTALACAO = 'Esta pasta é a instalação do próprio Nascera (ou fica dentro dela, ou a contém). Um projeto aqui daria ao motor de IA acesso ao código do produto.';
+const MOTIVO_SISTEMA = 'Esta é uma pasta do sistema ou de credenciais. Ela não pode ser usada como projeto.';
 
 // Devolve o MOTIVO da recusa, ou null se a pasta pode ser conectada.
 // Texto em português porque vai direto para a tela.
 function motivoParaRecusar(p) {
   const alvo = normalizar(p);
   if (!alvo) return 'Caminho inválido.';
+
+  if (sobrepoeInstalacao(alvo)) return MOTIVO_INSTALACAO;
+  if (ehSistemaOuCredencial(alvo)) return MOTIVO_SISTEMA;
 
   if (pastasProibidas().includes(alvo)) {
     return 'Esta é uma pasta do sistema ou a sua pasta pessoal. Conectar uma pasta dessas coloca tudo que existe dentro dela sob risco de exclusão. Escolha uma subpasta específica do seu projeto.';
@@ -84,6 +152,30 @@ function motivoParaRecusar(p) {
   const raiz = normalizar(base());
   if (raiz && (alvo === raiz || raiz.startsWith(alvo + path.sep))) {
     return 'Esta pasta contém a própria área de projetos do Nascera. Escolha uma pasta de dentro dela.';
+  }
+  if (RESTRITO && !dentroDaAreaDeProjetos(alvo)) {
+    return 'Neste servidor só é possível conectar pastas de dentro da área de projetos do Nascera.';
+  }
+  return null;
+}
+
+// Pode o Nascera TRABALHAR nesta pasta (abrir o motor, subir dev server,
+// mostrar no editor)? É a pergunta para projeto que JÁ EXISTE no cadastro —
+// inclusive o que foi conectado antes de a regra acima existir. Recusar só na
+// hora de conectar deixaria o registro ruim funcionando para sempre.
+//
+// `RESTRITO` fica de fora de propósito: ele fecha vínculo NOVO. Um cliente que
+// já tinha uma pasta legítima fora da área não pode perder o projeto numa
+// atualização. E não lança sem `configurar()`: quem chama está no caminho
+// quente do motor, e ali um throw derrubaria o chat em vez de proteger nada.
+function motivoParaOperar(p) {
+  const alvo = normalizar(p);
+  if (!alvo) return 'Caminho inválido.';
+  if (sobrepoeInstalacao(alvo)) return MOTIVO_INSTALACAO;
+  if (BASE && dentroDaAreaDeProjetos(alvo)) return null;
+  if (ehSistemaOuCredencial(alvo)) return MOTIVO_SISTEMA;
+  if (pastasProibidas().includes(alvo) || path.dirname(alvo) === alvo) {
+    return 'Esta é uma pasta do sistema ou a pasta pessoal. Ela não pode ser usada como projeto.';
   }
   return null;
 }
@@ -282,6 +374,12 @@ function apagarComSeguranca(p, motivo, opcoes) {
     logger.error('[seguranca] RECUSADO apagar fora da área de projetos:', alvo, '|', motivo || '');
     return { ok: false, erro: 'Fora da área de projetos — nada foi apagado.', recusado: true };
   }
+  // Instalação dentro da área (PROJECTS_BASE apontando para a pasta-mãe dela):
+  // estar "dentro da área" não basta para mandar o próprio produto à lixeira.
+  if (sobrepoeInstalacao(alvo)) {
+    logger.error('[seguranca] RECUSADO apagar a instalação do Nascera:', alvo, '|', motivo || '');
+    return { ok: false, erro: 'Esta é a instalação do Nascera — nada foi apagado.', recusado: true };
+  }
   const r = mandarParaLixeiraDoSistema(alvo, opcoes);
   // `metodo` no log porque num chamado de suporte a primeira pergunta é onde o
   // item foi parar: lixeira do SO, quarentena do Nascera ou cópia entre volumes.
@@ -290,7 +388,7 @@ function apagarComSeguranca(p, motivo, opcoes) {
 }
 
 module.exports = {
-  configurar, normalizar, dentroDaAreaDeProjetos, motivoParaRecusar,
+  configurar, restrito, normalizar, dentroDaAreaDeProjetos, motivoParaRecusar, motivoParaOperar,
   medir, formatarTamanho, mandarParaLixeiraDoSistema, apagarComSeguranca,
   pastasProibidas, lixeiraDoSistema, lixeiraDoNascera,
 };

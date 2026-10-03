@@ -36,6 +36,7 @@
 import { EventEmitter } from 'node:events';
 import { spawn } from 'node:child_process';
 import crypto from 'node:crypto';
+import so from '../servicos/so.js';
 
 // Os mesmos nomes de modo do NASCERA, traduzidos para o que o Codex entende.
 // 'turbo' e 'bypass' liberam tudo porque é o que o cliente espera do NASCERA:
@@ -167,7 +168,7 @@ export class CodexSession extends EventEmitter {
 
     const opcoes = {
       command: this.comando, args, cwd: this.cwd,
-      env: { ...process.env, ...this.env },
+      env: { ...so.ambienteDoMotor(), ...this.env },   // sem os segredos do servidor
     };
     // Mesmo cofre do outro motor: se o servidor passou um embrulho de
     // spawn, o Codex roda dentro dele também.

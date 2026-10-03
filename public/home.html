@@ -2052,6 +2052,7 @@ async function loadFolders(browsePath) {
     const res = await fetch(`/api/vps-folders?path=${encodeURIComponent(browsePath)}`, { headers });
     if (!res.ok) throw new Error('Failed');
     const data = await res.json();
+    if (data.base) { currentBrowsePath=data.base; pathEl.textContent=data.base; }
     if (!data.folders.length) { listEl.innerHTML=`<div class="p-8 text-center"><p class="text-xs" style="color:rgba(255,255,255,.2)">Nenhuma pasta encontrada</p></div>`; return; }
     listEl.innerHTML='';
     data.folders.forEach(folder => {

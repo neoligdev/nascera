@@ -61,8 +61,11 @@ app.use('/:slug', (req, res, next) => {
   }
 
   // If project has proxyTarget, proxy the request
-  if (proj.proxyTarget) {
-    const proxy = getProxy(proj.proxyTarget, slug);
+  // Conferido no uso: `proxyTarget` vem do usuário e este processo lê o
+  // projects.json direto — registro antigo não passou pela validação da rota.
+  const alvoDoProxy = proj.proxyTarget && require('./servicos/so.js').alvoDeProxySeguro(proj.proxyTarget);
+  if (alvoDoProxy) {
+    const proxy = getProxy(alvoDoProxy, slug);
     return proxy(req, res, next);
   }
 

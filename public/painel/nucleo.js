@@ -318,7 +318,6 @@ var NAV = [
   { grupo: 'Sistema', itens: [
     { id: 'email',     t: 'E-mail',          icone: 'email' },
     { id: 'aparencia', t: 'Aparência',       icone: 'aparencia' },
-    { id: 'updates',   t: 'Atualizações',    icone: 'updates', selo: 'upd-selo' },
     { id: 'atividade', t: 'Atividade',       icone: 'atividade' },
     { id: 'servidor',  t: 'Servidor & Logs', icone: 'servidor' },
     { id: 'config',    t: 'Configurações',   icone: 'config' },
@@ -436,10 +435,6 @@ function iniciar() {
   document.getElementById('z-recarregar').onclick = recarregar;
   window.addEventListener('hashchange', function () { irPara(location.hash.slice(1), true); });
   irPara(location.hash.slice(1) || 'visao', true);
-  // selo de atualização disponível
-  api('/api/admin/update/check').then(function (d) {
-    if (d && d.temNova) { var s = document.getElementById('upd-selo'); if (s) s.classList.remove('z-oculto'); }
-  }).catch(function () {});
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar);
 else iniciar();

@@ -237,18 +237,6 @@ console.log('\nExposição de rede');
     'Sanitizar ".." dava string vazia, e path.join apontava para a pasta-mãe');
 }
 
-console.log('\nAtualizações');
-{
-  checar('módulo de assinatura presente', !!ler('assinatura.js'));
-  checar('atualizador verifica assinatura antes de aplicar',
-    /verificarArquivo\(pacote/.test(ler('atualizacao.js')),
-    'sha256 do mesmo servidor não protege contra servidor comprometido');
-  checar('assinatura usa Ed25519', /ed25519/i.test(ler('assinatura.js')));
-  avisar('chave pública de atualização configurada',
-    !!process.env.NASCERA_UPDATE_PUBKEY,
-    'Sem NASCERA_UPDATE_PUBKEY o cliente aceita pacote sem assinatura (compatibilidade)');
-}
-
 // ── 11. Credenciais de projeto remoto ────────────────────────────────
 // Achado da varredura interna (08/08/2026): era RCE autenticado.
 console.log('\nCredenciais remotas');

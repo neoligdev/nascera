@@ -11,7 +11,7 @@
 // {"type":"tool_use"} e stop_reason "tool_use" — que é do que o agente
 // depende para fazer qualquer coisa além de conversar.)
 //
-// O que NÃO muda: cobrança e telemetria continuam existindo, mas um turno
+// O que NÃO muda: a cobrança continua existindo, mas um turno
 // local não consome crédito — o custo é a máquina do cliente.
 // ═══════════════════════════════════════════════════════════════════════
 

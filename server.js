@@ -24,8 +24,6 @@ const axios = require('axios');
 const billing = require('./billing');
 const domains = require('./domains');
 const theme = require('./theme');
-const telemetry = require('./telemetry');
-const atualizacao = require('./atualizacao');
 const senhas = require('./senhas');
 const modelosLocais = require('./modelos-locais');
 const motores = require('./motores');
@@ -148,7 +146,9 @@ const BIND = process.env.NASCERA_BIND
 // Portão único de toda exclusão. Configurado aqui, antes de qualquer rota,
 // porque nenhuma delas pode apagar arquivo sem passar por ele.
 const seguranca = require('./caminhos-seguros.js');
-seguranca.configurar(PROJECTS_BASE);
+// `instalacao`: nenhum projeto pode apontar para a pasta do próprio produto.
+// `restrito`: no servidor só se conecta pasta de dentro da área de projetos.
+seguranca.configurar(PROJECTS_BASE, { instalacao: __dirname, restrito: !isDesktopLocal });
 // Escrita atômica + leitura que não mascara corrupção como vazio.
 const { gravaEstado, leEstado } = require('./estado-seguro.js');
 // Banco: só entra em ação com DATABASE_URL definida. Sem ela, `db.ATIVO` é
@@ -170,65 +170,14 @@ const INTEGRATIONS_FILE = path.join(__dirname, 'integrations.json');
 if (!fs.existsSync(PUBLISHED_BASE)) fs.mkdirSync(PUBLISHED_BASE, { recursive: true });
 if (!fs.existsSync(TRASH_DIR)) fs.mkdirSync(TRASH_DIR, { recursive: true });
 
-// ─── Telemetry Collector ───────────────────────────────────────────
-const LICENSE_SERVER_URL = process.env.LICENSE_SERVER_URL || 'https://api.nascera.ai';
-const TELEMETRY_BUFFER_FILE = path.join(__dirname, 'telemetry-buffer.json');
-let telemetryBuffer = [];
-
-// Traduz o usuário local (ex.: "maria.slv") para o email dele. É o que
-// o painel do titular usa para saber QUEM fez o quê — o nome de usuário só
-// existe dentro desta instalação e não diz nada lá fora.
-function emailDoUsuario(username) {
-  if (!username) return null;
-  try {
-    const u = (loadUsers() || {})[username];
-    return u && u.email ? String(u.email).trim().toLowerCase() : null;
-  } catch { return null; }
-}
-
-function trackEvent(eventType, data, userId, licenseId) {
-  // Espelho local para o painel admin (o buffer abaixo é despachado e se perde)
+// ─── Registro de atividade ───────────────────────────────────────────
+// Alimenta a seção "Atividade" do painel admin. É LOCAL: fica no
+// activity-log.json desta máquina e não é enviado a lugar nenhum. (O nome
+// `trackEvent` ficou dos tempos em que isto também despachava telemetria —
+// removida por completo.)
+function trackEvent(eventType, data, userId) {
   try { appendActivity({ type: eventType, user: userId || null, data: data || {}, at: new Date().toISOString() }); } catch {}
-  if (typeof loadNasceraConfig === 'function' && loadNasceraConfig().telemetryEnabled === false) return;
-  telemetryBuffer.push({
-    eventType, data: data || {},
-    // installId amarra o evento à MÁQUINA; actorEmail, à PESSOA. Sem os dois,
-    // o evento chega no servidor do titular sem dono e vira número solto.
-    installId: (() => { try { return telemetry.loadIdentity().installId; } catch { return null; } })(),
-    actorEmail: emailDoUsuario(userId) || (data && data.email) || null,
-    licenseId: licenseId || null,
-    deviceOs: process.platform,
-    appVersion: process.env.APP_VERSION || require('./package.json').version || '1.0.0',
-    timestamp: new Date().toISOString()
-  });
-  if (telemetryBuffer.length >= 50) flushTelemetry();
 }
-
-async function flushTelemetry() {
-  if (telemetryBuffer.length === 0) return;
-  const events = [...telemetryBuffer];
-  telemetryBuffer = [];
-  try {
-    await axios.post(`${LICENSE_SERVER_URL}/api/telemetry/batch`, { events }, { timeout: 10000 });
-  } catch {
-    try {
-      const existing = leEstado(TELEMETRY_BUFFER_FILE, { fallback: [] });
-      gravaEstado(TELEMETRY_BUFFER_FILE, [...existing, ...events].slice(-500), { pretty: 0 });
-    } catch {}
-  }
-}
-setInterval(flushTelemetry, 60000);
-setTimeout(async () => {
-  try {
-    if (fs.existsSync(TELEMETRY_BUFFER_FILE)) {
-      const buffered = JSON.parse(fs.readFileSync(TELEMETRY_BUFFER_FILE, 'utf8'));
-      if (buffered.length > 0) {
-        await axios.post(`${LICENSE_SERVER_URL}/api/telemetry/batch`, { events: buffered }, { timeout: 10000 });
-        fs.unlinkSync(TELEMETRY_BUFFER_FILE);
-      }
-    }
-  } catch {}
-}, 10000);
 
 // Users
 let USERS = {}; // In-memory cache, populated from users.json
@@ -1309,17 +1258,6 @@ require('./rotas/admin-modelos-locais.js').registrar(app, {
   adminMiddleware, loadNasceraConfig, saveNasceraConfig, getChannels: () => channels, appendActivity,
 });
 
-// Telemetry endpoint for frontend events
-app.post('/api/telemetry/event', (req, res) => {
-  const { eventType, data } = req.body;
-  if (eventType) trackEvent(eventType, data || {});
-  res.json({ ok: true });
-});
-
-// ─── Atualização da plataforma ───────────────────────────────────────
-// Só admin: um update reinicia o serviço e troca o código de todo mundo.
-// ─── Rotas admin de atualização (S4: extraídas) ───
-require('./rotas/admin-update.js').registrar(app, { adminMiddleware, appendActivity, trackEvent });
 
 // Download releases for VPS installation (no auth required)
 app.get('/api/download/release', (_req, res) => {
@@ -1389,19 +1327,27 @@ require('./rotas/projetos-crud.js').registrar(app, {
   authMiddleware, projectOr404, projetosDoUsuario, semSegredos, makeSlug,
   loadProjects, saveProjects, scaffoldFromTheme, initGit, normalizeBuildLevel,
   trackEvent, seguranca, domains, loadTrash, saveTrash, loadNasceraConfig,
-  PROJECTS_BASE, PUBLISHED_BASE, TRASH_DIR, THUMB_DIR, THEMES_BASE, billing,
+  PROJECTS_BASE, PUBLISHED_BASE, TRASH_DIR, THUMB_DIR, THEMES_BASE, billing, ehAdmin,
 });
 
 // List VPS folders
 app.get('/api/vps-folders', authMiddleware, (req, res) => {
   const base = req.query.path || PROJECTS_BASE;
-  const resolved = path.resolve(base);
-  // Allow browsing anywhere on local, restrict on VPS.
-  // BUGFIX: a detecção de desktop aqui era só pela env NASCERA_DESKTOP — no macOS/Windows
-  // local (env não setada) o picker abria em /Users e tomava 403 logo na primeira listagem.
-  const isDesktop = process.env.NASCERA_DESKTOP === 'true' || process.platform === 'darwin' || process.platform === 'win32';
-  if (!isDesktop && !resolved.startsWith(PROJECTS_BASE) && !resolved.startsWith('/root') && !resolved.startsWith('/home')) {
-    return res.status(403).json({ error: 'Acesso negado' });
+  let resolved = path.resolve(base);
+  // No desktop o picker navega o disco inteiro (a máquina é do dono). No
+  // servidor era `/root` e `/home` liberados para QUALQUER usuário logado — foi
+  // por aqui que a pasta da instalação apareceu como "projeto" conectável, e
+  // um cliente comum enxergava o nome das pastas dos outros. Agora: só admin,
+  // e só a área de projetos. Pedido de fora da área cai na raiz dela em vez de
+  // dar 403, porque a tela abre o picker pedindo `/root`.
+  if (seguranca.restrito()) {
+    if (!ehAdmin(req.user.user)) {
+      return res.status(403).json({ error: 'Conectar uma pasta do servidor é restrito a administradores.' });
+    }
+    const real = seguranca.normalizar(resolved);
+    if (real !== seguranca.normalizar(PROJECTS_BASE) && !seguranca.dentroDaAreaDeProjetos(real)) {
+      resolved = PROJECTS_BASE;
+    }
   }
   try {
     const entries = fs.readdirSync(resolved, { withFileTypes: true });
@@ -1619,8 +1565,7 @@ function saveNasceraConfig(cfg) {
   _cfgCache = null; _cfgMtime = 0;   // força releitura na próxima chamada
 }
 
-// Log de atividade local (o buffer de telemetria é despachado para o servidor
-// de licenças e se perde; o painel precisa de um histórico próprio)
+// Log de atividade local: o histórico que o painel admin mostra.
 const ACTIVITY_FILE = path.join(__dirname, 'activity-log.json');
 function appendActivity(entry) {
   try {
@@ -1844,6 +1789,17 @@ function projectOr404(req, res) {
     res.status(404).json({ error: 'Projeto não encontrado' });
     return null;
   }
+  // Projeto cuja pasta o Nascera não pode operar (a própria instalação, pasta
+  // de sistema): nenhuma rota trabalha nele — versão, publicação, preview,
+  // dev server. Só o DELETE passa, porque é ele que SOLTA o vínculo (pasta
+  // vinculada nunca é apagada), e sem ele o registro ruim ficaria para sempre.
+  if (proj.path && !proj.isRemote && req.method !== 'DELETE') {
+    const bloqueio = seguranca.motivoParaOperar(proj.path);
+    if (bloqueio) {
+      res.status(409).json({ error: bloqueio + ' Exclua este projeto para soltar o vínculo.', bloqueado: true });
+      return null;
+    }
+  }
   return proj;
 }
 
@@ -1864,7 +1820,7 @@ require('./rotas/admin-domains.js').registrar(app, { adminMiddleware, loadNascer
 // ─── Runtime de preview (S4-2: servicos/preview-runtime.js) ───
 const { generateProjectScreenshot, startDevServer, autoDetectPreview } = require('./servicos/preview-runtime.js').criar({
   RAIZ: __dirname, ticketDePreview, loadProjects, saveProjects, devServers: _devServers,
-  sshExec, senhaSshDoProjeto,
+  sshExec, senhaSshDoProjeto, vpsSpawnWrapper,
 });
 
 // API: Save project thumbnail (from frontend canvas capture)
@@ -2496,11 +2452,19 @@ function vpsSpawnWrapper(projectPath) {
     };
   }
 
-  // Sem cofre (dev, sessão sem projeto, bwrap ausente): mantém o
-  // comportamento antigo — usuário sem privilégio, sem isolamento de caminho.
+  // Sem cofre, FALHA FECHADA. Antes isto caía num `su claude-runner` sem
+  // isolamento de caminho — e como a pasta de TODO projeto pertence a esse
+  // mesmo usuário, o motor de um cliente lia e gravava nos projetos dos
+  // outros. Num servidor com vários clientes, "rodar sem cofre" não é modo
+  // degradado: é não ter isolamento. Só segue quem o admin desligou de
+  // propósito na configuração (`sandbox: "off"`), e isso vai gritando no log.
   if (cfgSandbox !== 'off') {
-    logger.warn('[cofre] rodando SEM isolamento de caminhos: ' + (cofre.motivo || 'sessão sem projeto'));
+    const motivo = cofre.ok ? 'a pasta da sessão não existe' : (cofre.motivo || 'indisponível');
+    logger.error('[cofre] RECUSADO rodar sem isolamento: ' + motivo);
+    throw new Error('O isolamento do motor (cofre) não está disponível neste servidor: ' + motivo +
+                    '. Sem ele nada roda aqui. Instale o bubblewrap (apt install bubblewrap) e reinicie o Nascera.');
   }
+  logger.warn('[cofre] DESLIGADO na configuração: rodando SEM isolamento de caminhos.');
   const esc = (s) => "'" + String(s).replace(/'/g, "'\\''") + "'";
   return (o) => {
     const envPairs = Object.entries({ ...o.env, HOME: RUNNER_HOME, USER: RUNNER_USER })
@@ -2509,6 +2473,21 @@ function vpsSpawnWrapper(projectPath) {
     const cmd = 'cd ' + esc(o.cwd || RUNNER_HOME) + ' && exec env ' + envPairs + ' ' + esc(o.command) + ' ' + (o.args || []).map(esc).join(' ');
     return spawn('su', ['-s', '/bin/bash', '-c', cmd, RUNNER_USER], { stdio: ['pipe', 'pipe', 'pipe'] });
   };
+}
+
+// Sessão SEM projeto (chat aberto fora de um projeto). No servidor ela rodava
+// com diretório `/root` — e o cofre, que monta com escrita "a pasta da sessão",
+// montava o `/root` inteiro: a instalação, a área de projetos de todos os
+// clientes, tudo ao alcance de quem abrisse um chat sem projeto. Agora cada
+// usuário tem uma pasta vazia só dele, dentro da área (nome com ponto: não
+// aparece como projeto nem como pasta conectável).
+function pastaDeSessaoSemProjeto(user) {
+  const nome = String(user || 'anonimo').replace(/[^a-zA-Z0-9_-]/g, '_');
+  const dir = path.join(PROJECTS_BASE, '.sessoes', nome);
+  fs.mkdirSync(dir, { recursive: true });
+  try { require('child_process').execFileSync('chown', [RUNNER_USER + ':' + RUNNER_USER, dir], { timeout: 5000 }); }
+  catch (e) { logger.warn('[cofre] chown da pasta de sessão falhou: ' + e.message); }
+  return dir;
 }
 
 function sessionKeyFor(projectId, user) {
@@ -2537,7 +2516,7 @@ const { bindChannel, ensureChannel } = require('./servicos/motor-canal.js').cria
   autoCommitAsync, atualizarProjeto, getCurrentVersion, generateProjectScreenshot,
   getEngine, sessionKeyFor, isDesktopLocal, escreverFerramentaDeImagem, memoriaProjeto,
   PROJECTS_BASE, normalizeBuildLevel, loadNasceraConfig, modelosLocais, motores, vpsSpawnWrapper, BUILD_LEVELS,
-  segredos, writeCavemanSkill, planejamentoAutomatico, motor2,
+  segredos, writeCavemanSkill, planejamentoAutomatico, motor2, pastaDeSessaoSemProjeto,
   classificadorOperacao: require('./servicos/classificador-operacao.js'),
   // AD.1: credencial de IA própria do dono (ou null → credencial da instalação)
   credencialIaPropria: (username) => require('./rotas/ia-propria.js')
@@ -2825,34 +2804,6 @@ iniciarEstadoDb().then(() => server.listen(PORT, BIND, () => {
   };
   setTimeout(revalidar, 60000);
   setInterval(revalidar, 6 * 60 * 60 * 1000).unref();
-
-  // ─── Licença / telemetria: ativação + heartbeat ───────────────────
-  // Registra no servidor de licenças que esta instalação subiu (prova de uso)
-  // e mantém um pulso de vida. Respeita a flag telemetryEnabled do painel.
-  const getTelemetryContext = () => {
-    let primaryDomain = null, users = null, projects = null;
-    let adminEmail = null, adminEmails = [];
-    try { primaryDomain = (domains.listAll().find(d => d.status === 'ativo') || {}).domain || null; } catch {}
-    try {
-      const todos = loadUsers() || {};
-      users = Object.keys(todos).length;
-      // Quem responde por esta instalação. O primeiro admin criado (o do setup)
-      // é o dono; os demais vão junto para o titular saber quem mais manda aqui.
-      adminEmails = Object.values(todos)
-        .filter(u => u && u.role === 'admin' && u.email)
-        .sort((a, b) => String(a.createdAt || '').localeCompare(String(b.createdAt || '')))
-        .map(u => String(u.email).trim().toLowerCase());
-      adminEmail = adminEmails[0] || null;
-    } catch {}
-    try { projects = (loadProjects() || []).length; } catch {}
-    return { primaryDomain, users, projects, adminEmail, adminEmails };
-  };
-  if (loadNasceraConfig().telemetryEnabled !== false) {
-    try {
-      const installId = telemetry.init(getTelemetryContext);
-      logger.info(`  ├─ Licença: telemetria ativa (install ${String(installId).slice(0, 8)}…)`);
-    } catch (e) { logger.error('[telemetria] falha ao iniciar:', e.message); }
-  }
 }));
 
 }

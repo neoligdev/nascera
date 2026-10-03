@@ -131,11 +131,6 @@
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="19" cy="13" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="10" cy="20" r="2.5"/><path d="M12 2a10 10 0 100 20c1 0 1.5-.7 1.5-1.5 0-1.5-1-1.5-1-3 0-1 .8-1.5 2-1.5h2A5.5 5.5 0 0022 10c0-4.4-4.5-8-10-8z"/></svg>
         <span>Aparência</span>
       </a>
-      <a class="sidebar-link" data-sec="update" onclick="showSection('update')">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M21 2v6h-6M3 22v-6h6"/><path d="M3.5 9a9 9 0 0114.9-3.4L21 8M20.5 15a9 9 0 01-14.9 3.4L3 16"/></svg>
-        <span>Atualizações</span>
-        <span id="upd-selo" class="chip chip-purple" style="display:none;margin-left:auto;font-size:9.5px;padding:1px 6px">novo</span>
-      </a>
       <a class="sidebar-link" data-sec="system" onclick="showSection('system')">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
         <span>Servidor & Logs</span>
@@ -605,22 +600,6 @@
       </div>
     </div>
 
-    <!-- ═══ ATUALIZAÇÕES ═══ -->
-    <div class="section fade-in" id="sec-update">
-      <div class="page-badge">Sistema</div>
-      <h1 class="page-title">Atualizações</h1>
-      <p class="page-sub">Sua plataforma se atualiza sozinha a partir do servidor do Nascera. Seus usuários, projetos e configurações não são tocados.</p>
-      <div class="card" style="margin-bottom:14px">
-        <div id="upd-caixa" style="min-height:110px">
-          <div style="color:rgba(255,255,255,.4);font-size:13px">Consultando o servidor…</div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="stat-label" style="margin-bottom:10px">Histórico</div>
-        <div id="upd-historico"></div>
-      </div>
-    </div>
-
     <!-- ═══ SERVIDOR & LOGS ═══ -->
     <div class="section fade-in" id="sec-system">
       <div class="page-badge">Infra</div>
@@ -701,10 +680,6 @@
             <label class="inp-label">Retenção da lixeira (dias)</label>
             <input class="inp" id="cfg-trash" type="number" min="1" max="90"/>
           </div>
-          <div style="display:flex;align-items:center;gap:10px">
-            <input type="checkbox" id="cfg-telemetry" style="width:15px;height:15px;accent-color:var(--zh-accent)"/>
-            <label for="cfg-telemetry" style="font-size:12.5px;color:rgba(255,255,255,.6);cursor:pointer">Enviar telemetria ao servidor de licenças</label>
-          </div>
           <button class="btn btn-primary" onclick="saveConfig()" id="cfg-save">Salvar configurações</button>
           <p id="cfg-status" style="font-size:11px;color:rgba(74,222,128,.7);display:none;margin:0">Salvo!</p>
         </div>
@@ -775,7 +750,7 @@ function showSection(sec) {
   document.querySelectorAll('.section').forEach(function(el) { el.classList.remove('active'); });
   document.querySelectorAll('.sidebar-link[data-sec]').forEach(function(el) { el.classList.toggle('active', el.getAttribute('data-sec') === sec); });
   document.getElementById('sec-' + sec).classList.add('active');
-  var loaders = { overview: loadOverview, users: loadUsers, projects: loadProjects, engine: loadEngine, billing: loadBilling, theme: loadTheme, domains: loadDomains, system: loadSystem, activity: loadActivity, config: loadConfig, update: loadUpdate, email: loadEmail };
+  var loaders = { overview: loadOverview, users: loadUsers, projects: loadProjects, engine: loadEngine, billing: loadBilling, theme: loadTheme, domains: loadDomains, system: loadSystem, activity: loadActivity, config: loadConfig, email: loadEmail };
   if (loaders[sec]) loaders[sec]();
 }
 
@@ -877,93 +852,6 @@ function previewTemplate() {
   });
 }
 
-// ── Atualizações ──────────────────────────────────────────────────────
-var _upd = null;
-function loadUpdate() {
-  var cx = document.getElementById('upd-caixa');
-  cx.innerHTML = '<div style="color:rgba(255,255,255,.4);font-size:13px">Consultando o servidor…</div>';
-  api('/api/admin/update/status').then(function(s) { renderHistorico(s.historico || []); });
-  api('/api/admin/update/check').then(function(d) {
-    _upd = d;
-    if (d.erro || d.ok === false) {
-      cx.innerHTML = '<div class="stat-label" style="margin-bottom:6px">Versão instalada</div>'
-        + '<div style="font-size:22px;font-weight:700">' + esc(d.versaoAtual || '—') + '</div>'
-        + '<p style="color:rgba(248,113,113,.8);font-size:12.5px;margin:12px 0 0">' + esc(d.erro || 'Não foi possível consultar o servidor de atualizações.') + '</p>'
-        + '<button class="btn btn-ghost" style="margin-top:12px" onclick="loadUpdate()">Tentar de novo</button>';
-      return;
-    }
-    document.getElementById('upd-selo').style.display = d.temAtualizacao ? 'inline-block' : 'none';
-    if (!d.temAtualizacao) {
-      cx.innerHTML = '<div style="display:flex;align-items:center;gap:14px">'
-        + '<div style="width:38px;height:38px;border-radius:50%;background:rgba(74,222,128,.12);display:flex;align-items:center;justify-content:center;font-size:19px">✓</div>'
-        + '<div><div style="font-size:15px;font-weight:600">Tudo em dia</div>'
-        + '<div style="color:rgba(255,255,255,.4);font-size:12.5px">Você está na versão <b>' + esc(d.versaoAtual) + '</b>, a mais recente publicada.</div></div></div>'
-        + '<button class="btn btn-ghost" style="margin-top:14px" onclick="loadUpdate()">Verificar de novo</button>';
-      return;
-    }
-    cx.innerHTML = '<div style="display:flex;align-items:center;gap:14px;margin-bottom:14px">'
-      + '<div style="width:38px;height:38px;border-radius:50%;background:rgba(var(--zh-accent-rgb),.16);display:flex;align-items:center;justify-content:center;font-size:18px">↑</div>'
-      + '<div><div style="font-size:15px;font-weight:600">Versão ' + esc(d.versaoNova) + ' disponível</div>'
-      + '<div style="color:rgba(255,255,255,.4);font-size:12.5px">Você está na ' + esc(d.versaoAtual)
-      + (d.tamanho ? ' · pacote de ' + (d.tamanho / 1048576).toFixed(1) + ' MB' : '') + '</div></div></div>'
-      + (d.notas ? '<div style="background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px 14px;font-size:12.5px;color:rgba(255,255,255,.68);white-space:pre-wrap;margin-bottom:14px">' + esc(d.notas) + '</div>' : '')
-      + '<button class="btn btn-primary" onclick="aplicarUpdate()">Atualizar agora</button>'
-      + '<p style="font-size:11px;color:rgba(255,255,255,.3);margin:10px 0 0">O Nascera sai do ar por alguns segundos ao reiniciar. Seus usuários, projetos, cobranças, domínios e aparência ficam como estão.</p>';
-  });
-}
-
-function aplicarUpdate() {
-  if (!confirm('Atualizar o Nascera para a versão ' + _upd.versaoNova + '?\n\nO sistema reinicia sozinho ao terminar. Um backup é feito antes.')) return;
-  var cx = document.getElementById('upd-caixa');
-  cx.innerHTML = '<div class="stat-label" style="margin-bottom:8px">Atualizando</div><div id="upd-etapa" style="font-size:14px">iniciando…</div>'
-    + '<div style="height:4px;border-radius:4px;background:rgba(255,255,255,.06);margin-top:14px;overflow:hidden"><div id="upd-barra" style="height:100%;width:8%;background:var(--zh-accent);transition:width .5s"></div></div>';
-  var etapas = { verificando: 10, baixando: 35, conferindo: 55, extraindo: 65, 'salvando backup': 75, aplicando: 85, 'instalando dependências': 93, reiniciando: 100 };
-  var acompanhar = setInterval(function() {
-    api('/api/admin/update/status').then(function(s) {
-      if (s.etapa) {
-        document.getElementById('upd-etapa').textContent = s.etapa;
-        document.getElementById('upd-barra').style.width = (etapas[s.etapa] || 20) + '%';
-      }
-      if (s.erro) { clearInterval(acompanhar); cx.innerHTML = '<p style="color:rgba(248,113,113,.85);font-size:13px">' + esc(s.erro) + '</p><button class="btn btn-ghost" style="margin-top:12px" onclick="loadUpdate()">Voltar</button>'; }
-      else if (s.concluido) { clearInterval(acompanhar); esperarVoltar(); }
-    }).catch(function() { /* o servidor está reiniciando — normal */ });
-  }, 1500);
-
-  api('/api/admin/update/apply', { method: 'POST' }).then(function(r) {
-    if (r && r.error) { clearInterval(acompanhar); cx.innerHTML = '<p style="color:rgba(248,113,113,.85);font-size:13px">' + esc(r.error) + '</p><button class="btn btn-ghost" style="margin-top:12px" onclick="loadUpdate()">Voltar</button>'; }
-  }).catch(function() { /* conexão cai no restart — esperado */ });
-}
-
-// Fica batendo até o servidor voltar de pé com o código novo.
-function esperarVoltar() {
-  var cx = document.getElementById('upd-caixa');
-  cx.innerHTML = '<div class="stat-label" style="margin-bottom:8px">Quase lá</div><div style="font-size:14px">Reiniciando o Nascera…</div>';
-  var tentativas = 0;
-  var bate = setInterval(function() {
-    tentativas++;
-    fetch('/api/health', { cache: 'no-store' }).then(function(r) {
-      if (!r.ok) return;
-      clearInterval(bate);
-      cx.innerHTML = '<div style="font-size:15px;font-weight:600;margin-bottom:6px">Atualizado ✓</div>'
-        + '<div style="color:rgba(255,255,255,.45);font-size:12.5px">Recarregando o painel…</div>';
-      setTimeout(function() { location.reload(); }, 1500);
-    }).catch(function() {});
-    if (tentativas > 60) {
-      clearInterval(bate);
-      cx.innerHTML = '<p style="font-size:13px;color:rgba(251,191,36,.85)">O Nascera está demorando a voltar. Se ele não subir sozinho, veja os logs do servidor — o backup da versão anterior está na pasta <code>.backups</code>.</p>';
-    }
-  }, 2000);
-}
-
-function renderHistorico(h) {
-  var el = document.getElementById('upd-historico');
-  if (!h || !h.length) { el.innerHTML = '<p style="color:rgba(255,255,255,.3);font-size:12.5px;margin:0">Nenhuma atualização aplicada por aqui ainda.</p>'; return; }
-  el.innerHTML = h.map(function(x) {
-    return '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:12.5px">'
-      + '<span>Versão <b>' + esc(x.versao) + '</b> <span style="color:rgba(255,255,255,.3)">· ' + (x.arquivos || 0) + ' itens</span></span>'
-      + '<span style="color:rgba(255,255,255,.35)">' + fmtData(x.em) + '</span></div>';
-  }).join('');
-}
 function fmtData(iso) { try { return new Date(iso).toLocaleString('pt-BR'); } catch { return '—'; } }
 
 // ── Visão geral ──
@@ -2307,7 +2195,6 @@ function loadConfig() {
     document.getElementById('cfg-model').value = c.defaultBuildModel || '';
     document.getElementById('cfg-level').value = String(c.defaultBuildLevel || 3);
     document.getElementById('cfg-trash').value = c.trashRetentionDays || 7;
-    document.getElementById('cfg-telemetry').checked = c.telemetryEnabled !== false;
   });
 }
 function saveConfig() {
@@ -2315,7 +2202,6 @@ function saveConfig() {
     defaultBuildModel: document.getElementById('cfg-model').value,
     defaultBuildLevel: parseInt(document.getElementById('cfg-level').value, 10),
     trashRetentionDays: parseInt(document.getElementById('cfg-trash').value, 10),
-    telemetryEnabled: document.getElementById('cfg-telemetry').checked,
   };
   api('/api/admin/config', { method: 'PUT', body: JSON.stringify(body) }).then(function(r) {
     if (r.ok) {

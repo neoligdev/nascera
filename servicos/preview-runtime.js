@@ -17,8 +17,14 @@ const { Semaphore } = require('async-mutex');
 const so = require('./so.js');
 const { spawn } = require('child_process');
 
+// Ambiente do dev server: código do CLIENTE. Não leva credencial nenhuma da
+// instalação (ver `ambienteDeCliente`). `env` só é parâmetro para o teste.
+function ambienteDoDevServer(porta, env) {
+  return { ...so.ambienteDeCliente(env), PORT: String(porta), BROWSER: 'none', NO_COLOR: '1' };
+}
+
 function criar(deps) {
-  const { RAIZ, ticketDePreview, loadProjects, saveProjects, devServers, sshExec, senhaSshDoProjeto } = deps;
+  const { RAIZ, ticketDePreview, loadProjects, saveProjects, devServers, sshExec, senhaSshDoProjeto, vpsSpawnWrapper } = deps;
   const chromeSem = new Semaphore(Math.max(1, Number(process.env.NASCERA_MAX_CHROME) || 2));
 
   async function generateProjectScreenshot(proj) {
@@ -105,6 +111,14 @@ function criar(deps) {
   async function startDevServer(proj, scriptName) {
     if (devServers[proj.id]) return devServers[proj.id].port; // Already running
 
+    // `npm run dev` executa o que estiver no package.json da pasta. Na pasta da
+    // instalação isso subiu uma segunda cópia do próprio servidor.
+    const bloqueio = require('../caminhos-seguros.js').motivoParaOperar(proj.path);
+    if (bloqueio) {
+      logger.error(`[DEV-SERVER] RECUSADO para ${proj.name}: ${bloqueio}`);
+      return null;
+    }
+
     const projPath = proj.path;
     const portCandidate = 3000 + Math.floor(Math.random() * 1000);
 
@@ -114,18 +128,29 @@ function criar(deps) {
       const hasPnpm = fs.existsSync(path.join(projPath, 'pnpm-lock.yaml'));
       const runner = hasPnpm ? 'pnpm' : hasYarn ? 'yarn' : 'npm';
 
-      const isDesktop = process.env.NASCERA_DESKTOP === 'true' || process.platform === 'darwin' || process.platform === 'win32';
-      const env = { ...process.env, PORT: String(portCandidate), BROWSER: 'none', NO_COLOR: '1' };
+      const env = ambienteDoDevServer(portCandidate);
 
       logger.info(`[DEV-SERVER] Starting ${runner} run ${scriptName} for ${proj.name} on port ${portCandidate}`);
 
-      const proc = spawn(runner, ['run', scriptName], {
-        cwd: projPath,
-        stdio: ['ignore', 'pipe', 'pipe'],
-        env: env,
-        shell: true,
-        detached: false,
-      });
+      // O `package.json` é do cliente: `npm run dev` executa o que ele (ou a IA
+      // dele) escreveu. No servidor isso rodava como ROOT, fora do cofre e com
+      // o ambiente inteiro — qualquer cliente virava dono da máquina. Agora
+      // passa pelo MESMO embrulho do motor: cofre bwrap, usuário sem
+      // privilégio, só a pasta do projeto gravável. `vpsSpawnWrapper` devolve
+      // null no desktop (a máquina é do dono) e LANÇA se o servidor estiver
+      // sem cofre — o catch abaixo transforma isso em "preview indisponível".
+      const embrulho = vpsSpawnWrapper ? vpsSpawnWrapper(projPath) : null;
+      const proc = embrulho
+        ? embrulho({ command: runner, args: ['run', scriptName], cwd: projPath, env })
+        : spawn(runner, ['run', scriptName], {
+            cwd: projPath,
+            stdio: ['ignore', 'pipe', 'pipe'],
+            env: env,
+            shell: true,
+            detached: false,
+          });
+      // O embrulho abre stdin como pipe; fecha para ficar igual ao 'ignore'.
+      if (embrulho && proc.stdin) { try { proc.stdin.end(); } catch {} }
 
       devServers[proj.id] = { proc, port: portCandidate };
 
@@ -279,4 +304,4 @@ function criar(deps) {
   return { generateProjectScreenshot, startDevServer, autoDetectPreview };
 }
 
-module.exports = { criar };
+module.exports = { criar, ambienteDoDevServer };

@@ -34,7 +34,7 @@ const crypto = require('crypto');
  * @param {(themeId: string, projectPath: string) => void} deps.scaffoldFromTheme - Copia o tema base para a pasta do projeto.
  * @param {(projectPath: string) => void} deps.initGit - Inicializa o repositório git do projeto.
  * @param {(v: unknown) => string} deps.normalizeBuildLevel - Normaliza o nível de build para um valor válido.
- * @param {(nome: string, dados?: object) => void} deps.trackEvent - Emite um evento de telemetria.
+ * @param {(nome: string, dados?: object) => void} deps.trackEvent - Registra um evento na atividade local do painel.
  * @param {object} deps.seguranca - Módulo `caminhos-seguros`: único portão de exclusão.
  * @param {object} deps.domains - Módulo de domínios (limpeza ao excluir o projeto).
  * @param {() => object[]} deps.loadTrash - Lê a lixeira.
@@ -52,7 +52,7 @@ function registrar(app, deps) {
     authMiddleware, projectOr404, projetosDoUsuario, semSegredos, makeSlug,
     loadProjects, saveProjects, scaffoldFromTheme, initGit, normalizeBuildLevel,
     trackEvent, seguranca, domains, loadTrash, saveTrash, loadNasceraConfig,
-    PROJECTS_BASE, PUBLISHED_BASE, TRASH_DIR, THUMB_DIR, THEMES_BASE, billing,
+    PROJECTS_BASE, PUBLISHED_BASE, TRASH_DIR, THUMB_DIR, THEMES_BASE, billing, ehAdmin,
   } = deps;
 
   app.get('/api/projects', authMiddleware, (req, res) => {
@@ -73,6 +73,17 @@ function registrar(app, deps) {
       if (max != null && projetosDoUsuario(req.user.user).length >= max) {
         return res.status(403).json({ error: `Seu plano permite até ${max} projeto(s). Faça upgrade para criar mais.` });
       }
+    }
+
+    // Servidor: conectar pasta que já existe é coisa de admin — é ele quem tem
+    // a máquina na mão. Usuário comum só reaproveita a pasta de um projeto
+    // DELE (é o que o botão "duplicar" envia); antes, bastava estar logado para
+    // apontar um projeto para qualquer pasta do servidor. Papel AO VIVO, não o
+    // do token, pelo mesmo motivo do adminMiddleware.
+    if (folderPath && !createNew && seguranca.restrito() && !(ehAdmin && ehAdmin(req.user.user))) {
+      const pedido = seguranca.normalizar(folderPath);
+      const eDele = projetosDoUsuario(req.user.user).some(p => p.path && seguranca.normalizar(p.path) === pedido);
+      if (!eDele) return res.status(403).json({ error: 'Conectar uma pasta do servidor é restrito a administradores.' });
     }
 
     const slug = makeSlug(name);
@@ -111,8 +122,10 @@ function registrar(app, deps) {
     //   · o projeto guarda a ORIGEM, e pasta que o Nascera não criou nunca é
     //     apagada por ele — no máximo, desconectada.
     const proprio = !!(createNew && projectPath && seguranca.dentroDaAreaDeProjetos(projectPath));
-    if (!proprio && projectPath) {
-      const recusa = seguranca.motivoParaRecusar(projectPath);
+    //   · a instalação do próprio Nascera nunca vira projeto — nem conectada,
+    //     nem criada por um nome que caia em cima dela.
+    if (projectPath) {
+      const recusa = proprio ? seguranca.motivoParaOperar(projectPath) : seguranca.motivoParaRecusar(projectPath);
       if (recusa) return res.status(400).json({ error: recusa });
     }
 
@@ -243,7 +256,12 @@ function registrar(app, deps) {
     if (process.platform === 'linux' && process.env.NASCERA_DESKTOP !== 'true') {
       try {
         const cp = require('child_process');
-        if (projectPath) cp.execFileSync('chown', ['-R', 'claude-runner:claude-runner', projectPath]);
+        // Só dentro da área de projetos. `chown -R` numa pasta vinculada de
+        // fora entregava ao usuário do motor o que houvesse lá — foi assim que
+        // o `.env` e o `users.json` da instalação mudaram de dono.
+        if (projectPath && seguranca.dentroDaAreaDeProjetos(projectPath)) {
+          cp.execFileSync('chown', ['-R', 'claude-runner:claude-runner', projectPath]);
+        }
         cp.execFileSync('chown', ['-R', 'claude-runner:claude-runner', publishedPath]);
       } catch (e) { logger.error('[projects] chown claude-runner falhou:', e.message); }
     }
@@ -263,8 +281,18 @@ function registrar(app, deps) {
     if (!alvo) return res.status(404).json({ error: 'Projeto nao encontrado' });
     if (req.body.sessionId) alvo.sessionId = req.body.sessionId;
     if (req.body.name) alvo.name = req.body.name.trim();
+    // Os dois viram alvo de proxy do preview: http local só se for dev server.
+    const so = require('../servicos/so.js');
+    for (const campo of ['previewUrl', 'proxyTarget']) {
+      const v = req.body[campo];
+      if (!v) continue;
+      const local = campo === 'proxyTarget' || /^http:\/\//i.test(v);
+      if (local && !so.alvoDeProxySeguro(v)) {
+        return res.status(400).json({ error: 'Endereço inválido em ' + campo + '. Use http://localhost:<porta> de um servidor de desenvolvimento.' });
+      }
+    }
     if (req.body.previewUrl !== undefined) alvo.previewUrl = req.body.previewUrl || null;
-    if (req.body.proxyTarget !== undefined) alvo.proxyTarget = req.body.proxyTarget || null;
+    if (req.body.proxyTarget !== undefined) alvo.proxyTarget = req.body.proxyTarget ? so.alvoDeProxySeguro(req.body.proxyTarget) : null;
     if (req.body.favorite !== undefined) alvo.favorite = !!req.body.favorite;
     saveProjects(projects);
     res.json(alvo);

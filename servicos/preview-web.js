@@ -53,6 +53,11 @@ function registrar(app, deps) {
     if (!doTicket || !podeAcessarProjeto(proj, doTicket)) {
       return res.status(404).send('Projeto não encontrado');
     }
+    // Não serve arquivo de pasta que não pode ser projeto (a instalação: seria
+    // entregar server.js e .env pelo preview).
+    if (require('../caminhos-seguros.js').motivoParaOperar(proj.path)) {
+      return res.status(404).send('Projeto não encontrado');
+    }
 
     // Defesa em profundidade para a falha 2: mesmo servido daqui, o conteúdo
     // não pode ser enquadrado por outro site nem adivinhado por MIME.
@@ -72,8 +77,11 @@ function registrar(app, deps) {
     }
 
     // If previewUrl points to a localhost dev server
-    if (proj.previewUrl && proj.previewUrl.startsWith('http://localhost')) {
-      const targetUrl = proj.previewUrl + req.path + (req._parsedUrl.search || '');
+    // Conferido NO USO também: o registro pode ser anterior à validação.
+    const alvoLocal = proj.previewUrl && /^http:\/\//i.test(proj.previewUrl)
+      ? require('./so.js').alvoDeProxySeguro(proj.previewUrl) : null;
+    if (alvoLocal) {
+      const targetUrl = alvoLocal + req.path + (req._parsedUrl.search || '');
       return require('http').get(targetUrl, (proxyRes) => {
         res.writeHead(proxyRes.statusCode, proxyRes.headers);
         proxyRes.pipe(res);

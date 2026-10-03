@@ -288,7 +288,7 @@ function abaDados(c) {
       C.campo({ id: 'fd-papel', rotulo: 'Papel', tipo: 'select', valor: c.role, opcoes: [
         { v: 'user', t: 'Cliente' }, { v: 'admin', t: 'Administrador' },
       ], ajuda: 'Admin enxerga este painel inteiro. Dê com parcimônia.' }) +
-      C.campo({ id: 'fd-senha', rotulo: 'Nova senha', tipo: 'password', valor: '', dica: 'deixe em branco para manter', ajuda: 'Mínimo de 6 caracteres. Prefira mandar o link de acesso: assim só o cliente sabe a senha.' }) +
+      C.campo({ id: 'fd-senha', rotulo: 'Nova senha', tipo: 'password', valor: '', dica: 'deixe em branco para manter', ajuda: 'Mínimo de 10 caracteres. Prefira mandar o link de acesso: assim só o cliente sabe a senha.' }) +
     '</div>' +
     '<div class="z-linha z-mt">' +
       C.btn('Salvar dados', { classe: 'primario', icone: 'check', acao: 'salvar-dados' }) +
@@ -418,7 +418,7 @@ function acoesFicha(c) {
       var corpo = { name: val('fd-nome'), email: val('fd-email'), role: val('fd-papel') };
       var senha = val('fd-senha');
       if (senha) {
-        if (senha.length < 6) return Z.erro('A senha precisa de pelo menos 6 caracteres.');
+        if (senha.length < 10) return Z.erro('A senha precisa de pelo menos 10 caracteres.');
         corpo.password = senha;
       }
       Z.apiJson('/api/admin/users/' + encodeURIComponent(c.username), 'PATCH', corpo).then(function (d) {
@@ -462,13 +462,13 @@ function dialogoNovo() {
       { id: 'username', rotulo: 'Usuário (login)', dica: 'joao', ajuda: 'Sem espaços. É o que ele digita para entrar.' },
       { id: 'name', rotulo: 'Nome', dica: 'João da Silva' },
       { id: 'email', rotulo: 'E-mail', dica: 'joao@empresa.com.br', ajuda: 'Usado para avisos de compra, suspensão e recuperação de senha.' },
-      { id: 'password', rotulo: 'Senha provisória', tipo: 'password', dica: 'mínimo 6 caracteres', ajuda: 'Obrigatória agora; depois é só gerar o link de acesso para o cliente trocar.' },
+      { id: 'password', rotulo: 'Senha provisória', tipo: 'password', dica: 'mínimo 10 caracteres', ajuda: 'Obrigatória agora; depois é só gerar o link de acesso para o cliente trocar.' },
       { id: 'role', rotulo: 'Papel', tipo: 'select', valor: 'user', opcoes: [{ v: 'user', t: 'Cliente' }, { v: 'admin', t: 'Administrador' }] },
     ],
     confirmar: 'Criar conta',
     aoConfirmar: function (v) {
       if (!v.username || !v.password) return Z.erro('Usuário e senha são obrigatórios.');
-      if (v.password.length < 6) return Z.erro('A senha precisa de pelo menos 6 caracteres.');
+      if (v.password.length < 10) return Z.erro('A senha precisa de pelo menos 10 caracteres.');
       Z.apiJson('/api/admin/users', 'POST', v).then(function (d) {
         if (d && d.error) return Z.erro(d.error);
         Z.ok('Conta de ' + (v.name || v.username) + ' criada.');

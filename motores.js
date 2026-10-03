@@ -1200,7 +1200,7 @@ module.exports = {
   // lugar do texto genérico da SDK quanto para o painel de diagnóstico.
   diagnosticarBinario,
   // invocação neutra de comando: fonte única para quem precisa chamar `npm` ou
-  // um CLI que no Windows é shim de script (usado também pelo atualizacao.js).
+  // um CLI que no Windows é shim de script.
   invocacaoDe, invocacaoParaPty,
   // Config de provedores do OpenCode (ex.: DeepSeek) — leitura compartilhada
   // entre o diagnóstico daqui e a rota admin que grava o provedor.

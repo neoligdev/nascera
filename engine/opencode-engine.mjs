@@ -53,6 +53,7 @@
 
 import { EventEmitter } from 'node:events';
 import { spawn, spawnSync } from 'node:child_process';
+import so from '../servicos/so.js';
 
 // Cache por caminho de binário — instalações diferentes (embarcada vs global
 // vs apontada por OPENCODE_CMD) podem ter versões diferentes na mesma
@@ -199,7 +200,7 @@ export class OpenCodeSession extends EventEmitter {
 
     const opcoes = {
       command: this.comando, args, cwd: this.cwd,
-      env: { ...process.env, ...this.env },
+      env: { ...so.ambienteDoMotor(), ...this.env },   // sem os segredos do servidor
     };
     // Mesmo cofre do outro motor: se o servidor passou um embrulho de spawn,
     // o OpenCode roda dentro dele também.

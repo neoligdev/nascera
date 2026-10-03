@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // ═══════════════════════════════════════════════════════════════════════
-// NASCERA — empacota uma versão para publicar em api.nascera.ai
+// NASCERA — empacota uma versão para instalar em outra máquina
 //
 //   node scripts/empacotar-release.js 1.3.0
 //   node scripts/empacotar-release.js 1.3.0 --sem-temas    (pacote leve)
@@ -40,9 +40,9 @@ const RAIZ = path.join(__dirname, '..');
 // O que VAI no pacote. Lista explícita: incluir por engano um arquivo de
 // dados seria mandar o dado de um cliente para dentro da máquina de outro.
 const INCLUIR = [
-  'server.js', 'telemetry.js', 'atualizacao.js', 'billing.js', 'billing-db.js', 'domains.js',
+  'server.js', 'billing.js', 'billing-db.js', 'domains.js',
   'theme.js', 'senhas.js', 'imagens.js', 'motores.js', 'memoria-projeto.js', 'modelos-locais.js',
-  'caminhos-seguros.js', 'estado-seguro.js', 'estado-db.js', 'assinatura.js', 'segredos.js',
+  'caminhos-seguros.js', 'estado-seguro.js', 'estado-db.js', 'segredos.js',
   'claude-auth.js', 'log.js', 'db.js', 'migrar.js', 'migracoes', 'repos',
   'site-router.js', 'preview-server.js', 'publish-server.js',
   'package.json', 'system-prompt.md', 'designsystem.md',
@@ -414,21 +414,17 @@ function arquivosDeCodigoDeProduto(raiz) {
   return lista;
 }
 
-// ─── sinal 2: o que o ATUALIZADOR se recusa a sobrescrever ────────────
-// A lista não é minha: é a PRESERVAR do atualizacao.js. Se um arquivo precisa
-// sobreviver a um update, ele é da instalação por definição — e então jamais
-// pode estar DENTRO de um pacote. Lida do código-fonte (não por require, que
-// arrastaria axios e o resto do servidor): quando o atualizador aprender um
-// arquivo novo, esta trava aprende junto. Devolve null se não conseguir ler —
-// quem chama AVISA, porque link quebrado em silêncio é o defeito de sempre.
-function nomesPreservadosPeloAtualizador(raiz) {
-  let texto;
-  try { texto = fs.readFileSync(path.join(raiz, 'atualizacao.js'), 'utf8'); } catch { return null; }
-  const m = /const\s+PRESERVAR\s*=\s*new\s+Set\(\[([\s\S]*?)\]\)/.exec(texto);
-  if (!m) return null;
-  const nomes = (m[1].match(/'[^']+'|"[^"]+"/g) || []).map(s => s.slice(1, -1));
-  return nomes.length ? new Set(nomes) : null;
-}
+// ─── sinal 2: o que é da INSTALAÇÃO, nunca do pacote ──────────────────
+// Dado, configuração e segredo de uma instalação. Se um arquivo destes
+// aparecer DENTRO de um pacote, é dado de alguém viajando para a máquina de
+// outra pessoa. (A lista morava no atualizador automático, que foi removido.)
+const DA_INSTALACAO = new Set([
+  'users.json', 'projects.json', 'billing.json', 'domains.json', 'theme.json',
+  'integrations.json', 'trash.json', 'activity-log.json', 'nascera-config.json',
+  '.credenciais.json', '.env', 'ecosystem.config.js', 'node_modules',
+  'projetos', 'projects',
+]);
+function nomesPreservadosPeloAtualizador() { return DA_INSTALACAO; }
 
 // ─── o julgamento ─────────────────────────────────────────────────────
 // Conteúdo do produto que mora onde o servidor também escreve. Vale para os
@@ -618,11 +614,6 @@ function principal(argv = process.argv) {
   // inteiro no tar, e foi assim que 46 capturas de projetos de clientes saíram
   // daqui dentro de um pacote "só de código".
   const auditoria = auditarPacote(RAIZ, presentes);
-  if (!auditoria.preservados) {
-    console.error('\n  ⚠  Não consegui ler a lista PRESERVAR de atualizacao.js.');
-    console.error('     A trava perdeu um dos sinais (segue com os outros). Confira se a');
-    console.error('     declaração `const PRESERVAR = new Set([...])` ainda existe lá.');
-  }
   if (auditoria.achados.length) {
     console.error('\n  ⛔  DADO DE INSTALAÇÃO PRESTES A ENTRAR NO PACOTE:');
     for (const a of auditoria.achados.slice(0, 30)) {
@@ -662,33 +653,7 @@ function principal(argv = process.argv) {
   console.log(`    tamanho: ${(bytes / 1048576).toFixed(1)} MB`);
   console.log(`    sha256:  ${sha}`);
 
-  // ── Assinatura ───────────────────────────────────────────────────────
-  // O sha256 acima viaja pelo MESMO servidor que serve o pacote, então não
-  // protege contra servidor comprometido. A assinatura sim: a chave privada
-  // não está no servidor. Assina automaticamente se NASCERA_CHAVE_PRIVADA
-  // apontar para o arquivo da chave.
-  const chavePriv = process.env.NASCERA_CHAVE_PRIVADA;
-  if (chavePriv && fs.existsSync(chavePriv)) {
-    try {
-      const { assinarArquivo } = require('../assinatura.js');
-      const sig = assinarArquivo(saida, fs.readFileSync(chavePriv, 'utf8'));
-      fs.writeFileSync(saida + '.sig', sig);
-      console.log(`    assinatura: ${sig.slice(0, 32)}…  (salva em ${path.basename(saida)}.sig)`);
-    } catch (e) {
-      console.error('    ⚠ falha ao assinar: ' + e.message);
-    }
-  } else {
-    console.log('    ⚠ SEM ASSINATURA — defina NASCERA_CHAVE_PRIVADA=/caminho/privada.pem');
-    console.log('      Um pacote sem assinatura só é aceito por instalações que ainda');
-    console.log('      não têm chave pública configurada. Gere o par com:');
-    console.log('        node assinatura.js --gerar-par');
-  }
   console.log(`    inclui:  ${presentes.join(', ')}`);
-  console.log(`\n  Agora publique em https://api.nascera.ai/admin.html → aba Atualizações.`);
-  console.log(`  Ou pela linha de comando, com o token de admin do painel:\n`);
-  console.log(`    curl -X POST "https://api.nascera.ai/api/admin/releases?version=${versao}&notes=SUAS+NOTAS" \\`);
-  console.log(`      -H "Authorization: Bearer SEU_TOKEN" -H "Content-Type: application/gzip" \\`);
-  console.log(`      --data-binary @${path.basename(saida)}\n`);
 }
 
 // Só roda quando é chamado como comando. O `require` existe para o teste

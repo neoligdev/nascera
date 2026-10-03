@@ -66,7 +66,7 @@ app.put('/api/settings/password', authMiddleware, async (req, res) => {
   const { currentPassword, newPassword } = req.body || {};
   const atual = await senhas.conferir(currentPassword, u.password);
   if (!atual.ok) return res.status(401).json({ error: 'Senha atual incorreta' });
-  if (!newPassword || newPassword.length < 6) return res.status(400).json({ error: 'Nova senha deve ter no minimo 6 caracteres' });
+  if (!newPassword || newPassword.length < 10) return res.status(400).json({ error: 'Nova senha deve ter no mínimo 10 caracteres' });
   u.password = await senhas.criarHash(newPassword);
   USERS[req.user.user] = { password: u.password };
   saveUsers(users);

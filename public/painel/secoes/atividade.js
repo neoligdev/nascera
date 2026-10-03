@@ -99,7 +99,7 @@ var ROTULOS = {
   configurada: 'configurada', permitir: 'permitir', planoPadrao: 'plano padrão', url: 'endereço',
   path: 'caminho', id: 'id', grantCredits: 'créditos do plano', addBalanceCredits: 'créditos avulsos',
   resetSpend: 'zerou o consumo', defaultBuildModel: 'modelo padrão', defaultBuildLevel: 'nível padrão',
-  trashRetentionDays: 'retenção da lixeira (dias)', telemetryEnabled: 'telemetria',
+  trashRetentionDays: 'retenção da lixeira (dias)',
 };
 var DINHEIRO = { valor: 1, valorPagoBrl: 1, priceBrl: 1 };
 

@@ -409,8 +409,8 @@ function registrar(app, deps) {
   // Público (o comprador chega pelo link): troca o token pela senha nova.
   app.post('/api/primeiro-acesso', async (req, res) => {
     const { token, senha } = req.body || {};
-    if (!token || !senha || String(senha).length < 6) {
-      return res.status(400).json({ error: 'Token e senha (mín. 6 caracteres) obrigatórios' });
+    if (!token || !senha || String(senha).length < 10) {
+      return res.status(400).json({ error: 'Token e senha (mín. 10 caracteres) obrigatórios' });
     }
     const hash = crypto.createHash('sha256').update(String(token)).digest('hex');
     const users = loadUsers();

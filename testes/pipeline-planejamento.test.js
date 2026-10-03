@@ -170,7 +170,13 @@ test('pedido de criação em projeto vazio passa por planejamento e depois faz h
   }
   // Prova de que o Claude (não o mesmo canal OpenCode) assumiu o handoff:
   // é a sessão fake do Claude que escreve este arquivo (ver fake-engine.mjs).
-  assert.equal(fs.existsSync(path.join(proj.path, 'index.html')), true, 'o Claude deveria ter assumido e "construído" algo');
+  // Espera pela CONDIÇÃO, não pelo primeiro 'done': o turno de planejamento
+  // também anuncia 'done', e o handoff (reabrir o canal + turno do Claude)
+  // corre em paralelo com ele. Com a suíte inteira em paralelo o 'done' do
+  // planejamento chegava antes do arquivo, e o teste falhava sem haver defeito.
+  const construido = path.join(proj.path, 'index.html');
+  for (let i = 0; i < 200 && !fs.existsSync(construido); i++) await new Promise((r) => setTimeout(r, 10));
+  assert.equal(fs.existsSync(construido), true, 'o Claude deveria ter assumido e "construído" algo');
 });
 
 test('planejamento com múltiplas rodadas mantém a mesma sessão até o marcador', async () => {

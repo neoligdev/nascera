@@ -1,6 +1,6 @@
 /* ═══ NASCERA ADMIN v2 — CONFIGURAÇÕES ═════════════════════════════════
    As decisões que valem para o sistema inteiro: como os builds nascem,
-   quanto tempo a lixeira guarda, o que sai daqui em telemetria e quem
+   quanto tempo a lixeira guarda e quem
    gera as imagens dos sites. Um bloco, um botão de salvar.
    ══════════════════════════════════════════════════════════════════════ */
 (function () {
@@ -49,7 +49,6 @@ Z.registrar('config', {
       MODELOS_IMG = oa.modelos || [];
       var nivel = String(cfg.defaultBuildLevel || 3);
       var dias = cfg.trashRetentionDays || 7;
-      var telemetria = cfg.telemetryEnabled !== false;
       var temChave = !!oa.configurada;
 
       var html = C.cab({
@@ -101,34 +100,6 @@ Z.registrar('config', {
           '</div>',
       });
 
-      // ── Telemetria ──
-      html += '<span class="z-rotulo" style="margin-top:22px">Telemetria</span>';
-      html += C.card({
-        tit: 'O que esta instalação conta para o servidor de licenças',
-        sub: 'Sem meias-palavras: abaixo está exatamente o que sai daqui quando isto está ligado.',
-        corpo: C.switch('cfg-telemetria', 'Enviar telemetria para o servidor de licenças', telemetria) +
-          '<div class="z-sep"></div>' +
-          '<div class="z-grid2">' +
-            '<div><span class="z-rotulo">O que sai daqui</span><div class="z-col" style="gap:8px">' +
-              item('Um identificador desta instalação (não é o seu nome nem o do seu cliente).', 'ok') +
-              item('O e-mail dos administradores desta conta e o domínio principal publicado.', 'ok') +
-              item('Quantos usuários e quantos projetos existem — só a contagem.', 'ok') +
-              item('Sistema operacional e versão do Nascera instalada.', 'ok') +
-              item('Eventos de uso: login, projeto criado, venda confirmada, domínio verificado.', 'ok') +
-            '</div></div>' +
-            '<div><span class="z-rotulo">O que nunca sai</span><div class="z-col" style="gap:8px">' +
-              item('O conteúdo dos sites e o código gerado.', 'erro') +
-              item('As conversas dos seus clientes com a IA.', 'erro') +
-              item('Senhas, chaves de API ou tokens de qualquer tipo.', 'erro') +
-              item('Arquivos dos projetos — nada de disco é enviado.', 'erro') +
-            '</div></div>' +
-          '</div>' +
-          '<div class="z-dica" style="margin-top:14px">Desligar não bloqueia nada e não apaga o que já foi enviado: só interrompe o envio daqui para frente. O registro de <b>Atividade</b> continua funcionando normalmente dentro desta instalação.</div>' +
-          '<div class="z-linha" style="justify-content:flex-end;margin-top:15px">' +
-            C.btn('Salvar telemetria', { classe: 'primario', icone: 'check', acao: 'salvar-telemetria' }) +
-          '</div>',
-      });
-
       // ── Geração de imagens ──
       html += '<span class="z-rotulo" style="margin-top:22px">Geração de imagens</span>';
       html += C.card({
@@ -158,12 +129,6 @@ Z.registrar('config', {
           var d = parseInt(valor('cfg-lixeira'), 10);
           if (!(d >= 1 && d <= 90)) return Z.erro('A retenção precisa ficar entre 1 e 90 dias.');
           salvarConfig(el, { trashRetentionDays: d }, 'Lixeira agora guarda por ' + d + ' dia(s).');
-        },
-
-        'salvar-telemetria': function (_d, el) {
-          var lig = !!(document.getElementById('cfg-telemetria') || {}).checked;
-          salvarConfig(el, { telemetryEnabled: lig },
-            lig ? 'Telemetria ligada.' : 'Telemetria desligada. Nada mais sai daqui.');
         },
 
         'trocar-chave': function () {

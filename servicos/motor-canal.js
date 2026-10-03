@@ -14,6 +14,7 @@ const WebSocket = require('ws');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const seguranca = require('../caminhos-seguros.js');
 
 function criar(deps) {
   const {
@@ -22,7 +23,7 @@ function criar(deps) {
     getEngine, sessionKeyFor, isDesktopLocal, escreverFerramentaDeImagem, memoriaProjeto,
     PROJECTS_BASE, normalizeBuildLevel, loadNasceraConfig, modelosLocais, motores, vpsSpawnWrapper, BUILD_LEVELS,
     credencialIaPropria, email, loadUsers, segredos, writeCavemanSkill, planejamentoAutomatico, motor2,
-    classificadorOperacao,
+    classificadorOperacao, pastaDeSessaoSemProjeto,
   } = deps;
 
   // A.1 (Fase 2 — classificador de operação): acumula, por turno, os
@@ -324,12 +325,23 @@ function criar(deps) {
     if (ch && !ch.session.closed) return ch;
 
     // Config do projeto: cwd, sessão a retomar, modelo/modo preferidos
-    let cwd = isDesktopLocal ? (process.env.HOME || os.homedir()) : '/root';
+    // No servidor, sessão sem projeto NUNCA roda em `/root` (ver
+    // `pastaDeSessaoSemProjeto`): ganha uma pasta vazia só do usuário.
+    let cwd = isDesktopLocal ? (process.env.HOME || os.homedir())
+      : (pastaDeSessaoSemProjeto ? pastaDeSessaoSemProjeto(user) : '/root');
     let resumeSessionId = null, model = null, mode = null, buildLevel = 3, effortPref = null;
     if (projectId) {
       const projects = loadProjects();
       const proj = projects.find(p => p.id === projectId);
       if (proj) {
+        // Antes de QUALQUER escrita: as linhas abaixo já gravam arquivos na
+        // pasta do projeto (ferramenta de imagem, memória, skill). O motor não
+        // abre numa pasta que o Nascera não pode operar — a instalação dele.
+        const bloqueio = proj.path && !proj.isRemote ? seguranca.motivoParaOperar(proj.path) : null;
+        if (bloqueio) {
+          logger.error('[engine] RECUSADO abrir o motor em ' + proj.path + ' (projeto ' + proj.id + '): ' + bloqueio);
+          throw new Error(bloqueio);
+        }
         try { escreverFerramentaDeImagem(proj); } catch {}
         // Instrução de imagens vai junto: sem ela o agente ignora a ferramenta.
         try { if (proj.path) memoriaProjeto.escreverArquivos(proj.path); } catch {}

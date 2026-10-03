@@ -54,6 +54,11 @@ function garantirEnv() {
 garantirEnv();
 require('dotenv').config({ path: ENV_PATH });
 
+// Os três processos escutam só em 127.0.0.1: quem atende a internet é o proxy
+// (Caddy), e nenhum deles tem por que aceitar conexão direta de fora. Quem
+// roda SEM proxy na frente define NASCERA_BIND=0.0.0.0 no `.env`, de propósito.
+const BIND = process.env.NASCERA_BIND || '127.0.0.1';
+
 const BASE = {
   cwd: __dirname,
   autorestart: true,
@@ -67,21 +72,21 @@ module.exports = {
       ...BASE,
       name: 'nascera',
       script: 'server.js',
-      env: { PORT: process.env.PORT || '3333' },
+      env: { PORT: process.env.PORT || '3333', NASCERA_BIND: BIND },
       max_memory_restart: '1G',
     },
     {
       ...BASE,
       name: 'nascera-preview',
       script: 'preview-server.js',
-      env: { PORT: process.env.PREVIEW_PORT || '4001' },
+      env: { PORT: process.env.PREVIEW_PORT || '4001', NASCERA_BIND: BIND },
       max_memory_restart: '512M',
     },
     {
       ...BASE,
       name: 'nascera-publish',
       script: 'publish-server.js',
-      env: { PORT: process.env.PUBLISH_PORT || '4102' },
+      env: { PORT: process.env.PUBLISH_PORT || '4102', NASCERA_BIND: BIND },
       max_memory_restart: '512M',
     },
   ],

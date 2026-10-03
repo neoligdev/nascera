@@ -94,8 +94,8 @@ const GRUPOS = [
       'usage-events.jsonl',              // billing.js — extrato append-only
       'billing-outbox.jsonl',            // billing-db.js
       'emails.jsonl',                    // servicos/email.js
-      'telemetry-buffer.json',           // server.js
-      '.updates.json',                   // atualizacao.js — histórico de updates
+      'telemetry-buffer.json',           // sobra de versões antigas (telemetria, removida)
+      '.updates.json',                   // sobra de versões antigas (atualizador, removido)
       '.pg-degradado',                   // estado-db.js — marcador de degradação
       '*.log',
     ],
@@ -104,8 +104,8 @@ const GRUPOS = [
     titulo: 'Identidade desta máquina',
     porque: 'a instalação nova precisa nascer com identidade própria, não herdada',
     alvos: [
-      '.nascera-install.json',             // telemetry.js — installId
-      '.nascera-activation-pending.json',  // telemetry.js
+      '.nascera-install.json',             // sobra de versões antigas (telemetria, removida)
+      '.nascera-activation-pending.json',  // idem
     ],
   },
   {
@@ -125,7 +125,7 @@ const GRUPOS = [
     porque: 'um .bak carrega exatamente o mesmo conteúdo do estado que ele protege',
     alvos: [
       '*.bak', '*.bak-*',                // estado-seguro.js — cópia do último bom
-      '.backups',                        // atualizacao.js — a instalação INTEIRA antes do update
+      '.backups',                        // sobra de versões antigas (atualizador, removido)
       '_tmp_estado',
       'nascera-*.tar.gz', 'nascera-*.tar.gz.sig', 'nascera-release.tar.gz',
     ],

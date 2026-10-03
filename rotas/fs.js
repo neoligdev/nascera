@@ -93,7 +93,9 @@ function registrar(app, deps) {
     // e raiz repetida vira pasta duplicada na árvore do editor.
     const roots = new Set();
     const juntar = (cand) => {
-      if (!cand) return;
+      // Pasta que o Nascera não pode operar (a instalação dele, sistema) não
+      // vira raiz do editor, mesmo que um projeto antigo aponte para ela.
+      if (!cand || require('../caminhos-seguros.js').motivoParaOperar(cand)) return;
       try { roots.add(fs.realpathSync(cand)); } catch { roots.add(path.resolve(cand)); }
     };
     for (const p of projetosDoUsuario(username)) { juntar(p.path); juntar(p.publishedPath); }

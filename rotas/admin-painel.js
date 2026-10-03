@@ -94,7 +94,7 @@ app.get('/api/admin/users', adminMiddleware, (_req, res) => {
 app.post('/api/admin/users', adminMiddleware, async (req, res) => {
   const { username, password, name, email, role } = req.body;
   if (!username || !password) return res.status(400).json({ error: 'Usuário e senha são obrigatórios' });
-  if (password.length < 6) return res.status(400).json({ error: 'Senha deve ter no mínimo 6 caracteres' });
+  if (password.length < 10) return res.status(400).json({ error: 'Senha deve ter no mínimo 10 caracteres' });
   const users = loadUsers();
   if (users[username]) return res.status(400).json({ error: 'Usuário já existe' });
   users[username] = {
@@ -123,7 +123,7 @@ app.patch('/api/admin/users/:username', adminMiddleware, async (req, res) => {
     u.role = role === 'admin' ? 'admin' : 'user';
   }
   if (password) {
-    if (password.length < 6) return res.status(400).json({ error: 'Senha deve ter no mínimo 6 caracteres' });
+    if (password.length < 10) return res.status(400).json({ error: 'Senha deve ter no mínimo 10 caracteres' });
     u.password = await senhas.criarHash(password);
     delete USERS[req.params.username];   // invalida cache em memória do login
   }
@@ -234,20 +234,18 @@ app.get('/api/admin/config', adminMiddleware, (_req, res) => {
     defaultBuildModel: cfg.defaultBuildModel || '',
     defaultBuildLevel: cfg.defaultBuildLevel || 3,
     trashRetentionDays: cfg.trashRetentionDays || 7,
-    telemetryEnabled: cfg.telemetryEnabled !== false,
   });
 });
 
 app.put('/api/admin/config', adminMiddleware, (req, res) => {
   const cfg = loadNasceraConfig();
-  const { defaultBuildModel, defaultBuildLevel, trashRetentionDays, telemetryEnabled } = req.body;
+  const { defaultBuildModel, defaultBuildLevel, trashRetentionDays } = req.body;
   if (defaultBuildModel !== undefined) cfg.defaultBuildModel = String(defaultBuildModel || '');
   if (defaultBuildLevel !== undefined) cfg.defaultBuildLevel = normalizeBuildLevel(defaultBuildLevel);
   if (trashRetentionDays !== undefined) {
     const d = parseInt(trashRetentionDays, 10);
     cfg.trashRetentionDays = (d >= 1 && d <= 90) ? d : 7;
   }
-  if (telemetryEnabled !== undefined) cfg.telemetryEnabled = !!telemetryEnabled;
   saveNasceraConfig(cfg);
   appendActivity({ type: 'admin_config_updated', user: req.user.user, data: cfg, at: new Date().toISOString() });
   res.json({ ok: true, config: cfg });

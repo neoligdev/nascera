@@ -161,7 +161,7 @@ function registrar(app, deps) {
       });
     }
 
-    if (!username || !password || password.length < 6) {
+    if (!username || !password || password.length < 10) {
       return res.status(400).json({ error: 'Usuário e senha (mín. 6 chars) obrigatórios' });
     }
 
@@ -391,7 +391,7 @@ function registrar(app, deps) {
     const RESERVADOS = ['__proto__', 'constructor', 'prototype'];
     const usuario = typeof username === 'string' ? username.trim() : '';
     const senha = typeof password === 'string' ? password : '';
-    if (!/^[a-zA-Z0-9._-]{3,32}$/.test(usuario) || RESERVADOS.includes(usuario) || senha.length < 6) {
+    if (!/^[a-zA-Z0-9._-]{3,32}$/.test(usuario) || RESERVADOS.includes(usuario) || senha.length < 10) {
       return res.status(400).json({
         error: 'Usuário (3-32 letras, números, ponto, hífen ou _) e senha (mín. 6 chars) obrigatórios',
       });

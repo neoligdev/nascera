@@ -28,6 +28,7 @@ import { query } from '@anthropic-ai/claude-agent-sdk';
 // tela de status e o login já usam, então "o binário que o NASCERA mostra" e "o
 // binário que o NASCERA executa" passam a ser, por construção, o mesmo.
 import motoresPadrao from '../motores.js';
+import so from '../servicos/so.js';
 
 // Modos expostos pela UI → configuração SDK.
 // 'turbo'  = Nascera clássico: nunca pergunta. O auto-allow é decidido DENTRO do
@@ -200,7 +201,12 @@ export class ClaudeSession extends EventEmitter {
   // que mora o contrato com a SDK — e assim dá para conferi-lo num teste sem
   // subir processo nenhum.
   _montarOpcoes() {
-    const env = { ...process.env, ...this.env };
+    // Sem os segredos do servidor (JWT_SECRET & cia): o processo do motor é
+    // onde roda o que o cliente pedir, inclusive um `env`.
+    const env = { ...so.ambienteDoMotor(), ...this.env };
+    // O CLI do Claude tem telemetria, relatório de erro e checagem de
+    // atualização próprios. Esta instalação não envia nada disso.
+    env.CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = '1';
     delete env.CLAUDECODE;          // evita erro de "nested session"
     delete env.CLAUDE_CODE_ENTRYPOINT;
 

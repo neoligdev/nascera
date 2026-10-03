@@ -14,7 +14,6 @@
 #   --panel-domain <dom>  Domínio do painel. Sem ele o painel fica só no IP:porta.
 #   --email <e>           E-mail para os avisos do Let's Encrypt (recomendado).
 #   --admin-user <u>      Usuário admin inicial (padrão: admin).
-#   --license-url <url>   Servidor de telemetria/licenças. Vazio = desligado.
 #   --no-caddy            Não instalar/configurar o Caddy (usa outro proxy).
 #   --no-firewall         Não mexer no ufw.
 #
@@ -28,7 +27,6 @@ cd "$AQUI"
 PANEL_DOMAIN=""
 LE_EMAIL=""
 ADMIN_USER="admin"
-LICENSE_URL=""
 COM_CADDY=1
 COM_FIREWALL=1
 
@@ -37,7 +35,6 @@ while [[ $# -gt 0 ]]; do
     --panel-domain) PANEL_DOMAIN="${2:-}"; shift 2 ;;
     --email)        LE_EMAIL="${2:-}"; shift 2 ;;
     --admin-user)   ADMIN_USER="${2:-admin}"; shift 2 ;;
-    --license-url)  LICENSE_URL="${2:-}"; shift 2 ;;
     --no-caddy)     COM_CADDY=0; shift ;;
     --no-firewall)  COM_FIREWALL=0; shift ;;
     -h|--help)      sed -n '2,25p' "$0"; exit 0 ;;
@@ -153,15 +150,6 @@ else
 fi
 chmod 600 .env 2>/dev/null || true
 
-if [[ -n "$LICENSE_URL" ]]; then
-  if grep -q '^LICENSE_SERVER_URL=' .env; then
-    sed -i "s|^LICENSE_SERVER_URL=.*|LICENSE_SERVER_URL=$LICENSE_URL|" .env
-  else
-    echo "LICENSE_SERVER_URL=$LICENSE_URL" >> .env
-  fi
-  ok "telemetria apontada para $LICENSE_URL"
-fi
-
 # lê as portas do .env para usar adiante
 PORT="$(grep -E '^PORT=' .env | cut -d= -f2- || echo 3333)"
 PUBLISH_PORT="$(grep -E '^PUBLISH_PORT=' .env | cut -d= -f2- || echo 4102)"
@@ -192,7 +180,32 @@ if [[ "$COM_FIREWALL" -eq 1 ]]; then
   ufw allow 22/tcp >/dev/null 2>&1 || true
   ufw allow 80/tcp >/dev/null 2>&1 || true
   ufw allow 443/tcp >/dev/null 2>&1 || true
+
+  # O motor de IA roda como claude-runner e divide a rede com a máquina. Sem
+  # isto ele alcança, em 127.0.0.1, o que não tem autenticação: a API
+  # administrativa do Caddy (2019), o servidor de preview (4001), o publish
+  # (4102), além do SSH e do Postgres. A 3333 fica: a ferramenta de imagem do
+  # projeto chama o painel por ela, e o painel exige token. Também fecha o
+  # endereço de metadados da nuvem. Validado antes de valer: regra quebrada
+  # aqui derrubaria o firewall inteiro no próximo boot.
+  REGRAS=/etc/ufw/before.rules
+  if [[ -f "$REGRAS" ]] && ! grep -q 'NASCERA-RUNNER' "$REGRAS"; then
+    RUNNER_UID="$(id -u claude-runner)"
+    cp -a "$REGRAS" "$REGRAS.antes-do-nascera"
+    sed -i "/^-A ufw-before-output -o lo -j ACCEPT/i \\
+# NASCERA-RUNNER: o usuario do motor de IA nao fala com servicos locais sem autenticacao\\
+-A ufw-before-output -o lo -p tcp -m owner --uid-owner ${RUNNER_UID} -m multiport --dports 22,2019,4001,4102,5432 -j REJECT --reject-with tcp-reset\\
+-A ufw-before-output -d 169.254.0.0/16 -m owner --uid-owner ${RUNNER_UID} -j REJECT" "$REGRAS"
+    if iptables-restore --test < "$REGRAS" 2>/dev/null; then
+      ok "motor de IA isolado dos serviços locais (2019, 4001, 4102, 22, 5432)"
+    else
+      cp -a "$REGRAS.antes-do-nascera" "$REGRAS"
+      echo "  ! não consegui validar as regras do motor no firewall — mantive as anteriores"
+    fi
+  fi
+
   yes | ufw enable >/dev/null 2>&1 || true
+  ufw reload >/dev/null 2>&1 || true
   ok "22, 80 e 443 liberadas (portas internas ficam fechadas)"
 fi
 

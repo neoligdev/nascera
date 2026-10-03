@@ -72,7 +72,6 @@ nunca sobrescreve o que já estiver lá — ele só acrescenta a linha que falta
 | `PREVIEW_PORT`       | Porta do preview (padrão 4001).                                          |
 | `PUBLISH_PORT`       | Porta dos sites publicados (padrão 4102).                                |
 | `CLAUDE_CMD`         | Caminho do Claude CLI. **Deixe ausente** salvo motivo forte: sem ela o NASCERA prefere o CLI embarcado e se auto-repara. |
-| `LICENSE_SERVER_URL` | URL do Dashboard Admin (Pacote 2). Vazio = telemetria desligada.          |
 | `NASCERA_BUILD_MODEL`  | Modelo usado nas construções (padrão `sonnet`).                          |
 
 > `AUTH_USER` e `AUTH_PASS` **não são login** e nunca foram: nada no servidor lê
@@ -100,8 +99,6 @@ system-prompt.md     # system prompt do assistente
 
 ## Como se conecta aos outros pacotes
 
-- **Dashboard Admin (Pacote 2):** aponte `LICENSE_SERVER_URL` para a URL do admin.
-  É lá que ficam licenças, assinaturas e telemetria.
 - **Landing Page (Pacote 3):** site de marketing independente; os botões de
   login/cadastro da LP devem apontar para a URL deste sistema (`/` e `/auth`)
   ou para o cadastro do Dashboard Admin.
