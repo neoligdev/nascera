@@ -2795,6 +2795,16 @@ iniciarEstadoDb().then(() => server.listen(PORT, BIND, () => {
   // Preflight do motor em segundo plano — depois de já estar servindo.
   garantirMotorNoBoot();
 
+  // Credencial do Claude, propagada de novo a cada boot. Antes só rodava
+  // depois de um login manual na tela de setup — um refresh do OAuth do
+  // root (a lib renova o token sozinha) deixava o claude-runner com
+  // credencial velha/ausente sem avisar ninguém, e toda conversa quebrava
+  // com erro de login do motor sem nenhum sinal na tela de status. Copiar
+  // de novo a cada subida é barato (dois arquivos pequenos) e idempotente.
+  if (!isDesktopLocal) {
+    try { claudeAuth.propagateClaudeAuth(); } catch (e) { logger.error('[claude-auth] propagação no boot falhou:', e.message); }
+  }
+
   // Revalida o DNS de tempos em tempos: domínio que deixou de apontar não
   // pode continuar exibido como "ativo". Primeira passada 1min após subir.
   const revalidar = () => {
