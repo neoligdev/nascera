@@ -62,6 +62,24 @@
         ],
         "createdAt": "2026-10-09T14:05:20.181Z",
         "reason": "Agent: the one real multi-line prose paragraph was bumped 11.5px->13px; remaining instances are the page's established micro-label/caption scale (.form-label/.badge-text/.error-box at 11px, .form-hint/.footer/.terminal at 10px), used identically across dozens of elements in this same file, not stray tiny body copy"
+      },
+      {
+        "rule": "clipped-overflow-container",
+        "value": "*",
+        "files": [
+          "public/editor.html"
+        ],
+        "createdAt": "2026-10-09T14:15:27.995Z",
+        "reason": "User confirmed: overflow:hidden on body/.editor-main is structural (full-screen app shell, same as VS Code); revisit only if a tooltip is actually seen clipped"
+      },
+      {
+        "rule": "flat-type-hierarchy",
+        "value": "*",
+        "files": [
+          "public/pesquisa.html"
+        ],
+        "createdAt": "2026-10-09T14:15:28.013Z",
+        "reason": "User confirmed: small panel header distinguished by weight not size is the same deliberate convention already used in corte.html's Historico de Sessoes header"
       }
     ]
   }
