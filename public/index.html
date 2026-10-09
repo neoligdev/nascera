@@ -324,7 +324,7 @@
       term.style.display = "block";
       term.textContent = "> claude login\n";
 
-      fetch("/api/setup/claude-login-start", { method: "POST" })
+      fetch("/api/setup/claude-login-start", { method: "POST", headers: { "Authorization": "Bearer " + authToken } })
         .then(function(r) { return r.json(); })
         .then(function(d) {
           if (d.success) {
@@ -356,7 +356,7 @@
       msg.textContent = "Verificando...";
       msg.style.color = "rgba(250,204,21,.5)";
 
-      fetch("/api/setup/claude-login-code", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code: code }) })
+      fetch("/api/setup/claude-login-code", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Bearer " + authToken }, body: JSON.stringify({ code: code }) })
         .then(function(r) { return r.json(); })
         .then(function(d) {
           if (d.success) {

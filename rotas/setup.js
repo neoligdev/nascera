@@ -1,16 +1,21 @@
 // ═══════════════════════════════════════════════════════════════════════
 // NASCERA — rotas de primeiro acesso e login do Claude (S4: extraído do server.js)
 //
-// Bloco contíguo de 6 rotas, todas SEM autenticação por natureza (a máquina
-// ainda não tem admin, ou o dono está ligando o Claude Code):
-//   • GET  /api/setup-status              — a máquina já tem admin? já tem Claude?
-//   • POST /api/setup/create-account      — cria o admin (portão: token de setup)
-//   • POST /api/setup/assumir-instalacao  — destrava instalação herdada (mesmo portão)
-//   • POST /api/setup/claude-login-start  — abre o fluxo OAuth e devolve a URL
-//   • GET  /api/setup/claude-auth-status  — polling: "o login já concluiu?"
-//   • POST /api/setup/claude-login-code   — cola o código no prompt do CLI
-//   • POST /api/setup/claude-token        — login alternativo via setup-token
-//   • POST /api/setup/claude-logout       — desloga (esta exige auth)
+// Bloco contíguo de 7 rotas. Só as duas primeiras são SEM autenticação por
+// natureza (a máquina ainda não tem admin nenhum):
+//   • GET  /api/setup-status              — a máquina já tem admin? já tem Claude? (sem auth)
+//   • POST /api/setup/create-account      — cria o admin (sem auth; portão: token de setup)
+//   • POST /api/setup/assumir-instalacao  — destrava instalação herdada (sem auth; mesmo portão)
+// As 4 de login do motor TROCAM a credencial de Claude do servidor inteiro —
+// todas exigem authMiddleware (login do admin já feito). Até 2026-10-09 não
+// exigiam: qualquer um na internet podia logar a própria conta de Claude no
+// lugar da do admin. O front-end (index.html/home.html) já manda o Bearer
+// token em todas — a rota é que não conferia.
+//   • POST /api/setup/claude-login-start  — abre o fluxo OAuth e devolve a URL (auth)
+//   • GET  /api/setup/claude-auth-status  — polling: "o login já concluiu?" (auth)
+//   • POST /api/setup/claude-login-code   — cola o código no prompt do CLI (auth)
+//   • POST /api/setup/claude-token        — login alternativo via setup-token (auth)
+//   • POST /api/setup/claude-logout       — desloga (auth)
 //
 // O portão de segurança que importa: create-account só cria admin com o token
 // de setup válido E enquanto não houver admin. Coberto por
@@ -482,7 +487,15 @@ function registrar(app, deps) {
 
   // ═══ Claude Auth: Via Login (OAuth) ═══
   // Uses auth login for full scopes URL, keeps setup-token process for code input
-  app.post('/api/setup/claude-login-start', (_req, res) => {
+  //
+  // As 4 rotas de login do motor abaixo (login-start/auth-status/login-code/
+  // token) exigem authMiddleware. Sem auth, qualquer um na internet podia
+  // logar a PRÓPRIA conta de Claude no servidor inteiro: o servidor roda como
+  // root, o fluxo termina com propagateClaudeAuth() sobrescrevendo a
+  // credencial que toda conversa de todo cliente usa. claude-logout (abaixo)
+  // já exigia auth — deslogar era mais protegido que logar. Achado na
+  // auditoria de segurança de 2026-10-09; prova em testes/setup-claude-auth.test.js.
+  app.post('/api/setup/claude-login-start', authMiddleware, (_req, res) => {
     try {
       // Kill any previous login process
       if (global._claudeLoginProc) { try { global._claudeLoginProc.kill(); } catch {} global._claudeLoginProc = null; }
@@ -554,7 +567,7 @@ function registrar(app, deps) {
   // ═══ Claude Auth: status para polling da UI ═══
   // O CLI atual abre o navegador sozinho e conclui o login sem código colado.
   // A UI consulta este endpoint enquanto o modal está aberto e se atualiza sozinha.
-  app.get('/api/setup/claude-auth-status', (_req, res) => {
+  app.get('/api/setup/claude-auth-status', authMiddleware, (_req, res) => {
     const status = readClaudeAuthStatus();
     if (status.loggedIn) {
       // Login concluído (pelo navegador ou por código): encerra o processo pendente
@@ -569,7 +582,7 @@ function registrar(app, deps) {
   });
 
   // ═══ Claude Auth: Submit auth code to the "Paste code here" prompt ═══
-  app.post('/api/setup/claude-login-code', (req, res) => {
+  app.post('/api/setup/claude-login-code', authMiddleware, (req, res) => {
     const { code } = req.body;
     if (!code || !code.trim()) return res.json({ success: false, error: 'Codigo vazio' });
 
@@ -641,7 +654,7 @@ function registrar(app, deps) {
   });
 
   // ═══ Claude Auth: Via Token (setup-token) ═══
-  app.post('/api/setup/claude-token', (req, res) => {
+  app.post('/api/setup/claude-token', authMiddleware, (req, res) => {
     const { token } = req.body;
     if (!token || !token.trim()) return res.json({ success: false, error: 'Token vazio' });
 

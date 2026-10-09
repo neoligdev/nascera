@@ -423,7 +423,7 @@ window.watchClaudeLogin = function(onDone, timeoutMs) {
   if (window._claudeLoginWatcher) clearInterval(window._claudeLoginWatcher);
   var deadline = Date.now() + (timeoutMs || 300000);   // 5 min
   var check = function() {
-    fetch('/api/setup/claude-auth-status')
+    fetch('/api/setup/claude-auth-status', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('nascera_token') } })
       .then(function(r) { return r.json(); })
       .then(function(s) {
         if (s && s.loggedIn) {
