@@ -7,3 +7,21 @@ package-lock.json
 .nascera-install.json
 .nascera-activation-pending.json
 themes/catalog.json
+
+# Estado de produção (senhas com hash, saldo de créditos, segredos de
+# integração) — nunca versionado. Hoje a instalação não é um repo git, então
+# nada vazou; isto é rede de segurança caso algum dia alguém rode `git init`
+# dentro de uma instalação (achado da auditoria de segurança de 2026-10-09).
+.env
+.chave-cofre
+.cofre.json
+activity-log.json
+activity-log.json.bak
+billing.json
+integrations.json
+nascera-config.json
+projects.json
+trash.json
+users.json
+vendas.json
+usage-events.jsonl
